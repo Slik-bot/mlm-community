@@ -174,7 +174,8 @@
     feed.querySelectorAll('.post-card').forEach(function(p) { p.remove(); });
     showSkeletons(3);
 
-    var posts = await sbLoadPosts(currentFilter, 20);
+    var postsResult = await loadPosts(currentFilter, 20);
+    var posts = postsResult.data || [];
     removeSkeletons();
 
     if (!posts.length) {
@@ -204,7 +205,7 @@
   };
 
   function createPostElement(post) {
-    var profile = post.profiles || {};
+    var profile = post.author || {};
     var dnaNames = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
     var dnaClasses = { strategist: 'dna-blue', communicator: 'dna-green', creator: 'dna-orange', analyst: 'dna-purple' };
     var dnaDots = { strategist: '#3b82f6', communicator: '#22c55e', creator: '#f59e0b', analyst: '#a78bfa' };
@@ -216,10 +217,10 @@
     div.setAttribute('data-author-dna', profile.dna_type || '');
 
     var typeBadge = '';
-    if (post.post_type === 'case') typeBadge = '<span class="post-tag t-case">Кейс</span>';
-    else if (post.post_type === 'poll') typeBadge = '<span class="post-tag t-poll">Опрос</span>';
-    else if (post.post_type === 'tip') typeBadge = '<span class="post-tag t-expert">Совет</span>';
-    else if (post.post_type === 'announcement') typeBadge = '<span class="post-tag t-announce">Объявление</span>';
+    if (post.type === 'case') typeBadge = '<span class="post-tag t-case">Кейс</span>';
+    else if (post.type === 'poll') typeBadge = '<span class="post-tag t-poll">Опрос</span>';
+    else if (post.type === 'tip') typeBadge = '<span class="post-tag t-expert">Совет</span>';
+    else if (post.type === 'announcement') typeBadge = '<span class="post-tag t-announce">Объявление</span>';
 
     var ringCls = 'post-ava-ring' + (dnaClasses[profile.dna_type] ? ' ' + dnaClasses[profile.dna_type] : '');
     var avaContent = profile.avatar_url
@@ -234,7 +235,7 @@
     bodyHtml = bodyHtml.replace(/#([a-zA-Zа-яА-ЯёЁ0-9_]+)/g, '<span class="hashtag">#$1</span>');
 
     var caseHtml = '';
-    if (post.post_type === 'case' && post.case_data) {
+    if (post.type === 'case' && post.case_data) {
       try {
         var cd = typeof post.case_data === 'string' ? JSON.parse(post.case_data) : post.case_data;
         caseHtml = '<div class="case-row">' +
@@ -245,9 +246,9 @@
     }
 
     var pollHtml = '';
-    if (post.post_type === 'poll' && post.poll_options) {
+    if (post.type === 'poll' && post.poll_data) {
       try {
-        var opts = typeof post.poll_options === 'string' ? JSON.parse(post.poll_options) : post.poll_options;
+        var opts = typeof post.poll_data === 'string' ? JSON.parse(post.poll_data) : post.poll_data;
         if (opts && opts.length) {
           var totalV = 0; opts.forEach(function(o) { totalV += (o.votes || 0); });
           pollHtml = '<div class="poll-opts">';
@@ -262,7 +263,7 @@
         }
       } catch(e) {}
     }
-    var isOwn = currentAuthUser && post.user_id === currentAuthUser.id, pid = post.id;
+    var cu = getCurrentUser(); var isOwn = cu && post.author_id === cu.id, pid = post.id;
     var popHtml = isOwn ? '<div class="pop-i" onclick="editPost(\'' + pid + '\')">' + SVG_EDIT + ' Редактировать</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i dng" onclick="deletePost(\'' + pid + '\')">' + SVG_TRASH + ' Удалить</div>'
       : '<div class="pop-i" onclick="closePopovers();handleBookmark(\'' + pid + '\',this.closest(\'.post-card\').querySelector(\'.r-btn:last-child\'))">' + SVG_SAVE + ' Сохранить</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i" onclick="hidePost(\'' + pid + '\')">' + SVG_HIDE + ' Скрыть</div><div class="pop-i dng" onclick="reportPost(\'' + pid + '\')">' + SVG_WARN + ' Пожаловаться</div>';
 
@@ -294,16 +295,15 @@
     if (btn.disabled) return;
     btn.disabled = true;
     try {
-      var liked = await sbLikePost(postId);
+      var likeResult = await toggleLike(postId);
       var countEl = btn.querySelectorAll('span')[1];
-      var currentCount = parseInt(countEl.textContent) || 0;
-      if (liked) {
+      if (likeResult.liked) {
         btn.classList.add('liked');
-        countEl.textContent = currentCount + 1;
+        countEl.textContent = likeResult.likes_count;
         spawnParticles(btn);
       } else {
         btn.classList.remove('liked');
-        countEl.textContent = Math.max(0, currentCount - 1);
+        countEl.textContent = likeResult.likes_count;
       }
     } catch (e) {
       console.error('Like error:', e);
@@ -315,8 +315,8 @@
     if (btn.disabled) return;
     btn.disabled = true;
     try {
-      var saved = await sbToggleBookmark(postId);
-      if (saved) { btn.classList.add('saved'); } else { btn.classList.remove('saved'); }
+      var bmResult = await toggleBookmark(postId);
+      if (bmResult.bookmarked) { btn.classList.add('saved'); } else { btn.classList.remove('saved'); }
     } catch (e) {
       console.error('Bookmark error:', e);
     }

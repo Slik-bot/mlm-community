@@ -223,7 +223,11 @@
   window.initLandingModals = initAuthHandlers;
 
   // ===== Ждём загрузки DOM =====
-  window.addEventListener('DOMContentLoaded', function() {
+  window.addEventListener('DOMContentLoaded', async function() {
+
+    // Новые модули v5.1
+    if (window.detectPlatform) detectPlatform();
+    if (window.authCheckSession) await authCheckSession();
 
     // ===== АВТОЛОГИН при загрузке =====
     sbCheckSession().then(async function(profile) {

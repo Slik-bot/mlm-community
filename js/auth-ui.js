@@ -163,14 +163,14 @@
     var name = inp ? inp.value.trim() : 'Участник';
     if (name.length < 2) name = 'Участник';
 
-    sbSaveProfileName(name);
+    saveOnboardingStep('name', { name: name });
 
     if (_origSetupGoStep2) _origSetupGoStep2();
   };
 
   var _origSetupSkipName = window.setupSkipName;
   window.setupSkipName = function() {
-    sbSaveProfileName('Участник');
+    saveOnboardingStep('name', { name: 'Участник' });
     if (_origSetupSkipName) _origSetupSkipName();
   };
 
@@ -183,7 +183,7 @@
       var dnaType = localStorage.getItem('dnaType');
       var scores = localStorage.getItem('dnaScores');
       if (dnaType) {
-        sbSaveDnaResult(dnaType, scores ? JSON.parse(scores) : {});
+        saveDnaResult(dnaType, { answers: scores ? JSON.parse(scores) : {} });
       }
 
       return promise;
@@ -193,12 +193,12 @@
   var _origSetupShowDone = window.setupShowDone;
   window.setupShowDone = function() {
     var interests = window.setupSelectedInterests || [];
-    if (interests.length) sbSaveInterests(interests);
+    if (interests.length) saveOnboardingStep('interests', { interests: interests });
 
     var goal = window.setupSelectedGoal || '';
-    if (goal) sbSaveGoal(goal);
+    if (goal) saveOnboardingStep('goal', { goal: goal });
 
-    sbCompleteOnboarding();
+    saveOnboardingStep('complete', {});
 
     if (_origSetupShowDone) _origSetupShowDone();
   };
