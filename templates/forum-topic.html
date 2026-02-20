@@ -1,0 +1,41 @@
+<!-- =============== SCREEN: FORUM TOPIC =============== -->
+<div class="scr hidden" id="scrForumTopic">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Обсуждение</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Topic header -->
+  <div class="topic-header glass-card">
+    <div class="topic-cat-badge" id="topicCatBadge"></div>
+    <div class="topic-title" id="topicTitle"></div>
+    <div class="topic-meta">
+      <img class="topic-author-avatar" id="topicAuthorAvatar" alt="">
+      <span class="topic-author-name" id="topicAuthorName"></span>
+      <span class="topic-time" id="topicTime"></span>
+    </div>
+    <div class="topic-body" id="topicBody"></div>
+    <div class="topic-stats">
+      <span class="topic-stat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="topicViews">0</span>
+      </span>
+      <span class="topic-stat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span id="topicRepliesCount">0</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Replies -->
+  <div class="topic-replies" id="topicReplies"></div>
+
+  <!-- Reply form -->
+  <div class="topic-reply-form">
+    <textarea class="reply-input glass-input" id="replyInput" placeholder="Написать ответ..." rows="3"></textarea>
+    <button class="btn-primary" onclick="forumSubmitReply()">Ответить</button>
+  </div>
+</div>

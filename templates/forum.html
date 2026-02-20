@@ -1,0 +1,43 @@
+<!-- =============== SCREEN: FORUM =============== -->
+<div class="scr hidden" id="scrForum">
+  <div class="scr-head">
+    <div style="width:36px"></div>
+    <span class="scr-head-title">Форум</span>
+    <button class="icon-btn" onclick="goTo('scrForumCreate')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+  </div>
+
+  <!-- Categories horizontal scroll -->
+  <div class="forum-cats" id="forumCats">
+    <button class="forum-cat active" data-cat="all" onclick="forumFilterCat('all')">Все</button>
+    <button class="forum-cat" data-cat="business" onclick="forumFilterCat('business')">Бизнес</button>
+    <button class="forum-cat" data-cat="marketing" onclick="forumFilterCat('marketing')">Маркетинг</button>
+    <button class="forum-cat" data-cat="tools" onclick="forumFilterCat('tools')">Инструменты</button>
+    <button class="forum-cat" data-cat="education" onclick="forumFilterCat('education')">Обучение</button>
+    <button class="forum-cat" data-cat="newbies" onclick="forumFilterCat('newbies')">Новичкам</button>
+    <button class="forum-cat" data-cat="cases" onclick="forumFilterCat('cases')">Кейсы</button>
+    <button class="forum-cat" data-cat="offtopic" onclick="forumFilterCat('offtopic')">Оффтоп</button>
+  </div>
+
+  <!-- Sort -->
+  <div class="forum-sort-wrap">
+    <select class="forum-sort glass-input" id="forumSortSelect" onchange="forumSort(this.value)">
+      <option value="new">Новые</option>
+      <option value="active">Активные</option>
+      <option value="popular">Популярные</option>
+    </select>
+  </div>
+
+  <!-- Topic list -->
+  <div class="forum-list" id="forumList"></div>
+
+  <!-- Empty state -->
+  <div class="forum-empty hidden" id="forumEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </div>
+    <div class="empty-title">Тем пока нет</div>
+    <div class="empty-desc">Создайте первую тему</div>
+  </div>
+</div>

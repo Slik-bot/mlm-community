@@ -28,7 +28,10 @@ const TEMPLATES = {
   scrDealDetail: '/templates/deal-detail.html',
   scrShop: '/templates/shop.html',
   scrProductDetail: '/templates/product-detail.html',
-  scrProductCreate: '/templates/product-create.html'
+  scrProductCreate: '/templates/product-create.html',
+  scrForum: '/templates/forum.html',
+  scrForumTopic: '/templates/forum-topic.html',
+  scrForumCreate: '/templates/forum-create.html'
 };
 const loadedTemplates = {};
 
@@ -103,6 +106,15 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrProductCreate') {
     if (window.initProductCreate) window.initProductCreate();
+  }
+  if (id === 'scrForum') {
+    if (window.initForum) window.initForum();
+  }
+  if (id === 'scrForumTopic') {
+    if (window.initForumTopic) window.initForumTopic();
+  }
+  if (id === 'scrForumCreate') {
+    if (window.initForumCreate) window.initForumCreate();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
