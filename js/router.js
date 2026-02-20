@@ -25,7 +25,10 @@ const TEMPLATES = {
   scrChatInfo: '/templates/chat-info.html',
   scrDealList: '/templates/deal-list.html',
   scrDealCreate: '/templates/deal-create.html',
-  scrDealDetail: '/templates/deal-detail.html'
+  scrDealDetail: '/templates/deal-detail.html',
+  scrShop: '/templates/shop.html',
+  scrProductDetail: '/templates/product-detail.html',
+  scrProductCreate: '/templates/product-create.html'
 };
 const loadedTemplates = {};
 
@@ -92,13 +95,22 @@ async function ensureTemplate(id) {
   if (id === 'scrDealDetail') {
     if (window.initDealDetail) window.initDealDetail();
   }
+  if (id === 'scrShop') {
+    if (window.initShop) window.initShop();
+  }
+  if (id === 'scrProductDetail') {
+    if (window.initProductDetail) window.initProductDetail();
+  }
+  if (id === 'scrProductCreate') {
+    if (window.initProductCreate) window.initProductCreate();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
   }
 }
 
 function updateChrome(id){
-  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList';
+  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }

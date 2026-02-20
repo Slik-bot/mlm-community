@@ -1,0 +1,62 @@
+<!-- =============== SCREEN: PRODUCT CREATE =============== -->
+<div class="scr hidden" id="scrProductCreate">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Новый продукт</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="product-form">
+    <div class="form-field">
+      <label>Название</label>
+      <input class="glass-input" id="pcTitle" type="text" maxlength="100" placeholder="Название продукта">
+    </div>
+
+    <div class="form-field">
+      <label>Описание</label>
+      <textarea class="glass-input" id="pcDesc" maxlength="2000" rows="4" placeholder="Подробно опишите продукт..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <label>Категория</label>
+      <select class="glass-input" id="pcCategory">
+        <option value="course">Курс</option>
+        <option value="template">Шаблон</option>
+        <option value="guide">Гайд</option>
+        <option value="tool">Инструмент</option>
+        <option value="other">Другое</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Цена (руб.)</label>
+      <input class="glass-input" id="pcPrice" type="number" min="0" placeholder="0 = бесплатно">
+    </div>
+
+    <div class="form-field">
+      <label>Обложка</label>
+      <div class="cover-upload" onclick="pcPickCover()" id="pcCoverWrap">
+        <img id="pcCoverPreview" class="cover-preview hidden" src="" alt="">
+        <div class="cover-placeholder" id="pcCoverPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Загрузить обложку</span>
+        </div>
+      </div>
+      <input type="file" id="pcCoverInput" accept="image/*" class="hidden" onchange="pcHandleCover(this)">
+    </div>
+
+    <div class="form-field">
+      <label>Для кого (ДНК-тип)</label>
+      <div class="dna-checkboxes" id="pcDnaTypes">
+        <label class="dna-check"><input type="checkbox" value="strategist"><span class="dna-check-dot" style="background:#3b82f6"></span>Стратег</label>
+        <label class="dna-check"><input type="checkbox" value="communicator"><span class="dna-check-dot" style="background:#22c55e"></span>Коммуникатор</label>
+        <label class="dna-check"><input type="checkbox" value="creator"><span class="dna-check-dot" style="background:#f59e0b"></span>Креатор</label>
+        <label class="dna-check"><input type="checkbox" value="analyst"><span class="dna-check-dot" style="background:#a78bfa"></span>Аналитик</label>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="shopCreateProduct()">Опубликовать</button>
+  </div>
+</div>

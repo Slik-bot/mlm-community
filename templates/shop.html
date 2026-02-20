@@ -1,0 +1,48 @@
+<!-- =============== SCREEN: SHOP =============== -->
+<div class="scr hidden" id="scrShop">
+  <div class="scr-head">
+    <div style="width:36px"></div>
+    <span class="scr-head-title">Магазин</span>
+    <button class="icon-btn" onclick="goTo('scrProductCreate')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="shop-search-wrap">
+    <svg class="shop-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="shop-search glass-input" id="shopSearch" placeholder="Поиск продуктов..." oninput="shopFilterSearch(this.value)">
+  </div>
+
+  <!-- Categories -->
+  <div class="shop-categories" id="shopCategories">
+    <button class="cat-pill active" data-cat="all" onclick="shopFilterCat('all')">Все</button>
+    <button class="cat-pill" data-cat="course" onclick="shopFilterCat('course')">Курсы</button>
+    <button class="cat-pill" data-cat="template" onclick="shopFilterCat('template')">Шаблоны</button>
+    <button class="cat-pill" data-cat="guide" onclick="shopFilterCat('guide')">Гайды</button>
+    <button class="cat-pill" data-cat="tool" onclick="shopFilterCat('tool')">Инструменты</button>
+    <button class="cat-pill" data-cat="other" onclick="shopFilterCat('other')">Другое</button>
+  </div>
+
+  <!-- Sort -->
+  <div class="shop-sort-wrap">
+    <select class="shop-sort glass-input" id="shopSortSelect" onchange="shopSort(this.value)">
+      <option value="new">Новые</option>
+      <option value="popular">Популярные</option>
+      <option value="cheap">Дешевле</option>
+      <option value="expensive">Дороже</option>
+    </select>
+  </div>
+
+  <!-- Grid -->
+  <div class="shop-grid" id="shopGrid"></div>
+
+  <!-- Empty state -->
+  <div class="shop-empty hidden" id="shopEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    </div>
+    <div class="empty-title">Ничего не найдено</div>
+    <div class="empty-desc">Попробуйте другой запрос</div>
+  </div>
+</div>

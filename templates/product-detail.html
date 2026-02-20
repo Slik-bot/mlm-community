@@ -1,0 +1,55 @@
+<!-- =============== SCREEN: PRODUCT DETAIL =============== -->
+<div class="scr hidden" id="scrProductDetail">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title" id="pdTitle">Продукт</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Cover -->
+  <div class="pd-cover-wrap">
+    <img class="pd-cover" id="pdCover" src="" alt="">
+    <div class="pd-category-badge" id="pdCategory"></div>
+  </div>
+
+  <!-- Info -->
+  <div class="pd-info">
+    <div class="pd-name" id="pdName"></div>
+    <div class="pd-price-row">
+      <div class="pd-price" id="pdPrice"></div>
+      <div class="pd-sales" id="pdSales"></div>
+    </div>
+  </div>
+
+  <!-- Author -->
+  <div class="pd-author glass-card" onclick="shopOpenAuthor()">
+    <img class="pd-author-avatar" id="pdAuthorAvatar" src="" alt="">
+    <div class="pd-author-info">
+      <div class="pd-author-name" id="pdAuthorName"></div>
+      <div class="pd-author-dna" id="pdAuthorDna"></div>
+    </div>
+    <svg class="pd-author-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+  </div>
+
+  <!-- Description -->
+  <div class="pd-section">
+    <div class="section-title">Описание</div>
+    <div class="pd-desc" id="pdDesc"></div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="pd-section">
+    <div class="section-title">
+      Отзывы <span class="pd-rating" id="pdRating"></span>
+    </div>
+    <div class="pd-reviews" id="pdReviews"></div>
+  </div>
+
+  <!-- Buy bar (sticky) -->
+  <div class="pd-buy-bar">
+    <div class="pd-buy-price" id="pdBuyPrice"></div>
+    <button class="btn-primary pd-buy-btn" id="pdBuyBtn" onclick="shopBuyProduct()">Купить</button>
+  </div>
+</div>
