@@ -38,7 +38,9 @@ const TEMPLATES = {
   scrContestDetail: '/templates/contest-detail.html',
   scrExperts: '/templates/experts.html',
   scrExpertDetail: '/templates/expert-detail.html',
-  scrBecomeExpert: '/templates/become-expert.html'
+  scrBecomeExpert: '/templates/become-expert.html',
+  scrMatch: '/templates/match.html',
+  scrMatchList: '/templates/match-list.html'
 };
 const loadedTemplates = {};
 
@@ -143,6 +145,12 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrBecomeExpert') {
     if (window.initBecomeExpert) window.initBecomeExpert();
+  }
+  if (id === 'scrMatch') {
+    if (window.initMatch) window.initMatch();
+  }
+  if (id === 'scrMatchList') {
+    if (window.initMatchList) window.initMatchList();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
