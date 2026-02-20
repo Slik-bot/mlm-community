@@ -22,7 +22,10 @@ const TEMPLATES = {
   scrProfileSettings: '/templates/profile-settings.html',
   scrChatList: '/templates/chat-list.html',
   scrChat: '/templates/chat.html',
-  scrChatInfo: '/templates/chat-info.html'
+  scrChatInfo: '/templates/chat-info.html',
+  scrDealList: '/templates/deal-list.html',
+  scrDealCreate: '/templates/deal-create.html',
+  scrDealDetail: '/templates/deal-detail.html'
 };
 const loadedTemplates = {};
 
@@ -79,6 +82,15 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrChatInfo') {
     if (window.initChatInfo) window.initChatInfo();
+  }
+  if (id === 'scrDealList') {
+    if (window.initDealList) window.initDealList();
+  }
+  if (id === 'scrDealCreate') {
+    if (window.initDealCreate) window.initDealCreate();
+  }
+  if (id === 'scrDealDetail') {
+    if (window.initDealDetail) window.initDealDetail();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');

@@ -1,0 +1,64 @@
+<!-- =============== SCREEN: DEAL DETAIL =============== -->
+<div class="scr hidden" id="scrDealDetail">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title" id="dealDetailTitle">Сделка</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Status badge -->
+  <div class="deal-status-wrap">
+    <div class="deal-status-badge" id="dealStatusBadge"></div>
+  </div>
+
+  <!-- Parties -->
+  <div class="deal-parties glass-card">
+    <div class="deal-party">
+      <img class="party-avatar" id="dealClientAvatar" src="" alt="">
+      <div>
+        <div class="party-role">Заказчик</div>
+        <div class="party-name" id="dealClientName"></div>
+      </div>
+    </div>
+    <div class="party-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+    </div>
+    <div class="deal-party">
+      <img class="party-avatar" id="dealExecutorAvatar" src="" alt="">
+      <div>
+        <div class="party-role">Исполнитель</div>
+        <div class="party-name" id="dealExecutorName"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finance -->
+  <div class="deal-finance glass-card">
+    <div class="finance-row">
+      <span>Бюджет</span>
+      <span id="dealFinanceTotal"></span>
+    </div>
+    <div class="finance-row">
+      <span>Предоплата (50%)</span>
+      <span id="dealFinancePrepay"></span>
+    </div>
+    <div class="finance-row">
+      <span>Комиссия (20%)</span>
+      <span id="dealFinanceFee"></span>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="deal-desc-section">
+    <div class="section-title">Описание</div>
+    <div class="deal-desc-text" id="dealDescText"></div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="deal-milestones" id="dealMilestones"></div>
+
+  <!-- Actions -->
+  <div class="deal-actions" id="dealActions"></div>
+</div>

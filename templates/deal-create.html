@@ -1,0 +1,61 @@
+<!-- =============== SCREEN: DEAL CREATE =============== -->
+<div class="scr hidden" id="scrDealCreate">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Новая сделка</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="deal-form">
+    <div class="form-field">
+      <label>Название</label>
+      <input class="glass-input" id="dealTitle" type="text" placeholder="Что нужно сделать?" maxlength="100">
+    </div>
+
+    <div class="form-field">
+      <label>Описание</label>
+      <textarea class="glass-input" id="dealDesc" placeholder="Подробно опишите задачу..." maxlength="1000" rows="4"></textarea>
+    </div>
+
+    <div class="form-field">
+      <label>Бюджет (руб.)</label>
+      <input class="glass-input" id="dealBudget" type="number" placeholder="0" min="100" max="1000000" oninput="updateDealCalc()">
+    </div>
+
+    <div class="form-field">
+      <label>Срок выполнения</label>
+      <input class="glass-input" id="dealDeadline" type="date">
+    </div>
+
+    <div class="form-field">
+      <label>Категория</label>
+      <select class="glass-input" id="dealCategory">
+        <option value="design">Дизайн</option>
+        <option value="marketing">Маркетинг</option>
+        <option value="development">Разработка</option>
+        <option value="content">Контент</option>
+        <option value="consulting">Консалтинг</option>
+        <option value="other">Другое</option>
+      </select>
+    </div>
+
+    <div class="deal-calc glass-card" id="dealCalc">
+      <div class="calc-row">
+        <span>Бюджет</span>
+        <span id="calcTotal">0 руб.</span>
+      </div>
+      <div class="calc-row">
+        <span>Комиссия платформы (20%)</span>
+        <span id="calcFee">0 руб.</span>
+      </div>
+      <div class="calc-row calc-result">
+        <span>Исполнитель получит</span>
+        <span id="calcExecutor">0 руб.</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="dealCreate()">Создать сделку</button>
+  </div>
+</div>

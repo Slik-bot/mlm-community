@@ -1,0 +1,41 @@
+<!-- =============== SCREEN: DEAL LIST =============== -->
+<div class="scr hidden" id="scrDealList">
+  <div class="scr-head">
+    <div style="width:36px"></div>
+    <span class="scr-head-title">Сделки</span>
+    <button class="icon-btn" onclick="goTo('scrDealCreate')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="deal-tabs">
+    <button class="deal-tab active" data-tab="client" onclick="switchDealTab('client')">Мои заказы</button>
+    <button class="deal-tab" data-tab="executor" onclick="switchDealTab('executor')">Я исполнитель</button>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="deal-filter" id="dealFilter">
+    <button class="filter-pill active" data-filter="all" onclick="filterDeals('all')">Все</button>
+    <button class="filter-pill" data-filter="active" onclick="filterDeals('active')">Активные</button>
+    <button class="filter-pill" data-filter="completed" onclick="filterDeals('completed')">Завершённые</button>
+  </div>
+
+  <!-- List -->
+  <div class="deal-list" id="dealList"></div>
+
+  <!-- Empty state -->
+  <div class="deal-empty hidden" id="dealEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64">
+        <path d="M20 28c-2-2-4-6-4-10a12 12 0 0124 0c0 4-2 8-4 10"/>
+        <path d="M24 28h16v4a8 8 0 01-16 0v-4z"/>
+        <path d="M28 40v4M36 40v4"/>
+        <path d="M22 48h20"/>
+      </svg>
+    </div>
+    <div class="empty-title">Нет сделок</div>
+    <div class="empty-desc">Создайте первую сделку</div>
+    <button class="btn-primary" onclick="goTo('scrDealCreate')">Создать сделку</button>
+  </div>
+</div>
