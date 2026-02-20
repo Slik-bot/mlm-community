@@ -35,7 +35,10 @@ const TEMPLATES = {
   scrTasks: '/templates/tasks.html',
   scrTaskDetail: '/templates/task-detail.html',
   scrContests: '/templates/contests.html',
-  scrContestDetail: '/templates/contest-detail.html'
+  scrContestDetail: '/templates/contest-detail.html',
+  scrExperts: '/templates/experts.html',
+  scrExpertDetail: '/templates/expert-detail.html',
+  scrBecomeExpert: '/templates/become-expert.html'
 };
 const loadedTemplates = {};
 
@@ -131,6 +134,15 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrContestDetail') {
     if (window.initContestDetail) window.initContestDetail();
+  }
+  if (id === 'scrExperts') {
+    if (window.initExperts) window.initExperts();
+  }
+  if (id === 'scrExpertDetail') {
+    if (window.initExpertDetail) window.initExpertDetail();
+  }
+  if (id === 'scrBecomeExpert') {
+    if (window.initBecomeExpert) window.initBecomeExpert();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');

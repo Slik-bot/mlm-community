@@ -1,0 +1,51 @@
+<!-- =============== SCREEN: EXPERTS =============== -->
+<div class="scr hidden" id="scrExperts">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Эксперты</span>
+    <button class="icon-btn" onclick="goTo('scrBecomeExpert')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="experts-search-wrap">
+    <svg class="experts-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="experts-search glass-input" id="expertsSearch" placeholder="Поиск экспертов..." oninput="expertsFilterSearch(this.value)">
+  </div>
+
+  <!-- Specializations -->
+  <div class="experts-specs" id="expertsSpecs">
+    <button class="spec-pill active" data-spec="all" onclick="expertsFilterSpec('all')">Все</button>
+    <button class="spec-pill" data-spec="marketing" onclick="expertsFilterSpec('marketing')">Маркетинг</button>
+    <button class="spec-pill" data-spec="sales" onclick="expertsFilterSpec('sales')">Продажи</button>
+    <button class="spec-pill" data-spec="finance" onclick="expertsFilterSpec('finance')">Финансы</button>
+    <button class="spec-pill" data-spec="hr" onclick="expertsFilterSpec('hr')">HR</button>
+    <button class="spec-pill" data-spec="it" onclick="expertsFilterSpec('it')">IT</button>
+    <button class="spec-pill" data-spec="legal" onclick="expertsFilterSpec('legal')">Право</button>
+  </div>
+
+  <!-- Sort -->
+  <div class="experts-sort-wrap">
+    <select class="experts-sort glass-input" id="expertsSortSelect" onchange="expertsSort(this.value)">
+      <option value="rating">По рейтингу</option>
+      <option value="price_asc">Дешевле</option>
+      <option value="price_desc">Дороже</option>
+      <option value="sessions">По сессиям</option>
+    </select>
+  </div>
+
+  <!-- List -->
+  <div class="experts-list" id="expertsList"></div>
+
+  <!-- Empty -->
+  <div class="experts-empty hidden" id="expertsEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="empty-title">Эксперты не найдены</div>
+    <div class="empty-desc">Попробуйте другой запрос</div>
+  </div>
+</div>
