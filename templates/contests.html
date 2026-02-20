@@ -1,0 +1,29 @@
+<!-- =============== SCREEN: CONTESTS =============== -->
+<div class="scr hidden" id="scrContests">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Конкурсы</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="contests-tabs" id="contestsTabs">
+    <button class="contest-tab active" data-tab="active" onclick="switchContestTab('active')">Активные</button>
+    <button class="contest-tab" data-tab="upcoming" onclick="switchContestTab('upcoming')">Скоро</button>
+    <button class="contest-tab" data-tab="finished" onclick="switchContestTab('finished')">Завершённые</button>
+  </div>
+
+  <!-- List -->
+  <div class="contests-list" id="contestsList"></div>
+
+  <!-- Empty -->
+  <div class="contests-empty hidden" id="contestsEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M6 9a6 6 0 0 0 12 0V3H6v6z"/><path d="M12 15v3"/><path d="M8 21h8"/></svg>
+    </div>
+    <div class="empty-title">Нет конкурсов</div>
+    <div class="empty-desc">Следите за обновлениями</div>
+  </div>
+</div>

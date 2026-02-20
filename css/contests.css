@@ -1,0 +1,315 @@
+/* ===== CONTESTS STYLES ===== */
+
+/* --- Tabs --- */
+.contests-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+.contest-tab {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.contest-tab.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+/* --- List --- */
+.contests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+.contest-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 200ms;
+  overflow: hidden;
+}
+.contest-card:active {
+  background: rgba(255,255,255,0.06);
+}
+.contest-card-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.contest-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.contest-card-dates {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
+  font-family: 'Outfit', sans-serif;
+}
+.contest-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.contest-prize {
+  font-size: 15px;
+  font-weight: 700;
+  color: #22c55e;
+  font-family: 'Outfit', sans-serif;
+}
+.contest-participants {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Empty --- */
+.contests-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.contests-empty .empty-icon {
+  color: rgba(255,255,255,0.15);
+  margin-bottom: 16px;
+}
+.contests-empty .empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.contests-empty .empty-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* --- Detail Hero --- */
+.cd-hero {
+  margin: 16px;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.cd-type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.cd-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.cd-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.cd-finished-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* --- Timer --- */
+.cd-timer {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0 0;
+}
+.timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.timer-val {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.timer-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Outfit', sans-serif;
+}
+.timer-sep {
+  font-size: 28px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.3);
+  padding-top: 4px;
+}
+
+/* --- Prizes --- */
+.cd-prizes {
+  padding: 0 16px 16px;
+}
+.cd-prizes-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.cd-prizes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prize-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.prize-place {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
+}
+.prize-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+}
+.prize-amount {
+  margin-left: auto;
+  font-weight: 700;
+  color: #22c55e;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- My Position --- */
+.cd-my-position {
+  margin: 0 16px 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(139,92,246,0.08);
+  border: 1px solid rgba(139,92,246,0.2);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a78bfa;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Leaderboard --- */
+.cd-leaderboard {
+  padding: 0 16px 16px;
+}
+.cd-lb-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.lb-empty {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.lb-row.lb-me {
+  background: rgba(139,92,246,0.08);
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border-bottom: none;
+}
+.lb-place {
+  width: 28px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
+}
+.lb-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.lb-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-score {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
+}
+
+/* --- Join --- */
+.cd-join-wrap {
+  padding: 16px;
+}

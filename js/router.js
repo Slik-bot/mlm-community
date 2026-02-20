@@ -33,7 +33,9 @@ const TEMPLATES = {
   scrForumTopic: '/templates/forum-topic.html',
   scrForumCreate: '/templates/forum-create.html',
   scrTasks: '/templates/tasks.html',
-  scrTaskDetail: '/templates/task-detail.html'
+  scrTaskDetail: '/templates/task-detail.html',
+  scrContests: '/templates/contests.html',
+  scrContestDetail: '/templates/contest-detail.html'
 };
 const loadedTemplates = {};
 
@@ -124,6 +126,12 @@ async function ensureTemplate(id) {
   if (id === 'scrTaskDetail') {
     if (window.initTaskDetail) window.initTaskDetail();
   }
+  if (id === 'scrContests') {
+    if (window.initContests) window.initContests();
+  }
+  if (id === 'scrContestDetail') {
+    if (window.initContestDetail) window.initContestDetail();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
   }
@@ -138,6 +146,7 @@ function updateChrome(id){
 async function goTo(id) {
   if(isTransitioning) return;
   if (window.chatUnsubscribe) chatUnsubscribe();
+  if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   await ensureTemplate(id);
 
   var onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
