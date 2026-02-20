@@ -128,15 +128,23 @@
         reg.submit.textContent = 'Создание...';
         reg.submit.disabled = true;
 
-        var result = await sbSignUp(email, password, name);
-
-        if (result.ok) {
+        try {
+          var data = await authRegister(email, password, name);
           if (name) localStorage.setItem('userName', name);
           freshRegistration();
           closeLndModals();
-          goTo('scrWelcome');
-        } else {
-          var msg = result.msg;
+
+          var user = data.user || {};
+          if (!user.dna_type) {
+            goTo('scrDnaTest');
+          } else if (!user.level) {
+            goTo('scrSetup1');
+          } else {
+            localStorage.setItem('onboardingDone', 'true');
+            goTo('scrFeed');
+          }
+        } catch (err) {
+          var msg = err.message || 'Ошибка регистрации';
           if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
           else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
           else if (msg.includes('invalid')) msg = 'Некорректный email';
@@ -166,9 +174,8 @@
         login.submit.textContent = 'Вход...';
         login.submit.disabled = true;
 
-        var result = await sbSignIn(email, password);
-
-        if (result.ok) {
+        try {
+          var data = await authLogin(email, password);
           localStorage.setItem('mlm_saved_email', email);
 
           if (window.PasswordCredential) {
@@ -185,15 +192,18 @@
 
           closeLndModals();
 
-          if (result.profile && result.profile.name && result.profile.dna_type) {
+          var user = data.user || {};
+          if (!user.dna_type) {
+            goTo('scrDnaTest');
+          } else if (!user.level) {
+            goTo('scrSetup1');
+          } else {
             localStorage.setItem('onboardingDone', 'true');
             goTo('scrFeed');
             initFeedFromDB();
-          } else {
-            goTo('scrWelcome');
           }
-        } else {
-          var msg = result.msg;
+        } catch (err) {
+          var msg = err.message || 'Ошибка входа';
           if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
           showAuthError('login', msg);
         }
@@ -227,24 +237,26 @@
 
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
-    if (window.authCheckSession) await authCheckSession();
 
     // ===== АВТОЛОГИН при загрузке =====
-    sbCheckSession().then(async function(profile) {
+    authCheckSession().then(async function(profile) {
       clearTimeout(_fallbackTimer);
       if (profile) {
         var dnaMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
 
-        if (profile.name && profile.dna_type) {
+        if (profile.dna_type && profile.level) {
           localStorage.setItem('onboardingDone', 'true');
-          localStorage.setItem('userName', profile.name);
-          localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
+          if (profile.name) localStorage.setItem('userName', profile.name);
+          if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
 
           await switchScreenInstant('scrFeed');
           showApp();
           initFeedFromDB();
+        } else if (profile.dna_type && !profile.level) {
+          await switchScreenInstant('scrSetup1');
+          showApp();
         } else {
-          await switchScreenInstant('scrWelcome');
+          await switchScreenInstant('scrDnaTest');
           showApp();
         }
       } else {
@@ -282,7 +294,7 @@
   window.doAppLogout = async function() {
     var savedEmail = localStorage.getItem('mlm_saved_email');
     try {
-      await sbSignOut();
+      await authLogout();
     } catch (e) {}
     localStorage.clear();
     if (savedEmail) localStorage.setItem('mlm_saved_email', savedEmail);
