@@ -1,0 +1,36 @@
+<!-- =============== SCREEN: LESSON =============== -->
+<div class="scr hidden" id="scrLesson">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title" id="lessonTitle">Урок</span>
+    <div style="width:20px"></div>
+  </div>
+
+  <!-- Lesson Meta -->
+  <div class="lesson-meta">
+    <div class="lesson-type-badge" id="lessonTypeBadge"></div>
+    <div class="lesson-progress" id="lessonProgress"></div>
+  </div>
+
+  <!-- Video -->
+  <div class="lesson-video-wrap hidden" id="lessonVideoWrap">
+    <iframe class="lesson-video" id="lessonVideo" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <!-- Content -->
+  <div class="lesson-content" id="lessonContent"></div>
+
+  <!-- Navigation -->
+  <div class="lesson-nav">
+    <button class="lesson-nav-btn lesson-nav-prev" id="lessonPrevBtn" onclick="lessonPrev()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+      Назад
+    </button>
+    <button class="btn-primary lesson-nav-btn" id="lessonNextBtn" onclick="lessonNext()">
+      Далее
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+</div>

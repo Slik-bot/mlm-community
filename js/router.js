@@ -40,7 +40,10 @@ const TEMPLATES = {
   scrExpertDetail: '/templates/expert-detail.html',
   scrBecomeExpert: '/templates/become-expert.html',
   scrMatch: '/templates/match.html',
-  scrMatchList: '/templates/match-list.html'
+  scrMatchList: '/templates/match-list.html',
+  scrAcademy: '/templates/academy.html',
+  scrCourse: '/templates/course.html',
+  scrLesson: '/templates/lesson.html'
 };
 const loadedTemplates = {};
 
@@ -151,6 +154,15 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrMatchList') {
     if (window.initMatchList) window.initMatchList();
+  }
+  if (id === 'scrAcademy') {
+    if (window.initAcademy) window.initAcademy();
+  }
+  if (id === 'scrCourse') {
+    if (window.initCourse) window.initCourse();
+  }
+  if (id === 'scrLesson') {
+    if (window.initLesson) window.initLesson();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');

@@ -1,0 +1,43 @@
+<!-- =============== SCREEN: COURSE =============== -->
+<div class="scr hidden" id="scrCourse">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title" id="courseTitle">Курс</span>
+    <div style="width:20px"></div>
+  </div>
+
+  <!-- Cover -->
+  <div class="course-cover-wrap">
+    <img class="course-cover" id="courseCover" alt="">
+    <div class="course-level-badge" id="courseLevelBadge"></div>
+  </div>
+
+  <!-- Info -->
+  <div class="course-info">
+    <div class="course-name" id="courseName"></div>
+    <div class="course-meta-row">
+      <span id="courseLessonsCount"></span>
+      <span id="courseDuration"></span>
+      <span id="courseXp"></span>
+    </div>
+    <div class="course-desc" id="courseDesc"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="course-progress-wrap hidden" id="courseProgressWrap">
+    <div class="course-progress-bar">
+      <div class="course-progress-fill" id="courseProgressFill"></div>
+    </div>
+    <div class="course-progress-label" id="courseProgressLabel"></div>
+  </div>
+
+  <!-- Lessons -->
+  <div class="course-lessons" id="courseLessons"></div>
+
+  <!-- Start Button -->
+  <div class="course-start-wrap">
+    <button class="btn-primary" id="courseStartBtn" onclick="courseStart()">Начать курс</button>
+  </div>
+</div>

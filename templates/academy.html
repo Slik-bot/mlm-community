@@ -1,0 +1,39 @@
+<!-- =============== SCREEN: ACADEMY =============== -->
+<div class="scr hidden" id="scrAcademy">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Академия</span>
+    <div style="width:20px"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="academy-tabs">
+    <button class="academy-tab active" data-tab="all" onclick="switchAcademyTab('all')">Все</button>
+    <button class="academy-tab" data-tab="my" onclick="switchAcademyTab('my')">Мои курсы</button>
+    <button class="academy-tab" data-tab="completed" onclick="switchAcademyTab('completed')">Пройденные</button>
+  </div>
+
+  <!-- Categories -->
+  <div class="academy-cats" id="academyCats">
+    <button class="academy-cat active" data-cat="all" onclick="academyFilterCat('all')">Все</button>
+    <button class="academy-cat" data-cat="mlm" onclick="academyFilterCat('mlm')">MLM</button>
+    <button class="academy-cat" data-cat="marketing" onclick="academyFilterCat('marketing')">Маркетинг</button>
+    <button class="academy-cat" data-cat="sales" onclick="academyFilterCat('sales')">Продажи</button>
+    <button class="academy-cat" data-cat="mindset" onclick="academyFilterCat('mindset')">Майндсет</button>
+    <button class="academy-cat" data-cat="finance" onclick="academyFilterCat('finance')">Финансы</button>
+  </div>
+
+  <!-- Courses Grid -->
+  <div class="academy-grid" id="academyGrid"></div>
+
+  <!-- Empty -->
+  <div class="academy-empty hidden" id="academyEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </div>
+    <div class="empty-title">Курсов нет</div>
+    <div class="empty-desc">Скоро появятся новые материалы</div>
+  </div>
+</div>
