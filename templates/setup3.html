@@ -1,0 +1,37 @@
+<div id="scrSetup3" class="scr hidden">
+  <div class="stp-top">
+    <div class="stp-back" onclick="goTo('scrSetup2')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="stp-title">Настройка профиля</div>
+    <div class="stp-dots"><span class="stp-dot done"></span><span class="stp-dot done"></span><span class="stp-dot active" id="stpDot3c"></span></div>
+  </div>
+  <div class="stp-body">
+    <div class="stp-heading">Какая у тебя главная цель?</div>
+    <div class="stp-subtext">Мы подберём квесты и контакты под твою цель</div>
+    <div class="stp-goals" id="stpGoals">
+      <div class="stp-goal" data-goal="1" onclick="setupSelectGoal(this)">
+        <div class="stp-goal-ic gr"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="stp-goal-text"><div class="stp-goal-t">Найти партнёров и клиентов</div><div class="stp-goal-d">Расширить сеть контактов и продажи</div></div>
+        <div class="stp-goal-radio"><div class="stp-goal-radio-inner"></div></div>
+      </div>
+      <div class="stp-goal" data-goal="2" onclick="setupSelectGoal(this)">
+        <div class="stp-goal-ic bl"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div class="stp-goal-text"><div class="stp-goal-t">Обучиться и вырасти</div><div class="stp-goal-d">Получить знания и навыки</div></div>
+        <div class="stp-goal-radio"><div class="stp-goal-radio-inner"></div></div>
+      </div>
+      <div class="stp-goal" data-goal="3" onclick="setupSelectGoal(this)">
+        <div class="stp-goal-ic or"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+        <div class="stp-goal-text"><div class="stp-goal-t">Масштабировать бизнес</div><div class="stp-goal-d">Построить команду и увеличить доход</div></div>
+        <div class="stp-goal-radio"><div class="stp-goal-radio-inner"></div></div>
+      </div>
+      <div class="stp-goal" data-goal="4" onclick="setupSelectGoal(this)">
+        <div class="stp-goal-ic pu"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+        <div class="stp-goal-text"><div class="stp-goal-t">Монетизировать опыт</div><div class="stp-goal-d">Продавать знания, менторить, обучать</div></div>
+        <div class="stp-goal-radio"><div class="stp-goal-radio-inner"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="stp-footer">
+    <button class="stp-btn disabled" id="stpBtn3" onclick="setupGoDone()" disabled>Далее →</button>
+    <div class="stp-skip" onclick="setupSkipGoal()">Пропустить</div>
+  </div>
+</div>

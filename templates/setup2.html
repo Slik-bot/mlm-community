@@ -1,0 +1,17 @@
+<div id="scrSetup2" class="scr hidden">
+  <div class="stp-top">
+    <div class="stp-back" onclick="goTo('scrSetup1')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="stp-title">Настройка профиля</div>
+    <div class="stp-dots"><span class="stp-dot done"></span><span class="stp-dot active" id="stpDot2b"></span><span class="stp-dot"></span></div>
+  </div>
+  <div class="stp-body stp-body-scroll">
+    <div class="stp-heading">Что тебе интересно?</div>
+    <div class="stp-subtext">Выбери минимум 3 темы — мы подстроим ленту под тебя</div>
+    <div class="stp-tags" id="stpTags"></div>
+    <div class="stp-counter" id="stpCounter">Выбрано: 0 / 15 <span class="stp-counter-hint">(минимум 3)</span></div>
+  </div>
+  <div class="stp-footer">
+    <button class="stp-btn disabled" id="stpBtn2" onclick="setupGoStep3()" disabled>Далее →</button>
+    <div class="stp-skip" onclick="setupSkipInterests()">Пропустить</div>
+  </div>
+</div>

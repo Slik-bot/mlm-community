@@ -1,0 +1,381 @@
+<!-- =============== SCREEN: LANDING =============== -->
+<div class="scr" id="scrLanding" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div class="gflow-layer" aria-hidden="true"></div>
+  <div class="lnd-particles" id="lndParticles" data-plx-speed="-0.15"></div>
+  <!-- S1: HEADER -->
+  <div class="lnd-header-sticky">
+    <nav class="navbar" id="lndHdr">
+      <div class="logo-glass" onclick="logoClick()"><img src="assets/logo.png" alt="MLM Community" class="logo-img"></div>
+      <div class="nav-right"><button class="lnd-login-btn" onclick="openLndModal('login')">Войти</button><button class="lnd-signup-btn lnd-btn lnd-btn--primary lnd-btn--sm" onclick="openLndModal('register')">Регистрация</button></div>
+    </nav>
+    <div class="neon-line"></div>
+  </div>
+  <!-- S2: HERO -->
+  <section class="lnd-hero">
+    <div class="lnd-orb lnd-orb1" data-plx-speed="-0.12"></div>
+    <div class="lnd-orb lnd-orb2" data-plx-speed="-0.18"></div>
+    <div class="lnd-orb lnd-orb3" data-plx-speed="-0.1"></div>
+    <div class="lnd-hero-inner">
+      <div class="hero-mask"><h1 class="lnd-title hero-reveal hero-reveal-1">Расти. Обучайся. Зарабатывай.</h1></div>
+      <div class="hero-mask"><p class="lnd-sub hero-reveal hero-reveal-2" style="font-size:13px;font-weight:300;color:rgba(255,255,255,.5)">Платформа для предпринимателей, наставников и лидеров. Инструменты для масштабирования, автоматизация, партнёры и обучение — всё в одном месте.</p></div>
+      <a href="#" id="dnaScrollLink" class="lnd-hero-dna-link hero-reveal-btn hero-reveal-3 mag-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2v2c0 4 4 6 4 10s-4 6-4 10"/><path d="M17 2v2c0 4-4 6-4 10s4 6 4 10"/><path d="M7 8h10"/><path d="M7 16h10"/></svg>
+        Узнай свой бизнес-ДНК бесплатно ↓
+      </a>
+    </div>
+  </section>
+  <!-- S3: PAINS -->
+  <section class="lnd-glass">
+    <div class="sr-mask"><div class="lnd-title" style="font-size:20px" data-sr="slide-up">Знакомо?</div></div>
+    <div class="lnd-sub" style="font-size:13px;margin-top:4px" data-sr="fade-up" data-sr-delay="1">Если хотя бы одно — про тебя, ты в нужном месте</div>
+    <div class="lnd-pain-list">
+      <div class="lnd-pain-row" data-toggle="acc-pain-1" data-sr="fade-up" data-sr-delay="1"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h0"/><path d="M19 11v2"/><circle cx="19" cy="16" r=".5" fill="currentColor" stroke="none"/></svg> <span>Ищешь партнёров, но холодные контакты не работают</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-pain-1"><p>Холодные звонки, рассылки, спам в личку — конверсия 1-2%, а энергии на 100%. Здесь работает иначе. Матч-система анализирует 7 параметров и соединяет тебя с людьми, которые УЖЕ ищут то, что ты предлагаешь. ДНК-совместимость, общие цели, география — алгоритм делает за тебя то, на что раньше уходили месяцы. Не ты бегаешь за контактами — технология приводит их к тебе.</p></div>
+      <div class="lnd-pain-row" data-toggle="acc-pain-2" data-sr="fade-up" data-sr-delay="2"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M6 15l4-4 4 2 5-6"/></svg> <span>Работаешь без системы и чёткого плана роста</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-pain-2"><p>Нет плана — каждый день как первый. Не знаешь, что делать утром. Здесь решено: ДНК-тест определит твой тип и точку старта. Каждое утро — 3 персональных квеста «Импульс». Карта возможностей — визуальный RPG-маршрут: 5 веток по 5 шагов. Пройденные светятся, текущий пульсирует. Маршрут новичка за 7 дней даёт ~300 XP и чёткий вектор. Ты всегда знаешь, где ты и куда двигаться.</p></div>
+      <div class="lnd-pain-row" data-toggle="acc-pain-3" data-sr="fade-up" data-sr-delay="3"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/><line x1="3" y1="3" x2="21" y2="21" stroke-opacity="0.5"/></svg> <span>Нет наставника и негде учиться</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-pain-3"><p>Бесплатных советов в интернете — тонны. Толку — ноль. Тебе нужен не контент, а ментор. Система автоматически подбирает наставника уровня Слон+ с совместимым ДНК. Специальный чат с подсказками. Наставник получает +50 XP за тебя — ему выгодно помогать. Плюс Академия: микро-уроки 30-60 секунд, live-воркшопы, шаблоны для копирования. Учишься у тех, кто делает прямо сейчас.</p></div>
+      <div class="lnd-pain-row" data-toggle="acc-pain-4" data-sr="fade-up" data-sr-delay="4"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><line x1="18" y1="8" x2="22" y2="8" stroke-opacity="0.3"/></svg> <span>Чувствуешь, что строишь бизнес в одиночку</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-pain-4"><p>Одиночка в сетевом — это потолок. Нет энергии команды, нет обмена опытом. Здесь 12 000+ предпринимателей из 15+ стран. Чаты, мастермайнды, форум с 7 категориями, еженедельные челленджи. Граф связей показывает: через 1 рукопожатие — 156 человек. Ты не просто участник — ты узел в растущей сети, где каждый усиливает каждого.</p></div>
+    </div>
+  </section>
+  <!-- S4: SOLUTION -->
+  <section class="lnd-glass lnd-glass--purple">
+    <div class="lnd-title" style="font-size:20px" data-plx-speed="-0.04">Экосистема для роста</div>
+    <div class="lnd-sub" style="font-size:13px;margin-top:4px" data-sr="fade-up">Всё, что нужно — в одном месте</div>
+    <div class="lnd-grid6">
+      <div class="lnd-grid6-item tilt-card" data-eco="1" data-sr="scale-in" data-sr-delay="1"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v2c0 4 4 6 4 10s-4 6-4 10v0"/><path d="M17 2v2c0 4-4 6-4 10s4 6 4 10v0"/><path d="M7 8h10"/><path d="M7 16h10"/></svg><div class="lnd-grid6-label">ДНК-тест бизнеса</div></div>
+      <div class="lnd-grid6-item tilt-card" data-eco="2" data-sr="scale-in" data-sr-delay="2"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg><div class="lnd-grid6-label">Матч-система</div></div>
+      <div class="lnd-grid6-item tilt-card" data-eco="3" data-sr="scale-in" data-sr-delay="3"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 0 12 0V3H6v6z"/><path d="M6 5H3v2a4 4 0 0 0 4 4"/><path d="M18 5h3v2a4 4 0 0 1-4 4"/><path d="M12 15v3"/><path d="M8 21h8"/><path d="M10 18h4"/></svg><div class="lnd-grid6-label">Геймификация</div></div>
+      <div class="lnd-grid6-item tilt-card" data-eco="4" data-sr="scale-in" data-sr-delay="4"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v12H3V9z"/><path d="M3 9l1.5-5h15L21 9"/><path d="M9 21V14h6v7"/><path d="M6 9v2"/><path d="M12 9v2"/><path d="M18 9v2"/></svg><div class="lnd-grid6-label">Маркетплейс</div></div>
+      <div class="lnd-grid6-item tilt-card" data-eco="5" data-sr="scale-in" data-sr-delay="5"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6s1.5-2 5-2 5.5 2 5.5 2v14s-2-1.5-5.5-1.5S2 20 2 20V6z"/><path d="M12.5 6s1.5-2 5-2 5 2 5 2v14s-2-1.5-5-1.5-5.5 1.5-5.5 1.5V6z"/></svg><div class="lnd-grid6-label">Академия</div></div>
+      <div class="lnd-grid6-item tilt-card" data-eco="6" data-sr="scale-in" data-sr-delay="6"><div class="tilt-glare"></div><svg class="lnd-icon--card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg><div class="lnd-grid6-label">Аналитика</div></div>
+    </div>
+  </section>
+  <!-- S4.5: HOW IT WORKS INSIDE -->
+  <section class="lnd-glass lnd-glass--inside">
+    <div class="sr-mask"><h2 class="lnd-sec-title" data-sr="slide-up">Как это работает изнутри</h2></div>
+    <p class="lnd-sec-sub" data-sr="fade-up" data-sr-delay="1">Не просто соцсеть — система, которая ведёт тебя к результату</p>
+    <div class="lnd-inside-grid">
+      <div class="lnd-inside-item" data-sr="fade-up" data-sr-delay="1">
+        <div class="lnd-inside-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2 4h3l-2.5 3L16 14H8l1.5-5L7 6h3l2-4z"/><rect x="7" y="16" width="10" height="2" rx="1"/><rect x="6" y="20" width="12" height="2" rx="1"/></svg></div>
+        <div class="lnd-inside-text"><span class="lnd-inside-label">Шахматная прогрессия</span><span class="lnd-inside-desc">От Пешки до Ферзя — 5 уровней с привилегиями</span></div>
+      </div>
+      <div class="lnd-inside-item" data-sr="fade-up" data-sr-delay="2">
+        <div class="lnd-inside-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-5 4 3 5-7"/></svg></div>
+        <div class="lnd-inside-text"><span class="lnd-inside-label">Бизнес-карма</span><span class="lnd-inside-desc">Репутация в цифрах — влияет на Матч и ленту</span></div>
+      </div>
+      <div class="lnd-inside-item" data-sr="fade-up" data-sr-delay="3">
+        <div class="lnd-inside-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-4-4-6-4-10z"/><path d="M10 22h4"/></svg></div>
+        <div class="lnd-inside-text"><span class="lnd-inside-label">Streak и множители</span><span class="lnd-inside-desc">До x3.0 к XP за ежедневную активность</span></div>
+      </div>
+      <div class="lnd-inside-item" data-sr="fade-up" data-sr-delay="4">
+        <div class="lnd-inside-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M18 8l2 2-2 2"/><circle cx="19" cy="5" r="2"/></svg></div>
+        <div class="lnd-inside-text"><span class="lnd-inside-label">Наставничество</span><span class="lnd-inside-desc">Ментор подбирается автоматически по ДНК</span></div>
+      </div>
+    </div>
+    <button class="lnd-inside-btn lnd-btn lnd-btn--secondary mag-btn" id="insideBtnOpen"><span>Узнать подробнее о платформе</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></button>
+  </section>
+  <!-- S5: PREVIEW -->
+  <section class="lnd-sec-preview">
+    <div class="sr-mask"><div class="lnd-title" style="font-size:20px;padding:0 20px" data-sr="slide-up">Смотри, как это работает</div></div>
+    <div class="lnd-sub" style="font-size:13px;margin-top:4px;padding:0 20px" data-sr="fade-up" data-sr-delay="1">Листай — 5 ключевых разделов</div>
+    <div class="lnd-carousel" id="lndCarousel" data-sr="fade-up" data-sr-delay="2">
+      <div class="lnd-slide"><div class="lnd-phone tilt-card"><div class="tilt-glare"></div><div class="lnd-ph-notch"></div><div class="lnd-ph-top"><div class="lnd-ph-greeting">Привет, Алексей! 👋</div><div class="lnd-ph-badges"><span class="lnd-ph-dna">🧬 Стратег</span><span class="lnd-ph-streak">🔥 14</span><span class="lnd-ph-bell">🔔</span></div></div><div class="lnd-ph-quests"><div class="lnd-ph-q-title">Задания на сегодня · <span style="color:var(--primary-light)">+150 XP</span></div><div class="lnd-ph-q"><div class="lnd-ph-q-check done">✓</div><div class="lnd-ph-q-text">Написать пост</div><div class="lnd-ph-q-xp">+30 XP</div></div><div class="lnd-ph-q"><div class="lnd-ph-q-check done">✓</div><div class="lnd-ph-q-text">Ответить на 3 комментария</div><div class="lnd-ph-q-xp">+20 XP</div></div><div class="lnd-ph-q"><div class="lnd-ph-q-check"></div><div class="lnd-ph-q-text">Найти партнёра в Матче</div><div class="lnd-ph-q-xp">+50 XP</div></div></div><div class="lnd-ph-stories"><div class="lnd-ph-st"><div class="lnd-ph-st-ring"><div class="lnd-ph-st-ava" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">АК</div></div><span>Анна</span></div><div class="lnd-ph-st"><div class="lnd-ph-st-ring"><div class="lnd-ph-st-ava" style="background:linear-gradient(135deg,#22c55e,#16a34a)">ДМ</div></div><span>Дмитрий</span></div><div class="lnd-ph-st"><div class="lnd-ph-st-ring"><div class="lnd-ph-st-ava" style="background:linear-gradient(135deg,#f59e0b,#d97706)">ЕС</div></div><span>Елена</span></div><div class="lnd-ph-st"><div class="lnd-ph-st-ring add"><div class="lnd-ph-st-ava" style="background:rgba(255,255,255,.05)">+</div></div><span>Добавить</span></div></div><div class="lnd-ph-post"><div class="lnd-ph-post-hdr"><div class="lnd-ph-post-ava" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">АК</div><div><div class="lnd-ph-post-name">Анна Козлова <span class="lnd-ph-badge-pro">PRO</span></div><div class="lnd-ph-post-meta">Стратег · NL International · 2ч</div></div></div><div class="lnd-ph-post-text">🚀 Закрыла 3 сделки! Матч-система реально работает</div><div class="lnd-ph-post-act"><span style="color:#ef4444">❤️ 47</span><span>💬 12</span><span>↗️</span><span style="margin-left:auto">🔖</span></div></div><div class="lnd-slide-label">Лента</div></div></div>
+      <div class="lnd-slide"><div class="lnd-phone tilt-card"><div class="tilt-glare"></div><div class="lnd-ph-notch"></div><div class="lnd-ph-header">🏪 Магазин инструментов</div><div class="lnd-ph-tabs"><span class="active">Популярное</span><span>Скрипты</span><span>Воронки</span></div><div class="lnd-ph-shop-card"><div class="lnd-ph-shop-img">📋</div><div class="lnd-ph-shop-info"><div class="lnd-ph-shop-name">Скрипт «Холодный звонок»</div><div class="lnd-ph-shop-author">Анна Козлова · ⭐ 4.9</div><div class="lnd-ph-shop-row"><span class="lnd-ph-shop-price">299 ₽</span><span class="lnd-ph-shop-sales">📥 1.2K</span></div></div></div><div class="lnd-ph-shop-card"><div class="lnd-ph-shop-img">📈</div><div class="lnd-ph-shop-info"><div class="lnd-ph-shop-name">Воронка «Автоматизация»</div><div class="lnd-ph-shop-author">Дмитрий Волков · ⭐ 4.8</div><div class="lnd-ph-shop-row"><span class="lnd-ph-shop-price">490 ₽</span><span class="lnd-ph-shop-sales">📥 850</span></div></div></div><div class="lnd-slide-label">Магазин</div></div></div>
+      <div class="lnd-slide"><div class="lnd-phone tilt-card"><div class="tilt-glare"></div><div class="lnd-ph-notch"></div><div class="lnd-ph-header">🏢 Компании</div><div class="lnd-ph-company"><div class="lnd-ph-comp-logo" style="background:linear-gradient(135deg,#22c55e,#16a34a)">NL</div><div class="lnd-ph-comp-info"><div class="lnd-ph-comp-name">NL International</div><div class="lnd-ph-comp-stats">👥 3 200 · ⭐ 4.8</div></div><div class="lnd-ph-comp-join">Вступить</div></div><div class="lnd-ph-company"><div class="lnd-ph-comp-logo" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">GW</div><div class="lnd-ph-comp-info"><div class="lnd-ph-comp-name">Greenway</div><div class="lnd-ph-comp-stats">👥 2 100 · ⭐ 4.7</div></div><div class="lnd-ph-comp-join">Вступить</div></div><div class="lnd-slide-label">Компании</div></div></div>
+      <div class="lnd-slide"><div class="lnd-phone tilt-card"><div class="tilt-glare"></div><div class="lnd-ph-notch"></div><div class="lnd-ph-header">💬 Чаты</div><div class="lnd-ph-chat"><div class="lnd-ph-chat-ava" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">АК</div><div class="lnd-ph-chat-info"><div class="lnd-ph-chat-name">Анна Козлова <span class="lnd-ph-badge-pro">PRO</span></div><div class="lnd-ph-chat-last">Давай созвонимся завтра 🤝</div></div><div class="lnd-ph-chat-time">2м</div></div><div class="lnd-ph-chat"><div class="lnd-ph-chat-ava" style="background:linear-gradient(135deg,#22c55e,#16a34a)">NL</div><div class="lnd-ph-chat-info"><div class="lnd-ph-chat-name">NL International</div><div class="lnd-ph-chat-last">Новый вебинар в четверг! 🎓</div></div><div class="lnd-ph-chat-time">1ч</div></div><div class="lnd-slide-label">Чаты</div></div></div>
+      <div class="lnd-slide"><div class="lnd-phone tilt-card"><div class="tilt-glare"></div><div class="lnd-ph-notch"></div><div class="lnd-ph-profile-top"><div class="lnd-ph-prof-ava" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">АЛ</div><div class="lnd-ph-prof-name">Алексей Лидер</div><div class="lnd-ph-prof-dna">🧬 Стратег</div></div><div class="lnd-ph-prof-stats"><div class="lnd-ph-prof-stat"><div class="lnd-ph-prof-stat-n">♟ Ладья</div><div class="lnd-ph-prof-stat-l">Уровень</div></div><div class="lnd-ph-prof-stat"><div class="lnd-ph-prof-stat-n">8 420</div><div class="lnd-ph-prof-stat-l">XP</div></div><div class="lnd-ph-prof-stat"><div class="lnd-ph-prof-stat-n">47 🔥</div><div class="lnd-ph-prof-stat-l">Streak</div></div></div><div class="lnd-slide-label">Профиль</div></div></div>
+    </div>
+    <div class="lnd-dots" id="lndDots"><span class="active"></span><span></span><span></span><span></span><span></span></div>
+  </section>
+  <!-- S6: TRUST -->
+  <section class="lnd-glass">
+    <div class="lnd-trust-grid">
+      <div class="lnd-trust-item" data-sr="scale-in" data-sr-delay="1"><div class="lnd-trust-num">12 000+</div><div class="lnd-trust-label">участников</div></div>
+      <div class="lnd-trust-item" data-sr="scale-in" data-sr-delay="2"><div class="lnd-trust-num">15+</div><div class="lnd-trust-label">стран</div></div>
+      <div class="lnd-trust-item" data-sr="scale-in" data-sr-delay="3"><div class="lnd-trust-num">100+</div><div class="lnd-trust-label">активных лидеров</div></div>
+      <div class="lnd-trust-item" data-sr="scale-in" data-sr-delay="4"><div class="lnd-trust-num">38 000+</div><div class="lnd-trust-label">гайдов и материалов</div></div>
+    </div>
+  </section>
+  <!-- S7: AUDIENCE -->
+  <section class="lnd-glass">
+    <div class="sr-mask"><div class="lnd-title" style="font-size:20px" data-sr="slide-up">Для кого эта платформа</div></div>
+    <div class="lnd-audience-list">
+      <div class="lnd-audience-row" data-toggle="acc-who-1" data-sr="fade-up" data-sr-delay="1"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12c-3-3-8-2-8 3"/><path d="M12 12c3-3 8-2 8 3"/><path d="M12 12c0-5-3-9-3-9"/><path d="M12 12c0-5 3-9 3-9"/></svg> <span>Новички в бизнесе</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-1"><p>Ноль опыта — не проблема. ДНК-тест за 60 секунд определит твой тип. Маршрут новичка — 7 дней, 10 шагов, ~300 XP. Система подберёт наставника уровня Слон+ с совместимым ДНК. Первый пост, первые друзья, первый квест — платформа ведёт за руку. К концу первой недели ты Пешка с чётким планом роста до Ферзя.</p></div>
+      <div class="lnd-audience-row" data-toggle="acc-who-2" data-sr="fade-up" data-sr-delay="2"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-6 6-6 13a6 6 0 0 0 12 0c0-7-6-13-6-13z"/><circle cx="12" cy="14" r="2"/><path d="M6 15l-3 3"/><path d="M18 15l3 3"/></svg> <span>Действующие лидеры команд</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-2"><p>Ты строишь команду — здесь ускоришься. Аналитика по каждому участнику (BUSINESS), Матч без лимитов, выход на 15+ стран. Уровень Ладья: лидерборды, курсы, комиссия 12%. Ферзь: Совет сообщества, VIP, комиссия 10%. Реферальная: 15-20% с подписок приведённых. Лидеры растут, когда находят сильное окружение — здесь оно собрано.</p></div>
+      <div class="lnd-audience-row" data-toggle="acc-who-3" data-sr="fade-up" data-sr-delay="3"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M2 13h20"/></svg> <span>Предприниматели</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-3"><p>Есть продукт, но нет канала? Маркетплейс: тысячи участников. Создавай инструменты (Слон+), продавай гайды, воронки, курсы. Комиссия от 15% до 10% с ростом. Flash Sale, бандлы, промокоды. Публичный лендинг mlmcommunity.app/@username работает как SEO-визитка 24/7. Это не холодный рынок — тёплая экосистема.</p></div>
+      <div class="lnd-audience-row" data-toggle="acc-who-4" data-sr="fade-up" data-sr-delay="4"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="17" cy="9" r="2.5"/><path d="M21 21v-1.5a3 3 0 0 0-2.5-3"/></svg> <span>Создатели структур</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-4"><p>Групповые чаты с шаблонами: Команда, Обучение, Цели. Роли: Создатель, Админ, Участник. Аналитика по каждому (BUSINESS). Карта возможностей для отслеживания прогресса. Встроенное наставничество — опытные ведут новичков, получая XP. Масштабирование без хаоса — система берёт рутину на себя.</p></div>
+      <div class="lnd-audience-row" data-toggle="acc-who-5" data-sr="fade-up" data-sr-delay="5"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> <span>Инфобизнесмены</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-5"><p>6 типов контента: посты, опросы, кейсы «Было/Стало», объявления, Stories, советы. Шеринг: Telegram = 15 XP, Instagram = 20 XP. Реферальная воронка: друг видит карточку → QR → ДНК-тест без регистрации → оба получают бонус. Монетизация: маркетплейс + реферальная 15-20% с подписок.</p></div>
+      <div class="lnd-audience-row" data-toggle="acc-who-6" data-sr="fade-up" data-sr-delay="6"><svg class="lnd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg> <span>Международные команды</span><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand" id="acc-who-6"><p>Русский + English с переключателем. В планах: казахский, узбекский, грузинский, турецкий, арабский. 15+ стран уже внутри. Матч учитывает географию. SEO-лендинги для каждого участника. Компании с флагами стран. Строй глобально — платформа создана для этого.</p></div>
+    </div>
+  </section>
+  <!-- S8: BENEFITS -->
+  <section class="lnd-glass lnd-glass--green">
+    <div class="lnd-title" style="font-size:20px" data-sr="slide-left">Что ты получишь</div>
+    <div class="lnd-benefits-list">
+      <div class="lnd-benefit-row" data-toggle="acc-get-1" data-sr="fade-up" data-sr-delay="1"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Готовую систему привлечения</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-1"><p>Матч на 7 факторов находит партнёров за тебя. Реферальная воронка: шеринг → QR → ДНК-тест без регистрации → бонус обоим. Радар возможностей: push когда кто-то ищет твой ДНК-тип. Публичный лендинг @username для SEO. Виральные карточки 1080×1920 для соцсетей. Система, которая привлекает за тебя.</p></div>
+      <div class="lnd-benefit-row" data-toggle="acc-get-2" data-sr="fade-up" data-sr-delay="2"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Обучение от практиков</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-2"><p>Академия: 20+ микро-уроков по 30-60 секунд с шаблонами. Live-воркшопы каждую неделю. Карта возможностей — RPG-маршрут: 5 веток × 5 шагов, каждый = урок + действие + 50 XP. Маршрут новичка 7 дней → ~300 XP + ачивка «Первопроходец». Прошёл курс — сертификат + бейдж. Здесь учатся делая.</p></div>
+      <div class="lnd-benefit-row" data-toggle="acc-get-3" data-sr="fade-up" data-sr-delay="3"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Поддержку сообщества 24/7</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-3"><p>12 000+ участников онлайн. Форум с 7 категориями, экспертные ответы с зелёной рамкой. Автоматический наставник для новичков (Слон+ с совместимым ДНК). Групповые чаты с ролями. Умные push: утром — квесты, днём — лайки, вечером — streak. Еженедельный дайджест: топ-кейсы, эксперт недели, твой прогресс.</p></div>
+      <div class="lnd-benefit-row" data-toggle="acc-get-4" data-sr="fade-up" data-sr-delay="4"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Аналитику и трекинг роста</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-4"><p>Дашборд реального времени: рост, конверсии, доход. Еженедельный автоотчёт: XP, streak, топ-%. До следующего уровня — в днях. Граф связей на d3.js: «Через 1 рукопожатие — 156 человек». Публичная аналитика компаний: рост партнёров, индекс доверия. BUSINESS — аналитика по каждому участнику команды.</p></div>
+      <div class="lnd-benefit-row" data-toggle="acc-get-5" data-sr="fade-up" data-sr-delay="5"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Геймификацию для мотивации</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-5"><p>5 шахматных уровней: Пешка → Конь → Слон → Ладья → Ферзь. Streak до x3.0. 50+ ачивок: социальные, бизнес, контент, секретные. Сезоны каждые 3 месяца. Пасхалки: 5 тапов на логотип = ачивка, ночной режим со звёздами, конфетти на день рождения. Фигура оживает при повышении — конь прыгает, ладья крутится.</p></div>
+      <div class="lnd-benefit-row" data-toggle="acc-get-6" data-sr="fade-up" data-sr-delay="6"><span class="lnd-check"><svg class="lnd-icon lnd-icon--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg></span> <span>Маркетплейс для нетворкинга</span><svg class="lnd-arrow lnd-arrow--green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="lnd-expand lnd-expand--green" id="acc-get-6"><p>Каталог участников: фильтры по ДНК, нише, городу. Матч показывает % совместимости. Граф связей: прямые друзья → друзья друзей → 3-й круг. Компании с рейтингами, отзывами, аналитикой. Эксперты с ДНК-аурой и % совместимости. Не соцсеть для лайков — деловая среда, где каждое знакомство = точка роста.</p></div>
+    </div>
+  </section>
+
+  <!-- ══════ СЕКЦИЯ ОТЗЫВОВ ══════ -->
+  <section class="rvw-section" id="reviewsSection">
+    <div class="sr-mask"><div class="lnd-sec-title" data-sr="slide-up">Нас уже выбирают лидеры</div></div>
+    <p class="rvw-subtitle" data-sr="fade-up" data-sr-delay="1">Истории участников платформы</p>
+
+    <div class="rvw-counter" data-sr="scale-in" data-sr-delay="2">
+      <span class="rvw-counter-num">1 200+</span>
+      <span class="rvw-counter-label">участников на платформе</span>
+    </div>
+
+    <div class="rvw-carousel">
+
+      <div class="rvw-card" data-rvw="0">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#7C3AED,#4F46E5)">АК</div>
+          <div>
+            <div class="rvw-name">Алексей К. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Наставник · 2 года в MLM</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span>
+        </div>
+        <p class="rvw-text">Перевёл команду сюда 3 месяца назад. Раньше всё вёл в Excel — сейчас не представляю как так жил.</p>
+        <div class="rvw-full" id="rvwFull0">
+          <p class="rvw-full-text">Перевёл всю команду на платформу три месяца назад. До этого вёл учёт в Excel, переписки раскиданы по трём мессенджерам, обучение — кто где нашёл. Сейчас всё в одном месте: и аналитика, и обучение, и коммуникация. Команда выросла до 50 человек, и управлять ей стало проще, чем когда было 10.</p>
+        </div>
+        <div class="rvw-tag">Команда 50+ человек</div>
+        <button class="rvw-more" onclick="toggleReview(0)">Читать полностью</button>
+      </div>
+
+      <div class="rvw-card" data-rvw="1">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#059669,#10B981)">МС</div>
+          <div>
+            <div class="rvw-name">Мария С. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Лидер · Greenway</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span>
+        </div>
+        <p class="rvw-text">Освободила 3 часа в день за счёт автоматизации. Теперь трачу время на людей, а не на таблицы.</p>
+        <div class="rvw-full" id="rvwFull1">
+          <p class="rvw-full-text">Я наставник с двухлетним стажем, и главная боль всегда была рутина: отчёты, напоминания, контроль. Платформа автоматизировала процентов 70 всего этого. Реально высвободила 3 часа в день. Теперь трачу это время на живое общение с командой и на стратегию. Результаты команды тоже пошли вверх.</p>
+        </div>
+        <div class="rvw-tag">+3 часа в день</div>
+        <button class="rvw-more" onclick="toggleReview(1)">Читать полностью</button>
+      </div>
+
+      <div class="rvw-card" data-rvw="2">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#D97706,#F59E0B)">ДВ</div>
+          <div>
+            <div class="rvw-name">Дмитрий В. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Предприниматель · 5 лет в бизнесе</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span>
+        </div>
+        <p class="rvw-text">Прошёл ДНК-тест из интереса, но рекомендации реально помогли. Поменял подход — результат x3.</p>
+        <div class="rvw-full" id="rvwFull2">
+          <p class="rvw-full-text">Скептически отнёсся к ДНК-тесту, думал маркетинговый ход. Но результат — Стратег — попал точно. Рекомендации по рекрутингу оказались на удивление точными. Перестроил воронку, изменил скрипты, начал работать с другими типами партнёров. За квартал результат утроился. Теперь тест проходит каждый новичок в команде.</p>
+        </div>
+        <div class="rvw-tag">Рост x3 за квартал</div>
+        <button class="rvw-more" onclick="toggleReview(2)">Читать полностью</button>
+      </div>
+
+      <div class="rvw-card" data-rvw="3">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#DB2777,#EC4899)">ЕЛ</div>
+          <div>
+            <div class="rvw-name">Елена Л. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Топ-лидер · 8 лет в сетевом</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star half">★</span>
+        </div>
+        <p class="rvw-text">Аналитика — огонь. Впервые вижу, где реально теряю людей. Конверсия подскочила.</p>
+        <div class="rvw-full" id="rvwFull3">
+          <p class="rvw-full-text">Восемь лет в сетевом, перепробовала кучу инструментов. Аналитика здесь — лучшее, что видела. Впервые могу посмотреть, на каком этапе теряю людей и почему. За первый месяц подняла конверсию на 40%. Не скажу что платформа идеальна — пока не хватает интеграции с Telegram. Но в целом — топ.</p>
+        </div>
+        <div class="rvw-tag">Конверсия +40%</div>
+        <button class="rvw-more" onclick="toggleReview(3)">Читать полностью</button>
+      </div>
+
+      <div class="rvw-card" data-rvw="4">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#2563EB,#3B82F6)">ИП</div>
+          <div>
+            <div class="rvw-name">Игорь П. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Наставник · Amway</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span>
+        </div>
+        <p class="rvw-text">Матч-система нашла мне двух партнёров, которые сейчас лидеры. Сам бы их не нашёл никогда.</p>
+        <div class="rvw-full" id="rvwFull4">
+          <p class="rvw-full-text">Матч-система — это то, ради чего стоит зарегистрироваться. Подобрала мне двух человек, которых я бы никогда не нашёл через обычный нетворкинг. Оба сейчас выросли в лидеров. Ещё нравится геймификация — команда реально включилась в процесс, соревнуются между собой. Удержание выросло заметно.</p>
+        </div>
+        <div class="rvw-tag">2 лидера в команде</div>
+        <button class="rvw-more" onclick="toggleReview(4)">Читать полностью</button>
+      </div>
+
+      <div class="rvw-card" data-rvw="5">
+        <div class="rvw-top">
+          <div class="rvw-avatar" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">ОН</div>
+          <div>
+            <div class="rvw-name">Ольга Н. <span class="rvw-verified"></span></div>
+            <div class="rvw-role">Начинающий · 4 месяца</div>
+          </div>
+        </div>
+        <div class="rvw-stars-row">
+          <span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span><span class="rvw-star">★</span>
+        </div>
+        <p class="rvw-text">Пришла полным нулём. За 4 месяца — наставник, план, первые результаты. Тут реально помогают.</p>
+        <div class="rvw-full" id="rvwFull5">
+          <p class="rvw-full-text">Пришла на платформу четыре месяца назад, вообще без опыта в сетевом. Боялась, что будет сложно. Но здесь всё разложено по шагам: обучение, наставник, план действий. За 4 месяца — первые партнёры, первый доход. Немного, но для старта — отлично. Главное — чувствую поддержку, не одна.</p>
+        </div>
+        <div class="rvw-tag">С нуля за 4 месяца</div>
+        <button class="rvw-more" onclick="toggleReview(5)">Читать полностью</button>
+      </div>
+
+    </div>
+    <div class="rvw-hint" data-sr="fade" data-sr-delay="3">← свайпай →</div>
+  </section>
+
+
+  <!-- DNA TEST SECTION -->
+  <section class="lnd-glass lnd-dna-section" id="dnaSection">
+    <div class="lnd-dna-badge" data-sr="fade" data-sr-delay="1">Бесплатно · 60 секунд · Без регистрации</div>
+    <div class="sr-mask"><h2 class="lnd-sec-title" data-sr="slide-up">Узнай свой бизнес-ДНК</h2></div>
+    <p class="lnd-dna-desc" data-sr="fade-up" data-sr-delay="1">7 вопросов — и система определит твой тип. Результат покажет твои суперсилы.</p>
+    <div class="lnd-dna-types" data-sr="fade" data-sr-delay="2">
+      <span class="lnd-dna-tag lnd-dna-tag--s">Стратег</span>
+      <span class="lnd-dna-tag lnd-dna-tag--c">Коммуникатор</span>
+      <span class="lnd-dna-tag lnd-dna-tag--k">Креатор</span>
+      <span class="lnd-dna-tag lnd-dna-tag--a">Аналитик</span>
+    </div>
+    <button class="lnd-btn lnd-btn--primary mag-btn" onclick="dnaFromLanding()" data-sr="fade-up" data-sr-delay="3">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2v2c0 4 4 6 4 10s-4 6-4 10"/><path d="M17 2v2c0 4-4 6-4 10s4 6 4 10"/><path d="M7 8h10"/><path d="M7 16h10"/></svg>
+      Пройти ДНК-тест
+    </button>
+    <p class="lnd-dna-note" data-sr="fade" data-sr-delay="4">Результат сохранится при создании аккаунта</p>
+  </section>
+  <!-- S9: CTA + PRICING -->
+  <section class="lnd-cta-section">
+    <div class="sr-mask"><div class="lnd-title" style="font-size:20px;text-align:center" data-sr="slide-up">Начни строить сильную структуру уже сегодня</div></div>
+    <button class="lnd-cta-main lnd-btn lnd-btn--primary lnd-btn--full mag-btn" onclick="openLndModal('register')" style="margin-bottom:24px;" data-sr="scale-in" data-sr-delay="1">Создать аккаунт бесплатно</button>
+    <div class="lnd-tariffs">
+      <div class="lnd-tariff lnd-tariff--free tilt-card" id="tariffFree" data-sr="scale-in" data-sr-delay="1">
+        <div class="tilt-glare"></div>
+        <div class="lnd-tariff__label">FREE</div>
+        <div class="lnd-tariff__price">Бесплатно</div>
+        <div class="lnd-tariff__period">Навсегда</div>
+        <div class="lnd-tariff__features">
+          <span>✓ Лента и Stories</span>
+          <span>✓ ДНК-тест бизнеса</span>
+          <span>✓ 10 диалогов</span>
+          <span>✓ 5 постов/мес</span>
+        </div>
+        <div class="lnd-tariff__more">Подробнее</div>
+      </div>
+      <div class="lnd-tariff lnd-tariff--pro tilt-card" id="tariffPro" data-sr="scale-in" data-sr-delay="2">
+        <div class="tilt-glare"></div>
+        <div class="lnd-tariff__badge">Популярный</div>
+        <div class="lnd-tariff__label">PRO</div>
+        <div class="lnd-tariff__price">599₽<span>/мес</span></div>
+        <div class="lnd-tariff__period">4 990₽/год <span class="lnd-tariff__discount">-30%</span></div>
+        <div class="lnd-tariff__features">
+          <span>✓ Безлимит постов</span>
+          <span>✓ Безлимит чатов</span>
+          <span>✓ 10 свайпов/день</span>
+          <span>✓ Реферальная 15%</span>
+        </div>
+        <div class="lnd-tariff__more">Подробнее</div>
+      </div>
+      <div class="lnd-tariff lnd-tariff--biz tilt-card" id="tariffBiz" data-sr="scale-in" data-sr-delay="3">
+        <div class="tilt-glare"></div>
+        <div class="lnd-tariff__label">BUSINESS</div>
+        <div class="lnd-tariff__price">1 490₽<span>/мес</span></div>
+        <div class="lnd-tariff__period">11 990₽/год <span class="lnd-tariff__discount">-33%</span></div>
+        <div class="lnd-tariff__features">
+          <span>✓ Всё без лимитов</span>
+          <span>✓ Аналитика команды</span>
+          <span>✓ 5 компаний</span>
+          <span>✓ Реферальная 20%</span>
+        </div>
+        <div class="lnd-tariff__more">Подробнее</div>
+      </div>
+    </div>
+  </section>
+  <!-- S10: FOOTER -->
+  <footer class="lnd-footer" data-sr="fade">
+    <div class="lnd-footer__dev">Разработано международным IT-сообществом</div>
+    <div class="lnd-footer__socials">
+      <a href="https://t.me/mlmcommunity" target="_blank" class="lnd-footer__social">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.2-.04-.28-.02-.12.03-2.02 1.28-5.69 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.5-.84-.27-1.51-.42-1.45-.89.03-.25.38-.5 1.04-.78 4.07-1.77 6.79-2.94 8.15-3.5 3.88-1.62 4.69-1.9 5.21-1.91.12 0 .37.03.54.17.14.12.18.28.2.47-.01.06.01.24 0 .37z"/></svg>
+      </a>
+      <a href="https://instagram.com/mlmcommunity" target="_blank" class="lnd-footer__social">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      </a>
+      <a href="https://facebook.com/mlmcommunity" target="_blank" class="lnd-footer__social">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07c0 6.02 4.39 11.02 10.13 11.93v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.33l-.53 3.49h-2.8v8.44C19.61 23.09 24 18.09 24 12.07z"/></svg>
+      </a>
+      <a href="https://wa.me/mlmcommunity" target="_blank" class="lnd-footer__social">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.58c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.88 1.21 3.08c.15.2 2.09 3.19 5.06 4.47.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.75c-1.79 0-3.54-.48-5.07-1.39l-.36-.22-3.78.99 1.01-3.69-.24-.38A9.7 9.7 0 0 1 2.25 12c0-5.38 4.37-9.75 9.75-9.75S21.75 6.62 21.75 12s-4.37 9.75-9.7 9.75zM12.05 0C5.41 0 0 5.37 0 12c0 2.12.56 4.18 1.61 5.99L0 24l6.17-1.62A11.94 11.94 0 0 0 12.05 24C18.68 24 24 18.63 24 12S18.68 0 12.05 0z"/></svg>
+      </a>
+    </div>
+    <!-- Store buttons -->
+    <div class="lnd-footer__stores">
+      <a href="#" class="lnd-store-btn" target="_blank">
+        <svg class="lnd-store-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div class="lnd-store-text">
+          <span class="lnd-store-label">Скачать в</span>
+          <span class="lnd-store-name">App Store</span>
+        </div>
+      </a>
+      <a href="#" class="lnd-store-btn" target="_blank">
+        <svg class="lnd-store-icon" width="20" height="20" viewBox="0 0 512 512"><path d="M93.1 18.1c-8.4 4.6-13.1 13-13.1 22.9v430c0 9.9 4.7 18.3 13.1 22.9L274 256 93.1 18.1z" fill="rgba(255,255,255,.6)"/><path d="M274 256l90.8-52.4L152.5 6.3c-5.5-3-11.5-4.6-17.7-5L274 256z" fill="rgba(255,255,255,.55)"/><path d="M274 256l-139.2 254.7c6.2-.4 12.2-2 17.7-5l212.3-122.3L274 256z" fill="rgba(255,255,255,.5)"/><path d="M364.8 203.6L274 256l90.8 52.4 57.7-33.3c18.2-10.5 18.2-36.5 0-47L364.8 203.6z" fill="rgba(255,255,255,.65)"/></svg>
+        <div class="lnd-store-text">
+          <span class="lnd-store-label">Скачать в</span>
+          <span class="lnd-store-name">Google Play</span>
+        </div>
+      </a>
+    </div>
+    <div class="lnd-footer__legal">
+      <button class="lnd-btn lnd-btn--ghost lnd-footer__legal-btn" onclick="openInfoModal('offer')">Оферта</button>
+      <span class="lnd-footer__legal-dot">·</span>
+      <button class="lnd-btn lnd-btn--ghost lnd-footer__legal-btn" onclick="openInfoModal('privacy')">Конфиденциальность</button>
+      <span class="lnd-footer__legal-dot">·</span>
+      <button class="lnd-btn lnd-btn--ghost lnd-footer__legal-btn" onclick="openInfoModal('faq')">FAQ</button>
+      <span class="lnd-footer__legal-dot">·</span>
+      <button class="lnd-btn lnd-btn--ghost lnd-footer__legal-btn" onclick="openInfoModal('support')">Поддержка</button>
+    </div>
+    <div class="lnd-footer__copy">© 2025 MLM Community. Все права защищены.</div>
+  </footer>
+  <div class="lnd-modal-bg" id="lndRegisterModal" onclick="closeLndModals()"><div class="lnd-modal" onclick="event.stopPropagation()"><div class="lnd-modal-handle"></div><div class="lnd-modal-top"><div class="lnd-modal-t">Создать аккаунт</div><button class="lnd-modal-close" onclick="closeLndModals()">✕</button></div><div class="lnd-modal-body"><div class="lnd-reg-sub">Выбери способ регистрации</div><button class="lnd-reg-btn lnd-btn-tg" onclick="freshRegistration();goTo('scrWelcome');closeLndModals()"><span class="lnd-rec">Рекомендуем</span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</button><button class="lnd-reg-btn lnd-btn-gl" onclick="freshRegistration();goTo('scrWelcome');closeLndModals()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button><button class="lnd-reg-btn lnd-btn-gl" onclick="freshRegistration();goTo('scrWelcome');closeLndModals()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg> Apple</button><div class="lnd-sep"><div class="lnd-sep-line"></div><div class="lnd-sep-t">или email</div><div class="lnd-sep-line"></div></div><input class="lnd-input" placeholder="Имя" type="text"><input class="lnd-input" placeholder="Email" type="email"><input class="lnd-input" placeholder="Пароль" type="password"><button class="lnd-submit" onclick="freshRegistration();goTo('scrWelcome');closeLndModals()">Создать аккаунт</button><div class="lnd-terms">Нажимая «Создать аккаунт», ты соглашаешься с Офертой</div><div class="lnd-switch">Уже есть аккаунт? <a onclick="switchLndModal('login')">Войти</a></div></div></div></div>
+  <div class="lnd-modal-bg" id="lndLoginModal" onclick="closeLndModals()"><div class="lnd-modal" onclick="event.stopPropagation()"><div class="lnd-modal-handle"></div><div class="lnd-modal-top"><div class="lnd-modal-t">Войти</div><button class="lnd-modal-close" onclick="closeLndModals()">✕</button></div><div class="lnd-modal-body"><div class="lnd-reg-sub">С возвращением!</div><button class="lnd-reg-btn lnd-btn-tg" onclick="goTo('scrFeed');closeLndModals()"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</button><button class="lnd-reg-btn lnd-btn-gl" onclick="goTo('scrFeed');closeLndModals()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button><button class="lnd-reg-btn lnd-btn-gl" onclick="goTo('scrFeed');closeLndModals()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg> Apple</button><div class="lnd-sep"><div class="lnd-sep-line"></div><div class="lnd-sep-t">или email</div><div class="lnd-sep-line"></div></div><input class="lnd-input" placeholder="Email" type="email"><input class="lnd-input" placeholder="Пароль" type="password"><div class="lnd-forgot"><a onclick="alert('Ссылка отправлена на email')">Забыли пароль?</a></div><button class="lnd-submit" onclick="goTo('scrFeed');closeLndModals()">Войти</button><div class="lnd-switch">Нет аккаунта? <a onclick="switchLndModal('register')">Зарегистрироваться</a></div></div></div></div>
+  <div class="lnd-modal-bg" id="lndInfoModal" onclick="closeInfoModal()"><div class="lnd-modal" onclick="event.stopPropagation()"><div class="lnd-modal-handle"></div><div class="lnd-modal-top"><div class="lnd-modal-t" id="infoModalTitle"></div><button class="lnd-modal-close" onclick="closeInfoModal()">✕</button></div><div class="lnd-modal-body" id="infoModalBody"></div></div></div>
+</div>

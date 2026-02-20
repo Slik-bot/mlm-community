@@ -1,0 +1,77 @@
+<!-- =============== SCREEN: FEED =============== -->
+<div class="scr hidden" id="scrFeed">
+  <div class="hdr">
+    <div class="hdr-avatar" onclick="alert('Профиль — скоро!')">
+      <div style="font-size:15px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <div class="hdr-streak"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12c0 3-2 4-2 6a2 2 0 0 0 4 0c0-2-2-3-2-6z"/></svg>3</div>
+    </div>
+    <div class="hdr-info">
+      <div class="hdr-name" id="feedUserName">Привет, Алексей!</div>
+      <div class="hdr-dna"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Стратег · ♟ Пешка</div>
+    </div>
+    <button class="icon-btn" onclick="goTo('scrSearch')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="icon-btn" onclick="alert('Уведомления')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="badge-num">5</div>
+    </button>
+  </div>
+
+  <div class="feed" id="feedScroll">
+    <!-- Impulse -->
+    <div class="impulse" id="impulseBar" onclick="toggleImpulse()">
+      <div class="impulse-row">
+        <div class="impulse-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          3 задания · <span class="imp-streak"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12c0 3-2 4-2 6a2 2 0 0 0 4 0c0-2-2-3-2-6z"/></svg> <span class="imp-streak-val">3</span> дня</span> · <span class="imp-xp"><span class="imp-xp-val">0</span>/<span class="imp-xp-max">60</span> XP</span> · <span class="imp-lvl">Пешка</span>
+        </div>
+        <span class="impulse-chevron">▾</span>
+      </div>
+      <div class="impulse-expand">
+        <div style="height:3px;border-radius:2px;background:rgba(255,255,255,.05);margin:8px 0;overflow:hidden"><div class="imp-bar-fill" style="height:100%;background:var(--primary);width:0%;border-radius:2px;transition:width .5s ease-out"></div></div>
+        <div class="imp-quests">
+          <div class="q-item imp-quest done"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">Напиши комментарий</div><div class="q-xp">✓ +3</div></div>
+          <div class="q-item imp-quest"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">Напиши кейс с цифрами</div><div class="q-xp">+30</div></div>
+          <div class="q-item imp-quest"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">Ответь новичку на форуме</div><div class="q-xp">+15</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stories -->
+    <div class="stories">
+      <div class="story" onclick="alert('Создать Story')"><div class="story-ring add"><div class="story-ava">+</div></div><div class="story-nm">Создать</div></div>
+      <div class="story" onclick="alert('Story Анны')"><div class="story-ring new"><div class="story-ava">👩‍💼</div></div><div class="story-nm">Анна М.</div></div>
+      <div class="story"><div class="story-ring new"><div class="story-ava">👨‍💻</div></div><div class="story-nm">Дмитрий</div></div>
+      <div class="story"><div class="story-ring seen"><div class="story-ava">👩</div></div><div class="story-nm">Елена К.</div></div>
+      <div class="story"><div class="story-ring new"><div class="story-ava">👨</div></div><div class="story-nm">Максим</div></div>
+      <div class="story"><div class="story-ring seen"><div class="story-ava">👩‍🎨</div></div><div class="story-nm">Ольга</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="flt feed-flt on">Для вас</div><div class="flt feed-flt">Все</div><div class="flt feed-flt">Кейсы</div><div class="flt feed-flt">Эксперты</div><div class="flt feed-flt">Компании</div><div class="flt feed-flt">Опросы</div>
+    </div>
+
+    <!-- Wisdom -->
+    <div class="wisdom" id="wisdomCard">
+      <button class="wisdom-close" onclick="event.stopPropagation();this.parentElement.style.display='none'">✕</button>
+      <div class="wisdom-label">Мудрость дня</div>
+      <div class="wisdom-text">80% успешных сетевиков начинали с наставника. Найди своего — и результат придёт быстрее.</div>
+      <div class="wisdom-link">Найти наставника →</div>
+    </div>
+
+    <!-- Route -->
+    <div class="route" onclick="alert('Маршрут новичка')">
+      <div class="route-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+      <div class="route-info">
+        <div class="route-title">Маршрут новичка</div>
+        <div class="route-sub">1/10 шагов · +300 XP за прохождение</div>
+        <div class="route-bar"><div class="route-bar-fill"></div></div>
+      </div>
+      <div class="route-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+    </div>
+
+    <!-- Посты загружаются из Supabase через loadFeedPosts() -->
+  </div>
+</div>

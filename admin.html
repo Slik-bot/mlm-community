@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MLM Community — Админ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">MLM Community</div>
+      <div class="login-sub">Админ-панель</div>
+      <input type="email" id="loginEmail" class="field" placeholder="Email" autocomplete="email">
+      <input type="password" id="loginPass" class="field" placeholder="Пароль" autocomplete="current-password">
+      <button id="loginBtn" class="btn btn-primary btn-full" onclick="adminLogin()">Войти</button>
+      <div id="loginError" class="login-error"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" class="admin-panel" style="display:none">
+    <div id="sbOverlay" class="sb-overlay" onclick="toggleSidebar()"></div>
+
+    <nav id="sidebar" class="sidebar">
+      <div class="sb-logo">⚡ MLM Admin</div>
+      <div class="sb-menu">
+        <button class="sb-item active" data-page="dashboard" onclick="showPage('dashboard')"><i>📊</i><span>Дашборд</span></button>
+        <button class="sb-item" data-page="users" onclick="showPage('users')"><i>👥</i><span>Пользователи</span></button>
+        <button class="sb-item" data-page="content" onclick="showPage('content')"><i>📝</i><span>Контент</span></button>
+        <button class="sb-item" data-page="companies" onclick="showPage('companies')"><i>🏢</i><span>Компании</span></button>
+        <button class="sb-item" data-page="shop" onclick="showPage('shop')"><i>🛍</i><span>Магазин</span></button>
+        <button class="sb-item" data-page="gamification" onclick="showPage('gamification')"><i>🎮</i><span>Геймификация</span></button>
+        <button class="sb-item" data-page="finance" onclick="showPage('finance')"><i>💰</i><span>Финансы</span></button>
+        <button class="sb-item" data-page="settings" onclick="showPage('settings')"><i>⚙️</i><span>Настройки</span></button>
+      </div>
+      <div class="sb-footer">
+        <div class="sb-email" id="sbEmail"></div>
+        <button class="sb-item sb-logout" onclick="adminLogout()"><i>🚪</i><span>Выход</span></button>
+      </div>
+    </nav>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="burger" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h2 id="pageTitle">Дашборд</h2>
+        <div id="adminName" class="topbar-name"></div>
+      </header>
+      <div id="pageContent" class="content"></div>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalOv" class="modal-ov" onclick="closeModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h3 id="modalTitle"></h3>
+        <button class="modal-x" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastEl" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/admin-core.js"></script>
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-pages.js"></script>
+  <script src="js/admin-pages2.js"></script>
+  <script src="js/admin-pages3.js"></script>
+  <script src="js/admin-pages4.js"></script>
+</body>
+</html>

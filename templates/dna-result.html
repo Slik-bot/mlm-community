@@ -1,0 +1,92 @@
+<div id="scrDnaResult" class="scr hidden">
+  <div class="dnr-reveal" id="dnrReveal">
+    <div class="dnr-reveal-bg" id="dnrRevBg"></div>
+    <div class="dnr-roulette" id="dnrRoulette">
+      <div class="dnr-orb-spin dnr-orb-s" data-type="S"></div>
+      <div class="dnr-orb-spin dnr-orb-c" data-type="C"></div>
+      <div class="dnr-orb-spin dnr-orb-k" data-type="K"></div>
+      <div class="dnr-orb-spin dnr-orb-a" data-type="A"></div>
+    </div>
+    <div class="dnr-wave" id="dnrWave"></div>
+    <div class="dnr-reveal-label" id="dnrRevLabel">Кто ты?</div>
+  </div>
+  <div class="dnr-screen" id="dnrScreen">
+    <div class="dnr-bg">
+      <div class="dnr-orb dnr-orb1" id="dnrOrb1"></div>
+      <div class="dnr-orb dnr-orb2" id="dnrOrb2"></div>
+      <div class="dnr-bg-particles" id="dnrBgParticles"></div>
+    </div>
+    <div class="dnr-scroll">
+      <!-- LUXURY CARD -->
+      <div class="dnr-card dna-rv-item dna-rv-card" id="dnrCard" data-dna-rv-delay="100">
+        <div class="dna-rv-item dna-rv-glow" data-dna-rv-delay="0"></div>
+        <div class="dnr-card-noise"></div>
+        <div class="dnr-card-shine"></div>
+
+        <!-- Header — dark gradient zone -->
+        <div class="dnr-card-header" id="dnrCardHeader">
+          <div class="dnr-card-header-pattern"></div>
+          <div class="dnr-card-header-fade"></div>
+          <div class="dnr-pawn-wrap">
+            <div class="dnr-pawn-ripple" id="dnrPawnRipple">
+              <div class="dnr-ripple-ring dnr-ripple-1"></div>
+              <div class="dnr-ripple-ring dnr-ripple-2"></div>
+              <div class="dnr-ripple-ring dnr-ripple-3"></div>
+            </div>
+            <div class="dnr-pawn" id="dnrPawn"></div>
+          </div>
+          <div class="dnr-badge" id="dnrBadge"><span class="dnr-badge-icon">♟</span> ПЕШКА · УРОВЕНЬ 1</div>
+        </div>
+
+        <!-- Body -->
+        <div class="dnr-card-body">
+          <div class="dnr-exclusive" id="dnrExclusive">Один из 4 уникальных типов</div>
+          <div class="dnr-label" id="dnrLabel">ТВОЙ БИЗНЕС-ДНК</div>
+          <div class="dnr-name dna-rv-item dna-rv-type" id="dnrName" data-dna-rv-delay="550"></div>
+          <div class="dnr-accent"></div>
+
+          <div class="dnr-divider"></div>
+
+          <div class="dnr-desc-wrap dna-rv-item dna-rv-text" data-dna-rv-delay="700">
+            <div class="dnr-desc-quote" id="dnrDescQuote">«</div>
+            <div class="dnr-desc" id="dnrDesc"></div>
+          </div>
+
+          <div class="dnr-tags dna-rv-item dna-rv-text" id="dnrTags" data-dna-rv-delay="850"></div>
+
+          <div class="dnr-divider"></div>
+
+          <!-- Career path -->
+          <div class="dnr-career dna-rv-item dna-rv-text" data-dna-rv-delay="950">
+            <div class="dnr-career-path">
+              <div class="dnr-career-fig active" id="dnrFig0">♟</div>
+              <div class="dnr-career-line"><div class="dnr-career-line-fill" id="dnrLineFill0"></div></div>
+              <div class="dnr-career-fig">♞</div>
+              <div class="dnr-career-line"></div>
+              <div class="dnr-career-fig">♝</div>
+              <div class="dnr-career-line"></div>
+              <div class="dnr-career-fig">♜</div>
+              <div class="dnr-career-line"></div>
+              <div class="dnr-career-fig">♛</div>
+              <div class="dnr-career-line"></div>
+              <div class="dnr-career-fig last">♚</div>
+            </div>
+            <div class="dnr-xp-bar-bg"><div class="dnr-xp-bar" id="dnrXpBar"></div></div>
+            <div class="dnr-xp-text"><span class="dnr-xp-current">0</span> / <span class="dnr-xp-target" id="dnrXpTarget">500</span> XP до следующего уровня</div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dnr-card-foot">
+          <div class="dnr-card-logo">MLM Community</div>
+          <div class="dnr-card-serial" id="dnrSerial">#DNA-00001</div>
+          <div class="dnr-card-share" onclick="alert('Функция Поделиться будет доступна позже')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+        </div>
+      </div>
+      <!-- END CARD -->
+
+      <button class="dnr-btn dna-rv-item dna-rv-btn" id="dnrMainBtn" onclick="dnaResultAction()" data-dna-rv-delay="1100">Продолжить →</button>
+      <div class="dnr-retry dna-rv-item dna-rv-btn" id="dnrRetryBtn" onclick="dnaRetry()" data-dna-rv-delay="1200">Пройти заново</div>
+    </div>
+  </div>
+</div>

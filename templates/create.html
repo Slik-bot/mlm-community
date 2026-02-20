@@ -1,0 +1,18 @@
+<div class="scr hidden" id="scrCreate">
+  <div class="create-hdr">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="create-title">Новый пост</span>
+    <button class="pub-btn" id="pubBtn" onclick="doPublish()">Опубликовать</button>
+  </div>
+  <div class="create-scroll">
+    <textarea class="create-ta" id="createTa" placeholder="О чём хотите рассказать?"></textarea>
+    <div id="photoPreview"></div>
+  </div>
+  <div class="create-toolbar">
+    <button class="tb-btn" id="photoBtn">📷 Фото</button>
+    <button class="tb-btn">🎥 Видео</button>
+    <button class="tb-btn">#️⃣ Теги</button>
+  </div>
+</div>

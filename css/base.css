@@ -1,0 +1,118 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#06060b;--surface:#0e0e16;--primary:#8b5cf6;--primary-dark:#7c3aed;--primary-light:#a78bfa;
+  --text:#f4f4f6;--text-muted:rgba(255,255,255,0.45);--text-dim:rgba(255,255,255,0.22);
+  --glass:rgba(255,255,255,0.035);--glass-border:rgba(255,255,255,0.06);
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;--orange:#f59e0b;
+  --nav-h:68px;--radius:14px;
+  --fs-hero:30px;--fs-h2:22px;--fs-h3:18px;--fs-body:14px;--fs-small:13px;--fs-caption:12px;--fs-micro:11px;
+  --lh-tight:1.25;--lh-normal:1.5;--lh-relaxed:1.6;
+}
+
+/* ═══ BUTTON SYSTEM ═══ */
+.lnd-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-weight:700;border:none;cursor:pointer;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);-webkit-tap-highlight-color:transparent;user-select:none;position:relative;overflow:hidden;}
+.lnd-btn--primary{padding:14px 32px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-size:var(--fs-body);border-radius:14px;box-shadow:0 4px 16px rgba(139,92,246,0.25);}
+.lnd-btn--primary::after{content:'';position:absolute;top:-50%;left:-60%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);transform:skewX(-20deg);animation:btnShimmer 4s ease infinite;}
+@keyframes btnShimmer{0%,100%{left:-60%}50%{left:120%}}
+.lnd-btn--primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(139,92,246,0.35);}
+.lnd-btn--primary:active{transform:translateY(0) scale(0.98);}
+.lnd-btn--primary.lnd-btn--full{width:100%;}
+.lnd-btn--secondary{padding:12px 24px;background:transparent;color:rgba(255,255,255,0.7);font-size:var(--fs-small);border:1px solid rgba(139,92,246,0.20);border-radius:12px;}
+.lnd-btn--secondary:hover{background:rgba(139,92,246,0.06);border-color:rgba(139,92,246,0.35);color:#fff;transform:translateY(-1px);}
+.lnd-btn--secondary:active{transform:scale(0.98);}
+.lnd-btn--ghost{padding:8px 16px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.45);font-size:var(--fs-caption);font-weight:600;border:1px solid rgba(255,255,255,0.06);border-radius:10px;}
+.lnd-btn--ghost:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.10);}
+.lnd-btn--sm{padding:10px 20px;font-size:var(--fs-small);border-radius:12px;}
+
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Outfit',-apple-system,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+.app{height:100%;max-width:420px;margin:0 auto;position:relative;overflow:hidden;}
+
+/* ============ SCREENS ============ */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;z-index:1;background:var(--bg);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s;will-change:transform;}
+.scr.hidden{transform:translateX(100%);opacity:0;pointer-events:none;z-index:0;}
+.scr.back-hidden{transform:translateX(-30%);opacity:0;pointer-events:none;z-index:0;}
+
+/* ============ HEADER ============ */
+.hdr{display:flex;align-items:center;padding:50px 16px 12px;gap:10px;flex-shrink:0;background:rgba(6,6,11,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.04);position:relative;z-index:10;}
+.hdr-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(139,92,246,.18));border:2px solid rgba(139,92,246,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;cursor:pointer;box-shadow:0 0 12px rgba(139,92,246,0.3),0 0 4px rgba(139,92,246,0.2);transition:box-shadow 0.3s ease;}
+.hdr-avatar img{width:100%;height:100%;object-fit:cover;}
+.hdr-streak{position:absolute;top:-3px;right:-5px;font-size:11px;background:var(--orange);border-radius:4px;padding:0 3px;line-height:14px;font-weight:700;border:1.5px solid var(--bg);}
+.hdr-info{flex:1;}
+.hdr-name{font-size:18px;font-weight:700;letter-spacing:-0.01em;}
+.hdr-dna{font-size:12px;color:var(--blue);font-weight:600;opacity:0.85;}
+.icon-btn{width:40px;height:40px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);color:rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.icon-btn:active{transform:scale(.92);background:rgba(255,255,255,.06);}
+.icon-btn svg{width:17px;height:17px;}
+.badge-num{position:absolute;top:-4px;right:-6px;min-width:16px;height:16px;border-radius:8px;background:var(--red);font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid var(--bg);}
+
+/* ============ BOTTOM NAV ============ */
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);max-width:420px;margin:0 auto;background:rgba(6,6,11,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.04);display:flex;align-items:flex-start;padding-top:7px;z-index:40;}
+.nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px 0;min-height:44px;transition:transform .12s;-webkit-tap-highlight-color:transparent;}
+.nav-i:active{transform:scale(.88);}
+.nav-ic{width:22px;height:22px;color:var(--text-dim);transition:color .2s;position:relative;}
+.nav-i.on .nav-ic{color:var(--primary);}
+.nav-lb{font-size:10px;color:var(--text-dim);font-weight:500;transition:color .2s;}
+.nav-i.on .nav-lb{color:var(--primary);}
+.nav-dot{width:3px;height:3px;border-radius:50%;background:var(--primary);opacity:0;transition:opacity .2s;}
+.nav-i.on .nav-dot{opacity:1;}
+
+/* ============ OVERLAY / DIM ============ */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25;opacity:0;pointer-events:none;transition:opacity .25s;}
+.dim.show{opacity:1;pointer-events:all;}
+
+/* ========== SCREEN TRANSITIONS ========== */
+
+/* Подавляем CSS-transition на .scr во время keyframe-анимации */
+.scr-tr-enter,
+.scr-tr-exit-left,
+.scr-tr-exit-right{
+  transition:none !important;
+  pointer-events:none !important;
+}
+
+/* Вход справа (goTo — новый экран накрывает сверху) */
+.scr-tr-enter-right{
+  z-index:60 !important;
+  animation:scrSlideInRight .4s cubic-bezier(.32,.72,.35,1.0) forwards;
+}
+
+/* Вход слева (goBack — предыдущий экран появляется из-под) */
+.scr-tr-enter-left{
+  animation:scrSlideInLeft .4s cubic-bezier(.32,.72,.35,1.0) forwards;
+}
+
+/* Выход влево (goTo — старый экран уходит вглубь) */
+.scr-tr-exit-left{
+  animation:scrSlideOutLeft .4s cubic-bezier(.32,.72,.35,1.0) forwards;
+}
+
+/* Выход вправо (goBack — текущий экран уезжает поверху) */
+.scr-tr-exit-right{
+  z-index:60 !important;
+  animation:scrSlideOutRight .4s cubic-bezier(.32,.72,.35,1.0) forwards;
+}
+
+@keyframes scrSlideInRight{
+  0%{transform:translateX(100%);opacity:.3}
+  100%{transform:translateX(0);opacity:1}
+}
+@keyframes scrSlideInLeft{
+  0%{transform:translateX(-35%);opacity:.5}
+  100%{transform:translateX(0);opacity:1}
+}
+@keyframes scrSlideOutLeft{
+  0%{transform:translateX(0);opacity:1}
+  100%{transform:translateX(-35%);opacity:.5}
+}
+@keyframes scrSlideOutRight{
+  0%{transform:translateX(0);opacity:1}
+  100%{transform:translateX(100%);opacity:.3}
+}
+
+/* Reduced-motion: мгновенные переходы (страховка поверх JS-проверки) */
+@media(prefers-reduced-motion:reduce){
+  .scr-tr-enter-right,.scr-tr-enter-left,
+  .scr-tr-exit-left,.scr-tr-exit-right{
+    animation-duration:.01s !important;
+  }
+}

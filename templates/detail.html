@@ -1,0 +1,14 @@
+<div class="scr hidden" id="scrDetail">
+  <div class="detail-hdr">
+    <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="detail-title">Пост</div>
+    <div style="width:34px;"></div>
+  </div>
+  <div class="detail-scroll">
+    <div style="text-align:center;padding:40px;color:rgba(255,255,255,.3)">Загрузка...</div>
+  </div>
+  <div class="cmt-bar">
+    <textarea class="cmt-field" placeholder="Комментарий..." rows="1" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px';this.nextElementSibling.classList.toggle('active',this.value.trim().length>0)"></textarea>
+    <button class="send-btn" onclick="alert('Отправлено! +3 XP')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+  </div>
+</div>
