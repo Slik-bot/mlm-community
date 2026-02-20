@@ -19,7 +19,10 @@ const TEMPLATES = {
   scrFeed: '/templates/feed.html',
   scrProfile: '/templates/profile.html',
   scrProfileEdit: '/templates/profile-edit.html',
-  scrProfileSettings: '/templates/profile-settings.html'
+  scrProfileSettings: '/templates/profile-settings.html',
+  scrChatList: '/templates/chat-list.html',
+  scrChat: '/templates/chat.html',
+  scrChatInfo: '/templates/chat-info.html'
 };
 const loadedTemplates = {};
 
@@ -68,19 +71,29 @@ async function ensureTemplate(id) {
   if (id === 'scrProfileSettings') {
     if (window.initProfileSettings) window.initProfileSettings();
   }
+  if (id === 'scrChatList') {
+    if (window.initChatList) window.initChatList();
+  }
+  if (id === 'scrChat') {
+    if (window.initChat) window.initChat();
+  }
+  if (id === 'scrChatInfo') {
+    if (window.initChatInfo) window.initChatInfo();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
   }
 }
 
 function updateChrome(id){
-  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile';
+  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
 
 async function goTo(id) {
   if(isTransitioning) return;
+  if (window.chatUnsubscribe) chatUnsubscribe();
   await ensureTemplate(id);
 
   var onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
