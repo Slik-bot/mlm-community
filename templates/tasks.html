@@ -1,0 +1,48 @@
+<!-- =============== SCREEN: TASKS =============== -->
+<div class="scr hidden" id="scrTasks">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Задания</span>
+    <div class="tasks-xp-badge" id="tasksXpBadge">0 XP</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tasks-tabs" id="tasksTabs">
+    <button class="task-tab active" data-tab="all" onclick="switchTaskTab('all')">Все</button>
+    <button class="task-tab" data-tab="platform" onclick="switchTaskTab('platform')">Платформа</button>
+    <button class="task-tab" data-tab="ad" onclick="switchTaskTab('ad')">Реклама</button>
+    <button class="task-tab" data-tab="business" onclick="switchTaskTab('business')">Бизнес</button>
+  </div>
+
+  <!-- DNA filter -->
+  <div class="tasks-dna-filter" id="tasksDnaFilter">
+    <button class="dna-filter-btn active" data-dna="all" onclick="filterTasksByDna('all')">Все типы</button>
+    <button class="dna-filter-btn strategist" data-dna="strategist" onclick="filterTasksByDna('strategist')">Стратег</button>
+    <button class="dna-filter-btn communicator" data-dna="communicator" onclick="filterTasksByDna('communicator')">Коммуникатор</button>
+    <button class="dna-filter-btn creator" data-dna="creator" onclick="filterTasksByDna('creator')">Креатор</button>
+    <button class="dna-filter-btn analyst" data-dna="analyst" onclick="filterTasksByDna('analyst')">Аналитик</button>
+  </div>
+
+  <!-- Daily progress -->
+  <div class="tasks-daily-progress glass-card" id="tasksDailyProgress">
+    <div class="daily-label">Выполнено сегодня</div>
+    <div class="daily-bar">
+      <div class="daily-fill" id="dailyFill" style="width:0%"></div>
+    </div>
+    <div class="daily-count" id="dailyCount">0 / 10</div>
+  </div>
+
+  <!-- Task list -->
+  <div class="tasks-list" id="tasksList"></div>
+
+  <!-- Empty state -->
+  <div class="tasks-empty hidden" id="tasksEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+    </div>
+    <div class="empty-title">Нет доступных заданий</div>
+    <div class="empty-desc">Все задания выполнены на сегодня!</div>
+  </div>
+</div>

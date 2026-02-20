@@ -31,7 +31,9 @@ const TEMPLATES = {
   scrProductCreate: '/templates/product-create.html',
   scrForum: '/templates/forum.html',
   scrForumTopic: '/templates/forum-topic.html',
-  scrForumCreate: '/templates/forum-create.html'
+  scrForumCreate: '/templates/forum-create.html',
+  scrTasks: '/templates/tasks.html',
+  scrTaskDetail: '/templates/task-detail.html'
 };
 const loadedTemplates = {};
 
@@ -115,6 +117,12 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrForumCreate') {
     if (window.initForumCreate) window.initForumCreate();
+  }
+  if (id === 'scrTasks') {
+    if (window.initTasks) window.initTasks();
+  }
+  if (id === 'scrTaskDetail') {
+    if (window.initTaskDetail) window.initTaskDetail();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');

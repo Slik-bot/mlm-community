@@ -1,0 +1,381 @@
+/* ===== TASKS STYLES ===== */
+
+/* --- XP Badge in header --- */
+.tasks-xp-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(139,92,246,0.2);
+  color: #a78bfa;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Tabs --- */
+.tasks-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tasks-tabs::-webkit-scrollbar {
+  display: none;
+}
+.task-tab {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.task-tab.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+/* --- DNA Filter --- */
+.tasks-dna-filter {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tasks-dna-filter::-webkit-scrollbar {
+  display: none;
+}
+.dna-filter-btn {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 200ms;
+}
+.dna-filter-btn.active {
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+}
+.dna-filter-btn.strategist.active {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+.dna-filter-btn.communicator.active {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+.dna-filter-btn.creator.active {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+.dna-filter-btn.analyst.active {
+  border-color: #a78bfa;
+  color: #a78bfa;
+}
+
+/* --- Daily Progress --- */
+.tasks-daily-progress {
+  margin: 0 16px 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.daily-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
+}
+.daily-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.daily-fill {
+  height: 100%;
+  background: #8b5cf6;
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.daily-count {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 6px;
+  text-align: right;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Task Cards --- */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+.task-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 200ms;
+}
+.task-card:active {
+  background: rgba(255,255,255,0.06);
+}
+.task-card--done {
+  opacity: 0.5;
+}
+.task-type-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.task-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.task-card-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.task-rewards {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.task-xp-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(139,92,246,0.2);
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+}
+.task-money-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(34,197,94,0.2);
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+}
+.task-done-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Empty state --- */
+.tasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.tasks-empty .empty-icon {
+  color: rgba(255,255,255,0.15);
+  margin-bottom: 16px;
+}
+.tasks-empty .empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.tasks-empty .empty-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* --- Task Detail --- */
+.td-hero {
+  text-align: center;
+  padding: 32px 16px 16px;
+}
+.td-type-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.td-type-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Outfit', sans-serif;
+}
+.td-info {
+  padding: 0 16px 16px;
+}
+.td-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.td-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.8);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.td-reward {
+  margin: 0 16px 16px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.td-reward-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Outfit', sans-serif;
+}
+.td-reward-row svg {
+  opacity: 0.5;
+}
+.td-xp {
+  margin-left: auto;
+  font-weight: 700;
+  color: #a78bfa;
+}
+.td-money {
+  margin-left: auto;
+  font-weight: 700;
+  color: #22c55e;
+}
+.td-requirements {
+  padding: 0 16px;
+}
+.td-req-item {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  padding: 8px 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Screenshot --- */
+.td-screenshot {
+  padding: 0 16px 16px;
+}
+.td-screenshot-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
+}
+.screenshot-upload {
+  aspect-ratio: 16/9;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px dashed rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 200ms;
+}
+.screenshot-upload:active {
+  background: rgba(255,255,255,0.06);
+}
+#tdScreenshotPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  font-family: 'Outfit', sans-serif;
+}
+#tdScreenshotPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* --- Status --- */
+.td-status {
+  margin: 0 16px;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+}
+.td-status--done {
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.2);
+}
+
+/* --- Action --- */
+.td-action-wrap {
+  padding: 16px;
+}
+.td-action-btn {
+  width: 100%;
+}
+.td-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

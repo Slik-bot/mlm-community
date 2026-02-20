@@ -1,0 +1,59 @@
+<!-- =============== SCREEN: TASK DETAIL =============== -->
+<div class="scr hidden" id="scrTaskDetail">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Задание</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Type hero -->
+  <div class="td-hero">
+    <div class="td-type-icon" id="tdTypeIcon"></div>
+    <div class="td-type-label" id="tdTypeLabel"></div>
+  </div>
+
+  <!-- Title & description -->
+  <div class="td-info">
+    <div class="td-title" id="tdTitle"></div>
+    <div class="td-desc" id="tdDesc"></div>
+  </div>
+
+  <!-- Reward -->
+  <div class="td-reward glass-card">
+    <div class="td-reward-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span>XP награда</span>
+      <span class="td-xp" id="tdXp"></span>
+    </div>
+    <div class="td-reward-row hidden" id="tdMoneyRow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <span>Денежная награда</span>
+      <span class="td-money" id="tdMoney"></span>
+    </div>
+  </div>
+
+  <!-- Requirements -->
+  <div class="td-requirements" id="tdRequirements"></div>
+
+  <!-- Screenshot upload -->
+  <div class="td-screenshot hidden" id="tdScreenshotWrap">
+    <div class="td-screenshot-label">Прикрепите скриншот выполнения</div>
+    <div class="screenshot-upload" onclick="taskPickScreenshot()" id="tdScreenshotArea">
+      <img id="tdScreenshotPreview" class="hidden" alt="">
+      <div id="tdScreenshotPlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Загрузить скриншот</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="td-status hidden" id="tdStatus"></div>
+
+  <!-- Action -->
+  <div class="td-action-wrap">
+    <button class="btn-primary td-action-btn" id="tdActionBtn" onclick="taskComplete()">Выполнить задание</button>
+  </div>
+</div>
