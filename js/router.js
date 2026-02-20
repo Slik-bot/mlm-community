@@ -16,7 +16,10 @@ const TEMPLATES = {
   scrSetup2: '/templates/setup2.html',
   scrSetup3: '/templates/setup3.html',
   scrDnaTest: '/templates/dna-test.html',
-  scrFeed: '/templates/feed.html'
+  scrFeed: '/templates/feed.html',
+  scrProfile: '/templates/profile.html',
+  scrProfileEdit: '/templates/profile-edit.html',
+  scrProfileSettings: '/templates/profile-settings.html'
 };
 const loadedTemplates = {};
 
@@ -56,13 +59,22 @@ async function ensureTemplate(id) {
   if (id === 'scrFeed') {
     if (window.initFeed) window.initFeed();
   }
+  if (id === 'scrProfile') {
+    if (window.initProfile) window.initProfile();
+  }
+  if (id === 'scrProfileEdit') {
+    if (window.initProfileEdit) window.initProfileEdit();
+  }
+  if (id === 'scrProfileSettings') {
+    if (window.initProfileSettings) window.initProfileSettings();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
   }
 }
 
 function updateChrome(id){
-  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate';
+  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
