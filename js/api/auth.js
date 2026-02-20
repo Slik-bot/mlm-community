@@ -69,28 +69,45 @@ async function authLogout() {
 // ═══ authCheckSession ═══
 
 async function authCheckSession() {
-  var result = await window.sb.auth.getSession();
-  var session = result.data && result.data.session;
-  if (!session) return null;
+  try {
+    var result = await window.sb.auth.getSession();
+    var session = result.data && result.data.session;
+    if (!session) return null;
 
-  var resp = await window.sb.from('users')
-    .select('*')
-    .eq('supabase_auth_id', session.user.id)
-    .single();
+    var resp = await window.sb.from('users')
+      .select('*')
+      .eq('supabase_auth_id', session.user.id)
+      .single();
 
-  if (resp.error || !resp.data) return null;
+    if (resp.error || !resp.data) return null;
 
-  var profile = resp.data;
-  window.setState('currentUser', profile);
-  window.setState('session', session);
-  window.AppEvents.emit('user:login', profile);
+    var user = resp.data;
 
-  window.sb.from('users')
-    .update({ last_active_at: new Date().toISOString() })
-    .eq('id', profile.id)
-    .then(function () {});
+    if (window.setState) {
+      window.setState('currentUser', user);
+      window.setState('session', session);
+    }
+    window.currentUser = user;
 
-  return profile;
+    if (window.AppEvents) window.AppEvents.emit('user:login', user);
+
+    window.sb.from('users')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('id', user.id)
+      .then(function () {});
+
+    if (!user.dna_type) {
+      goTo('scrDnaTest');
+    } else if (!user.level) {
+      goTo('scrSetup1');
+    } else {
+      goTo('scrFeed');
+    }
+
+    return user;
+  } catch (err) {
+    return null;
+  }
 }
 
 // ═══ Экспорт ═══

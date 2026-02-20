@@ -239,32 +239,25 @@
     if (window.detectPlatform) detectPlatform();
 
     // ===== АВТОЛОГИН при загрузке =====
-    authCheckSession().then(async function(profile) {
-      clearTimeout(_fallbackTimer);
-      if (profile) {
-        var dnaMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+    var profile = await authCheckSession();
+    clearTimeout(_fallbackTimer);
 
-        if (profile.dna_type && profile.level) {
-          localStorage.setItem('onboardingDone', 'true');
-          if (profile.name) localStorage.setItem('userName', profile.name);
-          if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
-
-          await switchScreenInstant('scrFeed');
-          showApp();
-          initFeedFromDB();
-        } else if (profile.dna_type && !profile.level) {
-          await switchScreenInstant('scrSetup1');
-          showApp();
-        } else {
-          await switchScreenInstant('scrDnaTest');
-          showApp();
-        }
-      } else {
-        await switchScreenInstant('scrLanding');
-        if (window.initLandingModals) window.initLandingModals();
-        showApp();
+    if (profile) {
+      var dnaMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+      if (profile.dna_type && profile.level) {
+        localStorage.setItem('onboardingDone', 'true');
+        if (profile.name) localStorage.setItem('userName', profile.name);
+        if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
       }
-    });
+      showApp();
+      if (profile.dna_type && profile.level && window.initFeedFromDB) {
+        initFeedFromDB();
+      }
+    } else {
+      await switchScreenInstant('scrLanding');
+      if (window.initLandingModals) window.initLandingModals();
+      showApp();
+    }
 
     // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
 

@@ -1,9 +1,7 @@
 // ===== SUPABASE INTEGRATION FOR MLM COMMUNITY =====
 // Подключается к существующему app.js, заменяя localStorage на реальную базу
 
-const SB_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co';
-const SB_KEY = 'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4';
-const sb = supabase.createClient(SB_URL, SB_KEY);
+var sb = window.sb;
 
 // Текущий пользователь
 let currentAuthUser = null;

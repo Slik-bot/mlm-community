@@ -1,10 +1,18 @@
 // ═══ Supabase Client — единственное подключение к БД ═══
 
-if (!window.sb) {
-  window.sb = supabase.createClient(
+if (!window._sbClient) {
+  window._sbClient = supabase.createClient(
     'https://tydavmiamwdrfjbcgwny.supabase.co',
-    'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4'
+    'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4',
+    {
+      auth: {
+        persistSession: true,
+        storageKey: 'mlm-auth',
+        storage: window.localStorage
+      }
+    }
   );
+  window.sb = window._sbClient;
 }
 
 function getCurrentUser() {
