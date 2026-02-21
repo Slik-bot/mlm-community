@@ -6,12 +6,14 @@ var EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
 
 function detectPlatform() {
   var platform = 'web';
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+  if (window.Telegram && window.Telegram.WebApp &&
+     (window.Telegram.WebApp.initData || window.Telegram.WebApp.platform)) {
     platform = 'telegram_mini_app';
   } else if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
     platform = 'native_app';
   }
   window.setState('platform', platform);
+  document.body.classList.add('platform-' + platform.replace(/_/g, '-'));
   return platform;
 }
 
@@ -27,6 +29,10 @@ async function authRegister(email, password, name) {
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка регистрации');
   }
+  await window.sb.auth.setSession({
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token
+  });
   window.setState('currentUser', data.user);
   window.setState('session', data.session);
   window.AppEvents.emit('user:login', data.user);
@@ -45,6 +51,10 @@ async function authLogin(email, password) {
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка входа');
   }
+  await window.sb.auth.setSession({
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token
+  });
   window.setState('currentUser', data.user);
   window.setState('session', data.session);
   window.AppEvents.emit('user:login', data.user);
@@ -77,11 +87,24 @@ async function authCheckSession() {
     var resp = await window.sb.from('users')
       .select('*')
       .eq('supabase_auth_id', session.user.id)
-      .single();
+      .maybeSingle();
 
-    if (resp.error || !resp.data) return null;
-
-    var user = resp.data;
+    if (!resp.data) {
+      // Сессия есть, но профиля нет — создаём базовый профиль
+      var newUser = {
+        id: session.user.id,
+        supabase_auth_id: session.user.id,
+        email: session.user.email,
+        name: session.user.email.split('@')[0],
+        auth_provider: 'email',
+        referral_code: Math.random().toString(36).substring(2, 8).toUpperCase()
+      };
+      var insert = await window.sb.from('users').insert(newUser).select().maybeSingle();
+      if (!insert.data) return null;
+      var user = insert.data;
+    } else {
+      var user = resp.data;
+    }
 
     if (window.setState) {
       window.setState('currentUser', user);
@@ -95,14 +118,6 @@ async function authCheckSession() {
       .update({ last_active_at: new Date().toISOString() })
       .eq('id', user.id)
       .then(function () {});
-
-    if (!user.dna_type) {
-      goTo('scrDnaTest');
-    } else if (!user.level) {
-      goTo('scrSetup1');
-    } else {
-      goTo('scrFeed');
-    }
 
     return user;
   } catch (err) {
