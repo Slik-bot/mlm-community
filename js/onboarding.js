@@ -167,6 +167,9 @@ function setupGoDone(){
 
 function setupShowDone(){
   localStorage.setItem('onboardingDone','true');
+  if (window.saveOnboardingStep) {
+    window.saveOnboardingStep('complete').catch(console.error);
+  }
   var cl=getDnaColor();
   var tp=localStorage.getItem('dnaType')||'S';
   var names={S:'Стратег',C:'Коммуникатор',K:'Креатор',A:'Аналитик'};

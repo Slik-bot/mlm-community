@@ -180,6 +180,9 @@ async function startDnaReveal(){
   for(var t in dnaScores) if(dnaScores[t]>ms){ms=dnaScores[t];mx=t}
   localStorage.setItem('dnaType',mx);
   localStorage.setItem('dnaScores',JSON.stringify(dnaScores));
+  if (window.saveDnaResult) {
+    window.saveDnaResult(mx, dnaScores).catch(console.error);
+  }
   var tp=dnaTypes[mx],cl=tp.color;
 
   await goTo('scrDnaResult');
