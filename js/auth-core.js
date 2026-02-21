@@ -248,10 +248,12 @@
         localStorage.setItem('onboardingDone', 'true');
         if (profile.name) localStorage.setItem('userName', profile.name);
         if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
-      }
-      showApp();
-      if (profile.dna_type && profile.level && window.initFeedFromDB) {
-        initFeedFromDB();
+        await switchScreenInstant('scrFeed');
+        showApp();
+        if (window.initFeedFromDB) initFeedFromDB();
+      } else {
+        await switchScreenInstant('scrWelcome');
+        showApp();
       }
     } else {
       await switchScreenInstant('scrLanding');
