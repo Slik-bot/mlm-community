@@ -138,6 +138,7 @@
           var user = data.user || {};
           if (!user.dna_type) {
             goTo('scrDnaTest');
+            if (window.dnaReset) window.dnaReset();
           } else if (!user.level) {
             goTo('scrSetup1');
           } else {
@@ -196,6 +197,7 @@
           var user = data.user || {};
           if (!user.dna_type) {
             goTo('scrDnaTest');
+            if (window.dnaReset) window.dnaReset();
           } else if (!user.level) {
             goTo('scrSetup1');
           } else {

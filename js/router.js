@@ -69,6 +69,9 @@ async function ensureTemplate(id) {
       if (window.initLandingModals) window.initLandingModals();
       if (window.initLanding) window.initLanding();
     }
+    if (id === 'scrDnaTest') {
+      if (window.dnaReset) window.dnaReset();
+    }
     return;
   }
   var html = await loadTemplate(id);
