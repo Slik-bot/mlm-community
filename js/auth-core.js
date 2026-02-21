@@ -232,31 +232,32 @@
     if (window.detectPlatform) detectPlatform();
 
     // ===== АВТОЛОГИН при загрузке =====
-    var profile = await authCheckSession();
-    clearTimeout(_fallbackTimer);
+    authCheckSession().then(async function(profile) {
+      clearTimeout(_fallbackTimer);
 
-    if (profile) {
-      var dnaMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
-      if (profile.name) localStorage.setItem('userName', profile.name);
-      if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
-
-      if (profile.dna_type && profile.level) {
+      if (profile && profile.dna_type && profile.level) {
         localStorage.setItem('onboardingDone', 'true');
+        localStorage.setItem('userName', profile.name || '');
         await switchScreenInstant('scrFeed');
         showApp();
         if (window.initFeedFromDB) initFeedFromDB();
-      } else if (profile.dna_type && !profile.level) {
+
+      } else if (profile && profile.dna_type && !profile.level) {
+        localStorage.setItem('userName', profile.name || '');
         await switchScreenInstant('scrSetup1');
         showApp();
-      } else {
+
+      } else if (profile && !profile.dna_type) {
+        localStorage.setItem('userName', profile.name || '');
         await switchScreenInstant('scrWelcome');
         showApp();
+
+      } else {
+        await switchScreenInstant('scrLanding');
+        if (window.initLandingModals) window.initLandingModals();
+        showApp();
       }
-    } else {
-      await switchScreenInstant('scrLanding');
-      if (window.initLandingModals) window.initLandingModals();
-      showApp();
-    }
+    });
 
     // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
 

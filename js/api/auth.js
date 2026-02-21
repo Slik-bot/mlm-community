@@ -80,31 +80,17 @@ async function authLogout() {
 
 async function authCheckSession() {
   try {
-    var result = await window.sb.auth.getSession();
-    var session = result.data && result.data.session;
+    const result = await window.sb.auth.getSession();
+    const session = result.data && result.data.session;
     if (!session) return null;
 
-    var resp = await window.sb.from('users')
+    const { data: user, error } = await window.sb
+      .from('users')
       .select('*')
       .eq('supabase_auth_id', session.user.id)
       .maybeSingle();
 
-    if (!resp.data) {
-      // Сессия есть, но профиля нет — создаём базовый профиль
-      var newUser = {
-        id: session.user.id,
-        supabase_auth_id: session.user.id,
-        email: session.user.email,
-        name: session.user.email.split('@')[0],
-        auth_provider: 'email',
-        referral_code: Math.random().toString(36).substring(2, 8).toUpperCase()
-      };
-      var insert = await window.sb.from('users').insert(newUser).select().maybeSingle();
-      if (!insert.data) return null;
-      var user = insert.data;
-    } else {
-      var user = resp.data;
-    }
+    if (error || !user) return null;
 
     if (window.setState) {
       window.setState('currentUser', user);
@@ -112,12 +98,10 @@ async function authCheckSession() {
     }
     window.currentUser = user;
 
-    if (window.AppEvents) window.AppEvents.emit('user:login', user);
-
     window.sb.from('users')
       .update({ last_active_at: new Date().toISOString() })
       .eq('id', user.id)
-      .then(function () {});
+      .then(function() {});
 
     return user;
   } catch (err) {
