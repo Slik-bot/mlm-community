@@ -133,6 +133,7 @@
           if (name) localStorage.setItem('userName', name);
           freshRegistration();
           closeLndModals();
+          showApp();
 
           var user = data.user || {};
           if (!user.dna_type) {
@@ -244,13 +245,17 @@
 
     if (profile) {
       var dnaMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+      if (profile.name) localStorage.setItem('userName', profile.name);
+      if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
+
       if (profile.dna_type && profile.level) {
         localStorage.setItem('onboardingDone', 'true');
-        if (profile.name) localStorage.setItem('userName', profile.name);
-        if (profile.dna_type) localStorage.setItem('dnaType', dnaMap[profile.dna_type] || 'S');
         await switchScreenInstant('scrFeed');
         showApp();
         if (window.initFeedFromDB) initFeedFromDB();
+      } else if (profile.dna_type && !profile.level) {
+        await switchScreenInstant('scrSetup1');
+        showApp();
       } else {
         await switchScreenInstant('scrWelcome');
         showApp();
