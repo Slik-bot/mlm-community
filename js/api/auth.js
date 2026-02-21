@@ -90,7 +90,19 @@ async function authCheckSession() {
       .eq('supabase_auth_id', session.user.id)
       .maybeSingle();
 
-    if (error || !user) return null;
+    if (error) return null;
+
+    // Профиль не найден — возвращаем базовый объект из сессии
+    // чтобы не выкидывать на лендинг если таблица недоступна
+    if (!user) {
+      return {
+        id: session.user.id,
+        supabase_auth_id: session.user.id,
+        email: session.user.email,
+        dna_type: null,
+        level: null
+      };
+    }
 
     if (window.setState) {
       window.setState('currentUser', user);

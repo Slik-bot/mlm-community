@@ -17,7 +17,7 @@
     if (ph) ph.remove();
   }
 
-  // Страховка: 3 секунды максимум
+  // Страховка: 8 секунд максимум
   var _fallbackTimer = setTimeout(async function() {
     var ph = document.getElementById('preload-hide');
     if (ph) {
@@ -25,7 +25,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 3000);
+  }, 8000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {
@@ -234,6 +234,8 @@
     // ===== АВТОЛОГИН при загрузке =====
     authCheckSession().then(async function(profile) {
       clearTimeout(_fallbackTimer);
+      if (window._authRoutingDone) return;
+      window._authRoutingDone = true;
 
       if (profile && profile.dna_type && profile.level) {
         localStorage.setItem('onboardingDone', 'true');
