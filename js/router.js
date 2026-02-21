@@ -67,7 +67,17 @@ async function ensureTemplate(id) {
   if (document.getElementById(id)) {
     if (id === 'scrLanding') {
       if (window.initLandingModals) window.initLandingModals();
-      if (window.initLanding) window.initLanding();
+    }
+    if (id === 'scrWelcome') {
+      const els = document.querySelectorAll(
+        '#scrWelcome .w-logo-container, #scrWelcome .w-tagline, ' +
+        '#scrWelcome .w-stat, #scrWelcome .w-stat-sep, ' +
+        '#scrWelcome .w-cta-wrap'
+      );
+      els.forEach(function(el) {
+        el.style.setProperty('animation', 'none', 'important');
+        el.style.setProperty('opacity', '1', 'important');
+      });
     }
     if (id === 'scrDnaTest') {
       if (window.dnaReset) window.dnaReset();
