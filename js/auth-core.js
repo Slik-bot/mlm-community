@@ -129,22 +129,12 @@
         reg.submit.disabled = true;
 
         try {
-          var data = await authRegister(email, password, name);
+          await authRegister(email, password, name);
           if (name) localStorage.setItem('userName', name);
           freshRegistration();
           closeLndModals();
           showApp();
-
-          var user = data.user || {};
-          if (!user.dna_type) {
-            goTo('scrDnaTest');
-            if (window.dnaReset) window.dnaReset();
-          } else if (!user.level) {
-            goTo('scrSetup1');
-          } else {
-            localStorage.setItem('onboardingDone', 'true');
-            goTo('scrFeed');
-          }
+          await goTo('scrWelcome');
         } catch (err) {
           var msg = err.message || 'Ошибка регистрации';
           if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
@@ -196,7 +186,7 @@
 
           var user = data.user || {};
           if (!user.dna_type) {
-            goTo('scrDnaTest');
+            await goTo('scrDnaTest');
             if (window.dnaReset) window.dnaReset();
           } else if (!user.level) {
             goTo('scrSetup1');
