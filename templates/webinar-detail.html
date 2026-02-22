@@ -1,0 +1,74 @@
+<!-- =============== SCREEN: WEBINAR DETAIL =============== -->
+<div class="scr hidden" id="scrWebinarDetail">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Вебинар</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="wd-hero glass-card">
+    <div class="wd-status-badge" id="wdStatusBadge"></div>
+    <div class="wd-title" id="wdTitle"></div>
+    <div class="wd-desc" id="wdDesc"></div>
+
+    <!-- Timer -->
+    <div class="wd-timer" id="wdTimer">
+      <div class="timer-block">
+        <span class="timer-val" id="wdTimerDays">00</span>
+        <span class="timer-label">дней</span>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-block">
+        <span class="timer-val" id="wdTimerHours">00</span>
+        <span class="timer-label">часов</span>
+      </div>
+      <div class="timer-sep">:</div>
+      <div class="timer-block">
+        <span class="timer-val" id="wdTimerMins">00</span>
+        <span class="timer-label">минут</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Host -->
+  <div class="wd-host glass-card">
+    <div class="wd-host-label">Спикер</div>
+    <div class="wd-host-info">
+      <img class="wd-host-avatar" id="wdHostAvatar" alt="">
+      <div class="wd-host-meta">
+        <span class="wd-host-name" id="wdHostName"></span>
+        <span class="wd-host-level" id="wdHostLevel"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="wd-info glass-card">
+    <div class="wd-info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span id="wdDate"></span>
+    </div>
+    <div class="wd-info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span id="wdTime"></span>
+    </div>
+    <div class="wd-info-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span id="wdParticipants"></span>
+    </div>
+  </div>
+
+  <!-- Participants -->
+  <div class="wd-participants">
+    <div class="wd-part-title">Участники</div>
+    <div class="wd-part-list" id="wdPartList"></div>
+  </div>
+
+  <!-- Action -->
+  <div class="wd-action-wrap" id="wdActionWrap">
+    <button class="btn-primary" id="wdActionBtn" onclick="webinarAction()">Записаться</button>
+  </div>
+</div>

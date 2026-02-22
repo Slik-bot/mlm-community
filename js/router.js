@@ -43,7 +43,10 @@ const TEMPLATES = {
   scrMatchList: '/templates/match-list.html',
   scrAcademy: '/templates/academy.html',
   scrCourse: '/templates/course.html',
-  scrLesson: '/templates/lesson.html'
+  scrLesson: '/templates/lesson.html',
+  scrWebinars: '/templates/webinars.html',
+  scrWebinarDetail: '/templates/webinar-detail.html',
+  scrAlliances: '/templates/alliances.html'
 };
 const loadedTemplates = {};
 
@@ -184,6 +187,15 @@ async function ensureTemplate(id) {
   if (id === 'scrLesson') {
     if (window.initLesson) window.initLesson();
   }
+  if (id === 'scrWebinars') {
+    if (window.initWebinars) window.initWebinars();
+  }
+  if (id === 'scrWebinarDetail') {
+    if (window.initWebinarDetail) window.initWebinarDetail();
+  }
+  if (id === 'scrAlliances') {
+    if (window.initAlliances) window.initAlliances();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
     resetWelcomeAnimations();
@@ -201,6 +213,7 @@ async function goTo(id) {
   if (window.haptic) haptic('light');
   if (window.chatUnsubscribe) chatUnsubscribe();
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
+  if (window.webinarsCleanup && id !== 'scrWebinarDetail') webinarsCleanup();
   await ensureTemplate(id);
 
   const onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
