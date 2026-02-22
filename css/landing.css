@@ -177,6 +177,7 @@
 .lnd-reg-btn{width:100%;height:52px;border-radius:14px;border:none;font-family:'Nunito',sans-serif;font-size:var(--fs-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:transform .12s;position:relative;}
 .lnd-reg-btn:active{transform:scale(.97);}
 .lnd-btn-tg{background:linear-gradient(135deg,#0088cc,#0077b5);color:#fff;}
+.lnd-btn-tg.loading{pointer-events:none;opacity:.7;}
 .lnd-rec{position:absolute;top:-8px;right:14px;background:var(--primary);color:#fff;font-size:var(--fs-micro);font-weight:700;padding:2px 8px;border-radius:6px;}
 .lnd-btn-gl{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--text);}
 .lnd-sep{display:flex;align-items:center;gap:12px;margin:16px 0;}

@@ -233,9 +233,12 @@
         e.preventDefault();
         e.stopPropagation();
 
-        const text = btn.textContent.trim();
-        if (text.includes('Telegram')) {
+        const originalText = btn.textContent.trim();
+        if (originalText.includes('Telegram')) {
+          if (window.haptic) haptic('medium');
           btn.disabled = true;
+          btn.classList.add('loading');
+          btn.textContent = 'Подключение...';
           try {
             const result = await authTelegram();
             sessionStorage.removeItem('manually_logged_out');
@@ -255,8 +258,16 @@
             }
           } catch (err) {
             if (window.haptic) haptic('error');
-            showToast(err.message || 'Ошибка входа через Telegram');
+            btn.textContent = err.message || 'Ошибка входа';
+            btn.classList.remove('loading');
+            setTimeout(function() {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }, 3000);
+            return;
           }
+          btn.classList.remove('loading');
+          btn.textContent = originalText;
           btn.disabled = false;
         } else {
           showToast('Скоро будет доступен');
