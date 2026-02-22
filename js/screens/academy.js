@@ -1,20 +1,20 @@
 // ===== ACADEMY SCREEN =====
 
-var currentCourse = null;
-var currentLesson = null;
-var currentLessons = [];
-var currentLessonIndex = 0;
-var academyTab = 'all';
-var academyCategory = 'all';
-var allCourses = [];
+let currentCourse = null;
+let currentLesson = null;
+let currentLessons = [];
+let currentLessonIndex = 0;
+let academyTab = 'all';
+let academyCategory = 'all';
+let allCourses = [];
 
-var LESSON_TYPES = {
+const LESSON_TYPES = {
   video: { label: 'Видео', color: '#ef4444' },
   text: { label: 'Текст', color: '#3b82f6' },
   quiz: { label: 'Тест', color: '#f59e0b' }
 };
 
-var CAT_LABELS = {
+const CAT_LABELS = {
   mlm: 'MLM',
   marketing: 'Маркетинг',
   sales: 'Продажи',
@@ -33,14 +33,14 @@ function initAcademy() {
 // ===== LOAD COURSES =====
 
 function loadCourses() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (!sb) {
     allCourses = [];
     renderAcademyGrid([]);
     return;
   }
 
-  var userId = window.currentUser ? window.currentUser.id : null;
+  const userId = window.currentUser ? window.currentUser.id : null;
 
   sb.from('academy_courses')
     .select('*, progress:user_progress(completed_at, progress_pct, user_id)')
@@ -55,8 +55,8 @@ function loadCourses() {
 // ===== FILTERS =====
 
 function applyAcademyFilters() {
-  var userId = window.currentUser ? window.currentUser.id : null;
-  var filtered = allCourses;
+  const userId = window.currentUser ? window.currentUser.id : null;
+  let filtered = allCourses;
 
   if (academyCategory !== 'all') {
     filtered = filtered.filter(function(c) {
@@ -83,7 +83,7 @@ function applyAcademyFilters() {
 
 function switchAcademyTab(tab) {
   academyTab = tab;
-  var tabs = document.querySelectorAll('.academy-tab');
+  const tabs = document.querySelectorAll('.academy-tab');
   tabs.forEach(function(t) {
     t.classList.toggle('active', t.getAttribute('data-tab') === tab);
   });
@@ -92,7 +92,7 @@ function switchAcademyTab(tab) {
 
 function academyFilterCat(cat) {
   academyCategory = cat;
-  var cats = document.querySelectorAll('.academy-cat');
+  const cats = document.querySelectorAll('.academy-cat');
   cats.forEach(function(c) {
     c.classList.toggle('active', c.getAttribute('data-cat') === cat);
   });
@@ -102,8 +102,8 @@ function academyFilterCat(cat) {
 // ===== RENDER GRID =====
 
 function renderAcademyGrid(courses) {
-  var grid = document.getElementById('academyGrid');
-  var empty = document.getElementById('academyEmpty');
+  const grid = document.getElementById('academyGrid');
+  const empty = document.getElementById('academyEmpty');
   if (!grid) return;
 
   if (courses.length === 0) {
@@ -113,16 +113,16 @@ function renderAcademyGrid(courses) {
   }
 
   if (empty) empty.classList.add('hidden');
-  var userId = window.currentUser ? window.currentUser.id : null;
+  const userId = window.currentUser ? window.currentUser.id : null;
 
   grid.innerHTML = courses.map(function(c) {
-    var cover = c.cover_url || '';
-    var catLabel = CAT_LABELS[c.category] || c.category || '';
-    var progressPct = 0;
-    var hasProgress = false;
+    const cover = c.cover_url || '';
+    const catLabel = CAT_LABELS[c.category] || c.category || '';
+    let progressPct = 0;
+    let hasProgress = false;
 
     if (userId && c.progress) {
-      var up = c.progress.find(function(p) { return p.user_id === userId; });
+      const up = c.progress.find(function(p) { return p.user_id === userId; });
       if (up) {
         progressPct = up.progress_pct || 0;
         hasProgress = true;
@@ -159,14 +159,14 @@ function openCourse(courseId) {
 function initCourse() {
   if (!currentCourse) { goBack(); return; }
 
-  var title = document.getElementById('courseTitle');
-  var name = document.getElementById('courseName');
-  var cover = document.getElementById('courseCover');
-  var desc = document.getElementById('courseDesc');
-  var lessonsCount = document.getElementById('courseLessonsCount');
-  var duration = document.getElementById('courseDuration');
-  var xp = document.getElementById('courseXp');
-  var levelBadge = document.getElementById('courseLevelBadge');
+  const title = document.getElementById('courseTitle');
+  const name = document.getElementById('courseName');
+  const cover = document.getElementById('courseCover');
+  const desc = document.getElementById('courseDesc');
+  const lessonsCount = document.getElementById('courseLessonsCount');
+  const duration = document.getElementById('courseDuration');
+  const xp = document.getElementById('courseXp');
+  const levelBadge = document.getElementById('courseLevelBadge');
 
   if (title) title.textContent = currentCourse.title || 'Курс';
   if (name) name.textContent = currentCourse.title || '';
@@ -181,7 +181,7 @@ function initCourse() {
 }
 
 function loadCourseLessons() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (!sb || !currentCourse) { currentLessons = []; renderCourseLessons(); return; }
 
   sb.from('academy_lessons')
@@ -195,7 +195,7 @@ function loadCourseLessons() {
 }
 
 function loadCourseProgress() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (!sb || !window.currentUser || !currentCourse) {
     renderCourseLessons();
     updateCourseProgress(0);
@@ -207,12 +207,12 @@ function loadCourseProgress() {
     .eq('user_id', window.currentUser.id)
     .eq('course_id', currentCourse.id)
     .then(function(res) {
-      var completed = res.data || [];
+      const completed = res.data || [];
       currentLessons.forEach(function(l) {
-        var found = completed.find(function(p) { return p.lesson_id === l.id; });
+        const found = completed.find(function(p) { return p.lesson_id === l.id; });
         l._completed = found ? true : false;
       });
-      var pct = currentLessons.length > 0
+      const pct = currentLessons.length > 0
         ? Math.round((completed.length / currentLessons.length) * 100) : 0;
       updateCourseProgress(pct);
       renderCourseLessons();
@@ -221,9 +221,9 @@ function loadCourseProgress() {
 }
 
 function updateCourseProgress(pct) {
-  var wrap = document.getElementById('courseProgressWrap');
-  var fill = document.getElementById('courseProgressFill');
-  var label = document.getElementById('courseProgressLabel');
+  const wrap = document.getElementById('courseProgressWrap');
+  const fill = document.getElementById('courseProgressFill');
+  const label = document.getElementById('courseProgressLabel');
   if (pct > 0) {
     if (wrap) wrap.classList.remove('hidden');
     if (fill) fill.style.width = pct + '%';
@@ -234,9 +234,9 @@ function updateCourseProgress(pct) {
 }
 
 function updateCourseStartBtn() {
-  var btn = document.getElementById('courseStartBtn');
+  const btn = document.getElementById('courseStartBtn');
   if (!btn) return;
-  var firstUndone = currentLessons.findIndex(function(l) { return !l._completed; });
+  const firstUndone = currentLessons.findIndex(function(l) { return !l._completed; });
   if (firstUndone === -1 && currentLessons.length > 0) {
     btn.textContent = 'Курс пройден';
     btn.disabled = true;
@@ -252,13 +252,13 @@ function updateCourseStartBtn() {
 // ===== RENDER LESSONS =====
 
 function renderCourseLessons() {
-  var list = document.getElementById('courseLessons');
+  const list = document.getElementById('courseLessons');
   if (!list) return;
 
   list.innerHTML = currentLessons.map(function(l, i) {
-    var type = LESSON_TYPES[l.type] || LESSON_TYPES.text;
-    var done = l._completed;
-    var statusSvg = done
+    const type = LESSON_TYPES[l.type] || LESSON_TYPES.text;
+    const done = l._completed;
+    const statusSvg = done
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" width="18" height="18"><path d="M20 6L9 17l-5-5"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" opacity="0.3"><circle cx="12" cy="12" r="10"/></svg>';
 
@@ -280,9 +280,9 @@ function renderCourseLessons() {
 // ===== COURSE START =====
 
 function courseStart() {
-  var idx = currentLessons.findIndex(function(l) { return !l._completed; });
-  if (idx === -1) idx = 0;
-  openLesson(idx);
+  const idx = currentLessons.findIndex(function(l) { return !l._completed; });
+  const finalIdx = idx === -1 ? 0 : idx;
+  openLesson(finalIdx);
 }
 
 // ===== OPEN LESSON =====
@@ -299,19 +299,19 @@ function openLesson(index) {
 function initLesson() {
   if (!currentLesson) { goBack(); return; }
 
-  var title = document.getElementById('lessonTitle');
-  var typeBadge = document.getElementById('lessonTypeBadge');
-  var progress = document.getElementById('lessonProgress');
-  var videoWrap = document.getElementById('lessonVideoWrap');
-  var video = document.getElementById('lessonVideo');
-  var content = document.getElementById('lessonContent');
-  var prevBtn = document.getElementById('lessonPrevBtn');
-  var nextBtn = document.getElementById('lessonNextBtn');
+  const title = document.getElementById('lessonTitle');
+  const typeBadge = document.getElementById('lessonTypeBadge');
+  const progress = document.getElementById('lessonProgress');
+  const videoWrap = document.getElementById('lessonVideoWrap');
+  const video = document.getElementById('lessonVideo');
+  const content = document.getElementById('lessonContent');
+  const prevBtn = document.getElementById('lessonPrevBtn');
+  const nextBtn = document.getElementById('lessonNextBtn');
 
   if (title) title.textContent = currentLesson.title || 'Урок';
   if (progress) progress.textContent = 'Урок ' + (currentLessonIndex + 1) + ' из ' + currentLessons.length;
 
-  var type = LESSON_TYPES[currentLesson.type] || LESSON_TYPES.text;
+  const type = LESSON_TYPES[currentLesson.type] || LESSON_TYPES.text;
   if (typeBadge) {
     typeBadge.textContent = type.label;
     typeBadge.style.background = type.color + '20';
@@ -335,7 +335,7 @@ function initLesson() {
 // ===== LESSON NAVIGATION =====
 
 function lessonNext() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (sb && window.currentUser && currentLesson && currentCourse) {
     sb.from('user_progress').upsert({
       user_id: window.currentUser.id,
@@ -343,8 +343,8 @@ function lessonNext() {
       course_id: currentCourse.id,
       completed_at: new Date().toISOString()
     }, { onConflict: 'user_id,lesson_id' }).then(function() {
-      var completed = currentLessons.filter(function(l) { return l._completed; }).length + 1;
-      var pct = Math.round((completed / currentLessons.length) * 100);
+      const completed = currentLessons.filter(function(l) { return l._completed; }).length + 1;
+      const pct = Math.round((completed / currentLessons.length) * 100);
       sb.from('user_progress').upsert({
         user_id: window.currentUser.id,
         course_id: currentCourse.id,

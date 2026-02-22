@@ -1,20 +1,20 @@
 // ===== CHAT SCREENS — список, диалог, инфо =====
 
-var currentConversationId = null;
-var realtimeSubscription = null;
-var currentChatTab = 'personal';
-var allConversations = [];
-var chatDebounceTimer = null;
+let currentConversationId = null;
+let realtimeSubscription = null;
+let currentChatTab = 'personal';
+let allConversations = [];
+let chatDebounceTimer = null;
 
 // ===== initChatList =====
 
 function initChatList() {
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
   loadConversations();
 
-  var searchInp = document.getElementById('chatSearch');
+  const searchInp = document.getElementById('chatSearch');
   if (searchInp) {
     searchInp.value = '';
     searchInp.addEventListener('input', function() {
@@ -29,15 +29,15 @@ function initChatList() {
 // ===== loadConversations =====
 
 async function loadConversations() {
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) return;
 
-  var skeleton = document.getElementById('chatSkeleton');
-  var emptyEl = document.getElementById('chatEmpty');
+  const skeleton = document.getElementById('chatSkeleton');
+  const emptyEl = document.getElementById('chatEmpty');
   if (skeleton) skeleton.classList.remove('hidden');
   if (emptyEl) emptyEl.classList.add('hidden');
 
-  var result = await window.sb.from('conversations')
+  const result = await window.sb.from('conversations')
     .select('*, conversation_members!inner(user_id, users(id, name, avatar_url, dna_type)), last_msg:messages(content, created_at, sender_id)')
     .eq('conversation_members.user_id', user.id)
     .eq('type', currentChatTab)
@@ -53,8 +53,8 @@ async function loadConversations() {
 // ===== renderChatList =====
 
 function renderChatList(conversations) {
-  var list = document.getElementById('chatList');
-  var emptyEl = document.getElementById('chatEmpty');
+  const list = document.getElementById('chatList');
+  const emptyEl = document.getElementById('chatEmpty');
   if (!list) return;
 
   list.querySelectorAll('.chat-item').forEach(function(el) { el.remove(); });
@@ -65,32 +65,32 @@ function renderChatList(conversations) {
   }
   if (emptyEl) emptyEl.classList.add('hidden');
 
-  var myId = getCurrentUser().id;
+  const myId = getCurrentUser().id;
   conversations.forEach(function(conv) {
-    var members = conv.conversation_members || [];
-    var other = null;
-    for (var i = 0; i < members.length; i++) {
+    const members = conv.conversation_members || [];
+    let other = null;
+    for (let i = 0; i < members.length; i++) {
       if (members[i].users && members[i].users.id !== myId) {
         other = members[i].users; break;
       }
     }
     if (!other) other = { name: 'Диалог', avatar_url: '', dna_type: '' };
 
-    var lastMsg = (conv.last_msg && conv.last_msg[0]) || {};
-    var timeStr = lastMsg.created_at ? formatChatTime(lastMsg.created_at) : '';
-    var preview = lastMsg.content || '';
+    const lastMsg = (conv.last_msg && conv.last_msg[0]) || {};
+    const timeStr = lastMsg.created_at ? formatChatTime(lastMsg.created_at) : '';
+    let preview = lastMsg.content || '';
     if (preview.length > 40) preview = preview.substring(0, 40) + '...';
 
-    var item = document.createElement('div');
+    const item = document.createElement('div');
     item.className = 'chat-item';
     item.setAttribute('data-conv-id', conv.id);
     item.onclick = function() { openChat(conv.id, other); };
 
-    var avaHtml = other.avatar_url
+    const avaHtml = other.avatar_url
       ? '<img class="chat-item-avatar" src="' + other.avatar_url + '" alt="">'
       : '<div class="chat-item-avatar chat-item-avatar-placeholder">' + (other.name || 'U').charAt(0).toUpperCase() + '</div>';
 
-    var unreadHtml = conv.unread_count > 0
+    const unreadHtml = conv.unread_count > 0
       ? '<div class="chat-unread">' + conv.unread_count + '</div>'
       : '';
 
@@ -112,10 +112,10 @@ function renderChatList(conversations) {
 
 function filterConversations(query) {
   if (!query) { renderChatList(allConversations); return; }
-  var myId = getCurrentUser().id;
-  var filtered = allConversations.filter(function(conv) {
-    var members = conv.conversation_members || [];
-    for (var i = 0; i < members.length; i++) {
+  const myId = getCurrentUser().id;
+  const filtered = allConversations.filter(function(conv) {
+    const members = conv.conversation_members || [];
+    for (let i = 0; i < members.length; i++) {
       if (members[i].users && members[i].users.id !== myId) {
         return (members[i].users.name || '').toLowerCase().indexOf(query) !== -1;
       }
@@ -136,7 +136,7 @@ function switchChatTab(tab, el) {
 
 // ===== openChat =====
 
-var currentChatPartner = null;
+let currentChatPartner = null;
 
 function openChat(conversationId, partner) {
   currentConversationId = conversationId;
@@ -150,8 +150,8 @@ function initChat() {
   if (!currentConversationId) { goBack(); return; }
 
   if (currentChatPartner) {
-    var headAvatar = document.getElementById('chatHeadAvatar');
-    var headName = document.getElementById('chatHeadName');
+    const headAvatar = document.getElementById('chatHeadAvatar');
+    const headName = document.getElementById('chatHeadName');
     if (headAvatar) {
       headAvatar.src = currentChatPartner.avatar_url || '';
       headAvatar.style.display = currentChatPartner.avatar_url ? '' : 'none';
@@ -159,10 +159,10 @@ function initChat() {
     if (headName) headName.textContent = currentChatPartner.name || 'Пользователь';
   }
 
-  var statusEl = document.getElementById('chatHeadStatus');
+  const statusEl = document.getElementById('chatHeadStatus');
   if (statusEl) statusEl.textContent = 'онлайн';
 
-  var input = document.getElementById('chatInput');
+  const input = document.getElementById('chatInput');
   if (input) { input.value = ''; input.style.height = 'auto'; }
 
   loadMessages(currentConversationId);
@@ -172,17 +172,17 @@ function initChat() {
 // ===== loadMessages =====
 
 async function loadMessages(convId) {
-  var container = document.getElementById('chatMessages');
+  const container = document.getElementById('chatMessages');
   if (!container) return;
   container.innerHTML = '';
 
-  var result = await window.sb.from('messages')
+  const result = await window.sb.from('messages')
     .select('*, sender:users(id, name, avatar_url, dna_type)')
     .eq('conversation_id', convId)
     .order('created_at', { ascending: true })
     .limit(50);
 
-  var messages = result.data || [];
+  const messages = result.data || [];
   renderMessages(messages);
 
   window.sb.from('messages')
@@ -196,12 +196,12 @@ async function loadMessages(convId) {
 // ===== renderMessages =====
 
 function renderMessages(messages) {
-  var container = document.getElementById('chatMessages');
+  const container = document.getElementById('chatMessages');
   if (!container) return;
 
-  var myId = getCurrentUser().id;
+  const myId = getCurrentUser().id;
   messages.forEach(function(msg) {
-    var bubble = createBubble(msg, myId);
+    const bubble = createBubble(msg, myId);
     container.appendChild(bubble);
   });
 
@@ -209,19 +209,19 @@ function renderMessages(messages) {
 }
 
 function createBubble(msg, myId) {
-  var isOwn = msg.sender_id === myId;
-  var div = document.createElement('div');
+  const isOwn = msg.sender_id === myId;
+  const div = document.createElement('div');
   div.className = 'chat-bubble ' + (isOwn ? 'own' : 'other');
   div.setAttribute('data-msg-id', msg.id);
 
-  var content = msg.content || '';
+  let content = msg.content || '';
   if (msg.type === 'file' && msg.file_url) {
     content = '<a class="chat-file-link" href="' + msg.file_url + '" target="_blank">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> ' +
       (msg.file_name || 'Файл') + '</a>';
   }
 
-  var time = msg.created_at ? formatMsgTime(msg.created_at) : '';
+  const time = msg.created_at ? formatMsgTime(msg.created_at) : '';
 
   div.innerHTML = '<div class="chat-bubble-content">' + content + '</div>' +
     '<div class="chat-bubble-time">' + time + '</div>';
@@ -249,14 +249,14 @@ function subscribeRealtime(convId) {
 // ===== appendMessage =====
 
 function appendMessage(message) {
-  var container = document.getElementById('chatMessages');
+  const container = document.getElementById('chatMessages');
   if (!container) return;
 
-  var existing = container.querySelector('[data-msg-id="' + message.id + '"]');
+  const existing = container.querySelector('[data-msg-id="' + message.id + '"]');
   if (existing) return;
 
-  var myId = getCurrentUser().id;
-  var bubble = createBubble(message, myId);
+  const myId = getCurrentUser().id;
+  const bubble = createBubble(message, myId);
   container.appendChild(bubble);
   container.scrollTop = container.scrollHeight;
 }
@@ -264,15 +264,15 @@ function appendMessage(message) {
 // ===== chatSend =====
 
 async function chatSend() {
-  var input = document.getElementById('chatInput');
+  const input = document.getElementById('chatInput');
   if (!input) return;
-  var text = input.value.trim();
+  const text = input.value.trim();
   if (!text || !currentConversationId) return;
 
   input.value = '';
   input.style.height = 'auto';
 
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) return;
 
   await window.sb.from('messages').insert({
@@ -287,7 +287,7 @@ async function chatSend() {
 
 function chatInputResize(el) {
   el.style.height = 'auto';
-  var maxH = 120;
+  const maxH = 120;
   el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
 }
 
@@ -303,20 +303,20 @@ function chatInputKeydown(event) {
 // ===== chatAttachFile =====
 
 function chatAttachFile() {
-  var input = document.createElement('input');
+  const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*,.pdf,.doc,.docx,.xls,.xlsx';
   input.onchange = async function() {
-    var file = input.files[0];
+    const file = input.files[0];
     if (!file || !currentConversationId) return;
-    var user = getCurrentUser();
+    const user = getCurrentUser();
     if (!user) return;
 
-    var path = 'chat-files/' + currentConversationId + '/' + Date.now() + '_' + file.name;
-    var uploadResult = await window.sb.storage.from('chat-files').upload(path, file);
+    const path = 'chat-files/' + currentConversationId + '/' + Date.now() + '_' + file.name;
+    const uploadResult = await window.sb.storage.from('chat-files').upload(path, file);
     if (uploadResult.error) return;
 
-    var urlData = window.sb.storage.from('chat-files').getPublicUrl(path);
+    const urlData = window.sb.storage.from('chat-files').getPublicUrl(path);
 
     await window.sb.from('messages').insert({
       conversation_id: currentConversationId,
@@ -335,16 +335,16 @@ function chatAttachFile() {
 function initChatInfo() {
   if (!currentChatPartner) { goBack(); return; }
 
-  var avatar = document.getElementById('chatInfoAvatar');
+  const avatar = document.getElementById('chatInfoAvatar');
   if (avatar) {
     avatar.src = currentChatPartner.avatar_url || '';
     avatar.style.display = currentChatPartner.avatar_url ? '' : 'none';
   }
 
-  var nameEl = document.getElementById('chatInfoName');
+  const nameEl = document.getElementById('chatInfoName');
   if (nameEl) nameEl.textContent = currentChatPartner.name || 'Пользователь';
 
-  var metaEl = document.getElementById('chatInfoMeta');
+  const metaEl = document.getElementById('chatInfoMeta');
   if (metaEl) metaEl.textContent = 'Последнее посещение недавно';
 }
 
@@ -380,9 +380,9 @@ function chatDelete() {
 }
 
 function formatChatTime(dateStr) {
-  var d = new Date(dateStr);
-  var now = new Date();
-  var diff = now - d;
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now - d;
   if (diff < 86400000 && d.getDate() === now.getDate()) {
     return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
   }
@@ -391,7 +391,7 @@ function formatChatTime(dateStr) {
 }
 
 function formatMsgTime(dateStr) {
-  var d = new Date(dateStr);
+  const d = new Date(dateStr);
   return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
 }
 

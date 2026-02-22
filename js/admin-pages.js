@@ -1,10 +1,11 @@
 // ===== ADMIN PAGES — Companies & Shop =====
 
 // ===== КОМПАНИИ =====
-var _compTab = 'companies';
+let _compTab = 'companies';
 function renderCompanies() {
-  var tabs = 'companies:Компании,responses:Заявки,experts:Эксперты', h = '<div class="tabs">';
-  tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _compTab ? ' active' : '') + '" onclick="switchCompTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  const tabs = 'companies:Компании,responses:Заявки,experts:Эксперты';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _compTab ? ' active' : '') + '" onclick="switchCompTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
   switchCompTab(_compTab, document.querySelector('.tab.active'));
@@ -17,17 +18,17 @@ function switchCompTab(tab, btn) {
 }
 
 async function loadCompanies() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('companies').select('*').order('created_at', { ascending: false });
-  var data = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openCompanyModal()">Добавить компанию</button></div>';
+  const r = await sb.from('companies').select('*').order('created_at', { ascending: false });
+  const data = r.data || [];
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openCompanyModal()">Добавить компанию</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет компаний</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Название</th><th>Категория</th><th>Рейтинг</th><th>Участников</th><th>Страна</th><th>Лет</th><th>Верифиц.</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(c) {
-    var ver = c.is_verified ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const ver = c.is_verified ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td><b>' + esc(c.name) + '</b></td><td>' + esc(c.category || '—') + '</td>' +
       '<td>' + (c.rating || 0) + '</td><td>' + (c.members_count || 0) + '</td>' +
       '<td>' + esc(c.country || '—') + '</td><td>' + (c.years || '—') + '</td><td>' + ver + '</td>' +
@@ -42,9 +43,9 @@ async function loadCompanies() {
 }
 
 async function openCompanyModal(id) {
-  var c = {};
-  if (id) { var r = await sb.from('companies').select('*').eq('id', id).single(); c = r.data || {}; }
-  var body = '<div class="fg"><div class="fl">Название</div><input class="field" id="cmpName" value="' + esc(c.name || '') + '"></div>' +
+  let c = {};
+  if (id) { const r = await sb.from('companies').select('*').eq('id', id).single(); c = r.data || {}; }
+  const body = '<div class="fg"><div class="fl">Название</div><input class="field" id="cmpName" value="' + esc(c.name || '') + '"></div>' +
     '<div class="fg"><div class="fl">Описание</div><textarea class="field" id="cmpDesc">' + esc(c.description || '') + '</textarea></div>' +
     '<div class="fg"><div class="fl">Категория</div><input class="field" id="cmpCat" value="' + esc(c.category || '') + '"></div>' +
     '<div class="fg"><div class="fl">Страна</div><input class="field" id="cmpCountry" value="' + esc(c.country || '') + '"></div>' +
@@ -55,7 +56,7 @@ async function openCompanyModal(id) {
 }
 
 async function saveCompany(id) {
-  var d = {
+  const d = {
     name: document.getElementById('cmpName').value.trim(),
     description: document.getElementById('cmpDesc').value.trim(),
     category: document.getElementById('cmpCat').value.trim(),
@@ -64,14 +65,14 @@ async function saveCompany(id) {
     logo_url: document.getElementById('cmpLogo').value.trim() || null
   };
   if (!d.name) { showToast('Введите название', 'err'); return; }
-  var r = id ? await sb.from('companies').update(d).eq('id', id) : await sb.from('companies').insert(d);
+  const r = id ? await sb.from('companies').update(d).eq('id', id) : await sb.from('companies').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Компания обновлена' : 'Компания создана', 'ok');
   closeModal(); loadCompanies();
 }
 
 async function verifyCompany(id, val) {
-  var u = { is_verified: val };
+  const u = { is_verified: val };
   if (val) u.verified_at = new Date().toISOString();
   await sb.from('companies').update(u).eq('id', id);
   showToast(val ? 'Верифицирована' : 'Верификация снята', 'ok');
@@ -87,20 +88,20 @@ async function deleteCompany(id) {
 
 // ===== ЗАЯВКИ (order_responses) =====
 async function loadResponses() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('order_responses').select('*, users(name), orders(title)')
+  const r = await sb.from('order_responses').select('*, users(name), orders(title)')
     .order('created_at', { ascending: false });
-  var data = r.data || [];
+  const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет заявок</div>'; return; }
-  var sm = { pending: 'badge-gold', approved: 'badge-green', rejected: 'badge-red' };
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  const sm = { pending: 'badge-gold', approved: 'badge-green', rejected: 'badge-red' };
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Пользователь</th><th>Компания</th><th>Сообщение</th><th>Статус</th><th>Дата</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(a) {
-    var usr = a.users ? a.users.name : '—', cmp = a.orders ? a.orders.title : '—';
-    var badge = sm[a.status] || 'badge-purple';
-    var acts = a.status === 'pending'
+    const usr = a.users ? a.users.name : '—', cmp = a.orders ? a.orders.title : '—';
+    const badge = sm[a.status] || 'badge-purple';
+    const acts = a.status === 'pending'
       ? '<button class="btn btn-success btn-sm" onclick="handleApp(\'' + a.id + '\',\'approved\')">Принять</button>' +
         '<button class="btn btn-danger btn-sm" onclick="handleApp(\'' + a.id + '\',\'rejected\')">Отклонить</button>'
       : '';
@@ -121,20 +122,20 @@ async function handleApp(id, status) {
 
 // ===== ЭКСПЕРТЫ (expert_cards) =====
 async function loadAdminExperts() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('expert_cards').select('*, users(name, avatar_url, company_id), companies(name)')
+  const r = await sb.from('expert_cards').select('*, users(name, avatar_url, company_id), companies(name)')
     .order('created_at', { ascending: false });
-  var data = r.data || [];
+  const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет экспертов</div>'; return; }
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Пользователь</th><th>Компания</th><th>Специальность</th><th>Теги</th><th>Верифиц.</th><th>Дата</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(e) {
-    var usr = e.users ? e.users.name : '—', cmp = e.companies ? e.companies.name : '—';
-    var tags = (e.tags || []).join(', ') || '—';
-    var isApproved = e.moderation_status === 'approved';
-    var ver = isApproved ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const usr = e.users ? e.users.name : '—', cmp = e.companies ? e.companies.name : '—';
+    const tags = (e.tags || []).join(', ') || '—';
+    const isApproved = e.moderation_status === 'approved';
+    const ver = isApproved ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td>' + esc(usr) + '</td><td>' + esc(cmp) + '</td>' +
       '<td>' + esc(e.specialty || '—') + '</td><td>' + esc(tags) + '</td>' +
       '<td>' + ver + '</td><td>' + fmtDate(e.created_at) + '</td>' +
@@ -152,10 +153,11 @@ async function toggleExpertVer(id, val) {
 
 
 // ===== МАГАЗИН =====
-var _shopTab = 'tools';
+let _shopTab = 'tools';
 function renderShop() {
-  var tabs = 'tools:Инструменты,categories:Категории,promos:Промокоды,purchases:Покупки', h = '<div class="tabs">';
-  tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _shopTab ? ' active' : '') + '" onclick="switchShopTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  const tabs = 'tools:Инструменты,categories:Категории,promos:Промокоды,purchases:Покупки';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _shopTab ? ' active' : '') + '" onclick="switchShopTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
   switchShopTab(_shopTab, document.querySelector('.tab.active'));
@@ -169,28 +171,28 @@ function switchShopTab(tab, btn) {
 
 // ===== ИНСТРУМЕНТЫ =====
 async function loadTools() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('products').select('*, tool_categories(name)').order('created_at', { ascending: false });
+  let r = await sb.from('products').select('*, tool_categories(name)').order('created_at', { ascending: false });
   if (r.error) r = await sb.from('products').select('*').order('created_at', { ascending: false });
-  var data = r.data || [];
+  let data = r.data || [];
   if (data.length) {
-    var ids = data.map(function(t) { return t.author_id; }).filter(Boolean);
+    let ids = data.map(function(t) { return t.author_id; }).filter(Boolean);
     ids = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
     if (ids.length) {
-      var pr = await sb.from('users').select('id, name').in('id', ids);
-      var nm = {}; (pr.data || []).forEach(function(p) { nm[p.id] = p.name; });
+      const pr = await sb.from('users').select('id, name').in('id', ids);
+      const nm = {}; (pr.data || []).forEach(function(p) { nm[p.id] = p.name; });
       data.forEach(function(t) { t._author = nm[t.author_id] || '—'; });
     }
   }
   if (!data.length) { area.innerHTML = '<div class="empty">Нет инструментов</div>'; return; }
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Название</th><th>Автор</th><th>Категория</th><th>Цена</th><th>Скач.</th><th>Рейтинг</th><th>Статус</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(t) {
-    var cat = t.tool_categories ? t.tool_categories.name : '—';
-    var price = t.is_free ? '<span class="badge badge-green">Free</span>' : (t.price || 0) + ' ₽';
-    var st = t.is_active !== false ? '<span class="badge badge-green">Акт</span>' : '<span class="badge badge-red">Скрыт</span>';
+    const cat = t.tool_categories ? t.tool_categories.name : '—';
+    const price = t.is_free ? '<span class="badge badge-green">Free</span>' : (t.price || 0) + ' ₽';
+    const st = t.is_active !== false ? '<span class="badge badge-green">Акт</span>' : '<span class="badge badge-red">Скрыт</span>';
     h += '<tr><td><b>' + esc(t.title) + '</b></td><td>' + esc(t._author || '—') + '</td>' +
       '<td>' + esc(cat) + '</td><td>' + price + '</td>' +
       '<td>' + (t.downloads_count || 0) + '</td><td>' + (t.rating || 0) + '</td><td>' + st + '</td>' +
@@ -215,17 +217,17 @@ async function delTool(id) {
 
 // ===== КАТЕГОРИИ =====
 async function loadToolCats() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('tool_categories').select('*').order('sort_order', { ascending: true });
-  var data = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openCatModal()">Добавить категорию</button></div>';
+  const r = await sb.from('tool_categories').select('*').order('sort_order', { ascending: true });
+  const data = r.data || [];
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openCatModal()">Добавить категорию</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет категорий</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Иконка</th><th>Название</th><th>Порядок</th><th>Активна</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(c) {
-    var act = c.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const act = c.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td>' + esc(c.icon || '—') + '</td><td><b>' + esc(c.name) + '</b></td>' +
       '<td>' + (c.sort_order || 0) + '</td><td>' + act + '</td>' +
       '<td class="actions">' +
@@ -238,9 +240,9 @@ async function loadToolCats() {
 }
 
 async function openCatModal(id) {
-  var c = {};
-  if (id) { var r = await sb.from('tool_categories').select('*').eq('id', id).single(); c = r.data || {}; }
-  var body = '<div class="fg"><div class="fl">Название</div><input class="field" id="catName" value="' + esc(c.name || '') + '"></div>' +
+  let c = {};
+  if (id) { const r = await sb.from('tool_categories').select('*').eq('id', id).single(); c = r.data || {}; }
+  const body = '<div class="fg"><div class="fl">Название</div><input class="field" id="catName" value="' + esc(c.name || '') + '"></div>' +
     '<div class="fg"><div class="fl">Иконка</div><input class="field" id="catIcon" value="' + esc(c.icon || '') + '"></div>' +
     '<div class="fg"><div class="fl">Порядок</div><input type="number" class="field" id="catOrder" value="' + (c.sort_order || 0) + '"></div>' +
     '<div class="modal-actions"><button class="btn btn-primary" onclick="saveCat(\'' + (id || '') + '\')">Сохранить</button></div>';
@@ -248,9 +250,9 @@ async function openCatModal(id) {
 }
 
 async function saveCat(id) {
-  var d = { name: document.getElementById('catName').value.trim(), icon: document.getElementById('catIcon').value.trim(), sort_order: parseInt(document.getElementById('catOrder').value) || 0 };
+  const d = { name: document.getElementById('catName').value.trim(), icon: document.getElementById('catIcon').value.trim(), sort_order: parseInt(document.getElementById('catOrder').value) || 0 };
   if (!d.name) { showToast('Введите название', 'err'); return; }
-  var r = id ? await sb.from('tool_categories').update(d).eq('id', id) : await sb.from('tool_categories').insert(d);
+  const r = id ? await sb.from('tool_categories').update(d).eq('id', id) : await sb.from('tool_categories').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Обновлена' : 'Создана', 'ok');
   closeModal(); loadToolCats();
@@ -264,17 +266,17 @@ async function delCat(id) {
 
 // ===== ПРОМОКОДЫ =====
 async function loadPromos() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('promo_codes').select('*').order('created_at', { ascending: false });
-  var data = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openPromoModal()">Создать промокод</button></div>';
+  const r = await sb.from('promo_codes').select('*').order('created_at', { ascending: false });
+  const data = r.data || [];
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openPromoModal()">Создать промокод</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет промокодов</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Код</th><th>Скидка</th><th>Исп./Макс</th><th>Применяется</th><th>Истекает</th><th>Активен</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(p) {
-    var act = p.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const act = p.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td><b>' + esc(p.code) + '</b></td><td>' + (p.discount_percent || 0) + '%</td>' +
       '<td>' + (p.used_count || 0) + '/' + (p.max_uses || '∞') + '</td>' +
       '<td>' + esc(p.applies_to || '—') + '</td><td>' + fmtDate(p.expires_at) + '</td><td>' + act + '</td>' +
@@ -288,7 +290,7 @@ async function loadPromos() {
 }
 
 function openPromoModal() {
-  var body = '<div class="fg"><div class="fl">Код</div><input class="field" id="pmCode"></div>' +
+  const body = '<div class="fg"><div class="fl">Код</div><input class="field" id="pmCode"></div>' +
     '<div class="fg"><div class="fl">Скидка %</div><input type="number" class="field" id="pmDisc" min="1" max="100"></div>' +
     '<div class="fg"><div class="fl">Макс. использований</div><input type="number" class="field" id="pmMax"></div>' +
     '<div class="fg"><div class="fl">Применяется к</div><input class="field" id="pmApplies" placeholder="tool / all"></div>' +
@@ -298,7 +300,7 @@ function openPromoModal() {
 }
 
 async function savePromo() {
-  var d = {
+  const d = {
     code: document.getElementById('pmCode').value.trim().toUpperCase(),
     discount_percent: parseInt(document.getElementById('pmDisc').value) || 0,
     max_uses: parseInt(document.getElementById('pmMax').value) || null,
@@ -307,7 +309,7 @@ async function savePromo() {
     is_active: true
   };
   if (!d.code || !d.discount_percent) { showToast('Заполните код и скидку', 'err'); return; }
-  var r = await sb.from('promo_codes').insert(d);
+  const r = await sb.from('promo_codes').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast('Промокод создан', 'ok'); closeModal(); loadPromos();
 }
@@ -325,19 +327,19 @@ async function delPromo(id) {
 
 // ===== ПОКУПКИ =====
 async function loadPurchases() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('purchases').select('*, users(name), products(title)')
+  const r = await sb.from('purchases').select('*, users(name), products(title)')
     .order('created_at', { ascending: false });
-  var data = r.data || [];
+  const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет покупок</div>'; return; }
-  var sm = { completed: 'badge-green', pending: 'badge-gold', refunded: 'badge-red' };
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  const sm = { completed: 'badge-green', pending: 'badge-gold', refunded: 'badge-red' };
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Покупатель</th><th>Инструмент</th><th>Сумма</th><th>Метод</th><th>Промокод</th><th>Статус</th><th>Дата</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(p) {
-    var usr = p.users ? p.users.name : '—', tool = p.products ? p.products.title : '—';
-    var badge = sm[p.status] || 'badge-purple';
+    const usr = p.users ? p.users.name : '—', tool = p.products ? p.products.title : '—';
+    const badge = sm[p.status] || 'badge-purple';
     h += '<tr><td>' + esc(usr) + '</td><td>' + esc(tool) + '</td>' +
       '<td>' + (p.amount || 0) + ' ₽</td><td>' + esc(p.payment_method || '—') + '</td>' +
       '<td>' + esc(p.promo_code || '—') + '</td>' +

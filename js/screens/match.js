@@ -1,17 +1,17 @@
 // ===== MATCH SCREEN =====
 
-var matchCandidates = [];
-var currentMatchIndex = 0;
-var isMatchAnimating = false;
+let matchCandidates = [];
+let currentMatchIndex = 0;
+let isMatchAnimating = false;
 
-var DNA_COLORS = {
+const DNA_COLORS = {
   strategist: '#3b82f6',
   communicator: '#22c55e',
   creator: '#f59e0b',
   analyst: '#a78bfa'
 };
 
-var DNA_LABELS = {
+const DNA_LABELS = {
   strategist: 'Стратег',
   communicator: 'Коммуникатор',
   creator: 'Креатор',
@@ -21,11 +21,11 @@ var DNA_LABELS = {
 // ===== INIT =====
 
 function initMatch() {
-  var stack = document.getElementById('matchStack');
+  const stack = document.getElementById('matchStack');
   if (stack) stack.innerHTML = '';
-  var empty = document.getElementById('matchEmpty');
+  const empty = document.getElementById('matchEmpty');
   if (empty) empty.classList.add('hidden');
-  var actions = document.getElementById('matchActions');
+  const actions = document.getElementById('matchActions');
   if (actions) actions.style.display = '';
   currentMatchIndex = 0;
   matchCandidates = [];
@@ -35,7 +35,7 @@ function initMatch() {
 // ===== LOAD CANDIDATES =====
 
 function loadMatchCandidates() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (!sb || !window.currentUser) {
     renderMatchStack();
     return;
@@ -45,7 +45,7 @@ function loadMatchCandidates() {
     .select('user2_id')
     .eq('user1_id', window.currentUser.id)
     .then(function(res) {
-      var seen = [window.currentUser.id];
+      const seen = [window.currentUser.id];
       if (res.data) {
         res.data.forEach(function(r) { seen.push(r.user2_id); });
       }
@@ -65,13 +65,13 @@ function loadMatchCandidates() {
 // ===== RENDER STACK =====
 
 function renderMatchStack() {
-  var stack = document.getElementById('matchStack');
-  var empty = document.getElementById('matchEmpty');
-  var actions = document.getElementById('matchActions');
+  const stack = document.getElementById('matchStack');
+  const empty = document.getElementById('matchEmpty');
+  const actions = document.getElementById('matchActions');
   if (!stack) return;
 
   stack.innerHTML = '';
-  var remaining = matchCandidates.slice(currentMatchIndex);
+  const remaining = matchCandidates.slice(currentMatchIndex);
 
   if (remaining.length === 0) {
     if (empty) empty.classList.remove('hidden');
@@ -82,9 +82,9 @@ function renderMatchStack() {
   if (empty) empty.classList.add('hidden');
   if (actions) actions.style.display = '';
 
-  var count = Math.min(remaining.length, 3);
-  for (var i = count - 1; i >= 0; i--) {
-    var card = renderMatchCard(remaining[i], i);
+  const count = Math.min(remaining.length, 3);
+  for (let i = count - 1; i >= 0; i--) {
+    const card = renderMatchCard(remaining[i], i);
     stack.appendChild(card);
   }
 }
@@ -92,7 +92,7 @@ function renderMatchStack() {
 // ===== RENDER CARD =====
 
 function renderMatchCard(user, index) {
-  var card = document.createElement('div');
+  const card = document.createElement('div');
   card.className = 'match-card';
   card.setAttribute('data-index', index);
   card.style.zIndex = 10 - index;
@@ -103,11 +103,11 @@ function renderMatchCard(user, index) {
     card.style.transform = 'scale(0.90) translateY(20px)';
   }
 
-  var avatar = user.avatar_url || 'assets/default-avatar.png';
-  var dna = user.dna_type || 'strategist';
-  var dnaColor = DNA_COLORS[dna] || '#8b5cf6';
-  var dnaLabel = DNA_LABELS[dna] || dna;
-  var bio = user.bio || '';
+  const avatar = user.avatar_url || 'assets/default-avatar.png';
+  const dna = user.dna_type || 'strategist';
+  const dnaColor = DNA_COLORS[dna] || '#8b5cf6';
+  const dnaLabel = DNA_LABELS[dna] || dna;
+  let bio = user.bio || '';
   if (bio.length > 80) bio = bio.substring(0, 80) + '...';
 
   card.innerHTML =
@@ -127,9 +127,9 @@ function renderMatchCard(user, index) {
 
 function matchLike() {
   if (isMatchAnimating) return;
-  var stack = document.getElementById('matchStack');
+  const stack = document.getElementById('matchStack');
   if (!stack) return;
-  var top = stack.querySelector('.match-card[data-index="0"]');
+  const top = stack.querySelector('.match-card[data-index="0"]');
   if (!top) return;
 
   isMatchAnimating = true;
@@ -147,9 +147,9 @@ function matchLike() {
 
 function matchSkip() {
   if (isMatchAnimating) return;
-  var stack = document.getElementById('matchStack');
+  const stack = document.getElementById('matchStack');
   if (!stack) return;
-  var top = stack.querySelector('.match-card[data-index="0"]');
+  const top = stack.querySelector('.match-card[data-index="0"]');
   if (!top) return;
 
   isMatchAnimating = true;
@@ -166,11 +166,11 @@ function matchSkip() {
 // ===== PROCESS =====
 
 function processMatch(action) {
-  var candidate = matchCandidates[currentMatchIndex];
+  const candidate = matchCandidates[currentMatchIndex];
   currentMatchIndex++;
 
   if (action === 'like' && candidate && window.supabase && window.currentUser) {
-    var sb = window.supabase;
+    const sb = window.supabase;
     sb.from('matches').insert({
       user1_id: window.currentUser.id,
       user2_id: candidate.id,
@@ -194,8 +194,8 @@ function processMatch(action) {
   }
 
   if (currentMatchIndex >= matchCandidates.length) {
-    var empty = document.getElementById('matchEmpty');
-    var actions = document.getElementById('matchActions');
+    const empty = document.getElementById('matchEmpty');
+    const actions = document.getElementById('matchActions');
     if (empty) empty.classList.remove('hidden');
     if (actions) actions.style.display = 'none';
   } else {
@@ -206,13 +206,13 @@ function processMatch(action) {
 // ===== MATCH MODAL =====
 
 function showMatchModal(user) {
-  var existing = document.getElementById('matchModalOverlay');
+  const existing = document.getElementById('matchModalOverlay');
   if (existing) existing.remove();
 
-  var avatar = user.avatar_url || 'assets/default-avatar.png';
-  var myAvatar = (window.currentUser && window.currentUser.avatar_url) || 'assets/default-avatar.png';
+  const avatar = user.avatar_url || 'assets/default-avatar.png';
+  const myAvatar = (window.currentUser && window.currentUser.avatar_url) || 'assets/default-avatar.png';
 
-  var overlay = document.createElement('div');
+  const overlay = document.createElement('div');
   overlay.className = 'match-modal';
   overlay.id = 'matchModalOverlay';
   overlay.innerHTML =
@@ -237,7 +237,7 @@ function showMatchModal(user) {
 }
 
 function closeMatchModal() {
-  var overlay = document.getElementById('matchModalOverlay');
+  const overlay = document.getElementById('matchModalOverlay');
   if (overlay) {
     overlay.classList.remove('active');
     setTimeout(function() { overlay.remove(); }, 300);
@@ -251,7 +251,7 @@ function initMatchList() {
 }
 
 function loadMatches() {
-  var sb = window.supabase;
+  const sb = window.supabase;
   if (!sb || !window.currentUser) {
     renderMatchList([]);
     return;
@@ -268,9 +268,9 @@ function loadMatches() {
 }
 
 function renderMatchList(matches) {
-  var list = document.getElementById('mlList');
-  var empty = document.getElementById('mlEmpty');
-  var count = document.getElementById('mlCount');
+  const list = document.getElementById('mlList');
+  const empty = document.getElementById('mlEmpty');
+  const count = document.getElementById('mlCount');
   if (!list) return;
 
   if (matches.length === 0) {
@@ -284,11 +284,11 @@ function renderMatchList(matches) {
   if (count) count.textContent = matches.length + ' ' + pluralMatch(matches.length);
 
   list.innerHTML = matches.map(function(m) {
-    var p = m.partner || {};
-    var avatar = p.avatar_url || 'assets/default-avatar.png';
-    var dna = p.dna_type || 'strategist';
-    var dnaColor = DNA_COLORS[dna] || '#8b5cf6';
-    var bio = p.bio || '';
+    const p = m.partner || {};
+    const avatar = p.avatar_url || 'assets/default-avatar.png';
+    const dna = p.dna_type || 'strategist';
+    const dnaColor = DNA_COLORS[dna] || '#8b5cf6';
+    let bio = p.bio || '';
     if (bio.length > 50) bio = bio.substring(0, 50) + '...';
 
     return '<div class="ml-item">' +
@@ -303,8 +303,8 @@ function renderMatchList(matches) {
 }
 
 function pluralMatch(n) {
-  var mod10 = n % 10;
-  var mod100 = n % 100;
+  const mod10 = n % 10;
+  const mod100 = n % 100;
   if (mod10 === 1 && mod100 !== 11) return 'мэтч';
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'мэтча';
   return 'мэтчей';

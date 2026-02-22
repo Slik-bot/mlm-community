@@ -1,25 +1,25 @@
 // ===== ADMIN CORE — Auth, Navigation, Dashboard, Users =====
 
-var SB_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co';
-var SB_KEY = 'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4';
-var sb = supabase.createClient(SB_URL, SB_KEY);
+const SB_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co';
+const SB_KEY = 'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4';
+const sb = supabase.createClient(SB_URL, SB_KEY);
 
-var adminUser = null;
-var adminProfile = null;
-var currentPage = 'dashboard';
+let adminUser = null;
+let adminProfile = null;
+let currentPage = 'dashboard';
 
-var DN = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-var DC = { strategist: 'blue', communicator: 'green', creator: 'gold', analyst: 'purple' };
-var LN = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
+const DN = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
+const DC = { strategist: 'blue', communicator: 'green', creator: 'gold', analyst: 'purple' };
+const LN = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
 
-var TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', finance:'Финансы', settings:'Настройки' };
+const TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', finance:'Финансы', settings:'Настройки' };
 
 // ===== AUTH =====
 async function adminLogin() {
-  var email = document.getElementById('loginEmail').value.trim();
-  var pass = document.getElementById('loginPass').value;
-  var errEl = document.getElementById('loginError');
-  var btn = document.getElementById('loginBtn');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
 
   errEl.textContent = '';
   if (!email || !pass) { errEl.textContent = 'Введите email и пароль'; return; }
@@ -29,7 +29,7 @@ async function adminLogin() {
 
   try {
     // 1. Авторизация через Supabase Auth
-    var signIn = await sb.auth.signInWithPassword({ email: email, password: pass });
+    const signIn = await sb.auth.signInWithPassword({ email: email, password: pass });
     if (signIn.error) {
       errEl.textContent = 'Неверный email или пароль';
       btn.textContent = 'Войти';
@@ -38,7 +38,7 @@ async function adminLogin() {
     }
 
     // 2. Проверка прав через таблицу admin_users
-    var adminCheck = await sb
+    const adminCheck = await sb
       .from('admin_users')
       .select('id, name, role, is_active')
       .eq('email', email)
@@ -70,11 +70,11 @@ async function adminLogin() {
 }
 async function checkSession() {
   try {
-    var sess = await sb.auth.getSession();
+    const sess = await sb.auth.getSession();
     if (!sess.data || !sess.data.session) return;
 
-    var email = sess.data.session.user.email;
-    var adminCheck = await sb
+    const email = sess.data.session.user.email;
+    const adminCheck = await sb
       .from('admin_users')
       .select('id, name, role, is_active')
       .eq('email', email)
@@ -115,7 +115,7 @@ function showPage(page) {
     el.classList.toggle('active', el.dataset.page === page);
   });
 
-  var sidebarEl = document.getElementById('sidebar');
+  const sidebarEl = document.getElementById('sidebar');
   if (sidebarEl.classList.contains('open')) toggleSidebar();
 
   renderPage(page);
@@ -141,7 +141,7 @@ function toggleSidebar() {
 
 // ===== DASHBOARD =====
 async function renderDashboard() {
-  var el = document.getElementById('pageContent');
+  const el = document.getElementById('pageContent');
   el.innerHTML =
     '<div class="stats-grid" id="dashStats"></div>' +
     '<div class="section-title">Последние жалобы</div>' +
@@ -150,7 +150,7 @@ async function renderDashboard() {
     '<div id="dashUsers"></div>';
 
   try {
-    var counts = await Promise.all([
+    const counts = await Promise.all([
       sb.from('users').select('id', { count: 'exact', head: true }),
       sb.from('posts').select('id', { count: 'exact', head: true }),
       sb.from('comments').select('id', { count: 'exact', head: true }),
@@ -159,7 +159,7 @@ async function renderDashboard() {
       sb.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active')
     ]);
 
-    var cards = [
+    const cards = [
       { icon: '👥', val: counts[0].count || 0, label: 'Пользователи', color: 'purple' },
       { icon: '📝', val: counts[1].count || 0, label: 'Посты', color: 'green' },
       { icon: '💬', val: counts[2].count || 0, label: 'Комментарии', color: 'blue' },
@@ -177,9 +177,9 @@ async function renderDashboard() {
     }).join('');
 
     // Последние жалобы
-    var reps = await sb.from('reports').select('*')
+    const reps = await sb.from('reports').select('*')
       .eq('status', 'pending').order('created_at', { ascending: false }).limit(5);
-    var rd = reps.data || [];
+    const rd = reps.data || [];
 
     document.getElementById('dashReports').innerHTML = !rd.length
       ? '<div class="empty">Нет активных жалоб</div>'
@@ -196,9 +196,9 @@ async function renderDashboard() {
         '</tbody></table></div>';
 
     // Новые пользователи
-    var users = await sb.from('users').select('name, email, dna_type, plan, created_at')
+    const users = await sb.from('users').select('name, email, dna_type, plan, created_at')
       .order('created_at', { ascending: false }).limit(5);
-    var ud = users.data || [];
+    const ud = users.data || [];
 
     document.getElementById('dashUsers').innerHTML = !ud.length
       ? '<div class="empty">Нет пользователей</div>'
@@ -206,10 +206,10 @@ async function renderDashboard() {
         '<th>Имя</th><th>Email</th><th>ДНК</th><th>План</th><th>Дата</th>' +
         '</tr></thead><tbody>' +
         ud.map(function(u) {
-          var dna = u.dna_type
+          const dna = u.dna_type
             ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
             : '—';
-          var planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
+          const planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
           return '<tr>' +
             '<td>' + esc(u.name || '—') + '</td>' +
             '<td>' + esc(u.email || '—') + '</td>' +
@@ -226,11 +226,11 @@ async function renderDashboard() {
 }
 
 // ===== USERS =====
-var _usersPage = 1, _usersSearch = '', _usersDna = '', _usersPlan = '';
-var _usersCache = [], _usersTotal = 0, _searchTimer = null;
+let _usersPage = 1, _usersSearch = '', _usersDna = '', _usersPlan = '';
+let _usersCache = [], _usersTotal = 0, _searchTimer = null;
 
 async function renderUsers() {
-  var el = document.getElementById('pageContent');
+  const el = document.getElementById('pageContent');
   el.innerHTML =
     '<div class="toolbar">' +
       '<input type="text" class="field field-search" placeholder="Поиск по имени..." value="' + esc(_usersSearch) + '" oninput="_usersSearch=this.value;_usersPage=1;debounceUsers()">' +
@@ -261,7 +261,7 @@ function debounceUsers() {
 
 async function loadUsersTable() {
   try {
-    var result = await loadUsers(_usersPage, _usersSearch, _usersDna, _usersPlan);
+    const result = await loadUsers(_usersPage, _usersSearch, _usersDna, _usersPlan);
     _usersCache = result.data;
     _usersTotal = result.count;
 
@@ -271,22 +271,22 @@ async function loadUsersTable() {
       return;
     }
 
-    var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+    let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
       '<th></th><th>Имя</th><th>Email</th><th>ДНК</th><th>Уровень</th><th>XP</th><th>План</th><th>Статус</th><th>Действия</th>' +
       '</tr></thead><tbody>';
 
     _usersCache.forEach(function(u) {
-      var avatar = u.avatar_url
+      const avatar = u.avatar_url
         ? '<img class="avatar-sm" src="' + esc(u.avatar_url) + '" alt="">'
         : '<div class="avatar-sm" style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-dim)">👤</div>';
 
-      var dna = u.dna_type
+      const dna = u.dna_type
         ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
         : '—';
 
-      var planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
+      const planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
 
-      var st = u.is_banned
+      const st = u.is_banned
         ? '<span class="badge badge-red">Бан</span>'
         : u.is_verified
           ? '<span class="badge badge-green">✓</span>'
@@ -311,22 +311,22 @@ async function loadUsersTable() {
     document.getElementById('usersTableWrap').innerHTML = h;
 
     // Pagination
-    var perPage = 20;
-    var totalPages = Math.ceil(_usersTotal / perPage);
+    const perPage = 20;
+    const totalPages = Math.ceil(_usersTotal / perPage);
 
     if (totalPages <= 1) {
       document.getElementById('usersPagination').innerHTML = '<span class="page-info">' + _usersTotal + ' всего</span>';
       return;
     }
 
-    var pg = '<div class="pagination">';
+    let pg = '<div class="pagination">';
     pg += '<button' + (_usersPage <= 1 ? ' disabled' : '') + ' onclick="_usersPage--;loadUsersTable()">&laquo;</button>';
 
-    var start = Math.max(1, _usersPage - 2);
-    var end = Math.min(totalPages, start + 4);
-    start = Math.max(1, end - 4);
+    const start = Math.max(1, _usersPage - 2);
+    const end = Math.min(totalPages, start + 4);
+    const start2 = Math.max(1, end - 4);
 
-    for (var i = start; i <= end; i++) {
+    for (let i = start2; i <= end; i++) {
       pg += '<button' + (i === _usersPage ? ' class="active"' : '') + ' onclick="_usersPage=' + i + ';loadUsersTable()">' + i + '</button>';
     }
 
@@ -342,10 +342,10 @@ async function loadUsersTable() {
 }
 
 function viewUser(id) {
-  var u = _usersCache.find(function(x) { return x.id === id; });
+  const u = _usersCache.find(function(x) { return x.id === id; });
   if (!u) return;
 
-  var body =
+  const body =
     '<div class="info-row"><div class="info-label">Email</div><div>' + esc(u.email || '—') + '</div></div>' +
     '<div class="info-row"><div class="info-label">ДНК</div><div>' + (DN[u.dna_type] || '—') + '</div></div>' +
     '<div class="info-row"><div class="info-label">Уровень</div><div>' + (LN[u.level] || '—') + ' (' + (u.xp || 0) + ' XP)</div></div>' +
@@ -394,7 +394,7 @@ async function toggleVerify(id, verify) {
 }
 async function doAdjustXp(id) {
   try {
-    var amount = parseInt(document.getElementById('xpAmount').value);
+    const amount = parseInt(document.getElementById('xpAmount').value);
     if (!amount || isNaN(amount)) { showToast('Введите число', 'err'); return; }
     await logXpChange(id, amount);
     showToast('XP ' + (amount > 0 ? '+' : '') + amount, 'ok');
@@ -406,10 +406,11 @@ async function doAdjustXp(id) {
 }
 
 // ===== CONTENT =====
-var _contentTab = 'posts';
+let _contentTab = 'posts';
 function renderContent() {
-  var tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы', h = '<div class="tabs">';
-  tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _contentTab ? ' active' : '') + '" onclick="switchContentTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  const tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _contentTab ? ' active' : '') + '" onclick="switchContentTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
   switchContentTab(_contentTab, document.querySelector('.tab.active'));
@@ -418,7 +419,7 @@ function switchContentTab(tab, btn) {
   _contentTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  var fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports }[tab];
+  const fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports }[tab];
   if (fn) fn(tab === 'reports' ? '' : 1);
 }
 
@@ -436,9 +437,9 @@ function openModal(title, html) {
 function closeModal() { document.getElementById('modalOv').classList.remove('show'); }
 
 // ===== TOAST =====
-var _toastTimer = null;
+let _toastTimer = null;
 function showToast(msg, type) {
-  var el = document.getElementById('toastEl');
+  const el = document.getElementById('toastEl');
   clearTimeout(_toastTimer);
   el.textContent = msg;
   el.className = 'toast show toast-' + (type || 'ok');

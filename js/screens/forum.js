@@ -1,11 +1,11 @@
 // ===== FORUM SCREENS — список тем, тема, создание =====
 
-var currentTopic = null;
-var allTopics = [];
-var forumCategory = 'all';
-var forumSortMethod = 'new';
+let currentTopic = null;
+let allTopics = [];
+let forumCategory = 'all';
+let forumSortMethod = 'new';
 
-var FORUM_CATS = {
+const FORUM_CATS = {
   business:  { label: 'Бизнес',       color: '#3b82f6' },
   marketing: { label: 'Маркетинг',    color: '#22c55e' },
   tools:     { label: 'Инструменты',  color: '#f59e0b' },
@@ -21,13 +21,13 @@ function getCatLabel(cat) {
 
 function formatTimeAgo(dateStr) {
   if (!dateStr) return '';
-  var diff = Date.now() - new Date(dateStr).getTime();
-  var min = Math.floor(diff / 60000);
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diff / 60000);
   if (min < 1) return 'только что';
   if (min < 60) return min + ' мин';
-  var hrs = Math.floor(min / 60);
+  const hrs = Math.floor(min / 60);
   if (hrs < 24) return hrs + ' ч';
-  var days = Math.floor(hrs / 24);
+  const days = Math.floor(hrs / 24);
   if (days < 30) return days + ' д';
   return Math.floor(days / 30) + ' мес';
 }
@@ -37,14 +37,14 @@ function formatTimeAgo(dateStr) {
 function initForum() {
   forumCategory = 'all';
   forumSortMethod = 'new';
-  var sortSel = document.getElementById('forumSortSelect');
+  const sortSel = document.getElementById('forumSortSelect');
   if (sortSel) sortSel.value = 'new';
   updateForumCatUI();
   loadForumTopics();
 }
 
 async function loadForumTopics() {
-  var query = window.sb.from('forum_topics')
+  let query = window.sb.from('forum_topics')
     .select('*, author:users(id, name, avatar_url, dna_type, level)')
     .order('created_at', { ascending: false })
     .limit(50);
@@ -53,13 +53,13 @@ async function loadForumTopics() {
     query = query.eq('category', forumCategory);
   }
 
-  var result = await query;
+  const result = await query;
   allTopics = result.data || [];
   applySortAndRender();
 }
 
 function applySortAndRender() {
-  var sorted = allTopics.slice();
+  const sorted = allTopics.slice();
   if (forumSortMethod === 'active') {
     sorted.sort(function(a, b) {
       return new Date(b.last_reply_at || b.created_at) - new Date(a.last_reply_at || a.created_at);
@@ -71,8 +71,8 @@ function applySortAndRender() {
 }
 
 function renderForumList(topics) {
-  var list = document.getElementById('forumList');
-  var empty = document.getElementById('forumEmpty');
+  const list = document.getElementById('forumList');
+  const empty = document.getElementById('forumEmpty');
   if (!list) return;
 
   if (!topics.length) {
@@ -83,9 +83,9 @@ function renderForumList(topics) {
   if (empty) empty.classList.add('hidden');
 
   list.innerHTML = topics.map(function(t) {
-    var cat = getCatLabel(t.category);
-    var author = t.author || {};
-    var pinIcon = t.is_pinned ? '<span class="ftc-pinned"><svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>' : '';
+    const cat = getCatLabel(t.category);
+    const author = t.author || {};
+    const pinIcon = t.is_pinned ? '<span class="ftc-pinned"><svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>' : '';
     return '<div class="forum-topic-card" onclick="openTopic(\'' + t.id + '\')">' +
       '<div class="ftc-top">' +
         '<span class="ftc-cat" style="background:' + cat.color + '22;color:' + cat.color + '">' + cat.label + '</span>' +
@@ -112,7 +112,7 @@ function forumFilterCat(cat) {
 }
 
 function updateForumCatUI() {
-  var btns = document.querySelectorAll('#forumCats .forum-cat');
+  const btns = document.querySelectorAll('#forumCats .forum-cat');
   btns.forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-cat') === forumCategory);
   });
@@ -133,34 +133,34 @@ function openTopic(topicId) {
 function initForumTopic() {
   if (!currentTopic) { goBack(); return; }
 
-  var cat = getCatLabel(currentTopic.category);
-  var badge = document.getElementById('topicCatBadge');
+  const cat = getCatLabel(currentTopic.category);
+  const badge = document.getElementById('topicCatBadge');
   if (badge) {
     badge.textContent = cat.label;
     badge.style.background = cat.color + '22';
     badge.style.color = cat.color;
   }
 
-  var titleEl = document.getElementById('topicTitle');
+  const titleEl = document.getElementById('topicTitle');
   if (titleEl) titleEl.textContent = currentTopic.title;
 
-  var bodyEl = document.getElementById('topicBody');
+  const bodyEl = document.getElementById('topicBody');
   if (bodyEl) bodyEl.textContent = currentTopic.body || '';
 
-  var author = currentTopic.author || {};
-  var avatarEl = document.getElementById('topicAuthorAvatar');
+  const author = currentTopic.author || {};
+  const avatarEl = document.getElementById('topicAuthorAvatar');
   if (avatarEl) avatarEl.src = author.avatar_url || 'assets/default-avatar.svg';
 
-  var nameEl = document.getElementById('topicAuthorName');
+  const nameEl = document.getElementById('topicAuthorName');
   if (nameEl) nameEl.textContent = author.name || 'Участник';
 
-  var timeEl = document.getElementById('topicTime');
+  const timeEl = document.getElementById('topicTime');
   if (timeEl) timeEl.textContent = formatTimeAgo(currentTopic.created_at);
 
-  var viewsEl = document.getElementById('topicViews');
+  const viewsEl = document.getElementById('topicViews');
   if (viewsEl) viewsEl.textContent = (currentTopic.views_count || 0) + 1;
 
-  var repliesEl = document.getElementById('topicRepliesCount');
+  const repliesEl = document.getElementById('topicRepliesCount');
   if (repliesEl) repliesEl.textContent = currentTopic.replies_count || 0;
 
   loadReplies(currentTopic.id);
@@ -171,7 +171,7 @@ function initForumTopic() {
 }
 
 async function loadReplies(topicId) {
-  var result = await window.sb.from('forum_replies')
+  const result = await window.sb.from('forum_replies')
     .select('*, author:users(id, name, avatar_url, dna_type, level)')
     .eq('topic_id', topicId)
     .order('created_at', { ascending: true });
@@ -180,7 +180,7 @@ async function loadReplies(topicId) {
 }
 
 function renderReplies(replies) {
-  var container = document.getElementById('topicReplies');
+  const container = document.getElementById('topicReplies');
   if (!container) return;
 
   if (!replies.length) {
@@ -188,13 +188,13 @@ function renderReplies(replies) {
     return;
   }
 
-  var isAuthor = currentTopic && window.currentUser && currentTopic.author_id === window.currentUser.id;
+  const isAuthor = currentTopic && window.currentUser && currentTopic.author_id === window.currentUser.id;
 
   container.innerHTML = replies.map(function(r) {
-    var author = r.author || {};
-    var bestClass = r.is_best ? ' reply-best' : '';
-    var bestBadge = r.is_best ? '<span class="reply-best-badge">Лучший ответ</span>' : '';
-    var markBtn = (isAuthor && !r.is_best) ? '<button class="reply-mark-best" onclick="forumMarkBest(\'' + r.id + '\')">Лучший</button>' : '';
+    const author = r.author || {};
+    const bestClass = r.is_best ? ' reply-best' : '';
+    const bestBadge = r.is_best ? '<span class="reply-best-badge">Лучший ответ</span>' : '';
+    const markBtn = (isAuthor && !r.is_best) ? '<button class="reply-mark-best" onclick="forumMarkBest(\'' + r.id + '\')">Лучший</button>' : '';
 
     return '<div class="reply-card glass-card' + bestClass + '">' +
       bestBadge +
@@ -213,8 +213,8 @@ function renderReplies(replies) {
 }
 
 async function forumSubmitReply() {
-  var input = document.getElementById('replyInput');
-  var text = input ? input.value.trim() : '';
+  const input = document.getElementById('replyInput');
+  const text = input ? input.value.trim() : '';
   if (!text || !currentTopic || !window.currentUser) return;
 
   await window.sb.from('forum_replies').insert({
@@ -251,22 +251,22 @@ async function forumMarkBest(replyId) {
 // ===== FORUM CREATE =====
 
 function initForumCreate() {
-  var title = document.getElementById('fcTitle');
-  var body = document.getElementById('fcBody');
-  var cat = document.getElementById('fcCategory');
+  const title = document.getElementById('fcTitle');
+  const body = document.getElementById('fcBody');
+  const cat = document.getElementById('fcCategory');
   if (title) title.value = '';
   if (body) body.value = '';
   if (cat) cat.value = 'business';
 }
 
 async function forumCreateTopic() {
-  var title = document.getElementById('fcTitle');
-  var body = document.getElementById('fcBody');
-  var cat = document.getElementById('fcCategory');
+  const title = document.getElementById('fcTitle');
+  const body = document.getElementById('fcBody');
+  const cat = document.getElementById('fcCategory');
 
-  var titleVal = title ? title.value.trim() : '';
-  var bodyVal = body ? body.value.trim() : '';
-  var catVal = cat ? cat.value : 'business';
+  const titleVal = title ? title.value.trim() : '';
+  const bodyVal = body ? body.value.trim() : '';
+  const catVal = cat ? cat.value : 'business';
 
   if (!titleVal || !bodyVal) {
     if (window.showToast) showToast('Заполните заголовок и текст');

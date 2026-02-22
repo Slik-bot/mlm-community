@@ -1,6 +1,6 @@
 // ═══ AppEvents — шина событий (pub/sub) ═══
 
-var _listeners = {};
+let _listeners = {};
 
 function on(event, callback) {
   if (!_listeners[event]) _listeners[event] = [];

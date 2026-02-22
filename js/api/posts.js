@@ -4,7 +4,7 @@
 
 async function loadPosts(filter, limit) {
   limit = limit || 20;
-  var query = window.sb.from('posts')
+  let query = window.sb.from('posts')
     .select('*, author:users(id, name, avatar_url, level, dna_type, is_verified)')
     .eq('moderation_status', 'approved')
     .order('created_at', { ascending: false })
@@ -14,17 +14,17 @@ async function loadPosts(filter, limit) {
     query = query.eq('type', filter);
   }
 
-  var result = await query;
+  const result = await query;
   return { data: result.data, error: result.error };
 }
 
 // ═══ createPost ═══
 
 async function createPost(content, type, mediaUrls) {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return { data: null, error: { message: 'Не авторизован' } };
 
-  var result = await window.sb.from('posts').insert({
+  const result = await window.sb.from('posts').insert({
     author_id: user.id,
     content: content,
     type: type || 'post',
@@ -38,10 +38,10 @@ async function createPost(content, type, mediaUrls) {
 // ═══ toggleLike ═══
 
 async function toggleLike(postId) {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return { liked: false, likes_count: 0 };
 
-  var existing = await window.sb.from('reactions')
+  const existing = await window.sb.from('reactions')
     .select('id')
     .eq('user_id', user.id)
     .eq('target_type', 'post')
@@ -60,7 +60,7 @@ async function toggleLike(postId) {
     });
   }
 
-  var count = await window.sb.from('reactions')
+  const count = await window.sb.from('reactions')
     .select('id', { count: 'exact', head: true })
     .eq('target_type', 'post')
     .eq('target_id', postId)
@@ -72,10 +72,10 @@ async function toggleLike(postId) {
 // ═══ addComment ═══
 
 async function addComment(postId, content, parentId) {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return { data: null, error: { message: 'Не авторизован' } };
 
-  var result = await window.sb.from('comments').insert({
+  const result = await window.sb.from('comments').insert({
     post_id: postId,
     author_id: user.id,
     content: content,
@@ -88,7 +88,7 @@ async function addComment(postId, content, parentId) {
 // ═══ loadComments ═══
 
 async function loadComments(postId) {
-  var result = await window.sb.from('comments')
+  const result = await window.sb.from('comments')
     .select('*, author:users(id, name, avatar_url, dna_type)')
     .eq('post_id', postId)
     .eq('is_deleted', false)
@@ -100,10 +100,10 @@ async function loadComments(postId) {
 // ═══ toggleBookmark ═══
 
 async function toggleBookmark(postId) {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return { bookmarked: false };
 
-  var existing = await window.sb.from('reactions')
+  const existing = await window.sb.from('reactions')
     .select('id')
     .eq('user_id', user.id)
     .eq('target_type', 'bookmark')

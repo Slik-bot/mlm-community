@@ -3,7 +3,7 @@
 // Отделено от feed.js
 // =======================================
 
-var fabOpen = false;
+let fabOpen = false;
 function toggleFab() {
   fabOpen = !fabOpen;
   document.getElementById('fabBtn').classList.toggle('open', fabOpen);
@@ -13,29 +13,29 @@ function toggleFab() {
 function closeFab() { if (fabOpen) toggleFab(); }
 function closeDim() { closeFab(); closePopovers(); }
 
-var _photoInited = false;
-var currentPostType = 'post';
-var currentPollInstance = null;
+let _photoInited = false;
+let currentPostType = 'post';
+let currentPollInstance = null;
 
 function openCreate(type) {
   closeFab();
   currentPostType = type || 'post';
 
   // Удалить старую модалку если есть
-  var old = document.querySelector('.create-modal');
+  const old = document.querySelector('.create-modal');
   if (old) old.remove();
 
   // Данные автора
-  var profile = (typeof currentProfile !== 'undefined') ? currentProfile : null;
-  var name = (profile && profile.name) ? profile.name : 'Участник';
-  var avatarUrl = (profile && profile.avatar_url) ? profile.avatar_url : '';
-  var avaHtml = avatarUrl
+  const profile = (typeof currentProfile !== 'undefined') ? currentProfile : null;
+  const name = (profile && profile.name) ? profile.name : 'Участник';
+  const avatarUrl = (profile && profile.avatar_url) ? profile.avatar_url : '';
+  const avaHtml = avatarUrl
     ? '<img class="create-avatar" src="' + avatarUrl + '" alt="">'
     : '<div class="create-avatar create-avatar--empty">' + (typeof escHtml === 'function' ? escHtml(name[0]) : name[0]) + '</div>';
-  var maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
+  const maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
 
   // Создать премиум модалку
-  var modal = document.createElement('div');
+  const modal = document.createElement('div');
   modal.className = 'create-modal';
   modal.innerHTML =
     '<div class="create-overlay"></div>' +
@@ -97,16 +97,16 @@ function openCreate(type) {
 }
 
 function setupCreateModal(modal) {
-  var textarea = modal.querySelector('.create-textarea');
-  var counter = modal.querySelector('.create-counter-current');
-  var publishBtn = modal.querySelector('#publish-btn');
-  var closeBtn = modal.querySelector('.create-close-btn');
-  var backBtn = modal.querySelector('.create-back-btn');
-  var overlay = modal.querySelector('.create-overlay');
-  var maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
+  const textarea = modal.querySelector('.create-textarea');
+  const counter = modal.querySelector('.create-counter-current');
+  const publishBtn = modal.querySelector('#publish-btn');
+  const closeBtn = modal.querySelector('.create-close-btn');
+  const backBtn = modal.querySelector('.create-back-btn');
+  const overlay = modal.querySelector('.create-overlay');
+  const maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
 
   // Кнопка фото
-  var photoBtn = modal.querySelector('[data-type="image"]');
+  const photoBtn = modal.querySelector('[data-type="image"]');
   if (photoBtn) {
     photoBtn.addEventListener('click', function() {
       if (typeof window.openImagePicker === 'function') {
@@ -119,7 +119,7 @@ function setupCreateModal(modal) {
   }
 
   // Кнопка опроса
-  var pollBtn = modal.querySelector('[data-type="poll"]');
+  const pollBtn = modal.querySelector('[data-type="poll"]');
   if (pollBtn) {
     pollBtn.addEventListener('click', function() {
       // Если билдер уже открыт — закрываем
@@ -130,7 +130,7 @@ function setupCreateModal(modal) {
         pollBtn.classList.remove('active');
         return;
       }
-      var pollContainer = modal.querySelector('.type-extra-content');
+      const pollContainer = modal.querySelector('.type-extra-content');
       if (pollContainer && window.createPoll) {
         currentPostType = 'poll';
         currentPollInstance = window.createPoll(pollContainer);
@@ -145,7 +145,7 @@ function setupCreateModal(modal) {
   // Счётчик символов + автоувеличение
   if (textarea) {
     textarea.addEventListener('input', function() {
-      var len = textarea.value.length;
+      const len = textarea.value.length;
       if (counter) {
         counter.textContent = len;
         counter.classList.toggle('create-counter-warning', len > maxLen - 200);
@@ -158,13 +158,13 @@ function setupCreateModal(modal) {
   }
 
   // Закрытие модалки
-  var container = modal.querySelector('.create-container');
+  const container = modal.querySelector('.create-container');
 
   function closeModal() {
     if (currentPollInstance) { currentPollInstance.destroy(); currentPollInstance = null; }
     if (typeof window.clearSelectedImages === 'function') window.clearSelectedImages();
     // Удалить drag-dismiss
-    var header = modal.querySelector('.create-header');
+    const header = modal.querySelector('.create-header');
     if (header && typeof window.removeDragDismiss === 'function') {
       window.removeDragDismiss(header);
     }
@@ -178,7 +178,7 @@ function setupCreateModal(modal) {
   if (overlay) overlay.addEventListener('click', closeModal);
 
   // Drag-dismiss: свайп по хедеру → закрыть модалку
-  var header = modal.querySelector('.create-header');
+  const header = modal.querySelector('.create-header');
   if (header && container && typeof window.addDragDismiss === 'function') {
     window.addDragDismiss(header, {
       moveTarget: container,
@@ -197,7 +197,7 @@ function setupCreateModal(modal) {
   // Публикация
   if (publishBtn) {
     publishBtn.addEventListener('click', async function() {
-      var content = textarea ? textarea.value.trim() : '';
+      const content = textarea ? textarea.value.trim() : '';
       if (!content) {
         window.showToast?.('Напишите что-нибудь!');
         if (textarea) textarea.focus();
@@ -209,10 +209,10 @@ function setupCreateModal(modal) {
 }
 
 // ===== PHOTO UPLOAD =====
-var _pendingPhoto = null;
+let _pendingPhoto = null;
 
 function initPhotoButton() {
-  var fileInput = document.createElement('input');
+  const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
   fileInput.style.display = 'none';
@@ -220,7 +220,7 @@ function initPhotoButton() {
   document.body.appendChild(fileInput);
 
   fileInput.addEventListener('change', function() {
-    var file = fileInput.files[0];
+    const file = fileInput.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { showToast('Фото не больше 5 МБ'); fileInput.value = ''; return; }
     _pendingPhoto = file;
@@ -228,7 +228,7 @@ function initPhotoButton() {
     fileInput.value = '';
   });
 
-  var toolbarBtns = document.querySelectorAll('#scrCreate .tb-btn');
+  const toolbarBtns = document.querySelectorAll('#scrCreate .tb-btn');
   if (toolbarBtns[0]) {
     toolbarBtns[0].addEventListener('click', function(e) {
       e.preventDefault();
@@ -239,28 +239,28 @@ function initPhotoButton() {
 
 function showPhotoPreview(file) {
   removePhotoPreview();
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.onload = function(e) {
-    var wrap = document.createElement('div');
+    const wrap = document.createElement('div');
     wrap.id = 'photoPreview';
     wrap.style.cssText = 'position:relative;margin:8px 14px;';
-    var img = document.createElement('img');
+    const img = document.createElement('img');
     img.src = e.target.result;
     img.style.cssText = 'width:100%;border-radius:10px;max-height:200px;object-fit:cover;';
     wrap.appendChild(img);
-    var del = document.createElement('div');
-    del.textContent = '\u2715';
+    const del = document.createElement('div');
+    del.textContent = '✕';
     del.style.cssText = 'position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;';
     del.onclick = function() { _pendingPhoto = null; removePhotoPreview(); };
     wrap.appendChild(del);
-    var ta = document.getElementById('createTa');
+    const ta = document.getElementById('createTa');
     if (ta) ta.parentNode.insertBefore(wrap, ta.nextSibling);
   };
   reader.readAsDataURL(file);
 }
 
 function removePhotoPreview() {
-  var old = document.getElementById('photoPreview');
+  const old = document.getElementById('photoPreview');
   if (old) old.remove();
 }
 
@@ -268,18 +268,18 @@ window.getPendingPhoto = function() { return _pendingPhoto; };
 window.clearPendingPhoto = function() { _pendingPhoto = null; removePhotoPreview(); };
 
 function checkPublish() {
-  var ta = document.getElementById('createTa');
-  var btn = document.getElementById('pubBtn');
-  var count = document.getElementById('createCount');
+  const ta = document.getElementById('createTa');
+  const btn = document.getElementById('pubBtn');
+  const count = document.getElementById('createCount');
   if (!ta || !btn) return;
-  var text = ta.value;
-  var maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
+  let text = ta.value;
+  const maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
   if (text.length > maxLen) {
     ta.value = text.substring(0, maxLen);
     text = ta.value;
   }
-  var hasText = text.trim().length > 0;
-  var hasPhoto = typeof getPendingPhoto === 'function' && getPendingPhoto();
+  const hasText = text.trim().length > 0;
+  const hasPhoto = typeof getPendingPhoto === 'function' && getPendingPhoto();
   btn.className = (hasText || hasPhoto) ? btn.className.replace('off', 'on') : btn.className.replace('on', 'off');
   if (count) {
     count.textContent = text.length + ' / ' + maxLen;

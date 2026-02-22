@@ -1,11 +1,12 @@
 // ===== ADMIN PAGES 2 — Gamification =====
 
-var _gamTab = 'quests';
-var _questsCache = [], _achCache = [];
+let _gamTab = 'quests';
+let _questsCache = [], _achCache = [];
 
 function renderGamification() {
-  var tabs = 'quests:Квесты,achievements:Достижения,leaderboard:Лидерборд', h = '<div class="tabs">';
-  tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _gamTab ? ' active' : '') + '" onclick="switchGamTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  const tabs = 'quests:Квесты,achievements:Достижения,leaderboard:Лидерборд';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _gamTab ? ' active' : '') + '" onclick="switchGamTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
   switchGamTab(_gamTab, document.querySelector('.tab.active'));
@@ -19,18 +20,18 @@ function switchGamTab(tab, btn) {
 
 // ===== КВЕСТЫ =====
 async function loadQuests() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('quest_templates').select('*').order('created_at', { ascending: false });
+  const r = await sb.from('quest_templates').select('*').order('created_at', { ascending: false });
   _questsCache = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openQuestModal()">Создать квест</button></div>';
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openQuestModal()">Создать квест</button></div>';
   if (!_questsCache.length) { area.innerHTML = h + '<div class="empty">Нет квестов</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Название</th><th>Описание</th><th>XP</th><th>ДНК</th><th>Действие</th><th>Кол-во</th><th>Активен</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   _questsCache.forEach(function(q) {
-    var dna = q.dna_type ? '<span class="badge badge-' + (DC[q.dna_type] || 'purple') + '">' + (DN[q.dna_type] || q.dna_type) + '</span>' : '—';
-    var act = q.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const dna = q.dna_type ? '<span class="badge badge-' + (DC[q.dna_type] || 'purple') + '">' + (DN[q.dna_type] || q.dna_type) + '</span>' : '—';
+    const act = q.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td><b>' + esc(q.title) + '</b></td><td>' + esc((q.description || '').substring(0, 40)) + '</td>' +
       '<td>' + (q.xp_reward || 0) + '</td><td>' + dna + '</td>' +
       '<td>' + esc(q.action_type || '—') + '</td><td>' + (q.action_count || 0) + '</td><td>' + act + '</td>' +
@@ -45,18 +46,18 @@ async function loadQuests() {
 }
 
 async function openQuestModal(id) {
-  var q = {};
-  if (id) { var r = await sb.from('quest_templates').select('*').eq('id', id).single(); q = r.data || {}; }
-  var dnaOpts = '<option value="">Все</option><option value="strategist"' + (q.dna_type === 'strategist' ? ' selected' : '') + '>Стратег</option>' +
+  let q = {};
+  if (id) { const r = await sb.from('quest_templates').select('*').eq('id', id).single(); q = r.data || {}; }
+  const dnaOpts = '<option value="">Все</option><option value="strategist"' + (q.dna_type === 'strategist' ? ' selected' : '') + '>Стратег</option>' +
     '<option value="mentor"' + (q.dna_type === 'mentor' ? ' selected' : '') + '>Ментор</option>' +
     '<option value="communicator"' + (q.dna_type === 'communicator' ? ' selected' : '') + '>Коммуникатор</option>' +
     '<option value="analyst"' + (q.dna_type === 'analyst' ? ' selected' : '') + '>Аналитик</option>';
-  var actOpts = '<option value="post"' + (q.action_type === 'post' ? ' selected' : '') + '>post</option>' +
+  const actOpts = '<option value="post"' + (q.action_type === 'post' ? ' selected' : '') + '>post</option>' +
     '<option value="like"' + (q.action_type === 'like' ? ' selected' : '') + '>like</option>' +
     '<option value="comment"' + (q.action_type === 'comment' ? ' selected' : '') + '>comment</option>' +
     '<option value="friend"' + (q.action_type === 'friend' ? ' selected' : '') + '>friend</option>' +
     '<option value="share"' + (q.action_type === 'share' ? ' selected' : '') + '>share</option>';
-  var body = '<div class="fg"><div class="fl">Название</div><input class="field" id="qTitle" value="' + esc(q.title || '') + '"></div>' +
+  const body = '<div class="fg"><div class="fl">Название</div><input class="field" id="qTitle" value="' + esc(q.title || '') + '"></div>' +
     '<div class="fg"><div class="fl">Описание</div><textarea class="field" id="qDesc">' + esc(q.description || '') + '</textarea></div>' +
     '<div class="fg"><div class="fl">XP награда</div><input type="number" class="field" id="qXp" value="' + (q.xp_reward || '') + '"></div>' +
     '<div class="fg"><div class="fl">ДНК-тип</div><select class="field" id="qDna">' + dnaOpts + '</select></div>' +
@@ -68,7 +69,7 @@ async function openQuestModal(id) {
 }
 
 async function saveQuest(id) {
-  var d = {
+  const d = {
     title: document.getElementById('qTitle').value.trim(),
     description: document.getElementById('qDesc').value.trim(),
     xp_reward: parseInt(document.getElementById('qXp').value) || 0,
@@ -78,7 +79,7 @@ async function saveQuest(id) {
     is_active: document.getElementById('qActive').value === 'true'
   };
   if (!d.title) { showToast('Введите название', 'err'); return; }
-  var r = id ? await sb.from('quest_templates').update(d).eq('id', id) : await sb.from('quest_templates').insert(d);
+  const r = id ? await sb.from('quest_templates').update(d).eq('id', id) : await sb.from('quest_templates').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Квест обновлён' : 'Квест создан', 'ok');
   closeModal(); loadQuests();
@@ -96,17 +97,17 @@ async function delQuest(id) {
 
 // ===== ДОСТИЖЕНИЯ =====
 async function loadAchievements() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('achievements_catalog').select('*').order('created_at', { ascending: false });
+  const r = await sb.from('achievements_catalog').select('*').order('created_at', { ascending: false });
   _achCache = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openAchModal()">Создать достижение</button></div>';
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openAchModal()">Создать достижение</button></div>';
   if (!_achCache.length) { area.innerHTML = h + '<div class="empty">Нет достижений</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Иконка</th><th>Название</th><th>Описание</th><th>Категория</th><th>XP</th><th>Условие</th><th>Значение</th><th>Активно</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   _achCache.forEach(function(a) {
-    var act = a.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const act = a.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td style="font-size:20px">' + esc(a.icon || '—') + '</td><td><b>' + esc(a.title) + '</b></td>' +
       '<td>' + esc((a.description || '').substring(0, 40)) + '</td>' +
       '<td><span class="badge badge-purple">' + esc(a.category || '—') + '</span></td>' +
@@ -122,13 +123,13 @@ async function loadAchievements() {
 }
 
 async function openAchModal(id) {
-  var a = {};
-  if (id) { var r = await sb.from('achievements_catalog').select('*').eq('id', id).single(); a = r.data || {}; }
-  var catOpts = '<option value="social"' + (a.category === 'social' ? ' selected' : '') + '>social</option>' +
+  let a = {};
+  if (id) { const r = await sb.from('achievements_catalog').select('*').eq('id', id).single(); a = r.data || {}; }
+  const catOpts = '<option value="social"' + (a.category === 'social' ? ' selected' : '') + '>social</option>' +
     '<option value="content"' + (a.category === 'content' ? ' selected' : '') + '>content</option>' +
     '<option value="trading"' + (a.category === 'trading' ? ' selected' : '') + '>trading</option>' +
     '<option value="special"' + (a.category === 'special' ? ' selected' : '') + '>special</option>';
-  var body = '<div class="fg"><div class="fl">Ключ</div><input class="field" id="achKey" value="' + esc(a.key || '') + '"></div>' +
+  const body = '<div class="fg"><div class="fl">Ключ</div><input class="field" id="achKey" value="' + esc(a.key || '') + '"></div>' +
     '<div class="fg"><div class="fl">Название</div><input class="field" id="achTitle" value="' + esc(a.title || '') + '"></div>' +
     '<div class="fg"><div class="fl">Описание</div><textarea class="field" id="achDesc">' + esc(a.description || '') + '</textarea></div>' +
     '<div class="fg"><div class="fl">Иконка (emoji)</div><input class="field" id="achIcon" value="' + esc(a.icon || '') + '"></div>' +
@@ -141,7 +142,7 @@ async function openAchModal(id) {
 }
 
 async function saveAch(id) {
-  var d = {
+  const d = {
     key: document.getElementById('achKey').value.trim(),
     title: document.getElementById('achTitle').value.trim(),
     description: document.getElementById('achDesc').value.trim(),
@@ -152,7 +153,7 @@ async function saveAch(id) {
     condition_value: parseInt(document.getElementById('achCondVal').value) || null
   };
   if (!d.key || !d.title) { showToast('Введите ключ и название', 'err'); return; }
-  var r = id ? await sb.from('achievements_catalog').update(d).eq('id', id) : await sb.from('achievements_catalog').insert(d);
+  const r = id ? await sb.from('achievements_catalog').update(d).eq('id', id) : await sb.from('achievements_catalog').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Достижение обновлено' : 'Достижение создано', 'ok');
   closeModal(); loadAchievements();
@@ -166,17 +167,17 @@ async function delAch(id) {
 
 // ===== ЛИДЕРБОРД =====
 async function loadLeaderboard() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('users').select('id, name, level, xp_total, streak')
+  const r = await sb.from('users').select('id, name, level, xp_total, streak')
     .order('xp_total', { ascending: false }).limit(20);
-  var data = r.data || [];
+  const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет данных</div>'; return; }
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>#</th><th>Имя</th><th>Уровень</th><th>XP</th><th>Стрик</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(u, i) {
-    var medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
+    const medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
     h += '<tr><td><b>' + medal + (i + 1) + '</b></td>' +
       '<td>' + esc(u.name || '—') + '</td>' +
       '<td>' + (LN[u.level] || '—') + '</td>' +

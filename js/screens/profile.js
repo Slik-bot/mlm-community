@@ -2,14 +2,14 @@
 
 // ===== ДНК-цвета =====
 
-var DNA_COLORS = {
+const DNA_COLORS = {
   strategist: '#3b82f6',
   communicator: '#22c55e',
   creator: '#f59e0b',
   analyst: '#a78bfa'
 };
 
-var DNA_NAMES = {
+const DNA_NAMES = {
   strategist: 'Стратег',
   communicator: 'Коммуникатор',
   creator: 'Креатор',
@@ -18,7 +18,7 @@ var DNA_NAMES = {
 
 // ===== Уровни =====
 
-var LEVELS = {
+const LEVELS = {
   pawn:   { name: 'Пешка', min: 0, max: 499 },
   knight: { name: 'Конь', min: 500, max: 1999 },
   bishop: { name: 'Слон', min: 2000, max: 4999 },
@@ -27,8 +27,8 @@ var LEVELS = {
 };
 
 function getChessIcon(level, color) {
-  var c = color || '#8b5cf6';
-  var icons = {
+  const c = color || '#8b5cf6';
+  const icons = {
     pawn: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><circle cx="12" cy="8" r="3"/><path d="M9 21h6"/><path d="M10 21v-4a2 2 0 012-2v0a2 2 0 012 2v4"/><path d="M7 21a7 7 0 010-1c0-2 2-3 5-3s5 1 5 3a7 7 0 010 1"/></svg>',
     knight: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M8 16l-1 5h10l-1-5"/><path d="M7 16c0-4 2-6 3-8l-2-3c0 0 3-2 5-2s4 2 4 5c0 4-2 6-2 8"/><circle cx="14" cy="7" r="1" fill="' + c + '"/></svg>',
     bishop: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M8 21h8"/><path d="M9 21v-1a7 7 0 016 0v1"/><path d="M12 3a5 5 0 00-3 9l1 4h4l1-4a5 5 0 00-3-9z"/><circle cx="12" cy="3" r="1" fill="' + c + '"/></svg>',
@@ -45,7 +45,7 @@ function getDnaColor(dnaType) {
 // ===== initProfile =====
 
 function initProfile() {
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
   loadProfile(user.id).then(function(result) {
@@ -58,40 +58,40 @@ function initProfile() {
 // ===== renderProfile =====
 
 function renderProfile(user) {
-  var dnaColor = getDnaColor(user.dna_type);
-  var stats = (user.user_stats && user.user_stats[0]) || user.user_stats || {};
-  var level = user.level || 'pawn';
-  var lvl = LEVELS[level] || LEVELS.pawn;
-  var xp = user.xp_total || 0;
-  var xpProgress = lvl.max > 0 ? Math.min(100, Math.round((xp - lvl.min) / (lvl.max - lvl.min + 1) * 100)) : 0;
+  const dnaColor = getDnaColor(user.dna_type);
+  const stats = (user.user_stats && user.user_stats[0]) || user.user_stats || {};
+  const level = user.level || 'pawn';
+  const lvl = LEVELS[level] || LEVELS.pawn;
+  const xp = user.xp_total || 0;
+  const xpProgress = lvl.max > 0 ? Math.min(100, Math.round((xp - lvl.min) / (lvl.max - lvl.min + 1) * 100)) : 0;
 
   // Avatar
-  var avatar = document.getElementById('profileAvatar');
+  const avatar = document.getElementById('profileAvatar');
   if (avatar) {
     avatar.src = user.avatar_url || '';
     avatar.style.display = user.avatar_url ? '' : 'none';
   }
 
   // DNA ring
-  var ring = document.getElementById('profileDnaRing');
+  const ring = document.getElementById('profileDnaRing');
   if (ring) ring.style.borderColor = dnaColor;
 
   // Chess icon
-  var chessEl = document.getElementById('profileChessIcon');
+  const chessEl = document.getElementById('profileChessIcon');
   if (chessEl) chessEl.innerHTML = getChessIcon(level, dnaColor);
 
   // Level name
-  var levelEl = document.getElementById('profileLevel');
+  const levelEl = document.getElementById('profileLevel');
   if (levelEl) levelEl.textContent = lvl.name;
 
   // Name
-  var nameEl = document.getElementById('profileName');
+  const nameEl = document.getElementById('profileName');
   if (nameEl) nameEl.textContent = user.name || 'Участник';
 
   // DNA badge
-  var badge = document.getElementById('profileDnaBadge');
+  const badge = document.getElementById('profileDnaBadge');
   if (badge) {
-    var dnaName = DNA_NAMES[user.dna_type] || '';
+    const dnaName = DNA_NAMES[user.dna_type] || '';
     if (dnaName) {
       badge.textContent = dnaName;
       badge.style.background = dnaColor + '20';
@@ -103,31 +103,31 @@ function renderProfile(user) {
   }
 
   // Balance
-  var balanceEl = document.getElementById('profileBalance');
+  const balanceEl = document.getElementById('profileBalance');
   if (balanceEl) {
-    var bal = (user.balance || 0) / 100;
+    const bal = (user.balance || 0) / 100;
     balanceEl.textContent = bal.toFixed(2) + ' руб.';
   }
 
   // XP bar
-  var xpFill = document.getElementById('profileXpFill');
+  const xpFill = document.getElementById('profileXpFill');
   if (xpFill) xpFill.style.width = xpProgress + '%';
 
-  var xpLabel = document.getElementById('profileXpLabel');
+  const xpLabel = document.getElementById('profileXpLabel');
   if (xpLabel) xpLabel.textContent = xp + ' / ' + (lvl.max + 1) + ' XP';
 
   // Stats
-  var el;
+  let el;
   el = document.getElementById('statTasks'); if (el) el.textContent = stats.tasks_completed || 0;
   el = document.getElementById('statDeals'); if (el) el.textContent = stats.deals_count || 0;
   el = document.getElementById('statReferrals'); if (el) el.textContent = stats.referrals_count || 0;
   el = document.getElementById('statRating'); if (el) el.textContent = stats.rating || 0;
 
   // Achievements
-  var achEl = document.getElementById('profileAchievements');
+  const achEl = document.getElementById('profileAchievements');
   if (achEl && user.achievements && user.achievements.length) {
-    var html = '';
-    var items = user.achievements.slice(0, 6);
+    let html = '';
+    const items = user.achievements.slice(0, 6);
     items.forEach(function(a) {
       html += '<div class="achievement-badge" title="' + (a.name || '') + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="' + (a.color || '#8b5cf6') + '" stroke-width="1.5" width="24" height="24"><path d="M6 9a6 6 0 0012 0V3H6v6z"/><path d="M12 15v3"/><path d="M8 21h8"/></svg>' +
@@ -137,20 +137,20 @@ function renderProfile(user) {
   }
 
   // Streak
-  var streak = user.streak_days || 0;
-  var streakDays = document.getElementById('streakDays');
+  const streak = user.streak_days || 0;
+  const streakDays = document.getElementById('streakDays');
   if (streakDays) streakDays.textContent = streak + ' ' + getDaysWord(streak);
 
-  var streakFire = document.getElementById('streakFire');
+  const streakFire = document.getElementById('streakFire');
   if (streakFire) streakFire.classList.toggle('active', streak > 0);
 
-  var mult = document.getElementById('streakMultiplier');
+  const mult = document.getElementById('streakMultiplier');
   if (mult) mult.textContent = 'x' + getStreakMultiplier(streak);
 }
 
 function getDaysWord(n) {
-  var abs = Math.abs(n) % 100;
-  var last = abs % 10;
+  const abs = Math.abs(n) % 100;
+  const last = abs % 10;
   if (abs > 10 && abs < 20) return 'дней';
   if (last > 1 && last < 5) return 'дня';
   if (last === 1) return 'день';
@@ -169,46 +169,46 @@ function getStreakMultiplier(days) {
 // ===== initProfileEdit =====
 
 function initProfileEdit() {
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
-  var nameInp = document.getElementById('editName');
+  const nameInp = document.getElementById('editName');
   if (nameInp) nameInp.value = user.name || '';
 
-  var bioInp = document.getElementById('editBio');
+  const bioInp = document.getElementById('editBio');
   if (bioInp) {
     bioInp.value = user.bio || '';
-    var counter = document.getElementById('editBioCount');
+    const counter = document.getElementById('editBioCount');
     if (counter) counter.textContent = (user.bio || '').length;
     bioInp.addEventListener('input', function() {
       if (counter) counter.textContent = bioInp.value.length;
     });
   }
 
-  var editAvatar = document.getElementById('editAvatar');
+  const editAvatar = document.getElementById('editAvatar');
   if (editAvatar) {
     editAvatar.src = user.avatar_url || '';
     editAvatar.style.display = user.avatar_url ? '' : 'none';
   }
 
-  var editRing = document.getElementById('editAvatarRing');
+  const editRing = document.getElementById('editAvatarRing');
   if (editRing) editRing.style.borderColor = getDnaColor(user.dna_type);
 }
 
 // ===== profileSaveEdit =====
 
 async function profileSaveEdit() {
-  var nameInp = document.getElementById('editName');
-  var bioInp = document.getElementById('editBio');
-  var name = nameInp ? nameInp.value.trim() : '';
-  var bio = bioInp ? bioInp.value.trim() : '';
+  const nameInp = document.getElementById('editName');
+  const bioInp = document.getElementById('editBio');
+  const name = nameInp ? nameInp.value.trim() : '';
+  const bio = bioInp ? bioInp.value.trim() : '';
 
   if (!name || name.length < 2) {
     showToast('Имя слишком короткое');
     return;
   }
 
-  var result = await updateProfile({ name: name, bio: bio });
+  const result = await updateProfile({ name: name, bio: bio });
   if (result.error) {
     showToast('Ошибка сохранения');
     return;
@@ -220,38 +220,38 @@ async function profileSaveEdit() {
 // ===== profilePickAvatar =====
 
 function profilePickAvatar() {
-  var input = document.createElement('input');
+  const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
   input.onchange = async function() {
-    var file = input.files[0];
+    const file = input.files[0];
     if (!file) return;
 
-    var user = getCurrentUser();
+    const user = getCurrentUser();
     if (!user) return;
 
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-    var img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
     img.onload = async function() {
-      var size = Math.min(img.width, img.height, 500);
+      const size = Math.min(img.width, img.height, 500);
       canvas.width = size;
       canvas.height = size;
-      var sx = (img.width - size) / 2;
-      var sy = (img.height - size) / 2;
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
       ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
 
       canvas.toBlob(async function(blob) {
-        var path = 'avatars/' + user.id + '/avatar.jpg';
-        var uploadResult = await window.sb.storage.from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+        const path = 'avatars/' + user.id + '/avatar.jpg';
+        const uploadResult = await window.sb.storage.from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
         if (uploadResult.error) { showToast('Ошибка загрузки'); return; }
 
-        var urlData = window.sb.storage.from('avatars').getPublicUrl(path);
-        var url = urlData.data.publicUrl + '?t=' + Date.now();
+        const urlData = window.sb.storage.from('avatars').getPublicUrl(path);
+        const url = urlData.data.publicUrl + '?t=' + Date.now();
 
         await updateProfile({ avatar_url: url });
 
-        var editAvatar = document.getElementById('editAvatar');
+        const editAvatar = document.getElementById('editAvatar');
         if (editAvatar) { editAvatar.src = url; editAvatar.style.display = ''; }
         showToast('Фото обновлено');
       }, 'image/jpeg', 0.85);
@@ -264,11 +264,11 @@ function profilePickAvatar() {
 // ===== initProfileSettings =====
 
 function initProfileSettings() {
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
   window.sb.from('user_settings').select('*').eq('user_id', user.id).single().then(function(result) {
-    var settings = result.data || {};
+    const settings = result.data || {};
     setToggleState('toggleMoney', settings.push_money !== false);
     setToggleState('toggleDeals', settings.push_deals !== false);
     setToggleState('toggleProgress', settings.push_progress !== false);
@@ -277,7 +277,7 @@ function initProfileSettings() {
 }
 
 function setToggleState(id, active) {
-  var el = document.getElementById(id);
+  const el = document.getElementById(id);
   if (!el) return;
   if (active) { el.classList.add('active'); } else { el.classList.remove('active'); }
 }
@@ -285,15 +285,15 @@ function setToggleState(id, active) {
 // ===== profileToggleSetting =====
 
 async function profileToggleSetting(key, el) {
-  var isActive = el.classList.contains('active');
-  var newVal = !isActive;
+  const isActive = el.classList.contains('active');
+  const newVal = !isActive;
 
   if (newVal) { el.classList.add('active'); } else { el.classList.remove('active'); }
 
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) return;
 
-  var update = {};
+  const update = {};
   update[key] = newVal;
   await window.sb.from('user_settings').update(update).eq('user_id', user.id);
 }

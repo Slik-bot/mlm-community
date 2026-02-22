@@ -1,10 +1,11 @@
 // ===== ADMIN PAGES 4 — Settings =====
 
-var _setTab = 'tariffs';
+let _setTab = 'tariffs';
 
 function renderSettings() {
-  var tabs = 'tariffs:Тарифы,xp:XP и уровни,dna:ДНК-тест,reviews:Отзывы,integrations:Интеграции', h = '<div class="tabs">';
-  tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _setTab ? ' active' : '') + '" onclick="switchSetTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  const tabs = 'tariffs:Тарифы,xp:XP и уровни,dna:ДНК-тест,reviews:Отзывы,integrations:Интеграции';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _setTab ? ' active' : '') + '" onclick="switchSetTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
   switchSetTab(_setTab, document.querySelector('.tab.active'));
@@ -18,20 +19,20 @@ function switchSetTab(tab, btn) {
 
 // ===== ТАРИФЫ =====
 async function loadTariffs() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('app_settings').select('*').eq('key', 'tariffs').single();
-  var cfg = (r.data && r.data.value) || {
+  const r = await sb.from('app_settings').select('*').eq('key', 'tariffs').single();
+  const cfg = (r.data && r.data.value) || {
     free: { monthly: 0, yearly: 0, posts_day: 3, cases: 1, tools: 0 },
     pro: { monthly: 499, yearly: 4990, posts_day: 10, cases: 5, tools: 5 },
     business: { monthly: 1499, yearly: 14990, posts_day: 50, cases: 20, tools: 50 }
   };
-  var plans = ['free', 'pro', 'business'];
-  var labels = { free: 'FREE', pro: 'PRO', business: 'BUSINESS' };
-  var colors = { free: 'blue', pro: 'purple', business: 'gold' };
-  var h = '<div class="stats-grid">';
+  const plans = ['free', 'pro', 'business'];
+  const labels = { free: 'FREE', pro: 'PRO', business: 'BUSINESS' };
+  const colors = { free: 'blue', pro: 'purple', business: 'gold' };
+  let h = '<div class="stats-grid">';
   plans.forEach(function(p) {
-    var c = cfg[p] || {};
+    const c = cfg[p] || {};
     h += '<div class="stat-card" style="text-align:left;padding:16px">' +
       '<div style="margin-bottom:8px"><span class="badge badge-' + colors[p] + '">' + labels[p] + '</span></div>' +
       '<div class="fg"><div class="fl">Цена/мес</div><input type="number" class="field" id="tf_' + p + '_m" value="' + (c.monthly || 0) + '"></div>' +
@@ -45,7 +46,8 @@ async function loadTariffs() {
   area.innerHTML = h;
 }
 async function saveTariffs() {
-  var plans = ['free', 'pro', 'business'], val = {};
+  const plans = ['free', 'pro', 'business'];
+  const val = {};
   plans.forEach(function(p) {
     val[p] = {
       monthly: parseInt(document.getElementById('tf_' + p + '_m').value) || 0,
@@ -55,23 +57,23 @@ async function saveTariffs() {
       tools: parseInt(document.getElementById('tf_' + p + '_tl').value) || 0
     };
   });
-  var r = await sb.from('app_settings').upsert({ key: 'tariffs', value: val, updated_at: new Date().toISOString() });
+  const r = await sb.from('app_settings').upsert({ key: 'tariffs', value: val, updated_at: new Date().toISOString() });
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast('Тарифы сохранены', 'ok');
 }
 
 // ===== XP И УРОВНИ =====
 async function loadXpRules() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var xpR = await sb.from('app_settings').select('*').eq('key', 'xp_rules').single();
-  var lvlR = await sb.from('app_settings').select('*').eq('key', 'levels').single();
-  var xp = (xpR.data && xpR.data.value) || { post: 15, like: 5, comment: 10, share: 25, friend: 10 };
-  var lvl = (lvlR.data && lvlR.data.value) || { pawn: 0, knight: 500, bishop: 1500, rook: 3000, queen: 5000, king: 10000 };
-  var actions = ['post', 'like', 'comment', 'share', 'friend'];
-  var levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
-  var lvlNames = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь', king: 'Король' };
-  var h = '<div class="section-title">XP за действия</div>' +
+  const xpR = await sb.from('app_settings').select('*').eq('key', 'xp_rules').single();
+  const lvlR = await sb.from('app_settings').select('*').eq('key', 'levels').single();
+  const xp = (xpR.data && xpR.data.value) || { post: 15, like: 5, comment: 10, share: 25, friend: 10 };
+  const lvl = (lvlR.data && lvlR.data.value) || { pawn: 0, knight: 500, bishop: 1500, rook: 3000, queen: 5000, king: 10000 };
+  const actions = ['post', 'like', 'comment', 'share', 'friend'];
+  const levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
+  const lvlNames = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь', king: 'Король' };
+  let h = '<div class="section-title">XP за действия</div>' +
     '<div class="table-wrap"><table class="data-table"><thead><tr><th>Действие</th><th>XP</th></tr></thead><tbody>';
   actions.forEach(function(a) {
     h += '<tr><td>' + a + '</td><td><input type="number" class="field" id="xr_' + a + '" value="' + (xp[a] || 0) + '" style="width:100px;margin:0"></td></tr>';
@@ -87,11 +89,13 @@ async function loadXpRules() {
   area.innerHTML = h;
 }
 async function saveXpRules() {
-  var actions = ['post', 'like', 'comment', 'share', 'friend'], xp = {};
+  const actions = ['post', 'like', 'comment', 'share', 'friend'];
+  const xp = {};
   actions.forEach(function(a) { xp[a] = parseInt(document.getElementById('xr_' + a).value) || 0; });
-  var levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'], lvl = {};
+  const levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
+  const lvl = {};
   levels.forEach(function(l) { lvl[l] = parseInt(document.getElementById('lv_' + l).value) || 0; });
-  var now = new Date().toISOString();
+  const now = new Date().toISOString();
   await sb.from('app_settings').upsert({ key: 'xp_rules', value: xp, updated_at: now });
   await sb.from('app_settings').upsert({ key: 'levels', value: lvl, updated_at: now });
   showToast('XP и уровни сохранены', 'ok');
@@ -99,17 +103,17 @@ async function saveXpRules() {
 
 // ===== ДНК-ТЕСТ =====
 async function loadDnaQuestions() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('dna_questions').select('*').order('sort_order', { ascending: true });
-  var data = r.data || [];
+  const r = await sb.from('dna_questions').select('*').order('sort_order', { ascending: true });
+  const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет вопросов</div>'; return; }
-  var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>#</th><th>Вопрос</th><th>Вариантов</th><th>Порядок</th><th>Активен</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(q, i) {
-    var opts = Array.isArray(q.options) ? q.options.length : 0;
-    var act = q.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    const opts = Array.isArray(q.options) ? q.options.length : 0;
+    const act = q.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td>' + (i + 1) + '</td><td>' + esc((q.question_text || '').substring(0, 60)) + '</td>' +
       '<td>' + opts + '</td><td>' + (q.sort_order || 0) + '</td><td>' + act + '</td></tr>';
   });
@@ -119,11 +123,11 @@ async function loadDnaQuestions() {
 
 // ===== ОТЗЫВЫ =====
 async function loadReviews() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('reviews').select('*').order('sort_order', { ascending: true });
-  var data = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openReviewModal()">Добавить отзыв</button></div>';
+  const r = await sb.from('reviews').select('*').order('sort_order', { ascending: true });
+  const data = r.data || [];
+  let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openReviewModal()">Добавить отзыв</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет отзывов</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Имя</th><th>Роль</th><th>Звёзды</th><th>Текст</th><th>Тег</th><th>Порядок</th><th>Действия</th>' +
@@ -143,9 +147,9 @@ async function loadReviews() {
   area.innerHTML = h;
 }
 async function openReviewModal(id) {
-  var rev = {};
-  if (id) { var r = await sb.from('reviews').select('*').eq('id', id).single(); rev = r.data || {}; }
-  var body = '<div class="fg"><div class="fl">Имя</div><input class="field" id="revName" value="' + esc(rev.name || '') + '"></div>' +
+  let rev = {};
+  if (id) { const r = await sb.from('reviews').select('*').eq('id', id).single(); rev = r.data || {}; }
+  const body = '<div class="fg"><div class="fl">Имя</div><input class="field" id="revName" value="' + esc(rev.name || '') + '"></div>' +
     '<div class="fg"><div class="fl">Роль</div><input class="field" id="revRole" value="' + esc(rev.role || '') + '"></div>' +
     '<div class="fg"><div class="fl">Звёзды (1-5)</div><input type="number" class="field" id="revStars" min="1" max="5" value="' + (rev.stars || 5) + '"></div>' +
     '<div class="fg"><div class="fl">Краткий текст</div><input class="field" id="revShort" value="' + esc(rev.short_text || '') + '"></div>' +
@@ -158,7 +162,7 @@ async function openReviewModal(id) {
   openModal(id ? 'Редактировать отзыв' : 'Новый отзыв', body);
 }
 async function saveReview(id) {
-  var d = {
+  const d = {
     name: document.getElementById('revName').value.trim(),
     role: document.getElementById('revRole').value.trim(),
     stars: parseInt(document.getElementById('revStars').value) || 5,
@@ -170,7 +174,7 @@ async function saveReview(id) {
     sort_order: parseInt(document.getElementById('revOrd').value) || 0
   };
   if (!d.name) { showToast('Введите имя', 'err'); return; }
-  var r = id ? await sb.from('reviews').update(d).eq('id', id) : await sb.from('reviews').insert(d);
+  const r = id ? await sb.from('reviews').update(d).eq('id', id) : await sb.from('reviews').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Отзыв обновлён' : 'Отзыв создан', 'ok'); closeModal(); loadReviews();
 }
@@ -182,20 +186,20 @@ async function delReview(id) {
 
 // ===== ИНТЕГРАЦИИ =====
 async function loadIntegrations() {
-  var area = document.getElementById('contentArea');
+  const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
-  var cfg = (r.data && r.data.value) || {};
-  var items = [
+  const r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
+  const cfg = (r.data && r.data.value) || {};
+  const items = [
     { key: 'telegram_bot', name: 'Telegram Bot', icon: '🤖', field: 'Токен бота', placeholder: 'bot123456:ABC...' },
     { key: 'tribute', name: 'Tribute', icon: '💳', field: 'Channel ID', placeholder: 'channel_id' },
     { key: 'google_play', name: 'Google Play', icon: '📱', field: null },
     { key: 'app_store', name: 'App Store', icon: '🍎', field: null }
   ];
-  var h = '<div class="stats-grid">';
+  let h = '<div class="stats-grid">';
   items.forEach(function(it) {
-    var val = cfg[it.key] || {};
-    var st = val.connected ? '<span class="badge badge-green">Подключено</span>' : '<span class="badge badge-red">Не подключено</span>';
+    const val = cfg[it.key] || {};
+    const st = val.connected ? '<span class="badge badge-green">Подключено</span>' : '<span class="badge badge-red">Не подключено</span>';
     h += '<div class="stat-card" style="text-align:left;padding:16px">' +
       '<div style="font-size:24px;margin-bottom:8px">' + it.icon + ' ' + it.name + '</div>' +
       '<div style="margin-bottom:8px">' + st + '</div>';
@@ -211,11 +215,11 @@ async function loadIntegrations() {
   area.innerHTML = h;
 }
 async function saveIntegration(key) {
-  var r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
-  var cfg = (r.data && r.data.value) || {};
-  var token = document.getElementById('int_' + key).value.trim();
+  const r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
+  const cfg = (r.data && r.data.value) || {};
+  const token = document.getElementById('int_' + key).value.trim();
   cfg[key] = { token: token, connected: !!token };
-  var res = await sb.from('app_settings').upsert({ key: 'integrations', value: cfg, updated_at: new Date().toISOString() });
+  const res = await sb.from('app_settings').upsert({ key: 'integrations', value: cfg, updated_at: new Date().toISOString() });
   if (res.error) { showToast(res.error.message, 'err'); return; }
   showToast('Сохранено', 'ok'); loadIntegrations();
 }

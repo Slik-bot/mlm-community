@@ -5,9 +5,9 @@
 // --- FIX 1: sbFormatDate (удалена вместе с supabase-api.js) ---
 window.sbFormatDate = function(d) {
   if (!d) return '';
-  var dt = new Date(d);
-  var now = new Date();
-  var diff = (now - dt) / 1000;
+  const dt = new Date(d);
+  const now = new Date();
+  const diff = (now - dt) / 1000;
   if (diff < 60) return 'только что';
   if (diff < 3600) return Math.floor(diff / 60) + ' мин назад';
   if (diff < 86400) return Math.floor(diff / 3600) + ' ч назад';
@@ -18,7 +18,7 @@ window.sbFormatDate = function(d) {
 // --- FIX 2: sbLoadComments (удалена вместе с supabase-api.js) ---
 window.sbLoadComments = async function(postId) {
   if (window.loadComments) {
-    var result = await window.loadComments(postId);
+    const result = await window.loadComments(postId);
     return (result && result.data) || result || [];
   }
   return [];

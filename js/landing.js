@@ -1,7 +1,7 @@
 // ===== LANDING =====
 
 // ═══ ECOSYSTEM MODAL DATA ═══
-var ECO_DATA = {
+const ECO_DATA = {
   1:{title:'ДНК-тест бизнеса',text:'7 вопросов — 60 секунд — и система определяет твой бизнес-ДНК: Стратег, Коммуникатор, Креатор или Аналитик.\n\nЭто не развлекательный тест. Результат влияет на всё: какие ежедневные квесты тебе выпадают, кого Матч-система подбирает в партнёры, какой контент в ленте показывается первым, какие инструменты в магазине рекомендуются.\n\nКаждый ДНК-тип получает свой цвет — и твоя шахматная фигура окрашивается в него. Стратег — синяя, Коммуникатор — зелёная, Креатор — оранжевая, Аналитик — фиолетовая. Это твоя визуальная идентичность в сообществе.\n\nМожно пройти бесплатно прямо сейчас — даже без регистрации.'},
   2:{title:'Матч-система',text:'Полноэкранные карточки участников — свайпай как в Tinder, только для бизнеса. Вправо — интерес, влево — пропуск. Один Superlike в день с золотой рамкой.\n\nАлгоритм подбора учитывает 7 факторов: ДНК-совместимость (30%), общие интересы (20%), совпадение целей (20%), уровень опыта (10%), общие друзья (10%), активность (5%), география (5%). Кольцо вокруг аватара показывает процент совместимости.\n\nПри матче — экран с конфетти, два аватара, процент совместимости и автоматический icebreaker в чате. Не нужно придумывать, с чего начать разговор.\n\nPRO — 10 свайпов в день, BUSINESS — безлимит.'},
   3:{title:'Геймификация',text:'Система «Импульс» — как Duolingo, но для бизнеса. Каждое утро 3 персональных квеста под твой ДНК-тип. Выполнил все три — бонус x1.5 к XP.\n\nXP начисляются за всё: пост = 15 XP, кейс «Было/Стало» = 30 XP, комментарий = 3 XP, матч = 15 XP, продажа инструмента = 20 XP, шеринг в Telegram = 15 XP.\n\nСтрик-серии умножают заработок: 7 дней подряд — x1.3, 30 дней — x2.0, 90 дней — x3.0 ко всем XP. Плюс 50+ ачивок: от «Первое слово» до секретных — «Ночная сова» (заходи в 00:00-05:00), «Марафонец» (streak 100 дней).\n\nЕженедельные челленджи с призами, сезоны каждые 3 месяца с эксклюзивными бейджами.'},
@@ -11,7 +11,7 @@ var ECO_DATA = {
 };
 
 // ═══ TARIFF MODAL DATA ═══
-var TARIFF_DATA = {
+const TARIFF_DATA = {
   free: {
     title: 'FREE — Бесплатно',
     color: 'rgba(255,255,255,0.5)',
@@ -77,20 +77,20 @@ var TARIFF_DATA = {
 // ═══ INIT SUBFUNCTIONS ═══
 
 function initLndHeader() {
-  var lnd=document.getElementById('scrLanding');
-  var hdr=document.getElementById('lndHdr');
+  const lnd=document.getElementById('scrLanding');
+  const hdr=document.getElementById('lndHdr');
   if(lnd&&hdr) lnd.addEventListener('scroll',function(){hdr.classList.toggle('scrolled',lnd.scrollTop>40);});
-  var app=document.querySelector('.app');
+  const app=document.querySelector('.app');
   document.querySelectorAll('#scrLanding > .lnd-modal-bg').forEach(function(m){app.appendChild(m);});
 }
 
 function createParticles(containerId) {
-  var c=document.getElementById(containerId);
+  const c=document.getElementById(containerId);
   if(!c) return;
   c.innerHTML='';
-  for(var i=0;i<18;i++){
-    var b=document.createElement('div');b.className='lnd-bubble';
-    var sz=Math.random()*16+8;
+  for(let i=0;i<18;i++){
+    const b=document.createElement('div');b.className='lnd-bubble';
+    const sz=Math.random()*16+8;
     b.style.width=sz+'px';b.style.height=sz+'px';
     b.style.left=Math.random()*100+'%';
     b.style.setProperty('--dur',(Math.random()*12+10)+'s');
@@ -99,9 +99,9 @@ function createParticles(containerId) {
     b.style.setProperty('--op',(Math.random()*0.35+0.3));
     c.appendChild(b);
   }
-  for(var j=0;j<25;j++){
-    var g=document.createElement('div');g.className='lnd-glow';
-    var gs=Math.random()*5+3;
+  for(let j=0;j<25;j++){
+    const g=document.createElement('div');g.className='lnd-glow';
+    const gs=Math.random()*5+3;
     g.style.width=gs+'px';g.style.height=gs+'px';
     g.style.left=Math.random()*100+'%';g.style.top=Math.random()*100+'%';
     g.style.setProperty('--pdur',(Math.random()*3+2)+'s');
@@ -109,9 +109,9 @@ function createParticles(containerId) {
     g.style.setProperty('--op',(Math.random()*0.4+0.35));
     c.appendChild(g);
   }
-  for(var k=0;k<5;k++){
-    var o=document.createElement('div');o.className='lnd-orb-float';
-    var os=Math.random()*60+40;
+  for(let k=0;k<5;k++){
+    const o=document.createElement('div');o.className='lnd-orb-float';
+    const os=Math.random()*60+40;
     o.style.width=os+'px';o.style.height=os+'px';
     o.style.left=(Math.random()*90+5)+'%';o.style.top=(Math.random()*80+10)+'%';
     o.style.setProperty('--dur',(Math.random()*15+20)+'s');
@@ -122,27 +122,27 @@ function createParticles(containerId) {
 }
 
 function initLndCarousel() {
-  var c=document.getElementById('lndCarousel');
-  var dots=document.querySelectorAll('#lndDots span');
+  const c=document.getElementById('lndCarousel');
+  const dots=document.querySelectorAll('#lndDots span');
   if(c&&dots.length){
     c.addEventListener('scroll',function(){
-      var idx=Math.round(c.scrollLeft/(c.scrollWidth/dots.length));
+      const idx=Math.round(c.scrollLeft/(c.scrollWidth/dots.length));
       dots.forEach(function(d,i){d.classList.toggle('active',i===idx);});
     });
   }
 }
 
 function initLndScrollReveal() {
-  var landing=document.getElementById('scrLanding');
+  const landing=document.getElementById('scrLanding');
   if(!landing) return;
-  var srElements=[];
-  var srTicking=false;
-  var srCheck=function(){
-    var landingRect=landing.getBoundingClientRect();
-    var threshold=landing.clientHeight*0.82;
+  let srElements=[];
+  let srTicking=false;
+  const srCheck=function(){
+    const landingRect=landing.getBoundingClientRect();
+    const threshold=landing.clientHeight*0.82;
     srElements.forEach(function(item){
       if(item.revealed) return;
-      var rect=item.el.getBoundingClientRect();
+      const rect=item.el.getBoundingClientRect();
       if(rect.top-landingRect.top<threshold){item.el.classList.add('sr-visible');item.revealed=true;}
     });
     srElements=srElements.filter(function(item){return !item.revealed;});
@@ -151,7 +151,7 @@ function initLndScrollReveal() {
       document.removeEventListener('touchmove',srOnScroll);
     }
   };
-  var srOnScroll=function(){
+  const srOnScroll=function(){
     if(!srTicking){
       srTicking=true;
       requestAnimationFrame(function(){srCheck();srTicking=false;});
@@ -172,27 +172,27 @@ function initLndScrollReveal() {
 }
 
 function initLndEcoModal() {
-  var overlay=document.getElementById('ecoModalOverlay');
-  var titleEl=document.getElementById('ecoModalTitle');
-  var textEl=document.getElementById('ecoModalText');
-  var iconEl=document.getElementById('ecoModalIcon');
-  var closeBtn=document.getElementById('ecoModalClose');
+  const overlay=document.getElementById('ecoModalOverlay');
+  const titleEl=document.getElementById('ecoModalTitle');
+  const textEl=document.getElementById('ecoModalText');
+  const iconEl=document.getElementById('ecoModalIcon');
+  const closeBtn=document.getElementById('ecoModalClose');
   if(!overlay) return;
   document.querySelectorAll('[data-eco]').forEach(function(card){
     card.style.cursor='pointer';
     card.addEventListener('click',function(){
-      var id=this.getAttribute('data-eco');
-      var data=ECO_DATA[id];
+      const id=this.getAttribute('data-eco');
+      const data=ECO_DATA[id];
       if(!data)return;
       titleEl.textContent=data.title;
       textEl.innerHTML=data.text.replace(/\n\n/g,'<br><br>');
-      var svgSource=this.querySelector('svg');
+      const svgSource=this.querySelector('svg');
       if(svgSource){iconEl.innerHTML=svgSource.outerHTML;}
       overlay.classList.add('open');
       document.body.style.overflow='hidden';
     });
   });
-  var closeModal=function(){overlay.classList.remove('open');document.body.style.overflow='';};
+  const closeModal=function(){overlay.classList.remove('open');document.body.style.overflow='';};
   closeBtn.addEventListener('click',closeModal);
   overlay.addEventListener('click',function(e){if(e.target===overlay)closeModal();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
@@ -202,18 +202,18 @@ function initLndAccordion() {
   document.querySelectorAll('[data-toggle]').forEach(function(trigger){
     trigger.addEventListener('click',function(e){
       e.stopPropagation();
-      var targetId=this.getAttribute('data-toggle');
-      var target=document.getElementById(targetId);
-      var arrow=this.querySelector('.lnd-arrow');
+      const targetId=this.getAttribute('data-toggle');
+      const target=document.getElementById(targetId);
+      const arrow=this.querySelector('.lnd-arrow');
       if(!target)return;
-      var section=this.closest('section,.lnd-glass');
+      const section=this.closest('section,.lnd-glass');
       if(section){
         section.querySelectorAll('.lnd-expand.open').forEach(function(el){
           if(el!==target){
             el.classList.remove('open');
-            var otherId=el.id;
-            var otherTrigger=section.querySelector('[data-toggle="'+otherId+'"]');
-            if(otherTrigger){var otherArrow=otherTrigger.querySelector('.lnd-arrow');if(otherArrow)otherArrow.classList.remove('open');}
+            const otherId=el.id;
+            const otherTrigger=section.querySelector('[data-toggle="'+otherId+'"]');
+            if(otherTrigger){const otherArrow=otherTrigger.querySelector('.lnd-arrow');if(otherArrow)otherArrow.classList.remove('open');}
           }
         });
       }
@@ -224,15 +224,15 @@ function initLndAccordion() {
 }
 
 function initLndInsideModal() {
-  var overlay=document.getElementById('insideModalOverlay');
-  var openBtn=document.getElementById('insideBtnOpen');
-  var closeBtn=document.getElementById('insideModalClose');
+  const overlay=document.getElementById('insideModalOverlay');
+  const openBtn=document.getElementById('insideBtnOpen');
+  const closeBtn=document.getElementById('insideModalClose');
   if(!overlay||!openBtn) return;
   openBtn.addEventListener('click',function(){
     overlay.classList.add('open');
     document.body.style.overflow='hidden';
   });
-  var closeInsideModal=function(){overlay.classList.remove('open');document.body.style.overflow='';};
+  const closeInsideModal=function(){overlay.classList.remove('open');document.body.style.overflow='';};
   if(closeBtn)closeBtn.addEventListener('click',closeInsideModal);
   overlay.addEventListener('click',function(e){if(e.target===overlay)closeInsideModal();});
   document.addEventListener('keydown',function(e){
@@ -241,24 +241,24 @@ function initLndInsideModal() {
 }
 
 function initLndScrollToDna() {
-  var link=document.getElementById('dnaScrollLink');
+  const link=document.getElementById('dnaScrollLink');
   if(link){
     link.addEventListener('click',function(e){
       e.preventDefault();
-      var el=document.getElementById('dnaSection');
+      const el=document.getElementById('dnaSection');
       if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
     });
   }
 }
 
 function initLndTariffModals() {
-  var overlay=document.getElementById('tariffOverlay');
-  var titleEl=document.getElementById('tariffModalTitle');
-  var bodyEl=document.getElementById('tariffModalBody');
-  var closeBtn=document.getElementById('tariffModalClose');
+  const overlay=document.getElementById('tariffOverlay');
+  const titleEl=document.getElementById('tariffModalTitle');
+  const bodyEl=document.getElementById('tariffModalBody');
+  const closeBtn=document.getElementById('tariffModalClose');
   if(!overlay) return;
-  var openTariff=function(key){
-    var data=TARIFF_DATA[key];
+  const openTariff=function(key){
+    const data=TARIFF_DATA[key];
     if(!data) return;
     titleEl.textContent=data.title;
     titleEl.style.color=data.color;
@@ -266,10 +266,10 @@ function initLndTariffModals() {
     overlay.style.display='flex';
     document.body.style.overflow='hidden';
   };
-  var closeTariff=function(){overlay.style.display='none';document.body.style.overflow='';};
-  var freeBtn=document.getElementById('tariffFree');
-  var proBtn=document.getElementById('tariffPro');
-  var bizBtn=document.getElementById('tariffBiz');
+  const closeTariff=function(){overlay.style.display='none';document.body.style.overflow='';};
+  const freeBtn=document.getElementById('tariffFree');
+  const proBtn=document.getElementById('tariffPro');
+  const bizBtn=document.getElementById('tariffBiz');
   if(freeBtn) freeBtn.addEventListener('click',function(){openTariff('free');});
   if(proBtn) proBtn.addEventListener('click',function(){openTariff('pro');});
   if(bizBtn) bizBtn.addEventListener('click',function(){openTariff('biz');});
@@ -299,7 +299,7 @@ window.initLanding = initLanding;
 
 function openLndModal(type){
   closeLndModals();
-  var el=document.getElementById('lnd'+type.charAt(0).toUpperCase()+type.slice(1)+'Modal');
+  const el=document.getElementById('lnd'+type.charAt(0).toUpperCase()+type.slice(1)+'Modal');
   if(el)el.classList.add('active');
 }
 function closeLndModals(){
@@ -323,14 +323,14 @@ function freshRegistration(){
 
 // ═══ INFO MODALS ═══
 
-var infoData={offer:{t:'Публичная оферта',b:'<b>1. Общие положения</b><br>Настоящий документ является официальным предложением MLM Community.<br><br><b>2. Регистрация</b><br>Пользователем может стать лицо старше 18 лет.<br><br><b>3. Тарифы</b><br>FREE / PRO 599₽/мес / BUSINESS 1490₽/мес.<br><br><b>4. Правила</b><br>Запрещены: спам, оскорбления, мошенничество. Нарушители блокируются.'},privacy:{t:'Конфиденциальность',b:'<b>1. Данные</b><br>Собираем: имя, email, активность, результаты ДНК-теста.<br><br><b>2. Использование</b><br>Персонализация, рекомендации, аналитика. Не передаём третьим лицам.<br><br><b>3. Защита</b><br>Шифрование TLS 1.3, AES-256. Серверы в защищённых дата-центрах.<br><br><b>4. Ваши права</b><br>Запросить копию, удалить данные, отозвать согласие.'},support:{t:'Поддержка',b:'<b>Telegram-бот</b><br>@mlmcommunity_support — ответ за 15 минут.<br><br><b>Email</b><br>support@mlmcommunity.app<br><br><b>FAQ</b><br>Частые вопросы доступны в Академии после регистрации.'},faq:{t:'FAQ',b:'<div class="faq-grid"><div class="faq-block"><div class="faq-block-q">1. Что такое ДНК-тест бизнеса?</div><div class="faq-block-a"><p>Бесплатный тест из 7 вопросов, который определяет твой тип предпринимателя — Стратег, Коммуникатор, Креатор или Аналитик. На основе результата платформа подбирает персональные рекомендации: какой контент изучать, с кем партнёриться, какую стратегию выбрать. Тест занимает 60 секунд и доступен без регистрации.</p></div></div><div class="faq-block"><div class="faq-block-q">2. Платформа бесплатная?</div><div class="faq-block-a"><p>Да, базовый тариф FREE — бесплатный навсегда. Включает ленту, Stories, ДНК-тест, 10 диалогов и 5 постов в месяц. PRO за 599₽/мес — безлимит постов и чатов, 10 свайпов/день. BUSINESS за 1 490₽/мес — аналитика команды, до 5 компаний. Годовая подписка — скидка до 33%.</p></div></div><div class="faq-block"><div class="faq-block-q">3. Чем отличается от соцсетей?</div><div class="faq-block-a"><p>Обычные соцсети — про лайки и контент. Здесь — про результат. Матч-система находит партнёров по 7 параметрам совместимости. Геймификация мотивирует расти. Карта возможностей даёт пошаговый план. Аналитика показывает, где теряешь людей. Деловая среда, где каждое знакомство — точка роста.</p></div></div><div class="faq-block"><div class="faq-block-q">4. Как работает матч-система?</div><div class="faq-block-a"><p>Алгоритм анализирует 7 факторов: ДНК-тип, нишу, опыт, цели, географию, активность и бизнес-карму. Показывает процент совместимости с другими участниками. Свайпай профили — при взаимном интересе открывается чат. На FREE — ограниченные свайпы, PRO — 10/день, BUSINESS — без лимитов.</p></div></div><div class="faq-block"><div class="faq-block-q">5. Я новичок — мне подойдёт?</div><div class="faq-block-a"><p>Именно для тебя. ДНК-тест определит точку старта. Маршрут новичка за 7 дней — около 300 XP и чёткий план. Система подберёт наставника с совместимым ДНК. Академия — 20+ микро-уроков по 30-60 секунд. Сообщество поддержит. Многие пришли без опыта и вышли на результат за 3-4 месяца.</p></div></div><div class="faq-block"><div class="faq-block-q">6. Какие компании представлены?</div><div class="faq-block-a"><p>Платформа мультикомпанийная — представители разных сетевых компаний. У каждой публичный профиль с рейтингом, отзывами и аналитикой. Можно состоять в нескольких компаниях (до 5 на BUSINESS). Мы не продвигаем конкретные бренды — даём инструменты для роста в любой структуре.</p></div></div><div class="faq-block"><div class="faq-block-q">7. Реферальная программа?</div><div class="faq-block-a"><p>Приглашай участников и получай комиссию с подписок: 15% на PRO, 20% на BUSINESS. Начисляется ежемесячно, пока приглашённый платит. Вывод от 1 000₽. Бонус обоим при регистрации через воронку: ты получаешь XP, друг — расширенный триал.</p></div></div><div class="faq-block"><div class="faq-block-q">8. Мои данные в безопасности?</div><div class="faq-block-a"><p>Да. Данные по зашифрованному SSL/TLS. Пароли хешированы. Не передаём данные третьим лицам, не показываем рекламу. Результаты ДНК-теста видны только тебе. Политика конфиденциальности — в подвале сайта.</p></div></div></div>'}};
-function openInfoModal(k){var d=infoData[k];if(!d)return;document.getElementById('infoModalTitle').textContent=d.t;document.getElementById('infoModalBody').innerHTML=d.b;document.getElementById('lndInfoModal').classList.add('active');}
+const infoData={offer:{t:'Публичная оферта',b:'<b>1. Общие положения</b><br>Настоящий документ является официальным предложением MLM Community.<br><br><b>2. Регистрация</b><br>Пользователем может стать лицо старше 18 лет.<br><br><b>3. Тарифы</b><br>FREE / PRO 599₽/мес / BUSINESS 1490₽/мес.<br><br><b>4. Правила</b><br>Запрещены: спам, оскорбления, мошенничество. Нарушители блокируются.'},privacy:{t:'Конфиденциальность',b:'<b>1. Данные</b><br>Собираем: имя, email, активность, результаты ДНК-теста.<br><br><b>2. Использование</b><br>Персонализация, рекомендации, аналитика. Не передаём третьим лицам.<br><br><b>3. Защита</b><br>Шифрование TLS 1.3, AES-256. Серверы в защищённых дата-центрах.<br><br><b>4. Ваши права</b><br>Запросить копию, удалить данные, отозвать согласие.'},support:{t:'Поддержка',b:'<b>Telegram-бот</b><br>@mlmcommunity_support — ответ за 15 минут.<br><br><b>Email</b><br>support@mlmcommunity.app<br><br><b>FAQ</b><br>Частые вопросы доступны в Академии после регистрации.'},faq:{t:'FAQ',b:'<div class="faq-grid"><div class="faq-block"><div class="faq-block-q">1. Что такое ДНК-тест бизнеса?</div><div class="faq-block-a"><p>Бесплатный тест из 7 вопросов, который определяет твой тип предпринимателя — Стратег, Коммуникатор, Креатор или Аналитик. На основе результата платформа подбирает персональные рекомендации: какой контент изучать, с кем партнёриться, какую стратегию выбрать. Тест занимает 60 секунд и доступен без регистрации.</p></div></div><div class="faq-block"><div class="faq-block-q">2. Платформа бесплатная?</div><div class="faq-block-a"><p>Да, базовый тариф FREE — бесплатный навсегда. Включает ленту, Stories, ДНК-тест, 10 диалогов и 5 постов в месяц. PRO за 599₽/мес — безлимит постов и чатов, 10 свайпов/день. BUSINESS за 1 490₽/мес — аналитика команды, до 5 компаний. Годовая подписка — скидка до 33%.</p></div></div><div class="faq-block"><div class="faq-block-q">3. Чем отличается от соцсетей?</div><div class="faq-block-a"><p>Обычные соцсети — про лайки и контент. Здесь — про результат. Матч-система находит партнёров по 7 параметрам совместимости. Геймификация мотивирует расти. Карта возможностей даёт пошаговый план. Аналитика показывает, где теряешь людей. Деловая среда, где каждое знакомство — точка роста.</p></div></div><div class="faq-block"><div class="faq-block-q">4. Как работает матч-система?</div><div class="faq-block-a"><p>Алгоритм анализирует 7 факторов: ДНК-тип, нишу, опыт, цели, географию, активность и бизнес-карму. Показывает процент совместимости с другими участниками. Свайпай профили — при взаимном интересе открывается чат. На FREE — ограниченные свайпы, PRO — 10/день, BUSINESS — без лимитов.</p></div></div><div class="faq-block"><div class="faq-block-q">5. Я новичок — мне подойдёт?</div><div class="faq-block-a"><p>Именно для тебя. ДНК-тест определит точку старта. Маршрут новичка за 7 дней — около 300 XP и чёткий план. Система подберёт наставника с совместимым ДНК. Академия — 20+ микро-уроков по 30-60 секунд. Сообщество поддержит. Многие пришли без опыта и вышли на результат за 3-4 месяца.</p></div></div><div class="faq-block"><div class="faq-block-q">6. Какие компании представлены?</div><div class="faq-block-a"><p>Платформа мультикомпанийная — представители разных сетевых компаний. У каждой публичный профиль с рейтингом, отзывами и аналитикой. Можно состоять в нескольких компаниях (до 5 на BUSINESS). Мы не продвигаем конкретные бренды — даём инструменты для роста в любой структуре.</p></div></div><div class="faq-block"><div class="faq-block-q">7. Реферальная программа?</div><div class="faq-block-a"><p>Приглашай участников и получай комиссию с подписок: 15% на PRO, 20% на BUSINESS. Начисляется ежемесячно, пока приглашённый платит. Вывод от 1 000₽. Бонус обоим при регистрации через воронку: ты получаешь XP, друг — расширенный триал.</p></div></div><div class="faq-block"><div class="faq-block-q">8. Мои данные в безопасности?</div><div class="faq-block-a"><p>Да. Данные по зашифрованному SSL/TLS. Пароли хешированы. Не передаём данные третьим лицам, не показываем рекламу. Результаты ДНК-теста видны только тебе. Политика конфиденциальности — в подвале сайта.</p></div></div></div>'}};
+function openInfoModal(k){const d=infoData[k];if(!d)return;document.getElementById('infoModalTitle').textContent=d.t;document.getElementById('infoModalBody').innerHTML=d.b;document.getElementById('lndInfoModal').classList.add('active');}
 function closeInfoModal(){document.getElementById('lndInfoModal').classList.remove('active');}
 
 // ═══ LOGO CLICK ═══
 
 function logoClick(){
-  var glass=document.querySelector('.logo-glass');
+  const glass=document.querySelector('.logo-glass');
   if(!glass)return;
   glass.classList.remove('spinning');
   void glass.offsetWidth;

@@ -1,11 +1,11 @@
 // ═══ Auth API — регистрация, вход, сессия (БД v5.1) ═══
 
-var EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
+const EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
 
 // ═══ detectPlatform ═══
 
 function detectPlatform() {
-  var platform = 'web';
+  let platform = 'web';
   if (window.Telegram && window.Telegram.WebApp &&
      (window.Telegram.WebApp.initData || window.Telegram.WebApp.platform)) {
     platform = 'telegram_mini_app';
@@ -20,12 +20,12 @@ function detectPlatform() {
 // ═══ authRegister ═══
 
 async function authRegister(email, password, name) {
-  var res = await fetch(EDGE_URL + '/auth-email', {
+  const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'register', email: email, password: password, name: name })
   });
-  var data = await res.json();
+  const data = await res.json();
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка регистрации');
   }
@@ -42,12 +42,12 @@ async function authRegister(email, password, name) {
 // ═══ authLogin ═══
 
 async function authLogin(email, password) {
-  var res = await fetch(EDGE_URL + '/auth-email', {
+  const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'login', email: email, password: password })
   });
-  var data = await res.json();
+  const data = await res.json();
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка входа');
   }

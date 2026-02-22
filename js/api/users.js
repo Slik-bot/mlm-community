@@ -2,7 +2,7 @@
 
 async function resolveUserId() {
   // Попытка 1: AppState
-  var user = window.getCurrentUser ? window.getCurrentUser() : null;
+  let user = window.getCurrentUser ? window.getCurrentUser() : null;
   if (user && user.id) return user.id;
 
   // Попытка 2: window.currentUser (алиас)
@@ -10,13 +10,13 @@ async function resolveUserId() {
 
   // Попытка 3: живая сессия Supabase
   try {
-    var sess = await window.sb.auth.getSession();
-    var uid = sess.data && sess.data.session && sess.data.session.user
+    const sess = await window.sb.auth.getSession();
+    const uid = sess.data && sess.data.session && sess.data.session.user
       ? sess.data.session.user.id
       : null;
     if (uid) {
       // Найти и обновить AppState чтобы следующий вызов был быстрее
-      var resp = await window.sb.from('users').select('*').eq('id', uid).maybeSingle();
+      const resp = await window.sb.from('users').select('*').eq('id', uid).maybeSingle();
       if (resp.data && window.setState) {
         window.setState('currentUser', resp.data);
         window.currentUser = resp.data;
@@ -32,10 +32,10 @@ async function resolveUserId() {
 // ═══ loadProfile ═══
 
 async function loadProfile(userId) {
-  var id = userId || (window.getCurrentUser() && window.getCurrentUser().id);
+  const id = userId || (window.getCurrentUser() && window.getCurrentUser().id);
   if (!id) return { data: null, error: { message: 'Не авторизован' } };
 
-  var result = await window.sb.from('users')
+  const result = await window.sb.from('users')
     .select('*, user_stats(*), social_links(*), achievements(*)')
     .eq('id', id)
     .single();
@@ -46,18 +46,18 @@ async function loadProfile(userId) {
 // ═══ updateProfile ═══
 
 async function updateProfile(fields) {
-  var uid = await resolveUserId();
+  const uid = await resolveUserId();
   if (!uid) return { data: null, error: { message: 'Не авторизован' } };
 
-  var allowed = {};
-  var keys = ['name', 'bio', 'avatar_url', 'specialization'];
+  const allowed = {};
+  const keys = ['name', 'bio', 'avatar_url', 'specialization'];
   keys.forEach(function (k) {
     if (fields[k] !== undefined) allowed[k] = fields[k];
   });
 
-  var upd = await window.sb.from('users').update(allowed).eq('id', uid);
+  const upd = await window.sb.from('users').update(allowed).eq('id', uid);
   if (upd.error) return { data: null, error: upd.error };
-  var result = await window.sb.from('users').select('*').eq('id', uid).single();
+  const result = await window.sb.from('users').select('*').eq('id', uid).single();
   if (!result.error && result.data) {
     window.setState('currentUser', result.data);
     window.AppEvents.emit('user:updated', allowed);
@@ -68,19 +68,19 @@ async function updateProfile(fields) {
 // ═══ saveDnaResult ═══
 
 async function saveDnaResult(dnaType, dnaProfile) {
-  var uid = await resolveUserId();
-  var dnaTypeMap = {
+  const uid = await resolveUserId();
+  const dnaTypeMap = {
     'S': 'strategist', 'C': 'communicator', 'K': 'creator', 'A': 'analyst',
     'strategist': 'strategist', 'communicator': 'communicator',
     'creator': 'creator', 'analyst': 'analyst'
   };
-  var reverseMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+  const reverseMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
   dnaType = dnaTypeMap[dnaType] || dnaType;
   if (!uid) return { data: null, error: { message: 'Не авторизован' } };
 
   try {
     // Критичный update — dna_type в таблице users
-    var upd = await window.sb.from('users').update({
+    const upd = await window.sb.from('users').update({
       dna_type: dnaType,
       dna_profile: dnaProfile || {}
     }).eq('id', uid);
@@ -93,7 +93,7 @@ async function saveDnaResult(dnaType, dnaProfile) {
     localStorage.setItem('dnaType', reverseMap[dnaType] || 'S');
 
     // Перечитываем профиль
-    var result = await window.sb.from('users').select('*').eq('id', uid).single();
+    const result = await window.sb.from('users').select('*').eq('id', uid).single();
     if (!result.error && result.data) {
       window.setState('currentUser', result.data);
     }
@@ -109,13 +109,13 @@ async function saveDnaResult(dnaType, dnaProfile) {
 // ═══ saveOnboardingStep ═══
 
 async function saveOnboardingStep(step, data) {
-  var uid = await resolveUserId();
+  const uid = await resolveUserId();
   if (!uid) {
     console.error('[saveOnboardingStep] uid is null, step:', step);
     return { data: null, error: { message: 'Не авторизован' } };
   }
 
-  var fields = {};
+  const fields = {};
   if (step === 'name') {
     fields.name = data.name;
   } else if (step === 'interests') {
@@ -129,13 +129,13 @@ async function saveOnboardingStep(step, data) {
     return { data: null, error: null };
   }
 
-  var upd = await window.sb.from('users').update(fields).eq('id', uid);
+  const upd = await window.sb.from('users').update(fields).eq('id', uid);
   if (upd.error) {
     console.error('[saveOnboardingStep] update error:', upd.error.message, 'step:', step);
     return { data: null, error: upd.error };
   }
 
-  var result = await window.sb.from('users').select('*').eq('id', uid).single();
+  const result = await window.sb.from('users').select('*').eq('id', uid).single();
   if (result.error) {
     console.error('[saveOnboardingStep] select error:', result.error.message);
     return { data: null, error: result.error };
@@ -155,10 +155,10 @@ async function saveOnboardingStep(step, data) {
 // ═══ loadNotifications ═══
 
 async function loadNotifications(limit) {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return { data: null, error: { message: 'Не авторизован' } };
 
-  var result = await window.sb.from('notifications')
+  const result = await window.sb.from('notifications')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -170,7 +170,7 @@ async function loadNotifications(limit) {
 // ═══ markNotificationsRead ═══
 
 async function markNotificationsRead() {
-  var user = window.getCurrentUser();
+  const user = window.getCurrentUser();
   if (!user) return;
 
   await window.sb.from('notifications')

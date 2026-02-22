@@ -1,6 +1,6 @@
 // ===== NAVIGATION =====
 let navHistory = ['scrLanding'];
-var isTransitioning = false;
+let isTransitioning = false;
 
 // ===== TEMPLATE LOADER =====
 const TEMPLATES = {
@@ -49,12 +49,12 @@ const loadedTemplates = {};
 
 async function loadTemplate(id) {
   if (loadedTemplates[id]) return loadedTemplates[id];
-  var path = TEMPLATES[id];
+  const path = TEMPLATES[id];
   if (!path) return null;
   try {
-    var response = await fetch(path);
+    const response = await fetch(path);
     if (!response.ok) throw new Error('Failed to load ' + path);
-    var html = await response.text();
+    const html = await response.text();
     loadedTemplates[id] = html;
     return html;
   } catch (error) {
@@ -64,7 +64,7 @@ async function loadTemplate(id) {
 }
 
 function resetWelcomeAnimations() {
-  var scr = document.getElementById('scrWelcome');
+  const scr = document.getElementById('scrWelcome');
   if (!scr) return;
   // Двойной rAF — гарантирует применение ПОСЛЕ полного цикла рендеринга браузера
   // Это важно для Telegram WebView где remove('hidden') вызывает reflow + restart анимаций
@@ -83,7 +83,7 @@ async function ensureTemplate(id) {
       if (window.initLandingModals) window.initLandingModals();
     }
     if (id === 'scrWelcome') {
-      var scrW = document.getElementById('scrWelcome');
+      const scrW = document.getElementById('scrWelcome');
       if (scrW) scrW.classList.add('w-no-anim');
     }
     if (id === 'scrDnaTest') {
@@ -91,9 +91,9 @@ async function ensureTemplate(id) {
     }
     return;
   }
-  var html = await loadTemplate(id);
+  const html = await loadTemplate(id);
   if (!html) return;
-  var app = document.querySelector('.app');
+  const app = document.querySelector('.app');
   app.insertAdjacentHTML('beforeend', html);
 
   if (id === 'scrLanding') {
@@ -191,7 +191,7 @@ async function ensureTemplate(id) {
 }
 
 function updateChrome(id){
-  var show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop';
+  const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
@@ -203,7 +203,7 @@ async function goTo(id) {
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   await ensureTemplate(id);
 
-  var onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
+  const onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
   if (onbScreens.indexOf(id) !== -1) {
     document.body.classList.add('onboarding-mode');
   } else {
@@ -211,7 +211,7 @@ async function goTo(id) {
   }
   closePopovers(); closeFab();
   // Скрываем лендинг при переходе к любому экрану (у него нет .scr)
-  var lndEl = document.getElementById('scrLanding');
+  const lndEl = document.getElementById('scrLanding');
   if (lndEl && id !== 'scrLanding') lndEl.classList.add('hidden');
 
   const current = navHistory[navHistory.length-1];
@@ -219,31 +219,31 @@ async function goTo(id) {
 
   // Сброс классов анимаций Welcome при уходе с экрана
   if (current === 'scrWelcome') {
-    var wEl = document.getElementById('scrWelcome');
+    const wEl = document.getElementById('scrWelcome');
     if (wEl) {
       wEl.classList.remove('scr-welcome-ready');
       wEl.classList.remove('w-no-anim');
     }
   }
 
-  var currentEl = document.getElementById(current);
-  var nextEl = document.getElementById(id);
+  const currentEl = document.getElementById(current);
+  const nextEl = document.getElementById(id);
   if(!nextEl) return;
 
   // Clean up DNA result inline styles when leaving
   if(current==='scrDnaResult'){
-    var dnrRv=document.getElementById('dnrReveal');
+    const dnrRv=document.getElementById('dnrReveal');
     if(dnrRv){dnrRv.classList.remove('active');dnrRv.style.opacity='';dnrRv.style.pointerEvents='';}
-    var dnrSc=document.getElementById('dnrScreen');
+    const dnrSc=document.getElementById('dnrScreen');
     if(dnrSc){dnrSc.classList.remove('active');dnrSc.style.opacity='';dnrSc.style.pointerEvents='';}
-    var dnrCd=document.getElementById('dnrCard');
+    const dnrCd=document.getElementById('dnrCard');
     if(dnrCd){dnrCd.style.cssText='';}
   }
 
   navHistory.push(id);
   updateChrome(id);
 
-  var canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if(canAnimate && currentEl){
     isTransitioning = true;
@@ -267,9 +267,9 @@ async function goTo(id) {
 
   if(id==='scrSearch') setTimeout(function(){document.getElementById('searchInp').focus()},450);
   if(id==='scrFeed'){
-    var feedName=document.getElementById('feedUserName');
+    const feedName=document.getElementById('feedUserName');
     if(feedName){
-      var uName=localStorage.getItem('userName')||'Участник';
+      const uName=localStorage.getItem('userName')||'Участник';
       feedName.textContent='Привет, '+uName+'!';
     }
   }
@@ -283,13 +283,13 @@ async function goBack() {
   const current = navHistory.pop();
   const prev = navHistory[navHistory.length-1];
   await ensureTemplate(prev);
-  var currentEl = document.getElementById(current);
-  var prevEl = document.getElementById(prev);
+  const currentEl = document.getElementById(current);
+  const prevEl = document.getElementById(prev);
   if(!prevEl) return;
 
   updateChrome(prev);
 
-  var canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if(canAnimate && currentEl){
     isTransitioning = true;
@@ -334,14 +334,14 @@ updateChrome('scrLanding');
 // Фикс: reload при resume на Welcome (GPU rendering bug в Telegram WebView)
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState !== 'visible') return;
-  var scr = document.getElementById('scrWelcome');
+  const scr = document.getElementById('scrWelcome');
   if (scr && !scr.classList.contains('hidden') && !scr.classList.contains('back-hidden')) {
     location.reload();
   }
 });
 if (window.Telegram && window.Telegram.WebApp) {
   window.Telegram.WebApp.onEvent('activated', function() {
-    var scr = document.getElementById('scrWelcome');
+    const scr = document.getElementById('scrWelcome');
     if (scr && !scr.classList.contains('hidden') && !scr.classList.contains('back-hidden')) {
       location.reload();
     }

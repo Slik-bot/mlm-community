@@ -3,7 +3,7 @@
 // Premium UX: Apple/Instagram level
 // =======================================
 
-var DISMISS_THRESHOLD = 120;
+const DISMISS_THRESHOLD = 120;
 
 /**
  * Add drag-to-dismiss gesture with visual feedback
@@ -24,22 +24,22 @@ function addDragDismiss(el, opts) {
   }
 
   opts = opts || {};
-  var moveTarget = opts.moveTarget || el;
-  var fadeTarget = opts.fadeTarget || null;
-  var threshold = opts.threshold || DISMISS_THRESHOLD;
-  var onDismiss = opts.onDismiss || function() {};
-  var canStart = opts.canStart || function() { return true; };
+  const moveTarget = opts.moveTarget || el;
+  const fadeTarget = opts.fadeTarget || null;
+  const threshold = opts.threshold || DISMISS_THRESHOLD;
+  const onDismiss = opts.onDismiss || function() {};
+  const canStart = opts.canStart || function() { return true; };
 
-  var startX = 0;
-  var startY = 0;
-  var active = false;
-  var locked = false;
-  var isVertical = false;
-  var savedTransition = '';
+  let startX = 0;
+  let startY = 0;
+  let active = false;
+  let locked = false;
+  let isVertical = false;
+  let savedTransition = '';
 
   function handleStart(e) {
     if (!canStart(e)) return;
-    var pt = e.touches ? e.touches[0] : e;
+    const pt = e.touches ? e.touches[0] : e;
     startX = pt.clientX;
     startY = pt.clientY;
     active = true;
@@ -57,9 +57,9 @@ function addDragDismiss(el, opts) {
 
   function handleMove(e) {
     if (!active) return;
-    var pt = e.touches ? e.touches[0] : e;
-    var dx = pt.clientX - startX;
-    var dy = pt.clientY - startY;
+    const pt = e.touches ? e.touches[0] : e;
+    const dx = pt.clientX - startX;
+    const dy = pt.clientY - startY;
 
     // Lock direction after 10px movement
     if (!locked && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
@@ -75,18 +75,19 @@ function addDragDismiss(el, opts) {
     if (!locked || !isVertical) return;
 
     // Only allow downward drag
-    if (dy < 0) dy = 0;
-    if (dy === 0) return;
+    let dragDistance = dy;
+    if (dragDistance < 0) dragDistance = 0;
+    if (dragDistance === 0) return;
 
     e.preventDefault();
 
     // Visual feedback: follow finger + subtle scale
-    var scale = Math.max(0.92, 1 - dy / 1500);
-    moveTarget.style.transform = 'translateY(' + dy + 'px) scale(' + scale + ')';
+    const scale = Math.max(0.92, 1 - dragDistance / 1500);
+    moveTarget.style.transform = 'translateY(' + dragDistance + 'px) scale(' + scale + ')';
 
     // Fade overlay proportionally
     if (fadeTarget) {
-      var fadeProgress = Math.min(dy / (threshold * 2), 0.7);
+      const fadeProgress = Math.min(dragDistance / (threshold * 2), 0.7);
       fadeTarget.style.opacity = String(1 - fadeProgress);
     }
   }
@@ -105,11 +106,11 @@ function addDragDismiss(el, opts) {
       return;
     }
 
-    var pt = e.changedTouches ? e.changedTouches[0] : e;
-    var dy = pt.clientY - startY;
+    const pt = e.changedTouches ? e.changedTouches[0] : e;
+    const dy = pt.clientY - startY;
 
     // Spring transition for release
-    var spring = 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)';
+    const spring = 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)';
     moveTarget.style.transition = spring;
     if (fadeTarget) {
       fadeTarget.style.transition = 'opacity 300ms cubic-bezier(0.16, 1, 0.3, 1)';
@@ -152,7 +153,7 @@ function addDragDismiss(el, opts) {
  */
 function removeDragDismiss(el) {
   if (!el || !el._dragDismiss) return;
-  var h = el._dragDismiss;
+  const h = el._dragDismiss;
   el.removeEventListener('touchstart', h.handleStart);
   el.removeEventListener('touchmove', h.handleMove);
   el.removeEventListener('touchend', h.handleEnd);
@@ -176,13 +177,13 @@ function addHorizontalSwipe(el, opts) {
   }
 
   opts = opts || {};
-  var startX = 0;
-  var startY = 0;
-  var startTime = 0;
-  var active = false;
+  let startX = 0;
+  let startY = 0;
+  let startTime = 0;
+  let active = false;
 
   function onStart(e) {
-    var pt = e.touches ? e.touches[0] : e;
+    const pt = e.touches ? e.touches[0] : e;
     startX = pt.clientX;
     startY = pt.clientY;
     startTime = Date.now();
@@ -197,9 +198,9 @@ function addHorizontalSwipe(el, opts) {
 
   function onMove(e) {
     if (!active) return;
-    var pt = e.touches ? e.touches[0] : e;
-    var dx = pt.clientX - startX;
-    var dy = pt.clientY - startY;
+    const pt = e.touches ? e.touches[0] : e;
+    const dx = pt.clientX - startX;
+    const dy = pt.clientY - startY;
 
     // Prevent page scroll on horizontal swipe
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
@@ -216,16 +217,16 @@ function addHorizontalSwipe(el, opts) {
     if (!active) return;
     active = false;
 
-    var pt = e.changedTouches ? e.changedTouches[0] : e;
-    var dx = pt.clientX - startX;
-    var dy = pt.clientY - startY;
-    var dt = Date.now() - startTime;
+    const pt = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = pt.clientX - startX;
+    const dy = pt.clientY - startY;
+    const dt = Date.now() - startTime;
 
     // Must be horizontal movement
     if (Math.abs(dx) <= Math.abs(dy)) return;
 
     // Threshold: 50px distance or velocity > 0.3 px/ms
-    var velocity = Math.abs(dx) / (dt || 1);
+    const velocity = Math.abs(dx) / (dt || 1);
     if (Math.abs(dx) < 50 && velocity < 0.3) return;
 
     if (dx > 0) {
@@ -252,7 +253,7 @@ function addHorizontalSwipe(el, opts) {
  */
 function removeHorizontalSwipe(el) {
   if (!el || !el._hSwipe) return;
-  var h = el._hSwipe;
+  const h = el._hSwipe;
   el.removeEventListener('touchstart', h.onStart);
   el.removeEventListener('touchmove', h.onMove);
   el.removeEventListener('touchend', h.onEnd);

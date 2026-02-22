@@ -1,11 +1,11 @@
 // ===== CONTESTS SCREENS — список конкурсов, детали =====
 
-var currentContest = null;
-var allContests = [];
-var contestTab = 'active';
-var contestTimerInterval = null;
+let currentContest = null;
+let allContests = [];
+let contestTab = 'active';
+let contestTimerInterval = null;
 
-var CONTEST_TYPES = {
+const CONTEST_TYPES = {
   sales:     { label: 'Продажи',    color: '#22c55e' },
   referrals: { label: 'Рефералы',   color: '#8b5cf6' },
   activity:  { label: 'Активность', color: '#f59e0b' },
@@ -18,7 +18,7 @@ function getContestTypeLabel(type) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  var d = new Date(dateStr);
+  const d = new Date(dateStr);
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
@@ -31,16 +31,16 @@ function initContests() {
 }
 
 async function loadContests() {
-  var result = await window.sb.from('contests')
+  const result = await window.sb.from('contests')
     .select('*, participants:contest_participants(user_id)')
     .order('starts_at', { ascending: false });
 
   allContests = result.data || [];
-  var now = Date.now();
+  const now = Date.now();
 
-  var filtered = allContests.filter(function(c) {
-    var start = new Date(c.starts_at).getTime();
-    var end = new Date(c.ends_at).getTime();
+  const filtered = allContests.filter(function(c) {
+    const start = new Date(c.starts_at).getTime();
+    const end = new Date(c.ends_at).getTime();
     if (contestTab === 'active') return start <= now && end >= now;
     if (contestTab === 'upcoming') return start > now;
     return end < now;
@@ -50,8 +50,8 @@ async function loadContests() {
 }
 
 function renderContestsList(contests) {
-  var list = document.getElementById('contestsList');
-  var empty = document.getElementById('contestsEmpty');
+  const list = document.getElementById('contestsList');
+  const empty = document.getElementById('contestsEmpty');
   if (!list) return;
 
   if (!contests.length) {
@@ -62,9 +62,9 @@ function renderContestsList(contests) {
   if (empty) empty.classList.add('hidden');
 
   list.innerHTML = contests.map(function(c) {
-    var ct = getContestTypeLabel(c.type);
-    var pCount = c.participants ? c.participants.length : 0;
-    var prize = c.prize_pool ? c.prize_pool.toLocaleString('ru-RU') + ' P' : '';
+    const ct = getContestTypeLabel(c.type);
+    const pCount = c.participants ? c.participants.length : 0;
+    const prize = c.prize_pool ? c.prize_pool.toLocaleString('ru-RU') + ' P' : '';
 
     return '<div class="contest-card glass-card" onclick="openContest(\'' + c.id + '\')">' +
       '<span class="contest-card-type" style="background:' + ct.color + '22;color:' + ct.color + '">' + ct.label + '</span>' +
@@ -85,7 +85,7 @@ function switchContestTab(tab) {
 }
 
 function updateContestTabUI() {
-  var btns = document.querySelectorAll('#contestsTabs .contest-tab');
+  const btns = document.querySelectorAll('#contestsTabs .contest-tab');
   btns.forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-tab') === contestTab);
   });
@@ -101,26 +101,26 @@ function openContest(contestId) {
 function initContestDetail() {
   if (!currentContest) { goBack(); return; }
 
-  var ct = getContestTypeLabel(currentContest.type);
-  var badge = document.getElementById('cdTypeBadge');
+  const ct = getContestTypeLabel(currentContest.type);
+  const badge = document.getElementById('cdTypeBadge');
   if (badge) {
     badge.textContent = ct.label;
     badge.style.background = ct.color + '22';
     badge.style.color = ct.color;
   }
 
-  var titleEl = document.getElementById('cdTitle');
+  const titleEl = document.getElementById('cdTitle');
   if (titleEl) titleEl.textContent = currentContest.title;
 
-  var descEl = document.getElementById('cdDesc');
+  const descEl = document.getElementById('cdDesc');
   if (descEl) descEl.textContent = currentContest.description || '';
 
-  var now = Date.now();
-  var end = new Date(currentContest.ends_at).getTime();
+  const now = Date.now();
+  const end = new Date(currentContest.ends_at).getTime();
   if (end > now) {
     startContestTimer(end);
   } else {
-    var timer = document.getElementById('cdTimer');
+    const timer = document.getElementById('cdTimer');
     if (timer) timer.innerHTML = '<div class="cd-finished-label">Завершён</div>';
   }
 
@@ -130,15 +130,15 @@ function initContestDetail() {
 }
 
 function renderPrizes() {
-  var el = document.getElementById('cdPrizes');
+  const el = document.getElementById('cdPrizes');
   if (!el || !currentContest.prizes) { if (el) el.innerHTML = ''; return; }
 
-  var colors = ['#fbbf24', '#94a3b8', '#b45309'];
-  var bgColors = ['rgba(251,191,36,0.2)', 'rgba(148,163,184,0.2)', 'rgba(180,83,9,0.2)'];
+  const colors = ['#fbbf24', '#94a3b8', '#b45309'];
+  const bgColors = ['rgba(251,191,36,0.2)', 'rgba(148,163,184,0.2)', 'rgba(180,83,9,0.2)'];
 
   el.innerHTML = currentContest.prizes.map(function(p, i) {
-    var c = colors[i] || 'rgba(255,255,255,0.5)';
-    var bg = bgColors[i] || 'rgba(255,255,255,0.08)';
+    const c = colors[i] || 'rgba(255,255,255,0.5)';
+    const bg = bgColors[i] || 'rgba(255,255,255,0.08)';
     return '<div class="prize-row glass-card">' +
       '<div class="prize-place" style="background:' + bg + ';color:' + c + '">#' + (i + 1) + '</div>' +
       '<span class="prize-label">' + escHtml(p.label || 'Место ' + (i + 1)) + '</span>' +
@@ -151,19 +151,19 @@ function startContestTimer(endsAt) {
   if (contestTimerInterval) clearInterval(contestTimerInterval);
 
   function updateTimer() {
-    var diff = endsAt - Date.now();
+    const diff = endsAt - Date.now();
     if (diff <= 0) {
       clearInterval(contestTimerInterval);
-      var timer = document.getElementById('cdTimer');
+      const timer = document.getElementById('cdTimer');
       if (timer) timer.innerHTML = '<div class="cd-finished-label">Завершён</div>';
       return;
     }
-    var days = Math.floor(diff / 86400000);
-    var hours = Math.floor((diff % 86400000) / 3600000);
-    var mins = Math.floor((diff % 3600000) / 60000);
-    var dEl = document.getElementById('timerDays');
-    var hEl = document.getElementById('timerHours');
-    var mEl = document.getElementById('timerMins');
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const dEl = document.getElementById('timerDays');
+    const hEl = document.getElementById('timerHours');
+    const mEl = document.getElementById('timerMins');
     if (dEl) dEl.textContent = String(days).padStart(2, '0');
     if (hEl) hEl.textContent = String(hours).padStart(2, '0');
     if (mEl) mEl.textContent = String(mins).padStart(2, '0');
@@ -174,7 +174,7 @@ function startContestTimer(endsAt) {
 }
 
 async function loadContestLeaderboard() {
-  var result = await window.sb.from('contest_participants')
+  const result = await window.sb.from('contest_participants')
     .select('*, user:users(id, name, avatar_url, level)')
     .eq('contest_id', currentContest.id)
     .order('score', { ascending: false })
@@ -184,7 +184,7 @@ async function loadContestLeaderboard() {
 }
 
 function renderLeaderboard(participants) {
-  var el = document.getElementById('cdLeaderboard');
+  const el = document.getElementById('cdLeaderboard');
   if (!el) return;
 
   if (!participants.length) {
@@ -192,15 +192,15 @@ function renderLeaderboard(participants) {
     return;
   }
 
-  var myId = window.currentUser ? window.currentUser.id : null;
+  const myId = window.currentUser ? window.currentUser.id : null;
 
   el.innerHTML = participants.map(function(p, i) {
-    var user = p.user || {};
-    var isMe = user.id === myId;
-    var meClass = isMe ? ' lb-me' : '';
-    var place = i + 1;
-    var placeColors = { 1: '#fbbf24', 2: '#94a3b8', 3: '#b45309' };
-    var placeColor = placeColors[place] || 'rgba(255,255,255,0.4)';
+    const user = p.user || {};
+    const isMe = user.id === myId;
+    const meClass = isMe ? ' lb-me' : '';
+    const place = i + 1;
+    const placeColors = { 1: '#fbbf24', 2: '#94a3b8', 3: '#b45309' };
+    const placeColor = placeColors[place] || 'rgba(255,255,255,0.4)';
 
     return '<div class="lb-row' + meClass + '">' +
       '<span class="lb-place" style="color:' + placeColor + '">' + place + '</span>' +
@@ -212,11 +212,11 @@ function renderLeaderboard(participants) {
 }
 
 async function loadMyPosition() {
-  var posEl = document.getElementById('cdMyPosition');
-  var joinWrap = document.getElementById('cdJoinWrap');
+  const posEl = document.getElementById('cdMyPosition');
+  const joinWrap = document.getElementById('cdJoinWrap');
   if (!window.currentUser || !currentContest) return;
 
-  var result = await window.sb.from('contest_participants')
+  const result = await window.sb.from('contest_participants')
     .select('score')
     .eq('contest_id', currentContest.id)
     .eq('user_id', window.currentUser.id)
@@ -230,8 +230,8 @@ async function loadMyPosition() {
     if (joinWrap) joinWrap.classList.add('hidden');
   } else {
     if (posEl) posEl.classList.add('hidden');
-    var now = Date.now();
-    var end = new Date(currentContest.ends_at).getTime();
+    const now = Date.now();
+    const end = new Date(currentContest.ends_at).getTime();
     if (joinWrap) joinWrap.classList.toggle('hidden', end < now);
   }
 }
@@ -239,7 +239,7 @@ async function loadMyPosition() {
 async function contestJoin() {
   if (!currentContest || !window.currentUser) return;
 
-  var btn = document.getElementById('cdJoinBtn');
+  const btn = document.getElementById('cdJoinBtn');
   if (btn) btn.disabled = true;
 
   await window.sb.from('contest_participants').insert({
@@ -249,7 +249,7 @@ async function contestJoin() {
   });
 
   if (window.showToast) showToast('Вы участвуете в конкурсе!');
-  var joinWrap = document.getElementById('cdJoinWrap');
+  const joinWrap = document.getElementById('cdJoinWrap');
   if (joinWrap) joinWrap.classList.add('hidden');
   loadMyPosition();
   loadContestLeaderboard();

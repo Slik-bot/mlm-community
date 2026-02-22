@@ -1,22 +1,22 @@
 // ===== TASKS SCREENS — список заданий, детали задания =====
 
-var currentTask = null;
-var allTasks = [];
-var taskTab = 'all';
-var taskDnaFilter = 'all';
-var taskScreenshotUrl = null;
-var taskDailyDone = 0;
+let currentTask = null;
+let allTasks = [];
+let taskTab = 'all';
+let taskDnaFilter = 'all';
+let taskScreenshotUrl = null;
+let taskDailyDone = 0;
 
-var COMPLETE_TASK_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/complete-task';
+const COMPLETE_TASK_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/complete-task';
 
-var TASK_TYPES = {
+const TASK_TYPES = {
   platform: { label: 'Платформа', color: '#8b5cf6' },
   ad:       { label: 'Реклама',   color: '#f59e0b' },
   business: { label: 'Бизнес',    color: '#22c55e' }
 };
 
 function getTaskTypeIcon(type) {
-  var c = (TASK_TYPES[type] || TASK_TYPES.platform).color;
+  const c = (TASK_TYPES[type] || TASK_TYPES.platform).color;
   if (type === 'ad') {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="2" width="24" height="24"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg>';
   }
@@ -31,14 +31,14 @@ function getTaskTypeColor(type) {
 }
 
 function getTodayStart() {
-  var d = new Date();
+  const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d.toISOString();
 }
 
 function isCompletedToday(task) {
   if (!task.completions || !window.currentUser) return false;
-  var todayStart = getTodayStart();
+  const todayStart = getTodayStart();
   return task.completions.some(function(c) {
     return c.user_id === window.currentUser.id && c.status === 'approved';
   });
@@ -52,7 +52,7 @@ function initTasks() {
   updateTaskTabUI();
   updateDnaFilterUI();
 
-  var xpBadge = document.getElementById('tasksXpBadge');
+  const xpBadge = document.getElementById('tasksXpBadge');
   if (xpBadge && window.currentUser) {
     xpBadge.textContent = (window.currentUser.xp_total || 0) + ' XP';
   }
@@ -62,7 +62,7 @@ function initTasks() {
 }
 
 async function loadTasks() {
-  var result = await window.sb.from('tasks')
+  const result = await window.sb.from('tasks')
     .select('*, completions:task_completions(id, status, user_id)')
     .eq('is_active', true)
     .order('created_at', { ascending: false });
@@ -72,7 +72,7 @@ async function loadTasks() {
 }
 
 function applyTaskFilters() {
-  var filtered = allTasks;
+  let filtered = allTasks;
 
   if (taskTab !== 'all') {
     filtered = filtered.filter(function(t) { return t.type === taskTab; });
@@ -89,8 +89,8 @@ function applyTaskFilters() {
 }
 
 function renderTaskList(tasks) {
-  var list = document.getElementById('tasksList');
-  var empty = document.getElementById('tasksEmpty');
+  const list = document.getElementById('tasksList');
+  const empty = document.getElementById('tasksEmpty');
   if (!list) return;
 
   if (!tasks.length) {
@@ -101,12 +101,12 @@ function renderTaskList(tasks) {
   if (empty) empty.classList.add('hidden');
 
   list.innerHTML = tasks.map(function(t) {
-    var typeColor = getTaskTypeColor(t.type);
-    var typeIcon = getTaskTypeIcon(t.type);
-    var done = isCompletedToday(t);
-    var doneClass = done ? ' task-card--done' : '';
-    var doneBadge = done ? '<span class="task-done-badge">Выполнено</span>' : '';
-    var moneyBadge = t.reward_money ? '<span class="task-money-badge">' + t.reward_money + ' P</span>' : '';
+    const typeColor = getTaskTypeColor(t.type);
+    const typeIcon = getTaskTypeIcon(t.type);
+    const done = isCompletedToday(t);
+    const doneClass = done ? ' task-card--done' : '';
+    const doneBadge = done ? '<span class="task-done-badge">Выполнено</span>' : '';
+    const moneyBadge = t.reward_money ? '<span class="task-money-badge">' + t.reward_money + ' P</span>' : '';
 
     return '<div class="task-card glass-card' + doneClass + '" onclick="openTask(\'' + t.id + '\')">' +
       '<div class="task-type-icon" style="background:' + typeColor + '22">' + typeIcon + '</div>' +
@@ -129,7 +129,7 @@ function switchTaskTab(tab) {
 }
 
 function updateTaskTabUI() {
-  var btns = document.querySelectorAll('#tasksTabs .task-tab');
+  const btns = document.querySelectorAll('#tasksTabs .task-tab');
   btns.forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-tab') === taskTab);
   });
@@ -142,7 +142,7 @@ function filterTasksByDna(dna) {
 }
 
 function updateDnaFilterUI() {
-  var btns = document.querySelectorAll('#tasksDnaFilter .dna-filter-btn');
+  const btns = document.querySelectorAll('#tasksDnaFilter .dna-filter-btn');
   btns.forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-dna') === taskDnaFilter);
   });
@@ -150,17 +150,17 @@ function updateDnaFilterUI() {
 
 async function loadDailyProgress() {
   if (!window.currentUser) return;
-  var result = await window.sb.from('task_completions')
+  const result = await window.sb.from('task_completions')
     .select('id')
     .eq('user_id', window.currentUser.id)
     .gte('taken_at', getTodayStart())
     .eq('status', 'approved');
 
   taskDailyDone = (result.data || []).length;
-  var max = 10;
-  var pct = Math.min(taskDailyDone / max * 100, 100);
-  var fill = document.getElementById('dailyFill');
-  var count = document.getElementById('dailyCount');
+  const max = 10;
+  const pct = Math.min(taskDailyDone / max * 100, 100);
+  const fill = document.getElementById('dailyFill');
+  const count = document.getElementById('dailyCount');
   if (fill) fill.style.width = pct + '%';
   if (count) count.textContent = taskDailyDone + ' / ' + max;
 }
@@ -176,29 +176,29 @@ function openTask(taskId) {
 function initTaskDetail() {
   if (!currentTask) { goBack(); return; }
 
-  var typeColor = getTaskTypeColor(currentTask.type);
-  var typeLabel = (TASK_TYPES[currentTask.type] || TASK_TYPES.platform).label;
+  const typeColor = getTaskTypeColor(currentTask.type);
+  const typeLabel = (TASK_TYPES[currentTask.type] || TASK_TYPES.platform).label;
 
-  var iconEl = document.getElementById('tdTypeIcon');
+  const iconEl = document.getElementById('tdTypeIcon');
   if (iconEl) {
     iconEl.innerHTML = getTaskTypeIcon(currentTask.type);
     iconEl.style.background = typeColor + '22';
   }
 
-  var labelEl = document.getElementById('tdTypeLabel');
+  const labelEl = document.getElementById('tdTypeLabel');
   if (labelEl) labelEl.textContent = typeLabel;
 
-  var titleEl = document.getElementById('tdTitle');
+  const titleEl = document.getElementById('tdTitle');
   if (titleEl) titleEl.textContent = currentTask.title;
 
-  var descEl = document.getElementById('tdDesc');
+  const descEl = document.getElementById('tdDesc');
   if (descEl) descEl.textContent = currentTask.description || '';
 
-  var xpEl = document.getElementById('tdXp');
+  const xpEl = document.getElementById('tdXp');
   if (xpEl) xpEl.textContent = '+' + (currentTask.reward_xp || 0) + ' XP';
 
-  var moneyRow = document.getElementById('tdMoneyRow');
-  var moneyEl = document.getElementById('tdMoney');
+  const moneyRow = document.getElementById('tdMoneyRow');
+  const moneyEl = document.getElementById('tdMoney');
   if (currentTask.reward_money && currentTask.reward_money > 0) {
     if (moneyRow) moneyRow.classList.remove('hidden');
     if (moneyEl) moneyEl.textContent = currentTask.reward_money + ' P';
@@ -206,30 +206,30 @@ function initTaskDetail() {
     if (moneyRow) moneyRow.classList.add('hidden');
   }
 
-  var screenshotWrap = document.getElementById('tdScreenshotWrap');
+  const screenshotWrap = document.getElementById('tdScreenshotWrap');
   if (currentTask.requires_screenshot) {
     if (screenshotWrap) screenshotWrap.classList.remove('hidden');
   } else {
     if (screenshotWrap) screenshotWrap.classList.add('hidden');
   }
 
-  var preview = document.getElementById('tdScreenshotPreview');
-  var placeholder = document.getElementById('tdScreenshotPlaceholder');
+  const preview = document.getElementById('tdScreenshotPreview');
+  const placeholder = document.getElementById('tdScreenshotPlaceholder');
   if (preview) { preview.classList.add('hidden'); preview.src = ''; }
   if (placeholder) placeholder.classList.remove('hidden');
 
-  var reqEl = document.getElementById('tdRequirements');
+  const reqEl = document.getElementById('tdRequirements');
   if (reqEl) {
-    var reqs = [];
+    const reqs = [];
     if (currentTask.dna_types && currentTask.dna_types.length) {
       reqs.push('<div class="td-req-item">ДНК: ' + currentTask.dna_types.join(', ') + '</div>');
     }
     reqEl.innerHTML = reqs.join('');
   }
 
-  var done = isCompletedToday(currentTask);
-  var statusEl = document.getElementById('tdStatus');
-  var btn = document.getElementById('tdActionBtn');
+  const done = isCompletedToday(currentTask);
+  const statusEl = document.getElementById('tdStatus');
+  const btn = document.getElementById('tdActionBtn');
   if (done) {
     if (statusEl) { statusEl.classList.remove('hidden'); statusEl.textContent = 'Уже выполнено сегодня'; statusEl.className = 'td-status td-status--done'; }
     if (btn) { btn.disabled = true; btn.textContent = 'Выполнено'; }
@@ -240,20 +240,20 @@ function initTaskDetail() {
 }
 
 function taskPickScreenshot() {
-  var inp = document.createElement('input');
+  const inp = document.createElement('input');
   inp.type = 'file';
   inp.accept = 'image/*';
   inp.onchange = async function() {
-    var file = inp.files[0];
+    const file = inp.files[0];
     if (!file || !window.currentUser || !currentTask) return;
 
-    var path = 'task-screenshots/' + window.currentUser.id + '/' + currentTask.id + '.jpg';
+    const path = 'task-screenshots/' + window.currentUser.id + '/' + currentTask.id + '.jpg';
     await window.sb.storage.from('uploads').upload(path, file, { upsert: true });
-    var urlData = window.sb.storage.from('uploads').getPublicUrl(path);
+    const urlData = window.sb.storage.from('uploads').getPublicUrl(path);
     taskScreenshotUrl = urlData.data.publicUrl;
 
-    var preview = document.getElementById('tdScreenshotPreview');
-    var placeholder = document.getElementById('tdScreenshotPlaceholder');
+    const preview = document.getElementById('tdScreenshotPreview');
+    const placeholder = document.getElementById('tdScreenshotPlaceholder');
     if (preview) { preview.src = taskScreenshotUrl; preview.classList.remove('hidden'); }
     if (placeholder) placeholder.classList.add('hidden');
   };
@@ -268,14 +268,14 @@ async function taskComplete() {
     return;
   }
 
-  var btn = document.getElementById('tdActionBtn');
+  const btn = document.getElementById('tdActionBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
 
-  var sessionResult = await window.sb.auth.getSession();
-  var token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
+  const sessionResult = await window.sb.auth.getSession();
+  const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
 
   try {
-    var resp = await fetch(COMPLETE_TASK_URL, {
+    const resp = await fetch(COMPLETE_TASK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ async function taskComplete() {
       })
     });
 
-    var data = await resp.json();
+    const data = await resp.json();
 
     if (resp.ok && data.success) {
       if (window.showToast) showToast('+' + (data.xp_awarded || currentTask.reward_xp || 0) + ' XP!');

@@ -1,25 +1,25 @@
 // ========== SETUP SCREENS ==========
-var setupInterests=['Маркетинг','Продажи','Обучение','Нетворкинг','Автоматизация','Контент','Финансы','Лидерство','Рекрутинг','Личный бренд','Здоровье','Красота','Экология','Технологии','Инвестиции'];
-var setupSelectedInterests=[];
-var setupSelectedGoal=null;
+const setupInterests=['Маркетинг','Продажи','Обучение','Нетворкинг','Автоматизация','Контент','Финансы','Лидерство','Рекрутинг','Личный бренд','Здоровье','Красота','Экология','Технологии','Инвестиции'];
+let setupSelectedInterests=[];
+let setupSelectedGoal=null;
 
 function setupInit(){
-  var cl=getDnaColor();
+  const cl=getDnaColor();
   // Set dots color
-  var dots=document.querySelectorAll('.stp-dot.active,.stp-dot.done');
+  const dots=document.querySelectorAll('.stp-dot.active,.stp-dot.done');
   dots.forEach(function(d){d.style.background=cl;});
   // Set avatar ring color
-  var av=document.getElementById('stpAvatar');
+  const av=document.getElementById('stpAvatar');
   if(av){
     av.querySelectorAll('.stp-avatar-ripple').forEach(function(r){r.style.borderColor=cl+'20';});
   }
   // Set avatar label color
-  var lbl=document.querySelector('.stp-avatar-label');
+  const lbl=document.querySelector('.stp-avatar-label');
   if(lbl) lbl.style.color=cl;
   // Set input focus color as CSS variable
   document.documentElement.style.setProperty('--stp-color',cl);
   // Reset
-  var inp=document.getElementById('stpNameInput');
+  const inp=document.getElementById('stpNameInput');
   if(inp) inp.value='';
   setupSelectedInterests=[];
   setupSelectedGoal=null;
@@ -27,8 +27,8 @@ function setupInit(){
 }
 
 function getDnaColor(){
-  var t=localStorage.getItem('dnaType')||'S';
-  var colors={S:'#3b82f6',C:'#22c55e',K:'#f59e0b',A:'#a78bfa'};
+  const t=localStorage.getItem('dnaType')||'S';
+  const colors={S:'#3b82f6',C:'#22c55e',K:'#f59e0b',A:'#a78bfa'};
   return colors[t]||'#8b5cf6';
 }
 
@@ -37,8 +37,8 @@ function setupCheckName(){
 }
 
 function setupUpdateBtn1(){
-  var inp=document.getElementById('stpNameInput');
-  var btn=document.getElementById('stpBtn1');
+  const inp=document.getElementById('stpNameInput');
+  const btn=document.getElementById('stpBtn1');
   if(inp&&btn){
     if(inp.value.trim().length>=2){
       btn.classList.remove('disabled');btn.disabled=false;
@@ -49,7 +49,7 @@ function setupUpdateBtn1(){
 }
 
 function setupGoBack1(){
-  var hasReveal = document.getElementById('dnrScreen');
+  const hasReveal = document.getElementById('dnrScreen');
   if(hasReveal && hasReveal.classList.contains('active')){
     goTo('scrDnaResult');
   } else {
@@ -63,20 +63,20 @@ async function setupSkipName(){
 }
 
 async function setupGoStep2(){
-  var inp=document.getElementById('stpNameInput');
-  var name=inp?inp.value.trim():'Участник';
+  const inp=document.getElementById('stpNameInput');
+  let name=inp?inp.value.trim():'Участник';
   if(name.length<2) name='Участник';
   localStorage.setItem('userName',name);
   await goTo('scrSetup2');setupRenderTags();
 }
 
 function setupRenderTags(){
-  var cl=getDnaColor();
-  var cont=document.getElementById('stpTags');
+  const cl=getDnaColor();
+  const cont=document.getElementById('stpTags');
   if(!cont) return;
   cont.innerHTML='';
   setupInterests.forEach(function(t){
-    var el=document.createElement('div');
+    const el=document.createElement('div');
     el.className='stp-tag';
     el.textContent=t;
     el.setAttribute('data-tag',t);
@@ -86,12 +86,12 @@ function setupRenderTags(){
   });
   setupUpdateCounter();
   // Set dot colors
-  var dots=document.querySelectorAll('#scrSetup2 .stp-dot.active,#scrSetup2 .stp-dot.done');
+  const dots=document.querySelectorAll('#scrSetup2 .stp-dot.active,#scrSetup2 .stp-dot.done');
   dots.forEach(function(d){d.style.background=cl;});
 }
 
 function setupToggleTag(el,tag){
-  var idx=setupSelectedInterests.indexOf(tag);
+  const idx=setupSelectedInterests.indexOf(tag);
   if(idx===-1){
     setupSelectedInterests.push(tag);
     el.classList.add('selected');
@@ -107,9 +107,9 @@ function setupToggleTag(el,tag){
 }
 
 function setupUpdateCounter(){
-  var cnt=document.getElementById('stpCounter');
-  var btn=document.getElementById('stpBtn2');
-  var n=setupSelectedInterests.length;
+  const cnt=document.getElementById('stpCounter');
+  const btn=document.getElementById('stpBtn2');
+  const n=setupSelectedInterests.length;
   if(cnt){
     cnt.textContent='Выбрано: '+n+' / 15';
     if(n>=3){cnt.classList.add('enough');cnt.style.color=getDnaColor();}
@@ -132,26 +132,26 @@ async function setupGoStep3(){
 }
 
 function setupInitGoals(){
-  var cl=getDnaColor();
+  const cl=getDnaColor();
   setupSelectedGoal=null;
-  var goals=document.querySelectorAll('.stp-goal');
+  const goals=document.querySelectorAll('.stp-goal');
   goals.forEach(function(g){g.classList.remove('selected','dimmed')});
-  var btn=document.getElementById('stpBtn3');
+  const btn=document.getElementById('stpBtn3');
   if(btn){btn.classList.add('disabled');btn.disabled=true;}
   // Dot colors
-  var dots=document.querySelectorAll('#scrSetup3 .stp-dot.active,#scrSetup3 .stp-dot.done');
+  const dots=document.querySelectorAll('#scrSetup3 .stp-dot.active,#scrSetup3 .stp-dot.done');
   dots.forEach(function(d){d.style.background=cl;});
 }
 
 function setupSelectGoal(el){
-  var goals=document.querySelectorAll('.stp-goal');
-  var val=el.getAttribute('data-goal');
+  const goals=document.querySelectorAll('.stp-goal');
+  const val=el.getAttribute('data-goal');
   setupSelectedGoal=val;
   goals.forEach(function(g){
     if(g===el){g.classList.add('selected');g.classList.remove('dimmed');}
     else{g.classList.remove('selected');g.classList.add('dimmed');}
   });
-  var btn=document.getElementById('stpBtn3');
+  const btn=document.getElementById('stpBtn3');
   if(btn){btn.classList.remove('disabled');btn.disabled=false;}
 }
 
@@ -171,10 +171,10 @@ function setupShowDone(){
   if (window.saveOnboardingStep) {
     window.saveOnboardingStep('complete').catch(console.error);
   }
-  var cl=getDnaColor();
-  var tp=localStorage.getItem('dnaType')||'S';
-  var names={S:'Стратег',C:'Коммуникатор',K:'Креатор',A:'Аналитик'};
-  var name=localStorage.getItem('userName')||'Участник';
+  const cl=getDnaColor();
+  const tp=localStorage.getItem('dnaType')||'S';
+  const names={S:'Стратег',C:'Коммуникатор',K:'Креатор',A:'Аналитик'};
+  const name=localStorage.getItem('userName')||'Участник';
 
   goTo('scrDone');
 
@@ -187,19 +187,19 @@ function setupShowDone(){
   document.getElementById('doneCheck').style.boxShadow='0 0 32px '+cl+'30';
 
   // Title
-  var title=document.getElementById('doneTitle');
+  const title=document.getElementById('doneTitle');
   if(name&&name!=='Участник') title.textContent='Добро пожаловать, '+name+'!';
   else title.textContent='Добро пожаловать!';
 
   // Subtitle
-  var sub=document.getElementById('doneSubtitle');
+  const sub=document.getElementById('doneSubtitle');
   sub.textContent='Ты — '+names[tp]+' · ♟ Пешка · 0 XP';
   sub.style.color=cl;
 
   // Particles
-  var pc=document.getElementById('doneParticles');pc.innerHTML='';
-  for(var i=0;i<10;i++){
-    var p=document.createElement('div');p.className='dnr-bg-p';
+  const pc=document.getElementById('doneParticles');pc.innerHTML='';
+  for(let i=0;i<10;i++){
+    const p=document.createElement('div');p.className='dnr-bg-p';
     p.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+(1+Math.random()*1.5)+'px;height:'+(1+Math.random()*1.5)+'px;background:'+cl+';opacity:'+(0.06+Math.random()*0.12)+';animation-duration:'+(10+Math.random()*12)+'s;animation-delay:'+Math.random()*5+'s;';
     pc.appendChild(p);
   }

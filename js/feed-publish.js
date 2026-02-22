@@ -3,15 +3,15 @@
 // Отделено от feed.js
 // ═══════════════════════════════════════
 
-var ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-var MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-var MAX_POST_LENGTH = 5000;
-var MAX_IMAGE_WIDTH = 1200;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_POST_LENGTH = 5000;
+const MAX_IMAGE_WIDTH = 1200;
 
 // ===== ВАЛИДАЦИЯ =====
 
 function validatePostContent(text) {
-  var trimmed = text.trim();
+  const trimmed = text.trim();
   if (trimmed.length === 0) return { ok: false, error: 'Напишите что-нибудь!' };
   if (trimmed.length > MAX_POST_LENGTH) return { ok: false, error: 'Максимум ' + MAX_POST_LENGTH + ' символов' };
   return { ok: true, text: trimmed };
@@ -35,13 +35,13 @@ function compressImage(file) {
     // Пропускаем маленькие файлы (<500KB)
     if (file.size < 500 * 1024) { resolve(file); return; }
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function(e) {
-      var img = new Image();
+      const img = new Image();
       img.onload = function() {
-        var canvas = document.createElement('canvas');
-        var width = img.width;
-        var height = img.height;
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
 
         // Ресайз если шире MAX_IMAGE_WIDTH
         if (width > MAX_IMAGE_WIDTH) {
@@ -51,7 +51,7 @@ function compressImage(file) {
 
         canvas.width = width;
         canvas.height = height;
-        var ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
         canvas.toBlob(function(blob) {
@@ -70,23 +70,23 @@ function compressImage(file) {
 
 async function doPublish(contentArg) {
   // Поддержка модалки и шаблона scrCreate
-  var ta = document.getElementById('post-content') || document.getElementById('createTa');
-  var btn = document.getElementById('publish-btn') || document.getElementById('pubBtn');
-  var content = contentArg || (ta ? ta.value : '');
-  var photo = typeof getPendingPhoto === 'function' ? getPendingPhoto() : null;
+  const ta = document.getElementById('post-content') || document.getElementById('createTa');
+  const btn = document.getElementById('publish-btn') || document.getElementById('pubBtn');
+  const content = contentArg || (ta ? ta.value : '');
+  const photo = typeof getPendingPhoto === 'function' ? getPendingPhoto() : null;
 
   // Валидация текста
-  var textResult = validatePostContent(content);
+  const textResult = validatePostContent(content);
   if (!textResult.ok && !photo) {
     window.showToast?.(textResult.error);
     if (ta) ta.focus();
     return;
   }
-  var trimmed = textResult.ok ? textResult.text : '';
+  const trimmed = textResult.ok ? textResult.text : '';
 
   // Валидация фото
   if (photo) {
-    var imgResult = validateImage(photo);
+    const imgResult = validateImage(photo);
     if (!imgResult.ok) {
       window.showToast?.(imgResult.error);
       return;
@@ -106,12 +106,12 @@ async function doPublish(contentArg) {
   }
 
   // Состояние загрузки
-  var originalText = '';
+  let originalText = '';
   if (btn) {
     originalText = btn.textContent;
     btn.disabled = true;
-    var txtEl = btn.querySelector('.create-publish-text');
-    var loadEl = btn.querySelector('.create-publish-loader');
+    const txtEl = btn.querySelector('.create-publish-text');
+    const loadEl = btn.querySelector('.create-publish-loader');
     if (txtEl && loadEl) {
       txtEl.style.display = 'none';
       loadEl.style.display = 'inline-flex';
@@ -121,15 +121,15 @@ async function doPublish(contentArg) {
   }
 
   try {
-    var imageUrl = null;
-    var imageUrls = [];
+    let imageUrl = null;
+    let imageUrls = [];
 
     // Множественные фото (feed-media.js)
-    var selImages = typeof getSelectedImages === 'function' ? getSelectedImages() : [];
+    const selImages = typeof getSelectedImages === 'function' ? getSelectedImages() : [];
     if (selImages.length > 0) {
       try {
         imageUrls = await window.uploadSelectedImages(function(cur, tot) {
-          var txtEl = btn ? btn.querySelector('.create-publish-text') : null;
+          const txtEl = btn ? btn.querySelector('.create-publish-text') : null;
           if (txtEl) txtEl.textContent = 'Загрузка ' + cur + '/' + tot + '...';
           else if (btn) btn.textContent = 'Загрузка ' + cur + '/' + tot + '...';
         });
@@ -141,25 +141,25 @@ async function doPublish(contentArg) {
       }
     } else if (photo && typeof sbUploadImage === 'function') {
       // Одиночное фото (старый способ)
-      var compressed = await compressImage(photo);
+      const compressed = await compressImage(photo);
       imageUrl = await sbUploadImage(compressed);
       if (imageUrl) imageUrls = [imageUrl];
     }
 
-    var isEdit = window._editingPostId;
-    var result;
+    const isEdit = window._editingPostId;
+    let result;
 
     if (isEdit) {
-      var update = { content: trimmed };
+      const update = { content: trimmed };
       if (imageUrl) update.image_url = imageUrl;
       if (imageUrls.length) update.images = imageUrls;
-      var resp = await sb.from('posts').update(update).eq('id', isEdit).select().single();
+      const resp = await sb.from('posts').update(update).eq('id', isEdit).select().single();
       if (resp.error) throw resp.error;
       result = resp.data;
       window._editingPostId = null;
     } else {
-      var postType = window.currentPostType || 'post';
-      var pollData = null;
+      const postType = window.currentPostType || 'post';
+      let pollData = null;
       if (postType === 'poll' && window.currentPollInstance) {
         pollData = window.currentPollInstance.getData();
         if (!pollData) {
@@ -178,7 +178,7 @@ async function doPublish(contentArg) {
     if (typeof clearSelectedImages === 'function') clearSelectedImages();
 
     // Закрыть модалку или вернуться в ленту
-    var modal = document.querySelector('.create-modal');
+    const modal = document.querySelector('.create-modal');
     if (modal) {
       modal.classList.remove('create-modal--visible');
       setTimeout(function() { modal.remove(); }, 250);
@@ -208,7 +208,7 @@ async function doPublish(contentArg) {
     console.error('Publish error:', err);
 
     // Понятное сообщение пользователю
-    var message = 'Ошибка публикации';
+    let message = 'Ошибка публикации';
     if (err && err.message) {
       if (err.message.includes('auth')) message = 'Необходима авторизация';
       else if (err.message.includes('permission')) message = 'Нет прав на создание поста';
@@ -220,8 +220,8 @@ async function doPublish(contentArg) {
     // Восстановить кнопку
     if (btn) {
       btn.disabled = false;
-      var txtEl2 = btn.querySelector('.create-publish-text');
-      var loadEl2 = btn.querySelector('.create-publish-loader');
+      const txtEl2 = btn.querySelector('.create-publish-text');
+      const loadEl2 = btn.querySelector('.create-publish-loader');
       if (txtEl2 && loadEl2) {
         txtEl2.style.display = '';
         loadEl2.style.display = 'none';
