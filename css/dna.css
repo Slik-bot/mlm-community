@@ -144,8 +144,8 @@
 
 /* ========== DNA RESULT — LUXURY ========== */
 #scrDnaResult{overflow:hidden auto;}
-.dnr-screen{position:absolute;inset:0;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .8s;}
-.dnr-screen.active{opacity:1;pointer-events:all;}
+.dnr-screen{position:absolute;inset:0;overflow-y:auto;pointer-events:none;}
+.dnr-screen.active{pointer-events:all;}
 .dnr-screen.active .dnr-btn{opacity:1 !important;transform:translateY(0) !important;pointer-events:all !important;}
 .dnr-screen.active .dnr-retry{opacity:1 !important;pointer-events:all !important;}
 
