@@ -4,6 +4,11 @@
 
 const MORE_SECTIONS = [
   {
+    id: 'scrQuest',
+    label: 'Квест новичка',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9a6 6 0 0012 0V3H6v6z"/><path d="M6 3H4v3a2 2 0 002 2"/><path d="M18 3h2v3a2 2 0 01-2 2"/><path d="M12 15v3"/><path d="M8 21h8"/></svg>'
+  },
+  {
     id: 'scrWallet',
     label: 'Кошелёк',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M6 14h4"/></svg>'

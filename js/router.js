@@ -50,7 +50,8 @@ const TEMPLATES = {
   scrWallet: '/templates/wallet.html',
   scrVerification: '/templates/verification.html',
   scrNotifications: '/templates/notifications.html',
-  scrMore: '/templates/more.html'
+  scrMore: '/templates/more.html',
+  scrQuest: '/templates/quest.html'
 };
 const loadedTemplates = {};
 
@@ -211,6 +212,9 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrMore') {
     if (window.initMore) window.initMore();
+  }
+  if (id === 'scrQuest') {
+    if (window.initQuest) window.initQuest();
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');

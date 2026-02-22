@@ -299,18 +299,30 @@
           const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
-        await switchScreenInstant('scrFeed');
-        showApp();
-        if (window.initFeedFromDB) initFeedFromDB();
+        if (!profile.quest_completed && !sessionStorage.getItem('quest_shown')) {
+          sessionStorage.setItem('quest_shown', '1');
+          await switchScreenInstant('scrQuest');
+          showApp();
+        } else {
+          await switchScreenInstant('scrFeed');
+          showApp();
+          if (window.initFeedFromDB) initFeedFromDB();
+        }
       } else if (hasDna && hasName) {
         localStorage.setItem('onboardingDone', 'true');
         if (profile.dna_type) {
           const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
-        await switchScreenInstant('scrFeed');
-        showApp();
-        if (window.initFeedFromDB) initFeedFromDB();
+        if (!profile.quest_completed && !sessionStorage.getItem('quest_shown')) {
+          sessionStorage.setItem('quest_shown', '1');
+          await switchScreenInstant('scrQuest');
+          showApp();
+        } else {
+          await switchScreenInstant('scrFeed');
+          showApp();
+          if (window.initFeedFromDB) initFeedFromDB();
+        }
       } else if (hasDna && !hasName) {
         await switchScreenInstant('scrSetup1');
         showApp();

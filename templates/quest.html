@@ -1,0 +1,43 @@
+<!-- =============== SCREEN: WELCOME QUEST =============== -->
+<div class="scr hidden" id="scrQuest">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Квест новичка</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="quest-progress">
+    <div class="quest-progress__bar">
+      <div class="quest-progress__fill" id="questProgressFill"></div>
+    </div>
+    <div class="quest-progress__text" id="questProgressText">0 / 7</div>
+  </div>
+
+  <!-- Reward banner -->
+  <div class="quest-reward" id="questReward">
+    <div class="quest-reward__icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="28" height="28">
+        <path d="M6 9a6 6 0 0012 0V3H6v6z"/><path d="M6 3H4v3a2 2 0 002 2"/><path d="M18 3h2v3a2 2 0 01-2 2"/>
+        <path d="M12 15v3"/><path d="M8 21h8"/>
+      </svg>
+    </div>
+    <div class="quest-reward__info">
+      <div class="quest-reward__title">Награда за все 7 шагов</div>
+      <div class="quest-reward__amount">+100 руб. на баланс</div>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="quest-steps" id="questSteps">
+    <div class="quest-skeleton">
+      <div class="quest-skeleton__item"></div>
+      <div class="quest-skeleton__item"></div>
+      <div class="quest-skeleton__item"></div>
+      <div class="quest-skeleton__item"></div>
+      <div class="quest-skeleton__item"></div>
+    </div>
+  </div>
+</div>
