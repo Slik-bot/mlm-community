@@ -4,7 +4,7 @@ let _finTab = 'subscriptions';
 let _subFilter = '', _subPage = 1, _txPage = 1, _payFilter = '';
 
 function renderFinance() {
-  const tabs = 'subscriptions:Подписки,transactions:Транзакции,payouts:Выплаты,referrals:Рефералы,channels:Платёжные каналы';
+  const tabs = 'subscriptions:Подписки,transactions:Транзакции,withdrawals:Выводы,payouts:Выплаты,referrals:Рефералы,channels:Платёжные каналы';
   let h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _finTab ? ' active' : '') + '" onclick="switchFinTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
@@ -15,7 +15,7 @@ function switchFinTab(tab, btn) {
   _finTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  ({ subscriptions: loadSubscriptions, transactions: loadTransactions, payouts: loadPayouts, referrals: loadReferrals, channels: loadPayChannels }[tab] || function(){})();
+  ({ subscriptions: loadSubscriptions, transactions: loadTransactions, withdrawals: loadWithdrawals, payouts: loadPayouts, referrals: loadReferrals, channels: loadPayChannels }[tab] || function(){})();
 }
 
 // ===== ПОДПИСКИ =====

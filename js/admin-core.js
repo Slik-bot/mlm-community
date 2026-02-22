@@ -224,11 +224,25 @@ async function renderDashboard() {
 }
 
 // ===== USERS =====
-let _usersPage = 1, _usersSearch = '', _usersDna = '', _usersPlan = '';
+let _usersTab = 'list', _usersPage = 1, _usersSearch = '', _usersDna = '', _usersPlan = '';
 let _usersCache = [], _usersTotal = 0, _searchTimer = null;
 
-async function renderUsers() {
-  const el = document.getElementById('pageContent');
+function renderUsers() {
+  const tabs = 'list:Список,verification:Верификация';
+  let h = '<div class="tabs">';
+  tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _usersTab ? ' active' : '') + '" onclick="switchUsersTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
+  h += '</div><div id="contentArea"></div>';
+  document.getElementById('pageContent').innerHTML = h;
+  switchUsersTab(_usersTab, document.querySelector('.tab.active'));
+}
+function switchUsersTab(tab, btn) {
+  _usersTab = tab;
+  document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  ({ list: renderUsersList, verification: loadVerification }[tab] || function(){})();
+}
+async function renderUsersList() {
+  const el = document.getElementById('contentArea');
   el.innerHTML =
     '<div class="toolbar">' +
       '<input type="text" class="field field-search" placeholder="Поиск по имени..." value="' + esc(_usersSearch) + '" oninput="_usersSearch=this.value;_usersPage=1;debounceUsers()">' +
@@ -248,7 +262,6 @@ async function renderUsers() {
     '</div>' +
     '<div id="usersTableWrap">Загрузка...</div>' +
     '<div id="usersPagination"></div>';
-
   loadUsersTable();
 }
 
@@ -405,7 +418,7 @@ async function doAdjustXp(id) {
 // ===== CONTENT =====
 let _contentTab = 'posts';
 function renderContent() {
-  const tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы,moderation:Модерация';
+  const tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,taskReview:Задания,reports:Жалобы,moderation:Модерация';
   let h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _contentTab ? ' active' : '') + '" onclick="switchContentTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
@@ -416,8 +429,8 @@ function switchContentTab(tab, btn) {
   _contentTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  const fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports, moderation: loadModeration }[tab];
-  if (fn) fn(tab === 'reports' || tab === 'moderation' ? '' : 1);
+  const fn = { posts: loadPosts, comments: loadComments, cases: loadCases, taskReview: loadTaskReview, reports: loadReports, moderation: loadModeration }[tab];
+  if (fn) fn(tab === 'reports' || tab === 'moderation' || tab === 'taskReview' ? '' : 1);
 }
 
 // ===== PLACEHOLDERS =====
