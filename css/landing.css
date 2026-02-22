@@ -1,7 +1,7 @@
 /* ===== LANDING ===== */
 #scrLanding{position:fixed;inset:0;z-index:50;font-family:'Nunito',sans-serif;overflow-x:hidden;}
-#scrLanding.hidden{transform:translateX(100%);opacity:0;pointer-events:none;z-index:0;}
-#scrLanding.back-hidden{transform:translateX(-30%);opacity:0;pointer-events:none;z-index:0;}
+#scrLanding.hidden{display:none !important;pointer-events:none;z-index:0;}
+#scrLanding.back-hidden{display:none !important;pointer-events:none;z-index:0;}
 .lnd-header-sticky{position:sticky;top:0;z-index:100;padding-top:22px;padding-bottom:4px;background:rgba(10,10,15,0.90);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
 
 /* ═══ НАВБАР — тонкая стеклянная шторка ═══ */

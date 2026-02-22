@@ -262,23 +262,28 @@
         // Синхронизируем имя
         if (profile.name) localStorage.setItem('userName', profile.name);
 
-        // Главное условие: любой признак завершённого онбординга
-        var isDone = (onboardingDone === 'true' || onboardingDone === true)
-          || (profile.dna_type && profile.name && profile.name !== 'Участник')
-          || (profile.level && profile.level !== 'pawn')
-          || localDna;
+        var hasDna = profile.dna_type || localDna;
+        var hasName = profile.name && profile.name !== 'Участник';
 
-        if (isDone) {
-          // Восстанавливаем dnaType в localStorage если нужно
+        // onboardingDone — главный приоритет, проверяем ПЕРВЫМ
+        if (onboardingDone) {
           if (profile.dna_type) {
-            var revMap = {strategist:'S',communicator:'C',creator:'K',analyst:'A'};
+            var revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
             localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
           }
-          localStorage.setItem('onboardingDone','true');
           await switchScreenInstant('scrFeed');
           showApp();
           if (window.initFeedFromDB) initFeedFromDB();
-        } else if (profile.dna_type && (!profile.name || profile.name === 'Участник')) {
+        } else if (hasDna && hasName) {
+          localStorage.setItem('onboardingDone', 'true');
+          if (profile.dna_type) {
+            var revMap2 = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
+            localStorage.setItem('dnaType', revMap2[profile.dna_type] || localDna || 'S');
+          }
+          await switchScreenInstant('scrFeed');
+          showApp();
+          if (window.initFeedFromDB) initFeedFromDB();
+        } else if (hasDna && !hasName) {
           await switchScreenInstant('scrSetup1');
           showApp();
         } else {
