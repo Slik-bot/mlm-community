@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -93,12 +92,13 @@ async function derivePassword(
   return "tg_" + bufferToHex(raw);
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
+    console.log('auth-telegram called');
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
     if (!botToken) {
       return json({ error: "TELEGRAM_BOT_TOKEN not configured" }, 500);
@@ -110,12 +110,14 @@ serve(async (req) => {
     );
 
     const { initData } = await req.json();
+    console.log('initData length:', initData?.length);
     if (!initData) {
       return json({ error: "initData is required" }, 400);
     }
 
     // ═══ 1. Validate Telegram signature ═══
     const isValid = await validateTelegramData(initData, botToken);
+    console.log('HMAC result:', isValid);
     if (!isValid) {
       return json({ error: "Invalid signature" }, 401);
     }
@@ -145,6 +147,7 @@ serve(async (req) => {
       .select("*")
       .eq("telegram_id", telegramId)
       .maybeSingle();
+    console.log('user found:', !!existingUser);
 
     if (existingUser) {
       // ═══ LOGIN existing Telegram user ═══
@@ -168,70 +171,88 @@ serve(async (req) => {
     }
 
     // ═══ 4. REGISTER new Telegram user ═══
+    try {
+      // 4a. Create Supabase Auth user
+      console.log('calling createUser with email:', internalEmail);
+      let authData, authError;
+      try {
+        const result = await supabase.auth.admin.createUser({
+          email: internalEmail,
+          password: internalPassword,
+          email_confirm: true,
+        });
+        authData = result.data;
+        authError = result.error;
+        console.log('createUser done, error:', JSON.stringify(authError), 'user:', authData?.user?.id);
+      } catch (e) {
+        console.error('createUser EXCEPTION:', e.message);
+        return json({ error: 'createUser exception: ' + e.message }, 500);
+      }
+      if (authError) return json({ error: authError.message }, 400);
 
-    // 4a. Create Supabase Auth user
-    const { data: authData, error: authError } =
-      await supabase.auth.admin.createUser({
-        email: internalEmail,
-        password: internalPassword,
-        email_confirm: true,
+      const userId = authData.user.id;
+
+      // 4b. Generate unique referral_code (8 chars)
+      let referralCode = generateReferralCode();
+      for (let i = 0; i < 10; i++) {
+        const { data: exists } = await supabase
+          .from("users")
+          .select("id")
+          .eq("referral_code", referralCode)
+          .maybeSingle();
+        if (!exists) break;
+        referralCode = generateReferralCode();
+      }
+
+      // 4c. INSERT into users
+      const { error: userError } = await supabase.from("users").insert({
+        id: userId,
+        telegram_id: telegramId,
+        name: fullName,
+        telegram_username: username,
+        avatar_url: photoUrl,
+        auth_provider: "telegram",
+        supabase_auth_id: userId,
+        referral_code: referralCode,
       });
-    if (authError) return json({ error: authError.message }, 400);
 
-    const userId = authData.user.id;
+      console.log('insert users result:', userError ? userError.message : 'ok');
+      if (userError) {
+        await supabase.auth.admin.deleteUser(userId);
+        return json({ error: userError.message }, 500);
+      }
 
-    // 4b. Generate unique referral_code (8 chars)
-    let referralCode = generateReferralCode();
-    for (let i = 0; i < 10; i++) {
-      const { data: exists } = await supabase
+      // 4d. Default user_settings
+      const { error: settingsError } = await supabase.from("user_settings").insert({ user_id: userId });
+      console.log('insert user_settings result:', settingsError ? settingsError.message : 'ok');
+
+      // 4e. Default user_stats
+      const { error: statsError } = await supabase.from("user_stats").insert({ user_id: userId });
+      console.log('insert user_stats result:', statsError ? statsError.message : 'ok');
+
+      // 4f. Sign in for session
+      const { data: signIn, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: internalEmail,
+          password: internalPassword,
+        });
+      console.log('signIn after register:', signInError ? signInError.message : 'ok');
+      if (signInError) return json({ error: signInError.message }, 500);
+
+      const { data: fullUser } = await supabase
         .from("users")
-        .select("id")
-        .eq("referral_code", referralCode)
-        .maybeSingle();
-      if (!exists) break;
-      referralCode = generateReferralCode();
+        .select("*")
+        .eq("id", userId)
+        .single();
+      console.log('fullUser loaded:', !!fullUser);
+
+      return json({ user: fullUser, session: signIn.session });
+    } catch (createErr) {
+      console.error('CREATE USER BLOCK ERROR:', createErr.message, createErr.stack);
+      return json({ error: createErr.message }, 500);
     }
-
-    // 4c. INSERT into users
-    const { error: userError } = await supabase.from("users").insert({
-      id: userId,
-      telegram_id: telegramId,
-      name: fullName,
-      telegram_username: username,
-      avatar_url: photoUrl,
-      auth_provider: "telegram",
-      supabase_auth_id: userId,
-      referral_code: referralCode,
-    });
-
-    if (userError) {
-      await supabase.auth.admin.deleteUser(userId);
-      return json({ error: userError.message }, 500);
-    }
-
-    // 4d. Default user_settings
-    await supabase.from("user_settings").insert({ user_id: userId });
-
-    // 4e. Default user_stats
-    await supabase.from("user_stats").insert({ user_id: userId });
-
-    // 4f. Sign in for session
-    const { data: signIn, error: signInError } =
-      await supabase.auth.signInWithPassword({
-        email: internalEmail,
-        password: internalPassword,
-      });
-    if (signInError) return json({ error: signInError.message }, 500);
-
-    const { data: fullUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    return json({ user: fullUser, session: signIn.session });
   } catch (err) {
-    console.error("auth-telegram error:", err);
+    console.error("auth-telegram error:", err.message);
     return json({ error: "Internal server error" }, 500);
   }
 });

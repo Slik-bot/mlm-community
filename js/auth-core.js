@@ -245,8 +245,7 @@
             const user = result.user || {};
             if (user.name) localStorage.setItem('userName', user.name);
             if (!user.dna_type) {
-              await goTo('scrDnaTest');
-              if (window.dnaReset) window.dnaReset();
+              await goTo('scrWelcome');
             } else if (!user.level) {
               goTo('scrSetup1');
             } else {
