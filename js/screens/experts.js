@@ -20,11 +20,6 @@ function getSpecLabel(spec) {
   return EXPERT_SPECS[spec] || spec;
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 function renderStars(rating) {
   var full = Math.round(rating || 0);
   var html = '';
@@ -110,7 +105,7 @@ function renderExpertsList(experts) {
     return '<div class="expert-card glass-card" onclick="openExpert(\'' + e.id + '\')">' +
       '<img class="expert-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
       '<div class="expert-info">' +
-        '<div class="expert-name">' + escapeHtml(user.name || 'Эксперт') + '</div>' +
+        '<div class="expert-name">' + escHtml(user.name || 'Эксперт') + '</div>' +
         '<div class="expert-spec">' + getSpecLabel(e.specialization) + '</div>' +
         '<div class="expert-rating">' +
           '<span class="expert-stars">' + renderStars(e.rating) + '</span>' +
@@ -186,7 +181,7 @@ function initExpertDetail() {
   if (skillsEl) {
     var skills = currentExpert.skills || [];
     skillsEl.innerHTML = skills.map(function(s) {
-      return '<span class="skill-pill">' + escapeHtml(s) + '</span>';
+      return '<span class="skill-pill">' + escHtml(s) + '</span>';
     }).join('');
   }
 
@@ -219,11 +214,11 @@ function renderExpertReviews(reviews) {
     return '<div class="review-card glass-card">' +
       '<div class="review-header">' +
         '<img class="review-avatar" src="' + (author.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
-        '<span class="review-name">' + escapeHtml(author.name || 'Участник') + '</span>' +
+        '<span class="review-name">' + escHtml(author.name || 'Участник') + '</span>' +
         '<span class="review-date">' + date + '</span>' +
       '</div>' +
       '<div class="review-stars">' + renderStars(r.rating) + '</div>' +
-      '<div class="review-text">' + escapeHtml(r.text) + '</div>' +
+      '<div class="review-text">' + escHtml(r.text) + '</div>' +
     '</div>';
   }).join('');
 }

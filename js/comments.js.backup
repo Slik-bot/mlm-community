@@ -27,7 +27,7 @@ window.openPostDetail = async function(postId) {
 
   try {
     var postResult = await sb.from('posts')
-      .select('*, users(id, name, avatar_url, dna_type, level, is_verified)')
+      .select('*, profiles(id, name, avatar_url, dna_type, level, is_verified)')
       .eq('id', postId).single();
     var post = postResult.data;
     if (!post) { scroll.innerHTML = '<div class="cmt-loading">Пост не найден</div>'; return; }
@@ -47,7 +47,7 @@ window.handleComment = function(postId) { if (postId) openPostDetail(postId); };
 
 // ОТРИСОВКА ЭКРАНА
 function renderDetailScreen(scroll, post, comments) {
-  var p = post.users || {};
+  var p = post.profiles || {};
   var authorName = p.name || 'Аноним';
   var authorAva = p.avatar_url || '';
   var letter = authorName.charAt(0).toUpperCase();
@@ -85,7 +85,7 @@ function renderDetailScreen(scroll, post, comments) {
     html += renderComment(c, false);
     var reps = replies[c.id];
     if (reps && reps.length) {
-      var rootName = (c.author || {}).name || 'Аноним';
+      var rootName = (c.profiles || {}).name || 'Аноним';
       reps.forEach(function(r) { r._parentName = rootName; });
       html += '<div class="cmt-show-replies" onclick="toggleReplies(this)">';
       html += 'Показать ' + reps.length + ' ответ' + pluralEnd(reps.length);
@@ -106,7 +106,7 @@ function renderDetailScreen(scroll, post, comments) {
 
 // ОДИН КОММЕНТАРИЙ
 function renderComment(c, isReply) {
-  var p = c.author || {};
+  var p = c.profiles || {};
   var name = p.name || 'Аноним';
   var ava = p.avatar_url || '';
   var dna = p.dna_type || '';
@@ -195,9 +195,9 @@ window.likeComment = async function(id, el) {
   setTimeout(function(){ el.style.transform = ''; }, 150);
   try {
     if (liked) {
-      await sb.from('reactions').insert({ user_id: currentAuthUser.id, comment_id: id });
+      await sb.from('post_comment_likes').insert({ user_id: currentAuthUser.id, comment_id: id });
     } else {
-      await sb.from('reactions').delete().match({ user_id: currentAuthUser.id, comment_id: id });
+      await sb.from('post_comment_likes').delete().match({ user_id: currentAuthUser.id, comment_id: id });
     }
   } catch(e) {}
 };
@@ -241,7 +241,7 @@ window.closeCmtMenu = function() {
 
 window.delComment = async function(id) {
   closeCmtMenu();
-  await sb.from('comments').delete().eq('id', id);
+  await sb.from('post_comments').delete().eq('id', id);
   var el = document.querySelector('.cmt[data-id="' + id + '"]');
   if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(-20px)'; setTimeout(function(){ el.remove(); }, 250); }
   showToast('Комментарий удалён');
@@ -297,12 +297,12 @@ function initCommentInput() {
     f.value=''; f.style.height=''; btn.classList.remove('active');
     cancelReply();
     try {
-      var res = await sb.from('comments').insert({
+      var res = await sb.from('post_comments').insert({
         post_id:_postId, user_id:currentAuthUser.id, content:text, parent_comment_id:parentId||null
       }).select('id,created_at').single();
       if(!res||!res.data) return;
       var prof = currentProfile||{name:'Вы',avatar_url:'',dna_type:''};
-      var nc = {id:res.data.id, user_id:currentAuthUser.id, content:text, created_at:res.data.created_at||new Date().toISOString(), parent_comment_id:parentId, author:prof};
+      var nc = {id:res.data.id, user_id:currentAuthUser.id, content:text, created_at:res.data.created_at||new Date().toISOString(), parent_comment_id:parentId, profiles:prof};
       if(parentName) nc._parentName=parentName;
       var list = document.getElementById('cmtList');
       if(!list) return;

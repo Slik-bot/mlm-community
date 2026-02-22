@@ -21,7 +21,7 @@ function switchFinTab(tab, btn) {
 async function loadSubscriptions() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var q = sb.from('subscriptions').select('*, profiles(name)', { count: 'exact' })
+  var q = sb.from('subscriptions').select('*, users(name)', { count: 'exact' })
     .order('created_at', { ascending: false }).range((_subPage - 1) * PER_PAGE, _subPage * PER_PAGE - 1);
   if (_subFilter) q = q.eq('status', _subFilter);
   var r = await q;
@@ -38,11 +38,11 @@ async function loadSubscriptions() {
     '<th>Пользователь</th><th>План</th><th>Период</th><th>Цена</th><th>Статус</th><th>Метод</th><th>Начало</th><th>Истекает</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(s) {
-    var usr = s.profiles ? s.profiles.name : '—';
+    var usr = s.users ? s.users.name : '—';
     var badge = sm[s.status] || 'badge-purple';
-    var planBadge = s.plan === 'business' ? 'badge-gold' : 'badge-purple';
+    var planBadge = s.tariff === 'business' ? 'badge-gold' : 'badge-purple';
     var acts = s.status === 'active' ? '<button class="btn btn-danger btn-sm" onclick="cancelSub(\'' + s.id + '\')">Отменить</button>' : '';
-    h += '<tr><td>' + esc(usr) + '</td><td><span class="badge ' + planBadge + '">' + esc((s.plan || '').toUpperCase()) + '</span></td>' +
+    h += '<tr><td>' + esc(usr) + '</td><td><span class="badge ' + planBadge + '">' + esc((s.tariff || '').toUpperCase()) + '</span></td>' +
       '<td>' + esc(s.period || '—') + '</td><td>' + (s.price || 0) + '</td>' +
       '<td><span class="badge ' + badge + '">' + esc(s.status || '—') + '</span></td>' +
       '<td>' + esc(s.payment_method || '—') + '</td>' +
@@ -63,7 +63,7 @@ async function cancelSub(id) {
 async function loadTransactions() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('transactions').select('*, profiles(name)', { count: 'exact' })
+  var r = await sb.from('transactions').select('*, users(name)', { count: 'exact' })
     .order('created_at', { ascending: false }).range((_txPage - 1) * PER_PAGE, _txPage * PER_PAGE - 1);
   var data = r.data || [], total = r.count || 0;
   if (!data.length) { area.innerHTML = '<div class="empty">Нет транзакций</div>'; return; }
@@ -72,7 +72,7 @@ async function loadTransactions() {
     '<th>Пользователь</th><th>Тип</th><th>Сумма</th><th>Валюта</th><th>Статус</th><th>Описание</th><th>Дата</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(t) {
-    var usr = t.profiles ? t.profiles.name : '—';
+    var usr = t.users ? t.users.name : '—';
     var badge = sm[t.status] || 'badge-purple';
     h += '<tr><td>' + esc(usr) + '</td><td><span class="badge badge-blue">' + esc(t.type || '—') + '</span></td>' +
       '<td><b>' + (t.amount || 0) + '</b></td><td>' + esc(t.currency || '—') + '</td>' +
@@ -89,7 +89,7 @@ function loadTxPage(p) { _txPage = p; loadTransactions(); }
 async function loadPayouts() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var q = sb.from('payouts').select('*, profiles(name)').order('requested_at', { ascending: false });
+  var q = sb.from('payouts').select('*, users(name)').order('requested_at', { ascending: false });
   if (_payFilter) q = q.eq('status', _payFilter);
   var r = await q;
   var data = r.data || [];
@@ -106,7 +106,7 @@ async function loadPayouts() {
     '<th>Пользователь</th><th>Сумма</th><th>Статус</th><th>Запрошено</th><th>Оплачено</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(p) {
-    var usr = p.profiles ? p.profiles.name : '—';
+    var usr = p.users ? p.users.name : '—';
     var badge = sm[p.status] || 'badge-purple';
     var acts = '';
     if (p.status === 'pending') acts = '<button class="btn btn-success btn-sm" onclick="handlePayout(\'' + p.id + '\',\'approved\')">Одобрить</button><button class="btn btn-danger btn-sm" onclick="handlePayout(\'' + p.id + '\',\'rejected\')">Отклонить</button>';
@@ -138,7 +138,7 @@ async function loadReferrals() {
   data.forEach(function(ref) { if (ref.referrer_id) ids.push(ref.referrer_id); if (ref.referred_id) ids.push(ref.referred_id); });
   ids = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
   var nm = {};
-  if (ids.length) { var pr = await sb.from('profiles').select('id, name').in('id', ids); (pr.data || []).forEach(function(p) { nm[p.id] = p.name; }); }
+  if (ids.length) { var pr = await sb.from('users').select('id, name').in('id', ids); (pr.data || []).forEach(function(p) { nm[p.id] = p.name; }); }
   var sm = { active: 'badge-green', pending: 'badge-gold', expired: 'badge-red' };
   var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Реферер</th><th>Приглашённый</th><th>Статус</th><th>Комиссия %</th><th>Заработано</th><th>Дата</th>' +

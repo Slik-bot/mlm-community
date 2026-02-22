@@ -21,6 +21,7 @@
   var _fallbackTimer = setTimeout(async function() {
     var ph = document.getElementById('preload-hide');
     if (ph) {
+      window._authRoutingDone = true;
       await switchScreenInstant('scrLanding');
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
@@ -41,7 +42,15 @@
     });
 
     var target = document.getElementById(screenId);
-    if (target) target.classList.remove('hidden', 'back-hidden');
+    if (target) {
+      target.classList.remove('hidden', 'back-hidden');
+      // Принудительно сбрасываем opacity после удаления hidden
+      target.style.opacity = '1';
+      target.style.transform = 'translateX(0)';
+      if (screenId === 'scrWelcome') {
+        resetWelcomeAnimations();
+      }
+    }
 
     navHistory.length = 0;
     navHistory.push(screenId);
@@ -57,7 +66,6 @@
   }
 
   // ===== ПОЛУЧЕНИЕ ИНПУТОВ МОДАЛОК =====
-
   window.getLoginInputs = function() {
     var modal = document.getElementById('lndLoginModal');
     if (!modal) return null;
@@ -237,24 +245,48 @@
       if (window._authRoutingDone) return;
       window._authRoutingDone = true;
 
-      if (profile && profile.dna_type && profile.level) {
-        localStorage.setItem('onboardingDone', 'true');
-        localStorage.setItem('userName', profile.name || '');
-        await switchScreenInstant('scrFeed');
-        showApp();
-        if (window.initFeedFromDB) initFeedFromDB();
+      var onboardingDone = localStorage.getItem('onboardingDone');
+      var localDna = localStorage.getItem('dnaType');
+      var localName = localStorage.getItem('userName');
 
-      } else if (profile && profile.dna_type && !profile.level) {
-        localStorage.setItem('userName', profile.name || '');
-        await switchScreenInstant('scrSetup1');
-        showApp();
+      if (profile) {
+        localStorage.setItem('userName', profile.name || localName || '');
 
-      } else if (profile && !profile.dna_type) {
-        localStorage.setItem('userName', profile.name || '');
-        await switchScreenInstant('scrWelcome');
-        showApp();
+        var hasDna = profile.dna_type || localDna;
+        var hasName = (profile.name && profile.name.trim().length > 1 && profile.name !== 'Участник') || localName;
+
+        // Считаем онбординг завершённым если ЛЮБОЕ из условий:
+        var isDone = onboardingDone === 'true'
+          || (hasDna && hasName)
+          || (profile && profile.name && profile.name !== 'Участник')
+          || localStorage.getItem('mlm_onboarding_step') === 'done';
+
+        if (isDone) {
+          // Если нет ДНК в профиле но есть в localStorage — восстановить
+          if (!profile.dna_type && localDna) {
+            try {
+              var dnaMap = { S: 'strategist', C: 'communicator', K: 'creator', A: 'analyst' };
+              await window.sb
+                .from('users')
+                .update({ dna_type: dnaMap[localDna] || 'strategist' })
+                .eq('id', profile.id);
+            } catch(e) { console.error('[AUTH] DNA restore failed:', e); }
+          }
+          if (profile.dna_type) {
+            var revMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+            localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
+          }
+          localStorage.setItem('onboardingDone', 'true');
+          await switchScreenInstant('scrFeed');
+          showApp();
+          if (window.initFeedFromDB) initFeedFromDB();
+        } else {
+          await switchScreenInstant('scrWelcome');
+          showApp();
+        }
 
       } else {
+        // Нет сессии → лендинг
         await switchScreenInstant('scrLanding');
         if (window.initLandingModals) window.initLandingModals();
         showApp();

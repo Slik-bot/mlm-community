@@ -7,7 +7,7 @@ var PER_PAGE = 20;
 
 async function loadUsers(page, search, dna, plan) {
   try {
-    var query = sb.from('profiles').select('*', { count: 'exact' });
+    var query = sb.from('users').select('*', { count: 'exact' });
 
     if (search) query = query.ilike('name', '%' + search + '%');
     if (dna) query = query.eq('dna_type', dna);
@@ -31,7 +31,7 @@ async function loadUsers(page, search, dna, plan) {
 
 async function updateProfile(userId, fields) {
   try {
-    var result = await sb.from('profiles').update(fields).eq('id', userId);
+    var result = await sb.from('users').update(fields).eq('id', userId);
     if (result.error) {
       showToast(result.error.message, 'err');
     }
@@ -49,17 +49,20 @@ async function updateProfile(userId, fields) {
 async function logXpChange(userId, amount) {
   try {
     // Логируем изменение
-    await sb.from('user_xp_log').insert({
+    await sb.from('transactions').insert({
       user_id: userId,
       amount: amount,
-      action_type: 'admin_adjust'
+      action_type: 'admin_adjust',
+      type: 'xp_conversion',
+      balance_after: 0,
+      xp_after: 0
     });
 
     // Получаем текущий XP
-    var p = await sb.from('profiles').select('xp').eq('id', userId).single();
+    var p = await sb.from('users').select('xp_total').eq('id', userId).single();
     if (!p.data) return;
 
-    var newXp = Math.max(0, (p.data.xp || 0) + amount);
+    var newXp = Math.max(0, (p.data.xp_total || 0) + amount);
 
     // Определяем уровень
     var level = 'pawn';
@@ -69,7 +72,7 @@ async function logXpChange(userId, amount) {
     else if (newXp >= 500) level = 'knight';
 
     // Обновляем профиль
-    await sb.from('profiles').update({ xp: newXp, level: level }).eq('id', userId);
+    await sb.from('users').update({ xp_total: newXp, level: level }).eq('id', userId);
   } catch (err) {
     console.error('logXpChange error:', err);
     showToast('Ошибка коррекции XP', 'err');
@@ -85,7 +88,7 @@ async function loadPosts(page) {
     _postsPage = page || 1;
     var area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
-    var r = await sb.from('posts').select('*, profiles(name)', { count: 'exact' })
+    var r = await sb.from('posts').select('*, users(name)', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range((_postsPage - 1) * PER_PAGE, _postsPage * PER_PAGE - 1);
     if (r.error) throw r.error;
@@ -95,7 +98,7 @@ async function loadPosts(page) {
       '<th>Автор</th><th>Текст</th><th>Тип</th><th>Лайки</th><th>Коммент.</th><th>Просм.</th><th>Дата</th><th>Действия</th>' +
       '</tr></thead><tbody>';
     data.forEach(function(p) {
-      var author = p.profiles ? p.profiles.name : '—';
+      var author = p.users ? p.users.name : '—';
       var txt = (p.content || '').substring(0, 50);
       var vis = p.is_published !== false;
       h += '<tr><td>' + esc(author) + '</td><td>' + esc(txt) + '</td>' +
@@ -150,7 +153,7 @@ async function loadComments(page) {
     _commentsPage = page || 1;
     var area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
-    var r = await sb.from('post_comments').select('*, profiles(name)', { count: 'exact' })
+    var r = await sb.from('comments').select('*, users(name)', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range((_commentsPage - 1) * PER_PAGE, _commentsPage * PER_PAGE - 1);
     if (r.error) throw r.error;
@@ -160,7 +163,7 @@ async function loadComments(page) {
       '<th>Автор</th><th>Текст</th><th>Пост</th><th>Лайки</th><th>Дата</th><th>Действия</th>' +
       '</tr></thead><tbody>';
     data.forEach(function(c) {
-      var author = c.profiles ? c.profiles.name : '—';
+      var author = c.users ? c.users.name : '—';
       var txt = (c.content || '').substring(0, 80);
       var pid = c.post_id ? String(c.post_id).substring(0, 8) + '…' : '—';
       h += '<tr><td>' + esc(author) + '</td><td>' + esc(txt) + '</td>' +
@@ -182,7 +185,7 @@ async function loadComments(page) {
 async function deleteComment(id) {
   try {
     if (!confirm('Удалить комментарий?')) return;
-    var r = await sb.from('post_comments').delete().eq('id', id);
+    var r = await sb.from('comments').delete().eq('id', id);
     if (r.error) throw r.error;
     showToast('Комментарий удалён', 'ok');
     loadComments(_commentsPage);
@@ -201,7 +204,8 @@ async function loadStories(page) {
     _storiesPage = page || 1;
     var area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
-    var r = await sb.from('stories').select('*, profiles(name)', { count: 'exact' })
+    var r = await sb.from('posts').select('*, users(name)', { count: 'exact' })
+      .eq('type', 'post')
       .order('created_at', { ascending: false })
       .range((_storiesPage - 1) * PER_PAGE, _storiesPage * PER_PAGE - 1);
     if (r.error) throw r.error;
@@ -211,7 +215,7 @@ async function loadStories(page) {
       '<th>Автор</th><th>Тип</th><th>Текст</th><th>Просм.</th><th>Истекает</th><th>Действия</th>' +
       '</tr></thead><tbody>';
     data.forEach(function(s) {
-      var author = s.profiles ? s.profiles.name : '—';
+      var author = s.users ? s.users.name : '—';
       var txt = (s.text_content || '').substring(0, 50);
       h += '<tr><td>' + esc(author) + '</td>' +
         '<td><span class="badge badge-blue">' + esc(s.content_type || '—') + '</span></td>' +
@@ -233,7 +237,7 @@ async function loadStories(page) {
 async function deleteStory(id) {
   try {
     if (!confirm('Удалить сторис?')) return;
-    var r = await sb.from('stories').delete().eq('id', id);
+    var r = await sb.from('posts').delete().eq('id', id);
     if (r.error) throw r.error;
     showToast('Сторис удалена', 'ok');
     loadStories(_storiesPage);
@@ -252,12 +256,12 @@ async function loadReports(statusFilter) {
     _reportsFilter = statusFilter || '';
     var area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
-    var q = sb.from('reports').select('*, profiles!reports_reporter_id_fkey(name)', { count: 'exact' })
+    var q = sb.from('reports').select('*, users!reports_reporter_id_fkey(name)', { count: 'exact' })
       .order('created_at', { ascending: false }).limit(50);
     if (_reportsFilter) q = q.eq('status', _reportsFilter);
     var r = await q;
     if (r.error) {
-      q = sb.from('reports').select('*, profiles(name)', { count: 'exact' })
+      q = sb.from('reports').select('*, users(name)', { count: 'exact' })
         .order('created_at', { ascending: false }).limit(50);
       if (_reportsFilter) q = q.eq('status', _reportsFilter);
       r = await q;
@@ -275,7 +279,7 @@ async function loadReports(statusFilter) {
       '<th>От кого</th><th>Тип цели</th><th>Причина</th><th>Статус</th><th>Дата</th><th>Действия</th>' +
       '</tr></thead><tbody>';
     data.forEach(function(rep) {
-      var reporter = rep.profiles ? rep.profiles.name : '—';
+      var reporter = rep.users ? rep.users.name : '—';
       var badge = badgeMap[rep.status] || 'badge-purple';
       var acts = rep.status === 'pending'
         ? '<button class="btn btn-success btn-sm" onclick="resolveReport(\'' + rep.id + '\',\'resolved\')">Решить</button>' +

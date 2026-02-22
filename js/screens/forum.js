@@ -91,10 +91,10 @@ function renderForumList(topics) {
         '<span class="ftc-cat" style="background:' + cat.color + '22;color:' + cat.color + '">' + cat.label + '</span>' +
         pinIcon +
       '</div>' +
-      '<div class="ftc-title">' + escapeHtml(t.title) + '</div>' +
+      '<div class="ftc-title">' + escHtml(t.title) + '</div>' +
       '<div class="ftc-meta">' +
         '<img class="ftc-avatar" src="' + (author.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
-        '<span class="ftc-author">' + escapeHtml(author.name || 'Участник') + '</span>' +
+        '<span class="ftc-author">' + escHtml(author.name || 'Участник') + '</span>' +
         '<span class="ftc-time">' + formatTimeAgo(t.created_at) + '</span>' +
       '</div>' +
       '<div class="ftc-stats">' +
@@ -103,11 +103,6 @@ function renderForumList(topics) {
       '</div>' +
     '</div>';
   }).join('');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function forumFilterCat(cat) {
@@ -206,12 +201,12 @@ function renderReplies(replies) {
       '<div class="reply-header">' +
         '<img class="reply-avatar" src="' + (author.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
         '<div class="reply-info">' +
-          '<span class="reply-name">' + escapeHtml(author.name || 'Участник') + '</span>' +
+          '<span class="reply-name">' + escHtml(author.name || 'Участник') + '</span>' +
           '<span class="reply-level">Ур. ' + (author.level || 1) + '</span>' +
         '</div>' +
         '<span class="reply-time">' + formatTimeAgo(r.created_at) + '</span>' +
       '</div>' +
-      '<div class="reply-text">' + escapeHtml(r.content) + '</div>' +
+      '<div class="reply-text">' + escHtml(r.content) + '</div>' +
       '<div class="reply-actions">' + markBtn + '</div>' +
     '</div>';
   }).join('');

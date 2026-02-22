@@ -100,7 +100,7 @@ async function doPublish(contentArg) {
   }
 
   // Проверка авторизации
-  if (typeof currentAuthUser === 'undefined' || !currentAuthUser) {
+  if (!getCurrentUser()) {
     window.showToast?.('Необходима авторизация');
     return;
   }

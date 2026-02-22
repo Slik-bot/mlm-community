@@ -28,7 +28,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .app{height:100%;max-width:420px;margin:0 auto;position:relative;overflow:hidden;}
 
 /* ============ SCREENS ============ */
-.scr{position:absolute;inset:0;display:flex;flex-direction:column;z-index:1;background:var(--bg);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s;will-change:transform;}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;z-index:1;background:var(--bg);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s;}
 .scr.hidden{transform:translateX(100%);opacity:0;pointer-events:none;z-index:0;}
 .scr.back-hidden{transform:translateX(-30%);opacity:0;pointer-events:none;z-index:0;}
 

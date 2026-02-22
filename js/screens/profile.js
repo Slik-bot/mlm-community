@@ -298,24 +298,6 @@ async function profileToggleSetting(key, el) {
   await window.sb.from('user_settings').update(update).eq('user_id', user.id);
 }
 
-// ===== Toast =====
-
-function showToast(msg) {
-  var existing = document.querySelector('.profile-toast');
-  if (existing) existing.remove();
-
-  var toast = document.createElement('div');
-  toast.className = 'profile-toast';
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-
-  requestAnimationFrame(function() { toast.classList.add('show'); });
-  setTimeout(function() {
-    toast.classList.remove('show');
-    setTimeout(function() { toast.remove(); }, 300);
-  }, 2000);
-}
-
 // ===== Экспорт =====
 
 window.initProfile = initProfile;

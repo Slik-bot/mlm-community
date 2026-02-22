@@ -101,6 +101,13 @@ function toggleSortMenu(el) {
 
 // ===== INIT FEED =====
 function initFeed() {
+  // Блокируем нативный pull-to-refresh в Telegram/мобильных браузерах
+  if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
+    if (window.Telegram.WebApp.disableVerticalSwipes) window.Telegram.WebApp.disableVerticalSwipes();
+    window.Telegram.WebApp.expand();
+  }
+  document.body.style.overscrollBehavior = 'none';
+
   initFeedFilters();
   var feedScroll = document.getElementById('feedScroll') || document.querySelector('.feed');
   if (feedScroll) feedScroll.addEventListener('scroll', closePopovers, { passive: true });

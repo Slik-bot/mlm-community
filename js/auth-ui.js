@@ -155,58 +155,11 @@
   });
 
 
-  // ===== ПЕРЕХВАТ СОХРАНЕНИЯ ПРОФИЛЯ =====
-
-  var _origSetupGoStep2 = window.setupGoStep2;
-  window.setupGoStep2 = function() {
-    var inp = document.getElementById('stpNameInput');
-    var name = inp ? inp.value.trim() : 'Участник';
-    if (name.length < 2) name = 'Участник';
-
-    saveOnboardingStep('name', { name: name });
-
-    if (_origSetupGoStep2) _origSetupGoStep2();
-  };
-
-  var _origSetupSkipName = window.setupSkipName;
-  window.setupSkipName = function() {
-    saveOnboardingStep('name', { name: 'Участник' });
-    if (_origSetupSkipName) _origSetupSkipName();
-  };
-
-  var _origStartDnaReveal = window.startDnaReveal;
-  if (_origStartDnaReveal) {
-    window.startDnaReveal = function() {
-      var promise = _origStartDnaReveal.apply(this, arguments);
-
-      // localStorage.setItem('dnaType') выполняется синхронно в начале startDnaReveal
-      var dnaType = localStorage.getItem('dnaType');
-      var scores = localStorage.getItem('dnaScores');
-      if (dnaType) {
-        saveDnaResult(dnaType, { answers: scores ? JSON.parse(scores) : {} });
-      }
-
-      return promise;
-    };
-  }
-
-  var _origSetupShowDone = window.setupShowDone;
-  window.setupShowDone = function() {
-    var interests = window.setupSelectedInterests || [];
-    if (interests.length) saveOnboardingStep('interests', { interests: interests });
-
-    var goal = window.setupSelectedGoal || '';
-    if (goal) saveOnboardingStep('goal', { goal: goal });
-
-    saveOnboardingStep('complete', {});
-
-    if (_origSetupShowDone) _origSetupShowDone();
-  };
-
+  // ===== Загрузка ленты после онбординга =====
   var _origSetupFinish = window.setupFinish;
   window.setupFinish = function() {
     if (_origSetupFinish) _origSetupFinish();
-    setTimeout(initFeedFromDB, 500);
+    setTimeout(function() { if (window.initFeedFromDB) initFeedFromDB(); }, 500);
   };
 
 })();

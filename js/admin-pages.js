@@ -89,19 +89,19 @@ async function deleteCompany(id) {
 async function loadApplications() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('applications').select('*, profiles(name), companies(name)')
+  var r = await sb.from('order_responses').select('*, users(name), orders(title)')
     .order('created_at', { ascending: false });
   var data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет заявок</div>'; return; }
-  var sm = { pending: 'badge-gold', accepted: 'badge-green', rejected: 'badge-red' };
+  var sm = { pending: 'badge-gold', approved: 'badge-green', rejected: 'badge-red' };
   var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Пользователь</th><th>Компания</th><th>Сообщение</th><th>Статус</th><th>Дата</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(a) {
-    var usr = a.profiles ? a.profiles.name : '—', cmp = a.companies ? a.companies.name : '—';
+    var usr = a.users ? a.users.name : '—', cmp = a.orders ? a.orders.title : '—';
     var badge = sm[a.status] || 'badge-purple';
     var acts = a.status === 'pending'
-      ? '<button class="btn btn-success btn-sm" onclick="handleApp(\'' + a.id + '\',\'accepted\')">Принять</button>' +
+      ? '<button class="btn btn-success btn-sm" onclick="handleApp(\'' + a.id + '\',\'approved\')">Принять</button>' +
         '<button class="btn btn-danger btn-sm" onclick="handleApp(\'' + a.id + '\',\'rejected\')">Отклонить</button>'
       : '';
     h += '<tr><td>' + esc(usr) + '</td><td>' + esc(cmp) + '</td>' +
@@ -114,8 +114,8 @@ async function loadApplications() {
 }
 
 async function handleApp(id, status) {
-  await sb.from('applications').update({ status: status, updated_at: new Date().toISOString() }).eq('id', id);
-  showToast(status === 'accepted' ? 'Заявка принята' : 'Заявка отклонена', 'ok');
+  await sb.from('order_responses').update({ status: status, updated_at: new Date().toISOString() }).eq('id', id);
+  showToast(status === 'approved' ? 'Заявка принята' : 'Заявка отклонена', 'ok');
   loadApplications();
 }
 
@@ -123,7 +123,7 @@ async function handleApp(id, status) {
 async function loadExperts() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('experts').select('*, profiles(name), companies(name)')
+  var r = await sb.from('expert_cards').select('*, users(name, avatar_url, company_id), companies(name)')
     .order('created_at', { ascending: false });
   var data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет экспертов</div>'; return; }
@@ -131,20 +131,21 @@ async function loadExperts() {
     '<th>Пользователь</th><th>Компания</th><th>Специальность</th><th>Теги</th><th>Верифиц.</th><th>Дата</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(e) {
-    var usr = e.profiles ? e.profiles.name : '—', cmp = e.companies ? e.companies.name : '—';
+    var usr = e.users ? e.users.name : '—', cmp = e.companies ? e.companies.name : '—';
     var tags = (e.tags || []).join(', ') || '—';
-    var ver = e.is_verified ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+    var isApproved = e.moderation_status === 'approved';
+    var ver = isApproved ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td>' + esc(usr) + '</td><td>' + esc(cmp) + '</td>' +
       '<td>' + esc(e.specialty || '—') + '</td><td>' + esc(tags) + '</td>' +
       '<td>' + ver + '</td><td>' + fmtDate(e.created_at) + '</td>' +
-      '<td class="actions"><button class="btn btn-' + (e.is_verified ? 'ghost' : 'success') + ' btn-sm" onclick="toggleExpertVer(\'' + e.id + '\',' + !e.is_verified + ')">' + (e.is_verified ? 'Снять' : 'Верифик.') + '</button></td></tr>';
+      '<td class="actions"><button class="btn btn-' + (isApproved ? 'ghost' : 'success') + ' btn-sm" onclick="toggleExpertVer(\'' + e.id + '\',' + !isApproved + ')">' + (isApproved ? 'Снять' : 'Верифик.') + '</button></td></tr>';
   });
   h += '</tbody></table></div>';
   area.innerHTML = h;
 }
 
 async function toggleExpertVer(id, val) {
-  await sb.from('experts').update({ is_verified: val }).eq('id', id);
+  await sb.from('expert_cards').update({ moderation_status: val ? 'approved' : 'rejected' }).eq('id', id);
   showToast(val ? 'Эксперт верифицирован' : 'Верификация снята', 'ok');
   loadExperts();
 }
@@ -170,14 +171,14 @@ function switchShopTab(tab, btn) {
 async function loadTools() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('tools').select('*, tool_categories(name)').order('created_at', { ascending: false });
-  if (r.error) r = await sb.from('tools').select('*').order('created_at', { ascending: false });
+  var r = await sb.from('products').select('*, tool_categories(name)').order('created_at', { ascending: false });
+  if (r.error) r = await sb.from('products').select('*').order('created_at', { ascending: false });
   var data = r.data || [];
   if (data.length) {
     var ids = data.map(function(t) { return t.author_id; }).filter(Boolean);
     ids = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
     if (ids.length) {
-      var pr = await sb.from('profiles').select('id, name').in('id', ids);
+      var pr = await sb.from('users').select('id, name').in('id', ids);
       var nm = {}; (pr.data || []).forEach(function(p) { nm[p.id] = p.name; });
       data.forEach(function(t) { t._author = nm[t.author_id] || '—'; });
     }
@@ -189,13 +190,11 @@ async function loadTools() {
   data.forEach(function(t) {
     var cat = t.tool_categories ? t.tool_categories.name : '—';
     var price = t.is_free ? '<span class="badge badge-green">Free</span>' : (t.price || 0) + ' ₽';
-    var st = (t.is_featured ? '<span class="badge badge-gold">Featured</span> ' : '') +
-      (t.is_active !== false ? '<span class="badge badge-green">Акт</span>' : '<span class="badge badge-red">Скрыт</span>');
+    var st = t.is_active !== false ? '<span class="badge badge-green">Акт</span>' : '<span class="badge badge-red">Скрыт</span>';
     h += '<tr><td><b>' + esc(t.title) + '</b></td><td>' + esc(t._author || '—') + '</td>' +
       '<td>' + esc(cat) + '</td><td>' + price + '</td>' +
       '<td>' + (t.downloads_count || 0) + '</td><td>' + (t.rating || 0) + '</td><td>' + st + '</td>' +
       '<td class="actions">' +
-        '<button class="btn btn-ghost btn-sm" onclick="togFeatured(\'' + t.id + '\',' + !!t.is_featured + ')">' + (t.is_featured ? 'Unfeatured' : 'Featured') + '</button>' +
         '<button class="btn btn-ghost btn-sm" onclick="togToolActive(\'' + t.id + '\',' + (t.is_active !== false) + ')">' + (t.is_active !== false ? 'Скрыть' : 'Показать') + '</button>' +
         '<button class="btn btn-danger btn-sm" onclick="delTool(\'' + t.id + '\')">Удалить</button>' +
       '</td></tr>';
@@ -204,17 +203,13 @@ async function loadTools() {
   area.innerHTML = h;
 }
 
-async function togFeatured(id, cur) {
-  await sb.from('tools').update({ is_featured: !cur }).eq('id', id);
-  showToast(!cur ? 'Добавлен в Featured' : 'Убран из Featured', 'ok'); loadTools();
-}
 async function togToolActive(id, cur) {
-  await sb.from('tools').update({ is_active: !cur }).eq('id', id);
+  await sb.from('products').update({ is_active: !cur }).eq('id', id);
   showToast(cur ? 'Скрыт' : 'Показан', 'ok'); loadTools();
 }
 async function delTool(id) {
   if (!confirm('Удалить инструмент?')) return;
-  await sb.from('tools').delete().eq('id', id);
+  await sb.from('products').delete().eq('id', id);
   showToast('Удалён', 'ok'); loadTools();
 }
 
@@ -332,7 +327,7 @@ async function delPromo(id) {
 async function loadPurchases() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('purchases').select('*, profiles(name), tools(title)')
+  var r = await sb.from('purchases').select('*, users(name), products(title)')
     .order('created_at', { ascending: false });
   var data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет покупок</div>'; return; }
@@ -341,7 +336,7 @@ async function loadPurchases() {
     '<th>Покупатель</th><th>Инструмент</th><th>Сумма</th><th>Метод</th><th>Промокод</th><th>Статус</th><th>Дата</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(p) {
-    var usr = p.profiles ? p.profiles.name : '—', tool = p.tools ? p.tools.title : '—';
+    var usr = p.users ? p.users.name : '—', tool = p.products ? p.products.title : '—';
     var badge = sm[p.status] || 'badge-purple';
     h += '<tr><td>' + esc(usr) + '</td><td>' + esc(tool) + '</td>' +
       '<td>' + (p.amount || 0) + ' ₽</td><td>' + esc(p.payment_method || '—') + '</td>' +

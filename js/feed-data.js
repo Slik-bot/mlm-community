@@ -5,7 +5,8 @@
   // ===== ЗАГРУЗКА РЕАЛЬНОЙ ЛЕНТЫ =====
 
   window.initFeedFromDB = async function() {
-    if (!currentAuthUser) return;
+    var _u = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!_u) return;
 
     await loadProfile();
     updateFeedHeader();
@@ -15,48 +16,66 @@
   };
 
   function updateFeedHeader() {
-    if (!currentProfile) return;
+    var _profile = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!_profile) return;
 
     var nameEl = document.querySelector('.fd-name');
-    if (nameEl) nameEl.textContent = currentProfile.name || 'Участник';
+    if (nameEl) nameEl.textContent = _profile.name || 'Участник';
 
     var dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
     var dnaBadge = document.querySelector('.fd-dna');
-    if (dnaBadge && currentProfile.dna_type) {
-      dnaBadge.textContent = dnaMap[currentProfile.dna_type] || '';
+    if (dnaBadge && _profile.dna_type) {
+      dnaBadge.textContent = dnaMap[_profile.dna_type] || '';
     }
 
     var xpEl = document.querySelector('.imp-xp-val');
-    if (xpEl) xpEl.textContent = (currentProfile.xp || 0) + ' XP';
+    if (xpEl) xpEl.textContent = (_profile.xp || 0) + ' XP';
 
     loadStreakDisplay();
   }
 
   async function loadStreakDisplay() {
-    var result = await sb.from('user_streaks').select('current_streak').eq('user_id', currentAuthUser.id).single();
+    var _u = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!_u) return;
+    var result = await window.sb.from('user_streaks').select('current_streak').eq('user_id', _u.id).maybeSingle();
+    if (!result.data) return;
     var streakEl = document.querySelector('.imp-streak-val');
-    if (streakEl && result.data) {
+    if (streakEl) {
       streakEl.innerHTML = result.data.current_streak + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
     }
   }
 
   async function loadWisdomCard() {
-    var card = await sbLoadWisdom();
-    if (!card) return;
+    var result = await window.sb
+      .from('wisdom_cards')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!result.data) return;
 
     var textEl = document.querySelector('.wis-text');
     var authorEl = document.querySelector('.wis-author');
-    if (textEl) textEl.textContent = '\u00AB' + card.text + '\u00BB';
-    if (authorEl) authorEl.textContent = '\u2014 ' + (card.author || 'MLM Community');
+    if (textEl) textEl.textContent = '\u00AB' + result.data.text + '\u00BB';
+    if (authorEl) authorEl.textContent = '\u2014 ' + (result.data.author || 'MLM Community');
   }
 
   async function loadQuestsBar() {
-    if (!currentAuthUser) return;
+    var _u = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!_u) return;
     try {
-      var quests = typeof sbLoadDailyQuests === 'function' ? await sbLoadDailyQuests() : [];
+      var questsResult = await window.sb
+        .from('user_quests')
+        .select('*')
+        .eq('user_id', _u.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      var quests = (questsResult.data) || [];
 
       // Streak
-      var streakRes = await sb.from('user_streaks').select('current_streak').eq('user_id', currentAuthUser.id).single();
+      var streakRes = await window.sb.from('user_streaks').select('current_streak').eq('user_id', _u.id).maybeSingle();
       var streakEl = document.querySelector('.imp-streak-val');
       if (streakEl && streakRes.data) streakEl.textContent = streakRes.data.current_streak || 0;
 
@@ -65,11 +84,12 @@
       var xpMaxEl = document.querySelector('.imp-xp-max');
       var lvlEl = document.querySelector('.imp-lvl');
 
-      if (currentProfile) {
-        if (xpEl) xpEl.textContent = currentProfile.xp || 0;
+      var _profile = window.getCurrentUser ? window.getCurrentUser() : null;
+      if (_profile) {
+        if (xpEl) xpEl.textContent = _profile.xp || 0;
         var levels = { pawn: 0, knight: 500, bishop: 2000, rook: 5000, queen: 15000 };
         var levelLabels = { pawn: '\u041F\u0435\u0448\u043A\u0430', knight: '\u041A\u043E\u043D\u044C', bishop: '\u0421\u043B\u043E\u043D', rook: '\u041B\u0430\u0434\u044C\u044F', queen: '\u0424\u0435\u0440\u0437\u044C' };
-        var curLvl = currentProfile.level || 'pawn';
+        var curLvl = _profile.level || 'pawn';
         var lvlNames = Object.keys(levels);
         var nextXP = levels[lvlNames[lvlNames.indexOf(curLvl) + 1]] || 20000;
         if (xpMaxEl) xpMaxEl.textContent = nextXP;
@@ -78,7 +98,7 @@
         var progressBar = document.querySelector('.imp-bar-fill');
         if (progressBar) {
           var prevXP = levels[curLvl] || 0;
-          var progress = ((currentProfile.xp || 0) - prevXP) / (nextXP - prevXP) * 100;
+          var progress = ((_profile.xp || 0) - prevXP) / (nextXP - prevXP) * 100;
           progressBar.style.width = Math.min(progress, 100) + '%';
         }
       }

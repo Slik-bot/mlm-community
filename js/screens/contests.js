@@ -22,11 +22,6 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 // ===== CONTESTS LIST =====
 
 function initContests() {
@@ -73,7 +68,7 @@ function renderContestsList(contests) {
 
     return '<div class="contest-card glass-card" onclick="openContest(\'' + c.id + '\')">' +
       '<span class="contest-card-type" style="background:' + ct.color + '22;color:' + ct.color + '">' + ct.label + '</span>' +
-      '<div class="contest-card-title">' + escapeHtml(c.title) + '</div>' +
+      '<div class="contest-card-title">' + escHtml(c.title) + '</div>' +
       '<div class="contest-card-dates">' + formatDate(c.starts_at) + ' — ' + formatDate(c.ends_at) + '</div>' +
       '<div class="contest-card-footer">' +
         (prize ? '<span class="contest-prize">' + prize + '</span>' : '<span></span>') +
@@ -146,7 +141,7 @@ function renderPrizes() {
     var bg = bgColors[i] || 'rgba(255,255,255,0.08)';
     return '<div class="prize-row glass-card">' +
       '<div class="prize-place" style="background:' + bg + ';color:' + c + '">#' + (i + 1) + '</div>' +
-      '<span class="prize-label">' + escapeHtml(p.label || 'Место ' + (i + 1)) + '</span>' +
+      '<span class="prize-label">' + escHtml(p.label || 'Место ' + (i + 1)) + '</span>' +
       '<span class="prize-amount">' + (p.amount ? p.amount.toLocaleString('ru-RU') + ' P' : '') + '</span>' +
     '</div>';
   }).join('');
@@ -210,7 +205,7 @@ function renderLeaderboard(participants) {
     return '<div class="lb-row' + meClass + '">' +
       '<span class="lb-place" style="color:' + placeColor + '">' + place + '</span>' +
       '<img class="lb-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
-      '<span class="lb-name">' + escapeHtml(user.name || 'Участник') + '</span>' +
+      '<span class="lb-name">' + escHtml(user.name || 'Участник') + '</span>' +
       '<span class="lb-score">' + (p.score || 0) + '</span>' +
     '</div>';
   }).join('');

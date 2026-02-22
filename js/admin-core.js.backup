@@ -151,12 +151,14 @@ async function renderDashboard() {
 
   try {
     var counts = await Promise.all([
-      sb.from('users').select('id', { count: 'exact', head: true }),
+      sb.from('profiles').select('id', { count: 'exact', head: true }),
       sb.from('posts').select('id', { count: 'exact', head: true }),
-      sb.from('comments').select('id', { count: 'exact', head: true }),
+      sb.from('post_comments').select('id', { count: 'exact', head: true }),
       sb.from('companies').select('id', { count: 'exact', head: true }),
       sb.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      sb.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active')
+      sb.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+      sb.from('stories').select('id', { count: 'exact', head: true }),
+      sb.from('tools').select('id', { count: 'exact', head: true })
     ]);
 
     var cards = [
@@ -165,7 +167,9 @@ async function renderDashboard() {
       { icon: '💬', val: counts[2].count || 0, label: 'Комментарии', color: 'blue' },
       { icon: '🏢', val: counts[3].count || 0, label: 'Компании', color: 'gold' },
       { icon: '⚠️', val: counts[4].count || 0, label: 'Жалобы', color: 'red' },
-      { icon: '💎', val: counts[5].count || 0, label: 'Подписки', color: 'green' }
+      { icon: '💎', val: counts[5].count || 0, label: 'Подписки', color: 'green' },
+      { icon: '📱', val: counts[6].count || 0, label: 'Сторис', color: 'blue' },
+      { icon: '🧰', val: counts[7].count || 0, label: 'Инструменты', color: 'purple' }
     ];
 
     document.getElementById('dashStats').innerHTML = cards.map(function(c) {
@@ -196,7 +200,7 @@ async function renderDashboard() {
         '</tbody></table></div>';
 
     // Новые пользователи
-    var users = await sb.from('users').select('name, email, dna_type, plan, created_at')
+    var users = await sb.from('profiles').select('name, email, dna_type, plan, created_at')
       .order('created_at', { ascending: false }).limit(5);
     var ud = users.data || [];
 

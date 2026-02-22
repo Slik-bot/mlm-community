@@ -63,21 +63,28 @@ async function loadTemplate(id) {
   }
 }
 
+function resetWelcomeAnimations() {
+  var scr = document.getElementById('scrWelcome');
+  if (!scr) return;
+  // Двойной rAF — гарантирует применение ПОСЛЕ полного цикла рендеринга браузера
+  // Это важно для Telegram WebView где remove('hidden') вызывает reflow + restart анимаций
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (document.getElementById('scrWelcome')) {
+        document.getElementById('scrWelcome').classList.add('scr-welcome-ready');
+      }
+    });
+  });
+}
+
 async function ensureTemplate(id) {
   if (document.getElementById(id)) {
     if (id === 'scrLanding') {
       if (window.initLandingModals) window.initLandingModals();
     }
     if (id === 'scrWelcome') {
-      const els = document.querySelectorAll(
-        '#scrWelcome .w-logo-container, #scrWelcome .w-tagline, ' +
-        '#scrWelcome .w-stat, #scrWelcome .w-stat-sep, ' +
-        '#scrWelcome .w-cta-wrap'
-      );
-      els.forEach(function(el) {
-        el.style.setProperty('animation', 'none', 'important');
-        el.style.setProperty('opacity', '1', 'important');
-      });
+      var scrW = document.getElementById('scrWelcome');
+      if (scrW) scrW.classList.add('w-no-anim');
     }
     if (id === 'scrDnaTest') {
       if (window.dnaReset) window.dnaReset();
@@ -179,6 +186,7 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
+    resetWelcomeAnimations();
   }
 }
 
@@ -203,6 +211,15 @@ async function goTo(id) {
   closePopovers(); closeFab();
   const current = navHistory[navHistory.length-1];
   if(current===id) return;
+
+  // Сброс классов анимаций Welcome при уходе с экрана
+  if (current === 'scrWelcome') {
+    var wEl = document.getElementById('scrWelcome');
+    if (wEl) {
+      wEl.classList.remove('scr-welcome-ready');
+      wEl.classList.remove('w-no-anim');
+    }
+  }
 
   var currentEl = document.getElementById(current);
   var nextEl = document.getElementById(id);
@@ -307,3 +324,20 @@ updateChrome('scrLanding');
     c.appendChild(p);
   }
 })();
+
+// Фикс: reload при resume на Welcome (GPU rendering bug в Telegram WebView)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState !== 'visible') return;
+  var scr = document.getElementById('scrWelcome');
+  if (scr && !scr.classList.contains('hidden') && !scr.classList.contains('back-hidden')) {
+    location.reload();
+  }
+});
+if (window.Telegram && window.Telegram.WebApp) {
+  window.Telegram.WebApp.onEvent('activated', function() {
+    var scr = document.getElementById('scrWelcome');
+    if (scr && !scr.classList.contains('hidden') && !scr.classList.contains('back-hidden')) {
+      location.reload();
+    }
+  });
+}

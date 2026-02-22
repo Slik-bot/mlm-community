@@ -1,10 +1,10 @@
 // ===== ADMIN PAGES 2 — Gamification =====
 
 var _gamTab = 'quests';
-var _questsCache = [], _achCache = [], _seasonsCache = [];
+var _questsCache = [], _achCache = [];
 
 function renderGamification() {
-  var tabs = 'quests:Квесты,achievements:Достижения,leaderboard:Лидерборд,seasons:Сезоны', h = '<div class="tabs">';
+  var tabs = 'quests:Квесты,achievements:Достижения,leaderboard:Лидерборд', h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _gamTab ? ' active' : '') + '" onclick="switchGamTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
@@ -14,7 +14,7 @@ function switchGamTab(tab, btn) {
   _gamTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  ({ quests: loadQuests, achievements: loadAchievements, leaderboard: loadLeaderboard, seasons: loadSeasons }[tab] || function(){})();
+  ({ quests: loadQuests, achievements: loadAchievements, leaderboard: loadLeaderboard }[tab] || function(){})();
 }
 
 // ===== КВЕСТЫ =====
@@ -168,8 +168,8 @@ async function delAch(id) {
 async function loadLeaderboard() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  var r = await sb.from('profiles').select('id, name, level, xp, streak')
-    .order('xp', { ascending: false }).limit(20);
+  var r = await sb.from('users').select('id, name, level, xp_total, streak')
+    .order('xp_total', { ascending: false }).limit(20);
   var data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет данных</div>'; return; }
   var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
@@ -180,76 +180,9 @@ async function loadLeaderboard() {
     h += '<tr><td><b>' + medal + (i + 1) + '</b></td>' +
       '<td>' + esc(u.name || '—') + '</td>' +
       '<td>' + (LN[u.level] || '—') + '</td>' +
-      '<td><b>' + (u.xp || 0) + '</b></td>' +
+      '<td><b>' + (u.xp_total || 0) + '</b></td>' +
       '<td>' + (u.streak || 0) + ' дн.</td></tr>';
   });
   h += '</tbody></table></div>';
   area.innerHTML = h;
-}
-
-// ===== СЕЗОНЫ =====
-async function loadSeasons() {
-  var area = document.getElementById('contentArea');
-  area.innerHTML = 'Загрузка...';
-  var r = await sb.from('seasons').select('*').order('created_at', { ascending: false });
-  _seasonsCache = r.data || [];
-  var h = '<div class="toolbar"><button class="btn btn-primary" onclick="openSeasonModal()">Создать сезон</button></div>';
-  if (!_seasonsCache.length) { area.innerHTML = h + '<div class="empty">Нет сезонов</div>'; return; }
-  h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-    '<th>Название</th><th>Тема</th><th>Бейдж</th><th>Начало</th><th>Конец</th><th>Активен</th><th>Действия</th>' +
-    '</tr></thead><tbody>';
-  _seasonsCache.forEach(function(s) {
-    var act = s.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
-    h += '<tr><td><b>' + esc(s.title) + '</b></td><td>' + esc(s.theme || '—') + '</td>' +
-      '<td style="font-size:20px">' + esc(s.badge_icon || '—') + '</td>' +
-      '<td>' + fmtDate(s.starts_at) + '</td><td>' + fmtDate(s.ends_at) + '</td><td>' + act + '</td>' +
-      '<td class="actions">' +
-        '<button class="btn btn-ghost btn-sm" onclick="openSeasonModal(\'' + s.id + '\')">Ред.</button>' +
-        '<button class="btn btn-' + (s.is_active ? 'ghost' : 'success') + ' btn-sm" onclick="togSeason(\'' + s.id + '\',' + s.is_active + ')">' + (s.is_active ? 'Деактив.' : 'Актив.') + '</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delSeason(\'' + s.id + '\')">Удалить</button>' +
-      '</td></tr>';
-  });
-  h += '</tbody></table></div>';
-  area.innerHTML = h;
-}
-
-async function openSeasonModal(id) {
-  var s = {};
-  if (id) { var r = await sb.from('seasons').select('*').eq('id', id).single(); s = r.data || {}; }
-  var startVal = s.starts_at ? s.starts_at.substring(0, 10) : '';
-  var endVal = s.ends_at ? s.ends_at.substring(0, 10) : '';
-  var body = '<div class="fg"><div class="fl">Название</div><input class="field" id="seaTitle" value="' + esc(s.title || '') + '"></div>' +
-    '<div class="fg"><div class="fl">Тема</div><input class="field" id="seaTheme" value="' + esc(s.theme || '') + '"></div>' +
-    '<div class="fg"><div class="fl">Бейдж (emoji)</div><input class="field" id="seaBadge" value="' + esc(s.badge_icon || '') + '"></div>' +
-    '<div class="fg"><div class="fl">Начало</div><input type="date" class="field" id="seaStart" value="' + startVal + '"></div>' +
-    '<div class="fg"><div class="fl">Конец</div><input type="date" class="field" id="seaEnd" value="' + endVal + '"></div>' +
-    '<div class="fg"><div class="fl">Активен</div><select class="field" id="seaActive"><option value="true"' + (s.is_active ? ' selected' : '') + '>Да</option><option value="false"' + (!s.is_active ? ' selected' : '') + '>Нет</option></select></div>' +
-    '<div class="modal-actions"><button class="btn btn-primary" onclick="saveSeason(\'' + (id || '') + '\')">Сохранить</button></div>';
-  openModal(id ? 'Редактировать сезон' : 'Новый сезон', body);
-}
-
-async function saveSeason(id) {
-  var d = {
-    title: document.getElementById('seaTitle').value.trim(),
-    theme: document.getElementById('seaTheme').value.trim() || null,
-    badge_icon: document.getElementById('seaBadge').value.trim() || null,
-    starts_at: document.getElementById('seaStart').value || null,
-    ends_at: document.getElementById('seaEnd').value || null,
-    is_active: document.getElementById('seaActive').value === 'true'
-  };
-  if (!d.title) { showToast('Введите название', 'err'); return; }
-  var r = id ? await sb.from('seasons').update(d).eq('id', id) : await sb.from('seasons').insert(d);
-  if (r.error) { showToast(r.error.message, 'err'); return; }
-  showToast(id ? 'Сезон обновлён' : 'Сезон создан', 'ok');
-  closeModal(); loadSeasons();
-}
-
-async function togSeason(id, cur) {
-  await sb.from('seasons').update({ is_active: !cur }).eq('id', id);
-  showToast(!cur ? 'Активирован' : 'Деактивирован', 'ok'); loadSeasons();
-}
-async function delSeason(id) {
-  if (!confirm('Удалить сезон?')) return;
-  await sb.from('seasons').delete().eq('id', id);
-  showToast('Сезон удалён', 'ok'); loadSeasons();
 }

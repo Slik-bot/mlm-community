@@ -41,7 +41,7 @@ window.editPost = function(postId) {
 window.deletePost = function(postId) {
   closePopovers();
   if (!confirm('Удалить пост?')) return;
-  sb.from('posts').delete().eq('id', postId).eq('user_id', currentAuthUser.id).then(function() {
+  sb.from('posts').delete().eq('id', postId).eq('user_id', (getCurrentUser()?.id || currentAuthUser?.id)).then(function() {
     var card = document.querySelector('.post-card[data-post-id="' + postId + '"]');
     if (card) { card.style.transition = 'all .3s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(function() { card.remove(); }, 300); }
     showToast('Пост удалён');

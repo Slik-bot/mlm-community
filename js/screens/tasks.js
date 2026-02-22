@@ -111,8 +111,8 @@ function renderTaskList(tasks) {
     return '<div class="task-card glass-card' + doneClass + '" onclick="openTask(\'' + t.id + '\')">' +
       '<div class="task-type-icon" style="background:' + typeColor + '22">' + typeIcon + '</div>' +
       '<div class="task-card-body">' +
-        '<div class="task-card-title">' + escapeHtml(t.title) + '</div>' +
-        '<div class="task-card-desc">' + escapeHtml(t.description || '') + '</div>' +
+        '<div class="task-card-title">' + escHtml(t.title) + '</div>' +
+        '<div class="task-card-desc">' + escHtml(t.description || '') + '</div>' +
         '<div class="task-rewards">' +
           '<span class="task-xp-badge">+' + (t.reward_xp || 0) + ' XP</span>' +
           moneyBadge + doneBadge +
@@ -120,11 +120,6 @@ function renderTaskList(tasks) {
       '</div>' +
     '</div>';
   }).join('');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function switchTaskTab(tab) {

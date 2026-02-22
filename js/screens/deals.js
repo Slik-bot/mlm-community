@@ -79,7 +79,7 @@ function renderDealList(deals) {
 
     return '<div class="deal-card" onclick="openDeal(\'' + d.id + '\')">' +
       '<div class="deal-card-header">' +
-        '<div class="deal-card-title">' + escapeHtml(d.title) + '</div>' +
+        '<div class="deal-card-title">' + escHtml(d.title) + '</div>' +
         '<div class="deal-status-badge" style="background:' + st.color + '20;color:' + st.color + '">' + st.label + '</div>' +
       '</div>' +
       '<div class="deal-card-footer">' +
@@ -88,17 +88,10 @@ function renderDealList(deals) {
       '</div>' +
       '<div class="deal-card-user">' +
         (otherAvatar ? '<img class="deal-card-avatar" src="' + otherAvatar + '" alt="">' : '<div class="deal-card-avatar-empty"></div>') +
-        '<span class="deal-card-name">' + escapeHtml(otherName) + '</span>' +
+        '<span class="deal-card-name">' + escHtml(otherName) + '</span>' +
       '</div>' +
     '</div>';
   }).join('');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  var div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 function switchDealTab(tab) {
