@@ -150,17 +150,12 @@
 .dnr-screen.active .dnr-retry{opacity:1 !important;pointer-events:all !important;}
 
 .dnr-fixed-actions{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  max-width:420px;
-  margin:0 auto;
-  padding:16px 20px 36px;
-  background:linear-gradient(to top,#0a0a0f 65%,transparent);
-  z-index:30;
   display:none;
   flex-direction:column;
   align-items:center;
   gap:8px;
+  width:100%;
+  padding:0 20px 48px;
 }
 .dnr-fixed-actions.visible{
   display:flex;
