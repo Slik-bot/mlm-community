@@ -93,7 +93,9 @@ async function authTelegram() {
     },
     body: JSON.stringify({ initData: tgApp.initData })
   });
+  alert('1. fetch done, status: ' + res.status);
   const data = await res.json();
+  alert('2. data: ' + JSON.stringify(data).substring(0, 100));
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка авторизации через Telegram');
   }
@@ -104,12 +106,14 @@ async function authTelegram() {
     access_token: data.session.access_token,
     refresh_token: data.session.refresh_token
   });
+  alert('3. session set');
 
   const { data: profile } = await window.sb
     .from('users')
     .select('*')
     .eq('id', data.user.id)
     .single();
+  alert('4. profile loaded: ' + (profile ? profile.id : 'null'));
 
   const user = profile || data.user;
   window.setState('currentUser', user);
