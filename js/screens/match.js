@@ -3,6 +3,7 @@
 let matchCandidates = [];
 let currentMatchIndex = 0;
 let isMatchAnimating = false;
+let matchPartners = {};
 
 const DNA_LABELS = {
   strategist: 'Стратег',
@@ -157,41 +158,98 @@ function matchSkip() {
   }, 300);
 }
 
+// ===== GET OR CREATE DIRECT CONVERSATION =====
+
+async function getOrCreateDirectChat(userAId, userBId) {
+  const sb = window.sb;
+  if (!sb) return null;
+
+  try {
+    const { data: myDirects, error: e1 } = await sb
+      .from('conversations')
+      .select('id, conversation_members!inner(user_id)')
+      .eq('type', 'personal')
+      .eq('conversation_members.user_id', userAId);
+
+    if (e1) throw e1;
+
+    if (myDirects && myDirects.length > 0) {
+      const ids = myDirects.map(function(c) { return c.id; });
+      const { data: shared, error: e2 } = await sb
+        .from('conversation_members')
+        .select('conversation_id')
+        .eq('user_id', userBId)
+        .in('conversation_id', ids)
+        .limit(1);
+
+      if (e2) throw e2;
+      if (shared && shared.length > 0) return shared[0].conversation_id;
+    }
+
+    const { data: conv, error: e3 } = await sb
+      .from('conversations')
+      .insert({ type: 'personal' })
+      .select('id')
+      .single();
+
+    if (e3) throw e3;
+
+    const { error: e4 } = await sb
+      .from('conversation_members')
+      .insert([
+        { conversation_id: conv.id, user_id: userAId },
+        { conversation_id: conv.id, user_id: userBId }
+      ]);
+
+    if (e4) throw e4;
+    return conv.id;
+  } catch (err) {
+    console.error('getOrCreateDirectChat error:', err);
+    return null;
+  }
+}
+
 // ===== PROCESS =====
 
-function processMatch(action) {
+async function processMatch(action) {
   const candidate = matchCandidates[currentMatchIndex];
   currentMatchIndex++;
 
   if (action === 'like' && candidate && window.sb && window.currentUser) {
-    const sb = window.sb;
-    sb.from('matches').insert({
-      user_a_id: window.currentUser.id,
-      user_b_id: candidate.id,
-      user_a_action: 'like',
-      status: 'pending'
-    }).then(function() {
-      return sb.from('matches')
+    try {
+      const sb = window.sb;
+      const myId = window.currentUser.id;
+
+      await sb.from('matches').insert({
+        user_a_id: myId,
+        user_b_id: candidate.id,
+        user_a_action: 'like',
+        status: 'pending'
+      });
+
+      const { data: mutual } = await sb.from('matches')
         .select('id')
         .eq('user_a_id', candidate.id)
-        .eq('user_b_id', window.currentUser.id)
+        .eq('user_b_id', myId)
         .eq('user_a_action', 'like');
-    }).then(function(res) {
-      if (res.data && res.data.length > 0) {
+
+      if (mutual && mutual.length > 0) {
         const ts = new Date().toISOString();
         sb.from('matches')
           .update({ status: 'matched', matched_at: ts })
-          .eq('user_a_id', window.currentUser.id)
+          .eq('user_a_id', myId)
           .eq('user_b_id', candidate.id);
-        sb.from('matches')
+        await sb.from('matches')
           .update({ user_b_action: 'like', status: 'matched', matched_at: ts })
           .eq('user_a_id', candidate.id)
-          .eq('user_b_id', window.currentUser.id)
-          .then(function() {
-            showMatchModal(candidate);
-          });
+          .eq('user_b_id', myId);
+
+        const convId = await getOrCreateDirectChat(myId, candidate.id);
+        showMatchModal(candidate, convId);
       }
-    });
+    } catch (err) {
+      console.error('processMatch error:', err);
+    }
   }
 
   if (currentMatchIndex >= matchCandidates.length) {
@@ -206,7 +264,7 @@ function processMatch(action) {
 
 // ===== MATCH MODAL =====
 
-function showMatchModal(user) {
+function showMatchModal(user, conversationId) {
   const existing = document.getElementById('matchModalOverlay');
   if (existing) existing.remove();
 
@@ -225,16 +283,23 @@ function showMatchModal(user) {
     '</div>' +
     '<div class="match-modal-name">' + (user.name || 'Участник') + '</div>' +
     '<div class="match-modal-btns">' +
-      '<button class="btn-primary" onclick="closeMatchModal();goTo(\'scrChatList\')">Написать</button>' +
+      '<button class="btn-primary" id="matchWriteBtn">Написать</button>' +
       '<button class="btn-ghost" onclick="closeMatchModal()">Продолжить</button>' +
     '</div>';
 
   document.body.appendChild(overlay);
-  setTimeout(function() { overlay.classList.add('active'); }, 10);
 
-  setTimeout(function() {
+  document.getElementById('matchWriteBtn').onclick = function() {
     closeMatchModal();
-  }, 5000);
+    if (conversationId) {
+      openChat(conversationId, { id: user.id, name: user.name, avatar_url: user.avatar_url, dna_type: user.dna_type });
+    } else {
+      goTo('scrChatList');
+    }
+  };
+
+  setTimeout(function() { overlay.classList.add('active'); }, 10);
+  setTimeout(function() { closeMatchModal(); }, 5000);
 }
 
 function closeMatchModal() {
@@ -274,6 +339,8 @@ function renderMatchList(matches) {
   const count = document.getElementById('mlCount');
   if (!list) return;
 
+  matchPartners = {};
+
   if (matches.length === 0) {
     list.innerHTML = '';
     if (empty) empty.classList.remove('hidden');
@@ -286,6 +353,7 @@ function renderMatchList(matches) {
 
   list.innerHTML = matches.map(function(m) {
     const p = m.partner || {};
+    matchPartners[p.id] = p;
     const avatar = p.avatar_url || 'assets/default-avatar.png';
     const dna = p.dna_type || 'strategist';
     const dnaColor = window.DNA_COLORS[dna] || '#8b5cf6';
@@ -298,9 +366,22 @@ function renderMatchList(matches) {
         '<div class="ml-name">' + (p.name || 'Участник') + ' <span class="ml-dna-dot" style="background:' + dnaColor + '"></span></div>' +
         (bio ? '<div class="ml-bio">' + bio + '</div>' : '') +
       '</div>' +
-      '<button class="ml-write-btn" onclick="goTo(\'scrChatList\')">Написать</button>' +
+      '<button class="ml-write-btn" onclick="matchWriteTo(\'' + p.id + '\')">Написать</button>' +
     '</div>';
   }).join('');
+}
+
+// ===== MATCH WRITE TO =====
+
+async function matchWriteTo(partnerId) {
+  if (!window.currentUser) return;
+  const convId = await getOrCreateDirectChat(window.currentUser.id, partnerId);
+  const partner = matchPartners[partnerId] || {};
+  if (convId) {
+    openChat(convId, partner);
+  } else {
+    goTo('scrChatList');
+  }
 }
 
 function pluralMatch(n) {
@@ -318,3 +399,4 @@ window.initMatchList = initMatchList;
 window.matchLike = matchLike;
 window.matchSkip = matchSkip;
 window.closeMatchModal = closeMatchModal;
+window.matchWriteTo = matchWriteTo;
