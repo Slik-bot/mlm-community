@@ -46,7 +46,8 @@ const TEMPLATES = {
   scrLesson: '/templates/lesson.html',
   scrWebinars: '/templates/webinars.html',
   scrWebinarDetail: '/templates/webinar-detail.html',
-  scrAlliances: '/templates/alliances.html'
+  scrAlliances: '/templates/alliances.html',
+  scrMore: '/templates/more.html'
 };
 const loadedTemplates = {};
 
@@ -196,6 +197,9 @@ async function ensureTemplate(id) {
   if (id === 'scrAlliances') {
     if (window.initAlliances) window.initAlliances();
   }
+  if (id === 'scrMore') {
+    if (window.initMore) window.initMore();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
     resetWelcomeAnimations();
@@ -203,7 +207,7 @@ async function ensureTemplate(id) {
 }
 
 function updateChrome(id){
-  const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop';
+  const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop'||id==='scrMore';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
