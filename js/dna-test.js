@@ -267,6 +267,8 @@ async function startDnaReveal(){
     screen.classList.add('active');
     screen.style.opacity = '1';
     screen.style.pointerEvents = 'all';
+    var actions=document.querySelector('.dnr-fixed-actions');
+    if(actions) actions.classList.add('visible');
 
     // ── Set all card colors ──
     document.getElementById('dnrOrb1').style.background='radial-gradient(circle,'+cl+'14,transparent 70%)';
@@ -385,6 +387,8 @@ function dnaReset(){
   if(rv){rv.classList.remove('active');rv.style.display='';rv.style.opacity='';rv.style.pointerEvents='';}
   var scr=document.getElementById('dnrScreen');
   if(scr){scr.classList.remove('active');scr.style.opacity='';scr.style.pointerEvents='';}
+  var actions=document.querySelector('.dnr-fixed-actions');
+  if(actions) actions.classList.remove('visible');
   var card=document.getElementById('dnrCard');
   if(card){card.style.opacity='';card.style.transform='';}
   var btn=document.getElementById('dnrMainBtn');

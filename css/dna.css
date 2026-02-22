@@ -151,18 +151,19 @@
 
 .dnr-fixed-actions{
   position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
+  bottom:0;left:0;right:0;
   max-width:420px;
   margin:0 auto;
   padding:16px 20px 36px;
   background:linear-gradient(to top,#0a0a0f 65%,transparent);
   z-index:30;
-  display:flex;
+  display:none;
   flex-direction:column;
   align-items:center;
   gap:8px;
+}
+.dnr-fixed-actions.visible{
+  display:flex;
 }
 
 .dnr-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
