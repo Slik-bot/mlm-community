@@ -35,6 +35,8 @@
 <link rel="stylesheet" href="css/webinars.css">
 <link rel="stylesheet" href="css/alliances.css">
 <link rel="stylesheet" href="css/more.css">
+<link rel="stylesheet" href="css/wallet.css">
+<link rel="stylesheet" href="css/notifications.css">
 <link rel="preload" href="assets/logo.png" as="image">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -61,7 +63,7 @@
   <div class="nav-i" onclick="goTo('scrCompanies')"><div class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div><div class="nav-lb">Компании</div><div class="nav-dot"></div></div>
   <div class="nav-i" onclick="goTo('scrShop')"><div class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div><div class="nav-lb">Магазин</div><div class="nav-dot"></div></div>
   <div class="nav-i" onclick="goTo('scrChatList')"><div class="nav-ic" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="badge-num" style="font-size:8px;min-width:14px;height:14px;top:-3px;right:-7px;">3</div></div><div class="nav-lb">Чат</div><div class="nav-dot"></div></div>
-  <div class="nav-i" onclick="goTo('scrProfile')"><div class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="nav-lb">Профиль</div><div class="nav-dot"></div></div>
+  <div class="nav-i" onclick="goTo('scrProfile')"><div class="nav-ic" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="badge-num hidden" id="notifBadge" style="font-size:8px;min-width:14px;height:14px;top:-3px;right:-7px;">0</div></div><div class="nav-lb">Профиль</div><div class="nav-dot"></div></div>
   <div class="nav-i" onclick="goTo('scrMore')"><div class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></div><div class="nav-lb">Ещё</div><div class="nav-dot"></div></div>
 </div>
 
@@ -250,6 +252,9 @@
 <script src="js/screens/academy.js"></script>
 <script src="js/screens/webinars.js"></script>
 <script src="js/screens/alliances.js"></script>
+<script src="js/screens/wallet.js"></script>
+<script src="js/screens/verification.js"></script>
+<script src="js/screens/notifications.js"></script>
 <script src="js/screens/more.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

@@ -1,0 +1,49 @@
+<!-- =============== SCREEN: VERIFICATION =============== -->
+<div class="scr hidden" id="scrVerification">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Верификация</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Status banner (shown if request exists) -->
+  <div class="verif-status hidden" id="verifStatus">
+    <div class="verif-status-icon" id="verifStatusIcon"></div>
+    <div class="verif-status-info">
+      <div class="verif-status-label" id="verifStatusLabel"></div>
+      <div class="verif-status-desc" id="verifStatusDesc"></div>
+    </div>
+  </div>
+
+  <!-- Upload form (hidden if already submitted) -->
+  <div class="verif-form" id="verifForm">
+    <div class="verif-info glass-card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Верификация подтверждает вашу личность и открывает расширенные возможности</span>
+    </div>
+
+    <!-- Passport upload -->
+    <div class="verif-upload glass-card" id="verifPassportCard" onclick="pickPassport()">
+      <div class="verif-upload-icon" id="verifPassportIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M7 20h10"/></svg>
+      </div>
+      <img class="verif-upload-preview hidden" id="verifPassportPreview" src="" alt="">
+      <div class="verif-upload-label">Фото паспорта</div>
+      <div class="verif-upload-hint">Нажмите для загрузки</div>
+    </div>
+
+    <!-- Selfie upload -->
+    <div class="verif-upload glass-card" id="verifSelfieCard" onclick="pickSelfie()">
+      <div class="verif-upload-icon" id="verifSelfieIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <img class="verif-upload-preview hidden" id="verifSelfiePreview" src="" alt="">
+      <div class="verif-upload-label">Селфи с документом</div>
+      <div class="verif-upload-hint">Нажмите для загрузки</div>
+    </div>
+
+    <button class="btn-primary verif-submit-btn" id="verifSubmitBtn" onclick="submitVerification()">Отправить на проверку</button>
+  </div>
+</div>

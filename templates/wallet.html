@@ -1,0 +1,52 @@
+<!-- =============== SCREEN: WALLET =============== -->
+<div class="scr hidden" id="scrWallet">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Кошелёк</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Balance card -->
+  <div class="wallet-balance-card glass-card">
+    <div class="wallet-balance-label">Баланс</div>
+    <div class="wallet-balance-amount" id="walletBalance">0.00 руб.</div>
+    <button class="btn-primary wallet-withdraw-btn" onclick="openWithdrawModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 5v14"/><path d="M5 12l7-7 7 7"/></svg>
+      Вывести средства
+    </button>
+  </div>
+
+  <!-- Transactions -->
+  <div class="wallet-section">
+    <div class="wallet-section-title">История транзакций</div>
+    <div class="wallet-tx-list" id="walletTxList"></div>
+    <div class="wallet-empty hidden" id="walletEmpty">
+      <div class="wallet-empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M6 14h4"/></svg>
+      </div>
+      <div class="wallet-empty-title">Нет транзакций</div>
+      <div class="wallet-empty-desc">Ваши операции появятся здесь</div>
+    </div>
+  </div>
+
+  <!-- Withdraw modal -->
+  <div class="wallet-modal-overlay hidden" id="walletModalOverlay" onclick="closeWithdrawModal()">
+    <div class="wallet-modal" onclick="event.stopPropagation()">
+      <div class="wallet-modal-head">
+        <span class="wallet-modal-title">Вывод средств</span>
+        <button class="icon-btn" onclick="closeWithdrawModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="wallet-modal-body">
+        <label class="wallet-field-label">Сумма (руб.)</label>
+        <input type="number" class="wallet-input" id="withdrawAmount" placeholder="0.00" min="1" step="0.01">
+        <label class="wallet-field-label">Реквизиты</label>
+        <textarea class="wallet-textarea" id="withdrawDetails" placeholder="Номер карты или кошелька" rows="3"></textarea>
+        <button class="btn-primary wallet-submit-btn" id="withdrawBtn" onclick="submitWithdrawal()">Отправить заявку</button>
+      </div>
+    </div>
+  </div>
+</div>

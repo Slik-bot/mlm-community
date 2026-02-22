@@ -1,0 +1,22 @@
+<!-- =============== SCREEN: NOTIFICATIONS =============== -->
+<div class="scr hidden" id="scrNotifications">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Уведомления</span>
+    <button class="icon-btn" onclick="markAllRead()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </button>
+  </div>
+
+  <div class="notif-list" id="notifList"></div>
+
+  <div class="notif-empty hidden" id="notifEmpty">
+    <div class="notif-empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </div>
+    <div class="notif-empty-title">Нет уведомлений</div>
+    <div class="notif-empty-desc">Здесь будут ваши уведомления</div>
+  </div>
+</div>

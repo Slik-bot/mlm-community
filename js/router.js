@@ -47,6 +47,9 @@ const TEMPLATES = {
   scrWebinars: '/templates/webinars.html',
   scrWebinarDetail: '/templates/webinar-detail.html',
   scrAlliances: '/templates/alliances.html',
+  scrWallet: '/templates/wallet.html',
+  scrVerification: '/templates/verification.html',
+  scrNotifications: '/templates/notifications.html',
   scrMore: '/templates/more.html'
 };
 const loadedTemplates = {};
@@ -196,6 +199,15 @@ async function ensureTemplate(id) {
   }
   if (id === 'scrAlliances') {
     if (window.initAlliances) window.initAlliances();
+  }
+  if (id === 'scrWallet') {
+    if (window.initWallet) window.initWallet();
+  }
+  if (id === 'scrVerification') {
+    if (window.initVerification) window.initVerification();
+  }
+  if (id === 'scrNotifications') {
+    if (window.initNotifications) window.initNotifications();
   }
   if (id === 'scrMore') {
     if (window.initMore) window.initMore();
