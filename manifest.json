@@ -1,0 +1,25 @@
+{
+  "name": "MLM Community",
+  "short_name": "MLM Community",
+  "description": "Экосистема заработка, обучения и нетворкинга",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06060b",
+  "theme_color": "#8b5cf6",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
