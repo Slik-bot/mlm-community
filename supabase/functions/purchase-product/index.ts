@@ -1,21 +1,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const PLATFORM_FEE_RATE = 0.20;
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
 
 async function validateProduct(
   supabase: ReturnType<typeof createClient>,
@@ -129,6 +116,15 @@ async function processPayment(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  function json(data: unknown, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -139,28 +135,43 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // 1. Валидация входных данных
-    const { user_id, product_id } = await req.json();
-    if (!user_id || !product_id) {
-      return json({ error: "user_id и product_id обязательны" }, 400);
+    // 1. JWT авторизация
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return json({ error: "Требуется авторизация" }, 401);
+
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+    if (authError || !authUser) {
+      return json({ error: "Невалидный токен" }, 401);
     }
 
-    // 2. Проверить товар
+    const user_id = authUser.id;
+
+    // 2. Валидация входных данных
+    const { product_id } = await req.json();
+    if (!product_id) {
+      return json({ error: "product_id обязателен" }, 400);
+    }
+
+    // 3. Проверить товар
     const productResult = await validateProduct(supabase, product_id);
     if (productResult.error) return json({ error: productResult.error }, 404);
     const product = productResult.product!;
 
-    // 3. Покупатель != продавец
+    // 4. Покупатель != продавец
     if (product.seller_id === user_id) {
       return json({ error: "Нельзя купить свой товар" }, 400);
     }
 
-    // 4. Не куплено ранее
+    // 5. Не куплено ранее
     if (await checkAlreadyPurchased(supabase, user_id, product_id)) {
       return json({ error: "Товар уже куплен" }, 400);
     }
 
-    // 5. Проверить баланс покупателя
+    // 6. Проверить баланс покупателя
     const { data: buyer, error: buyerError } = await supabase
       .from("users")
       .select("id, balance")
@@ -174,10 +185,10 @@ serve(async (req) => {
       return json({ error: "Недостаточно средств" }, 400);
     }
 
-    // 6. Провести оплату
+    // 7. Провести оплату
     const result = await processPayment(supabase, user_id, product);
 
-    // 7. Результат
+    // 8. Результат
     return json({
       success: true,
       purchase_id: result.purchaseId,

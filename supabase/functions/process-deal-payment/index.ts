@@ -1,19 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 async function validateDeal(
   supabase: ReturnType<typeof createClient>,
@@ -112,6 +99,15 @@ async function processPayment(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  function json(data: unknown, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -122,18 +118,33 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // 1. Валидация входных данных
-    const { deal_id, client_id } = await req.json();
-    if (!deal_id || !client_id) {
-      return json({ error: "deal_id и client_id обязательны" }, 400);
+    // 1. JWT авторизация
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return json({ error: "Требуется авторизация" }, 401);
+
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+    if (authError || !authUser) {
+      return json({ error: "Невалидный токен" }, 401);
     }
 
-    // 2. Проверить сделку
+    const client_id = authUser.id;
+
+    // 2. Валидация входных данных
+    const { deal_id } = await req.json();
+    if (!deal_id) {
+      return json({ error: "deal_id обязателен" }, 400);
+    }
+
+    // 3. Проверить сделку
     const dealResult = await validateDeal(supabase, deal_id, client_id);
     if (dealResult.error) return json({ error: dealResult.error }, 400);
     const deal = dealResult.deal!;
 
-    // 3. Проверить баланс клиента
+    // 4. Проверить баланс клиента
     const { data: client, error: clientError } = await supabase
       .from("users")
       .select("id, balance")
@@ -147,10 +158,10 @@ serve(async (req) => {
       return json({ error: "Недостаточно средств" }, 400);
     }
 
-    // 4. Провести оплату
+    // 5. Провести оплату
     await processPayment(supabase, deal);
 
-    // 5. Результат
+    // 6. Результат
     return json({
       success: true,
       deal_id: deal.id,

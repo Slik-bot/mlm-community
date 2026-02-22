@@ -1,21 +1,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const VALID_TYPES = ["money", "social", "deal", "progress", "system"];
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
 
 function isQuietHours(from: string | null, to: string | null): boolean {
   if (!from || !to) return false;
@@ -59,6 +46,15 @@ async function sendTelegramMessage(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  function json(data: unknown, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -69,17 +65,32 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // 1. Валидация входных данных
-    const { user_id, title, body, type } = await req.json();
+    // 1. JWT авторизация
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return json({ error: "Требуется авторизация" }, 401);
 
-    if (!user_id || !title || !body || !type) {
-      return json({ error: "user_id, title, body, type обязательны" }, 400);
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+    if (authError || !authUser) {
+      return json({ error: "Невалидный токен" }, 401);
+    }
+
+    const user_id = authUser.id;
+
+    // 2. Валидация входных данных
+    const { title, body, type } = await req.json();
+
+    if (!title || !body || !type) {
+      return json({ error: "title, body, type обязательны" }, 400);
     }
     if (!VALID_TYPES.includes(type)) {
       return json({ error: `type должен быть: ${VALID_TYPES.join(", ")}` }, 400);
     }
 
-    // 2. Получить telegram_id пользователя
+    // 3. Получить telegram_id пользователя
     const { data: user, error: userError } = await supabase
       .from("users")
       .select("telegram_id")
@@ -90,24 +101,24 @@ serve(async (req) => {
       return json({ error: "Пользователь не найден" }, 404);
     }
 
-    // 3. Получить настройки push
+    // 4. Получить настройки push
     const { data: settings } = await supabase
       .from("user_settings")
       .select("push_telegram, quiet_hours_from, quiet_hours_to")
       .eq("user_id", user_id)
       .single();
 
-    // 4. Проверить: push отключён?
+    // 5. Проверить: push отключён?
     if (settings && settings.push_telegram === false) {
       return json({ sent: false, reason: "disabled" });
     }
 
-    // 5. Проверить тихие часы
+    // 6. Проверить тихие часы
     if (settings && isQuietHours(settings.quiet_hours_from, settings.quiet_hours_to)) {
       return json({ sent: false, reason: "quiet_hours" });
     }
 
-    // 6. Отправить через Telegram
+    // 7. Отправить через Telegram
     if (!user.telegram_id) {
       return json({ sent: false, reason: "no_telegram_id" });
     }
@@ -124,7 +135,7 @@ serve(async (req) => {
       return json({ sent: false, reason: "telegram_api_error" });
     }
 
-    // 7. Обновить is_pushed у последнего непрочитанного уведомления
+    // 8. Обновить is_pushed у последнего непрочитанного уведомления
     const { data: notif } = await supabase
       .from("notifications")
       .select("id")
@@ -142,7 +153,7 @@ serve(async (req) => {
         .eq("id", notif.id);
     }
 
-    // 8. Результат
+    // 9. Результат
     return json({ sent: true, channel: "telegram" });
   } catch (err) {
     console.error("send-push error:", err);

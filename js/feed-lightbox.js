@@ -24,7 +24,7 @@ function openLightbox(urls, startIndex) {
 
     if (typeof urls === 'string') urls = [urls];
     if (!urls || !urls.length) {
-      console.warn('[LIGHTBOX] No URLs provided');
+      console.error('[LIGHTBOX] No URLs provided');
       return;
     }
 

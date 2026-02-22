@@ -1,12 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const MILESTONES: Record<number, { badge: string; name: string; xp: number }> = {
   7:   { badge: "streak_7",   name: "Неделя",    xp: 300 },
@@ -16,13 +10,6 @@ const MILESTONES: Record<number, { badge: string; name: string; xp: number }> = 
   180: { badge: "streak_180", name: "Полгода",    xp: 8000 },
   365: { badge: "streak_365", name: "Год",        xp: 30000 },
 };
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
 
 function getDateStr(daysOffset: number): string {
   const d = new Date();
@@ -133,6 +120,15 @@ async function awardBadges(
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  function json(data: unknown, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }

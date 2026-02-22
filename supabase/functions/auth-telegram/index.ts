@@ -1,18 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 function generateReferralCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -93,12 +80,20 @@ async function derivePassword(
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  function json(data: unknown, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    console.log('auth-telegram called');
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
     if (!botToken) {
       return json({ error: "TELEGRAM_BOT_TOKEN not configured" }, 500);
@@ -110,14 +105,12 @@ Deno.serve(async (req) => {
     );
 
     const { initData } = await req.json();
-    console.log('initData length:', initData?.length);
     if (!initData) {
       return json({ error: "initData is required" }, 400);
     }
 
     // ═══ 1. Validate Telegram signature ═══
     const isValid = await validateTelegramData(initData, botToken);
-    console.log('HMAC result:', isValid);
     if (!isValid) {
       return json({ error: "Invalid signature" }, 401);
     }
@@ -147,7 +140,6 @@ Deno.serve(async (req) => {
       .select("*")
       .eq("telegram_id", telegramId)
       .maybeSingle();
-    console.log('user found:', !!existingUser);
 
     if (existingUser) {
       // ═══ LOGIN existing Telegram user ═══
@@ -173,7 +165,6 @@ Deno.serve(async (req) => {
     // ═══ 4. REGISTER new Telegram user ═══
     try {
       // 4a. Create Supabase Auth user
-      console.log('calling createUser with email:', internalEmail);
       let authData, authError;
       try {
         const result = await supabase.auth.admin.createUser({
@@ -183,7 +174,6 @@ Deno.serve(async (req) => {
         });
         authData = result.data;
         authError = result.error;
-        console.log('createUser done, error:', JSON.stringify(authError), 'user:', authData?.user?.id);
       } catch (e) {
         console.error('createUser EXCEPTION:', e.message);
         return json({ error: 'createUser exception: ' + e.message }, 500);
@@ -216,7 +206,6 @@ Deno.serve(async (req) => {
         referral_code: referralCode,
       });
 
-      console.log('insert users result:', userError ? userError.message : 'ok');
       if (userError) {
         await supabase.auth.admin.deleteUser(userId);
         return json({ error: userError.message }, 500);
@@ -224,11 +213,9 @@ Deno.serve(async (req) => {
 
       // 4d. Default user_settings
       const { error: settingsError } = await supabase.from("user_settings").insert({ user_id: userId });
-      console.log('insert user_settings result:', settingsError ? settingsError.message : 'ok');
 
       // 4e. Default user_stats
       const { error: statsError } = await supabase.from("user_stats").insert({ user_id: userId });
-      console.log('insert user_stats result:', statsError ? statsError.message : 'ok');
 
       // 4f. Sign in for session
       const { data: signIn, error: signInError } =
@@ -236,7 +223,6 @@ Deno.serve(async (req) => {
           email: internalEmail,
           password: internalPassword,
         });
-      console.log('signIn after register:', signInError ? signInError.message : 'ok');
       if (signInError) return json({ error: signInError.message }, 500);
 
       const { data: fullUser } = await supabase
@@ -244,7 +230,6 @@ Deno.serve(async (req) => {
         .select("*")
         .eq("id", userId)
         .single();
-      console.log('fullUser loaded:', !!fullUser);
 
       return json({ user: fullUser, session: signIn.session });
     } catch (createErr) {
