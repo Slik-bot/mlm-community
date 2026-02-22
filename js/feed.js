@@ -74,18 +74,6 @@ document.addEventListener('click', function(e) {
   closePopovers();
 }, true);
 
-// ===== TOAST =====
-function showToast(msg) {
-  var old = document.getElementById('appToast');
-  if (old) old.remove();
-  var t = document.createElement('div');
-  t.id = 'appToast';
-  t.textContent = msg;
-  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:100px;background:rgba(16,16,26,.95);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-size:13px;font-weight:600;z-index:9999;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:cardIn .3s cubic-bezier(.16,1,.3,1);';
-  document.body.appendChild(t);
-  setTimeout(function() { t.remove(); }, 2000);
-}
-
 // ===== COMPANIES =====
 function filterCompanies(el) {
   el.parentElement.querySelectorAll('.comp-flt').forEach(function(f) { f.classList.remove('on'); });

@@ -22,9 +22,9 @@ async function loadTariffs() {
   area.innerHTML = 'Загрузка...';
   var r = await sb.from('app_settings').select('*').eq('key', 'tariffs').single();
   var cfg = (r.data && r.data.value) || {
-    free: { monthly: 0, yearly: 0, posts_day: 3, stories: 1, tools: 0 },
-    pro: { monthly: 499, yearly: 4990, posts_day: 10, stories: 5, tools: 5 },
-    business: { monthly: 1499, yearly: 14990, posts_day: 50, stories: 20, tools: 50 }
+    free: { monthly: 0, yearly: 0, posts_day: 3, cases: 1, tools: 0 },
+    pro: { monthly: 499, yearly: 4990, posts_day: 10, cases: 5, tools: 5 },
+    business: { monthly: 1499, yearly: 14990, posts_day: 50, cases: 20, tools: 50 }
   };
   var plans = ['free', 'pro', 'business'];
   var labels = { free: 'FREE', pro: 'PRO', business: 'BUSINESS' };
@@ -37,7 +37,7 @@ async function loadTariffs() {
       '<div class="fg"><div class="fl">Цена/мес</div><input type="number" class="field" id="tf_' + p + '_m" value="' + (c.monthly || 0) + '"></div>' +
       '<div class="fg"><div class="fl">Цена/год</div><input type="number" class="field" id="tf_' + p + '_y" value="' + (c.yearly || 0) + '"></div>' +
       '<div class="fg"><div class="fl">Посты/день</div><input type="number" class="field" id="tf_' + p + '_pd" value="' + (c.posts_day || 0) + '"></div>' +
-      '<div class="fg"><div class="fl">Сторис</div><input type="number" class="field" id="tf_' + p + '_st" value="' + (c.stories || 0) + '"></div>' +
+      '<div class="fg"><div class="fl">Кейсы</div><input type="number" class="field" id="tf_' + p + '_st" value="' + (c.cases || 0) + '"></div>' +
       '<div class="fg"><div class="fl">Инструменты</div><input type="number" class="field" id="tf_' + p + '_tl" value="' + (c.tools || 0) + '"></div>' +
     '</div>';
   });
@@ -51,7 +51,7 @@ async function saveTariffs() {
       monthly: parseInt(document.getElementById('tf_' + p + '_m').value) || 0,
       yearly: parseInt(document.getElementById('tf_' + p + '_y').value) || 0,
       posts_day: parseInt(document.getElementById('tf_' + p + '_pd').value) || 0,
-      stories: parseInt(document.getElementById('tf_' + p + '_st').value) || 0,
+      cases: parseInt(document.getElementById('tf_' + p + '_st').value) || 0,
       tools: parseInt(document.getElementById('tf_' + p + '_tl').value) || 0
     };
   });

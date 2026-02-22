@@ -196,53 +196,53 @@ async function deleteComment(id) {
 }
 
 
-// ===== КОНТЕНТ: СТОРИС =====
-var _storiesPage = 1;
+// ===== КОНТЕНТ: КЕЙСЫ =====
+var _casesPage = 1;
 
-async function loadStories(page) {
+async function loadCases(page) {
   try {
-    _storiesPage = page || 1;
+    _casesPage = page || 1;
     var area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
     var r = await sb.from('posts').select('*, users(name)', { count: 'exact' })
-      .eq('type', 'post')
+      .eq('post_type', 'case')
       .order('created_at', { ascending: false })
-      .range((_storiesPage - 1) * PER_PAGE, _storiesPage * PER_PAGE - 1);
+      .range((_casesPage - 1) * PER_PAGE, _casesPage * PER_PAGE - 1);
     if (r.error) throw r.error;
     var data = r.data || [], total = r.count || 0;
-    if (!data.length) { area.innerHTML = '<div class="empty">Нет сторис</div>'; return; }
+    if (!data.length) { area.innerHTML = '<div class="empty">Нет кейсов</div>'; return; }
     var h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-      '<th>Автор</th><th>Тип</th><th>Текст</th><th>Просм.</th><th>Истекает</th><th>Действия</th>' +
+      '<th>Автор</th><th>Тип</th><th>Текст</th><th>Просм.</th><th>Дата</th><th>Действия</th>' +
       '</tr></thead><tbody>';
     data.forEach(function(s) {
       var author = s.users ? s.users.name : '—';
-      var txt = (s.text_content || '').substring(0, 50);
+      var txt = (s.content || '').substring(0, 50);
       h += '<tr><td>' + esc(author) + '</td>' +
-        '<td><span class="badge badge-blue">' + esc(s.content_type || '—') + '</span></td>' +
+        '<td><span class="badge badge-blue">' + esc(s.post_type || '—') + '</span></td>' +
         '<td>' + esc(txt) + '</td><td>' + (s.views_count || 0) + '</td>' +
-        '<td>' + fmtDate(s.expires_at) + '</td>' +
+        '<td>' + fmtDate(s.created_at) + '</td>' +
         '<td class="actions">' +
-          '<button class="btn btn-danger btn-sm" onclick="deleteStory(\'' + s.id + '\')">Удалить</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="deleteCase(\'' + s.id + '\')">Удалить</button>' +
         '</td></tr>';
     });
     h += '</tbody></table></div>';
-    area.innerHTML = h + contentPagination(total, _storiesPage, 'loadStories');
+    area.innerHTML = h + contentPagination(total, _casesPage, 'loadCases');
   } catch (err) {
-    console.error('loadStories error:', err);
+    console.error('loadCases error:', err);
     document.getElementById('contentArea').innerHTML = '<div class="empty">Ошибка загрузки</div>';
-    showToast('Ошибка загрузки сторис', 'err');
+    showToast('Ошибка загрузки кейсов', 'err');
   }
 }
 
-async function deleteStory(id) {
+async function deleteCase(id) {
   try {
-    if (!confirm('Удалить сторис?')) return;
+    if (!confirm('Удалить кейс?')) return;
     var r = await sb.from('posts').delete().eq('id', id);
     if (r.error) throw r.error;
-    showToast('Сторис удалена', 'ok');
-    loadStories(_storiesPage);
+    showToast('Кейс удалён', 'ok');
+    loadCases(_casesPage);
   } catch (err) {
-    console.error('deleteStory error:', err);
+    console.error('deleteCase error:', err);
     showToast('Ошибка удаления', 'err');
   }
 }

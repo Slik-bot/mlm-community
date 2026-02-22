@@ -3,7 +3,7 @@
 // ===== КОМПАНИИ =====
 var _compTab = 'companies';
 function renderCompanies() {
-  var tabs = 'companies:Компании,applications:Заявки,experts:Эксперты', h = '<div class="tabs">';
+  var tabs = 'companies:Компании,responses:Заявки,experts:Эксперты', h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _compTab ? ' active' : '') + '" onclick="switchCompTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
@@ -13,7 +13,7 @@ function switchCompTab(tab, btn) {
   _compTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  ({ companies: loadCompanies, applications: loadApplications, experts: loadExperts }[tab] || function(){})();
+  ({ companies: loadCompanies, responses: loadResponses, experts: loadAdminExperts }[tab] || function(){})();
 }
 
 async function loadCompanies() {
@@ -85,8 +85,8 @@ async function deleteCompany(id) {
   loadCompanies();
 }
 
-// ===== ЗАЯВКИ =====
-async function loadApplications() {
+// ===== ЗАЯВКИ (order_responses) =====
+async function loadResponses() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
   var r = await sb.from('order_responses').select('*, users(name), orders(title)')
@@ -116,11 +116,11 @@ async function loadApplications() {
 async function handleApp(id, status) {
   await sb.from('order_responses').update({ status: status, updated_at: new Date().toISOString() }).eq('id', id);
   showToast(status === 'approved' ? 'Заявка принята' : 'Заявка отклонена', 'ok');
-  loadApplications();
+  loadResponses();
 }
 
-// ===== ЭКСПЕРТЫ =====
-async function loadExperts() {
+// ===== ЭКСПЕРТЫ (expert_cards) =====
+async function loadAdminExperts() {
   var area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
   var r = await sb.from('expert_cards').select('*, users(name, avatar_url, company_id), companies(name)')
@@ -147,7 +147,7 @@ async function loadExperts() {
 async function toggleExpertVer(id, val) {
   await sb.from('expert_cards').update({ moderation_status: val ? 'approved' : 'rejected' }).eq('id', id);
   showToast(val ? 'Эксперт верифицирован' : 'Верификация снята', 'ok');
-  loadExperts();
+  loadAdminExperts();
 }
 
 

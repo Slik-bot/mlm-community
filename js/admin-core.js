@@ -408,7 +408,7 @@ async function doAdjustXp(id) {
 // ===== CONTENT =====
 var _contentTab = 'posts';
 function renderContent() {
-  var tabs = 'posts:Посты,comments:Комментарии,stories:Сторис,reports:Жалобы', h = '<div class="tabs">';
+  var tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы', h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { var p = s.split(':'); h += '<button class="tab' + (p[0] === _contentTab ? ' active' : '') + '" onclick="switchContentTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
   document.getElementById('pageContent').innerHTML = h;
@@ -418,7 +418,7 @@ function switchContentTab(tab, btn) {
   _contentTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  var fn = { posts: loadPosts, comments: loadComments, stories: loadStories, reports: loadReports }[tab];
+  var fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports }[tab];
   if (fn) fn(tab === 'reports' ? '' : 1);
 }
 
