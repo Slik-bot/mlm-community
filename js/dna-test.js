@@ -265,6 +265,8 @@ async function startDnaReveal(){
     wave.classList.add('done');
     rv.classList.remove('active');
     screen.classList.add('active');
+    screen.style.opacity = '1';
+    screen.style.pointerEvents = 'all';
 
     // ── Set all card colors ──
     document.getElementById('dnrOrb1').style.background='radial-gradient(circle,'+cl+'14,transparent 70%)';

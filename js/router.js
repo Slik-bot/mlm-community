@@ -232,9 +232,9 @@ async function goTo(id) {
   // Clean up DNA result inline styles when leaving
   if(current==='scrDnaResult'){
     var dnrRv=document.getElementById('dnrReveal');
-    if(dnrRv){dnrRv.style.cssText='';dnrRv.classList.remove('active');}
+    if(dnrRv){dnrRv.classList.remove('active');dnrRv.style.opacity='';dnrRv.style.pointerEvents='';}
     var dnrSc=document.getElementById('dnrScreen');
-    if(dnrSc){dnrSc.style.cssText='';dnrSc.classList.remove('active');}
+    if(dnrSc){dnrSc.classList.remove('active');dnrSc.style.opacity='';dnrSc.style.pointerEvents='';}
     var dnrCd=document.getElementById('dnrCard');
     if(dnrCd){dnrCd.style.cssText='';}
   }
