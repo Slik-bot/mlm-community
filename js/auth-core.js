@@ -119,6 +119,7 @@
 
   // ===== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ МОДАЛОК =====
   function initAuthHandlers() {
+    alert('initAuthHandlers called, buttons found: ' + document.querySelectorAll('.lnd-btn-tg').length);
     // ===== Патчим кнопку РЕГИСТРАЦИИ =====
     const reg = getRegisterInputs();
     if (reg && reg.submit) {
@@ -230,6 +231,7 @@
     // ===== Патчим кнопки OAuth (Telegram, Google, Apple) =====
     document.querySelectorAll('.lnd-btn-tg, .lnd-btn-gl').forEach(function(btn) {
       btn.onclick = async function(e) {
+        alert('TG button clicked');
         e.preventDefault();
         e.stopPropagation();
 
