@@ -374,6 +374,7 @@ function playDnaReveal(cl){
     var delay=parseInt(el.getAttribute('data-dna-rv-delay'))||0;
     setTimeout(function(){el.classList.add('dna-rv-visible');},delay);
   });
+
 }
 
 function dnaReset(){

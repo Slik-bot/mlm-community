@@ -41,6 +41,15 @@
       scr.classList.remove('back-hidden', 'scr-tr-enter', 'scr-tr-enter-right', 'scr-tr-enter-left', 'scr-tr-exit-left', 'scr-tr-exit-right');
     });
 
+    // Также скрываем лендинг (у него нет класса .scr)
+    var _lnd = document.getElementById('scrLanding');
+    if (_lnd && screenId !== 'scrLanding') {
+      _lnd.style.display = 'none';
+    }
+    if (screenId === 'scrLanding' && _lnd) {
+      _lnd.style.display = '';
+    }
+
     var target = document.getElementById(screenId);
     if (target) {
       target.classList.remove('hidden', 'back-hidden');
@@ -245,48 +254,39 @@
       if (window._authRoutingDone) return;
       window._authRoutingDone = true;
 
-      var onboardingDone = localStorage.getItem('onboardingDone');
-      var localDna = localStorage.getItem('dnaType');
-      var localName = localStorage.getItem('userName');
-
       if (profile) {
-        localStorage.setItem('userName', profile.name || localName || '');
+        var onboardingDone = localStorage.getItem('onboardingDone');
+        var localDna = localStorage.getItem('dnaType');
+        var localName = localStorage.getItem('userName');
 
-        var hasDna = profile.dna_type || localDna;
-        var hasName = (profile.name && profile.name.trim().length > 1 && profile.name !== 'Участник') || localName;
+        // Синхронизируем имя
+        if (profile.name) localStorage.setItem('userName', profile.name);
 
-        // Считаем онбординг завершённым если ЛЮБОЕ из условий:
-        var isDone = onboardingDone === 'true'
-          || (hasDna && hasName)
-          || (profile && profile.name && profile.name !== 'Участник')
-          || localStorage.getItem('mlm_onboarding_step') === 'done';
+        // Главное условие: любой признак завершённого онбординга
+        var isDone = (onboardingDone === 'true' || onboardingDone === true)
+          || (profile.dna_type && profile.name && profile.name !== 'Участник')
+          || (profile.level && profile.level !== 'pawn')
+          || localDna;
 
         if (isDone) {
-          // Если нет ДНК в профиле но есть в localStorage — восстановить
-          if (!profile.dna_type && localDna) {
-            try {
-              var dnaMap = { S: 'strategist', C: 'communicator', K: 'creator', A: 'analyst' };
-              await window.sb
-                .from('users')
-                .update({ dna_type: dnaMap[localDna] || 'strategist' })
-                .eq('id', profile.id);
-            } catch(e) { console.error('[AUTH] DNA restore failed:', e); }
-          }
+          // Восстанавливаем dnaType в localStorage если нужно
           if (profile.dna_type) {
-            var revMap = { strategist: 'S', communicator: 'C', creator: 'K', analyst: 'A' };
+            var revMap = {strategist:'S',communicator:'C',creator:'K',analyst:'A'};
             localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
           }
-          localStorage.setItem('onboardingDone', 'true');
+          localStorage.setItem('onboardingDone','true');
           await switchScreenInstant('scrFeed');
           showApp();
           if (window.initFeedFromDB) initFeedFromDB();
+        } else if (profile.dna_type && (!profile.name || profile.name === 'Участник')) {
+          await switchScreenInstant('scrSetup1');
+          showApp();
         } else {
           await switchScreenInstant('scrWelcome');
           showApp();
         }
 
       } else {
-        // Нет сессии → лендинг
         await switchScreenInstant('scrLanding');
         if (window.initLandingModals) window.initLandingModals();
         showApp();
