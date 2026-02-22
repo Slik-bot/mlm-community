@@ -18,9 +18,12 @@ function setupInit(){
   if(lbl) lbl.style.color=cl;
   // Set input focus color as CSS variable
   document.documentElement.style.setProperty('--stp-color',cl);
-  // Reset
+  // Pre-fill name from Telegram or reset
   const inp=document.getElementById('stpNameInput');
-  if(inp) inp.value='';
+  if(inp) {
+    const savedName = localStorage.getItem('userName');
+    inp.value = savedName && savedName !== 'Участник' ? savedName : '';
+  }
   setupSelectedInterests=[];
   setupSelectedGoal=null;
   setupUpdateBtn1();

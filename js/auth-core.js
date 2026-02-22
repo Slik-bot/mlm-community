@@ -238,10 +238,12 @@
           btn.disabled = true;
           try {
             const result = await authTelegram();
+            sessionStorage.removeItem('manually_logged_out');
             if (window.haptic) haptic('success');
             closeLndModals();
             showApp();
             const user = result.user || {};
+            if (user.name) localStorage.setItem('userName', user.name);
             if (!user.dna_type) {
               await goTo('scrDnaTest');
               if (window.dnaReset) window.dnaReset();
@@ -322,19 +324,21 @@
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
 
-    // ===== Telegram Mini App — автовход без участия пользователя =====
+    // ===== Telegram Mini App — показываем лендинг, если нет сессии =====
     if (window.isTelegram && isTelegram()) {
-      try {
-        const result = await authTelegram();
-        await routeAfterAuth(result.user);
-      } catch (err) {
-        console.error('Telegram auto-login error:', err);
-        if (window.showToast) showToast('Ошибка автовхода. Попробуйте войти вручную');
+      if (sessionStorage.getItem('manually_logged_out')) {
+        await routeAfterAuth(null);
+      } else {
         try {
           const profile = await authCheckSession();
-          await routeAfterAuth(profile);
+          if (profile) {
+            await routeAfterAuth(profile);
+          } else {
+            await routeAfterAuth(null);
+          }
         } catch (e) {
-          console.error('Session fallback error:', e);
+          console.error('Telegram session check error:', e);
+          await routeAfterAuth(null);
         }
       }
     }
@@ -378,6 +382,7 @@
     } catch (e) {}
     localStorage.clear();
     if (savedEmail) localStorage.setItem('mlm_saved_email', savedEmail);
+    sessionStorage.setItem('manually_logged_out', '1');
     location.reload();
   };
 
