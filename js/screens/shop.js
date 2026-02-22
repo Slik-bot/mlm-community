@@ -7,6 +7,8 @@ let shopSearchQuery = '';
 let shopSortMethod = 'new';
 let shopCoverFile = null;
 
+const PURCHASE_PRODUCT_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/purchase-product';
+
 const SHOP_CATEGORIES = {
   course: 'Курс',
   template: 'Шаблон',
@@ -226,24 +228,38 @@ async function shopBuyProduct() {
   if (!user) { showToast('Войдите в аккаунт'); return; }
   if (!currentProduct) return;
 
-  const result = await window.sb.from('purchases').insert({
-    buyer_id: user.id,
-    product_id: currentProduct.id,
-    amount: currentProduct.price || 0,
-    author_id: currentProduct.author_id
-  });
-
-  if (result.error) {
-    showToast('Ошибка покупки');
-    return;
-  }
-
   const buyBtn = document.getElementById('pdBuyBtn');
-  if (buyBtn) {
-    buyBtn.textContent = 'Куплено';
-    buyBtn.disabled = true;
+  if (buyBtn) { buyBtn.disabled = true; buyBtn.textContent = 'Покупка...'; }
+
+  const sessionResult = await window.sb.auth.getSession();
+  const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
+
+  try {
+    const resp = await fetch(PURCHASE_PRODUCT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        product_id: currentProduct.id,
+        quantity: 1
+      })
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.success) {
+      if (buyBtn) { buyBtn.textContent = 'Куплено'; }
+      showToast('Продукт куплен!');
+    } else {
+      showToast(data.error || 'Ошибка покупки');
+      if (buyBtn) { buyBtn.disabled = false; buyBtn.textContent = currentProduct.price ? 'Купить' : 'Получить'; }
+    }
+  } catch (e) {
+    showToast('Ошибка сети');
+    if (buyBtn) { buyBtn.disabled = false; buyBtn.textContent = currentProduct.price ? 'Купить' : 'Получить'; }
   }
-  showToast('Продукт куплен!');
 }
 
 function shopOpenAuthor() {

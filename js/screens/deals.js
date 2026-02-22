@@ -5,6 +5,8 @@ let currentDealTab = 'client';
 let currentDealFilter = 'all';
 let allDeals = [];
 
+const PROCESS_DEAL_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/process-deal-payment';
+
 const DEAL_STATUSES = {
   pending: { label: 'Ожидает', color: '#f59e0b' },
   accepted: { label: 'Принята', color: '#3b82f6' },
@@ -274,10 +276,16 @@ function renderDealActions(deal) {
 
 async function dealAction(action) {
   if (!currentDeal) return;
+
+  // pay/accept — через Edge Function process-deal-payment
+  if (action === 'pay' || action === 'accept') {
+    await dealActionViaEF(action);
+    return;
+  }
+
+  // Остальные действия — прямой update
   const statusMap = {
-    accept: 'accepted',
     cancel: 'cancelled',
-    pay: 'paid',
     submit: 'submitted',
     approve: 'completed',
     revision: 'revision'
@@ -297,6 +305,39 @@ async function dealAction(action) {
   renderDealStatus(newStatus);
   renderDealActions(currentDeal);
   showToast('Статус обновлён');
+}
+
+async function dealActionViaEF(action) {
+  const sessionResult = await window.sb.auth.getSession();
+  const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
+
+  try {
+    const resp = await fetch(PROCESS_DEAL_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        deal_id: currentDeal.id,
+        action: action
+      })
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.success) {
+      const newStatus = action === 'pay' ? 'paid' : 'accepted';
+      currentDeal.status = newStatus;
+      renderDealStatus(newStatus);
+      renderDealActions(currentDeal);
+      showToast(action === 'pay' ? 'Оплата проведена' : 'Сделка принята');
+    } else {
+      showToast(data.error || 'Ошибка обработки');
+    }
+  } catch (e) {
+    showToast('Ошибка сети');
+  }
 }
 
 // ===== EXPORTS =====
