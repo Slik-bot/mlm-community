@@ -90,6 +90,7 @@ async function authTelegram() {
   });
   const data = await res.json();
   if (!res.ok || data.error) {
+    alert('SERVER ERROR: ' + JSON.stringify(data));
     throw new Error(data.error || 'Ошибка авторизации через Telegram');
   }
 
