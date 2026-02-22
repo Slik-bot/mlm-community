@@ -1,7 +1,7 @@
 // ═══ Auth API — регистрация, вход, сессия (БД v5.1) ═══
 
 const EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
-const SUPABASE_ANON_KEY = 'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGF2bWlhbXdkcmZqYmNnd255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTUxNTUsImV4cCI6MjA4MzQzMTE1NX0.Wyhhvdy-EnzazbFywr5Nk3d0F3JknWVXz1Sgvz3x67g';
 
 // ═══ detectPlatform ═══
 
@@ -93,9 +93,7 @@ async function authTelegram() {
     },
     body: JSON.stringify({ initData: tgApp.initData })
   });
-  alert('1. fetch done, status: ' + res.status);
   const data = await res.json();
-  alert('2. data: ' + JSON.stringify(data).substring(0, 100));
   if (!res.ok || data.error) {
     throw new Error(data.error || 'Ошибка авторизации через Telegram');
   }
@@ -106,14 +104,12 @@ async function authTelegram() {
     access_token: data.session.access_token,
     refresh_token: data.session.refresh_token
   });
-  alert('3. session set');
 
   const { data: profile } = await window.sb
     .from('users')
     .select('*')
     .eq('id', data.user.id)
     .single();
-  alert('4. profile loaded: ' + (profile ? profile.id : 'null'));
 
   const user = profile || data.user;
   window.setState('currentUser', user);
