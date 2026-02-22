@@ -209,6 +209,10 @@ async function goTo(id) {
     document.body.classList.remove('onboarding-mode');
   }
   closePopovers(); closeFab();
+  // Скрываем лендинг при переходе к любому экрану (у него нет .scr)
+  var lndEl = document.getElementById('scrLanding');
+  if (lndEl && id !== 'scrLanding') lndEl.classList.add('hidden');
+
   const current = navHistory[navHistory.length-1];
   if(current===id) return;
 

@@ -19,13 +19,14 @@
     var _profile = window.getCurrentUser ? window.getCurrentUser() : null;
     if (!_profile) return;
 
-    var nameEl = document.querySelector('.fd-name');
-    if (nameEl) nameEl.textContent = _profile.name || 'Участник';
+    var nameEl = document.querySelector('.fd-name, .hdr-name, #feedUserName');
+    if (nameEl) nameEl.textContent = 'Привет, ' + (_profile.name || 'Участник') + '!';
 
     var dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-    var dnaBadge = document.querySelector('.fd-dna');
+    var lvlMap = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
+    var dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
     if (dnaBadge && _profile.dna_type) {
-      dnaBadge.textContent = dnaMap[_profile.dna_type] || '';
+      dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[_profile.dna_type] || '') + ' \u00B7 \u265F ' + (lvlMap[_profile.level] || 'Пешка');
     }
 
     var xpEl = document.querySelector('.imp-xp-val');
