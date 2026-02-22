@@ -91,19 +91,27 @@ async function unsubscribeFromPush() {
 }
 
 async function savePushSubscription(subscription) {
-  const user = window.getCurrentUser ? window.getCurrentUser() : null;
-  if (!user) return false;
-
   try {
-    const subJson = subscription.toJSON();
-    const { error } = await window.sb.from('push_subscriptions').upsert({
-      user_id: user.id,
-      endpoint: subJson.endpoint,
-      p256dh: subJson.keys.p256dh,
-      auth: subJson.keys.auth
-    }, { onConflict: 'endpoint' });
+    const sessionResult = await window.sb.auth.getSession();
+    const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
+    if (!token) return false;
 
-    if (error) throw error;
+    const subJson = subscription.toJSON();
+    const resp = await fetch('https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/register-push-sub', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        endpoint: subJson.endpoint,
+        p256dh: subJson.keys.p256dh,
+        auth: subJson.keys.auth
+      })
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error);
     return true;
   } catch (err) {
     console.error('Save push subscription error:', err);
