@@ -6,6 +6,7 @@ let currentDealFilter = 'all';
 let allDeals = [];
 
 const PROCESS_DEAL_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/process-deal-payment';
+const ACCEPT_DEAL_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/accept-deal';
 
 const DEAL_STATUSES = {
   pending: { label: 'Ожидает', color: '#f59e0b' },
@@ -277,8 +278,14 @@ function renderDealActions(deal) {
 async function dealAction(action) {
   if (!currentDeal) return;
 
-  // pay/accept — через Edge Function process-deal-payment
-  if (action === 'pay' || action === 'accept') {
+  // accept — через accept-deal EF
+  if (action === 'accept') {
+    await acceptDealViaEF();
+    return;
+  }
+
+  // pay — через process-deal-payment EF
+  if (action === 'pay') {
     await dealActionViaEF(action);
     return;
   }
@@ -307,6 +314,35 @@ async function dealAction(action) {
   showToast('Статус обновлён');
 }
 
+async function acceptDealViaEF() {
+  const sessionResult = await window.sb.auth.getSession();
+  const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
+
+  try {
+    const resp = await fetch(ACCEPT_DEAL_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ deal_id: currentDeal.id })
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.success) {
+      currentDeal.status = 'accepted';
+      renderDealStatus('accepted');
+      renderDealActions(currentDeal);
+      showToast('Сделка принята');
+    } else {
+      showToast(data.error || 'Ошибка принятия');
+    }
+  } catch (e) {
+    showToast('Ошибка сети');
+  }
+}
+
 async function dealActionViaEF(action) {
   const sessionResult = await window.sb.auth.getSession();
   const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
@@ -327,11 +363,10 @@ async function dealActionViaEF(action) {
     const data = await resp.json();
 
     if (resp.ok && data.success) {
-      const newStatus = action === 'pay' ? 'paid' : 'accepted';
-      currentDeal.status = newStatus;
-      renderDealStatus(newStatus);
+      currentDeal.status = 'paid';
+      renderDealStatus('paid');
       renderDealActions(currentDeal);
-      showToast(action === 'pay' ? 'Оплата проведена' : 'Сделка принята');
+      showToast('Оплата проведена');
     } else {
       showToast(data.error || 'Ошибка обработки');
     }

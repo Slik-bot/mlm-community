@@ -2,6 +2,8 @@
 
 let walletBalance = 0;
 
+const REQUEST_WITHDRAWAL_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/request-withdrawal';
+
 const TX_TYPES = {
   deposit: { label: 'Пополнение', sign: '+', color: 'var(--green)' },
   withdrawal: { label: 'Вывод', sign: '-', color: 'var(--red)' },
@@ -122,16 +124,13 @@ function closeWithdrawModal() {
 }
 
 async function submitWithdrawal() {
-  const user = getCurrentUser();
-  if (!user) { showToast('Войдите в аккаунт'); return; }
-
   const amountInp = document.getElementById('withdrawAmount');
   const detailsInp = document.getElementById('withdrawDetails');
   const amount = parseFloat(amountInp ? amountInp.value : 0);
-  const details = (detailsInp ? detailsInp.value : '').trim();
+  const requisites = (detailsInp ? detailsInp.value : '').trim();
 
   if (!amount || amount <= 0) { showToast('Введите сумму'); return; }
-  if (!details) { showToast('Укажите реквизиты'); return; }
+  if (!requisites) { showToast('Укажите реквизиты'); return; }
 
   const amountCents = Math.round(amount * 100);
   if (amountCents > walletBalance) {
@@ -142,21 +141,34 @@ async function submitWithdrawal() {
   const btn = document.getElementById('withdrawBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
 
-  const result = await window.sb.from('withdrawals').insert({
-    user_id: user.id,
-    amount: amountCents,
-    details: details,
-    status: 'pending'
-  });
+  try {
+    const sessionResult = await window.sb.auth.getSession();
+    const token = sessionResult.data.session ? sessionResult.data.session.access_token : '';
 
-  if (result.error) {
-    showToast('Ошибка отправки заявки');
-    if (btn) { btn.disabled = false; btn.textContent = 'Отправить заявку'; }
-    return;
+    const resp = await fetch(REQUEST_WITHDRAWAL_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ amount: amount, requisites: requisites })
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.success) {
+      showToast('Заявка на вывод отправлена');
+      closeWithdrawModal();
+      const user = getCurrentUser();
+      if (user) await loadWalletBalance(user.id);
+    } else {
+      showToast(data.error || 'Ошибка отправки заявки');
+    }
+  } catch (err) {
+    console.error('Withdrawal error:', err);
+    showToast('Ошибка сети');
   }
 
-  showToast('Заявка на вывод отправлена');
-  closeWithdrawModal();
   if (btn) { btn.disabled = false; btn.textContent = 'Отправить заявку'; }
 }
 
