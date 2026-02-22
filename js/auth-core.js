@@ -319,6 +319,11 @@
     // Telegram Mini App
     if (window.initTelegram) initTelegram();
 
+    // DEBUG: показать состояние Telegram окружения
+    const tg = window.Telegram && window.Telegram.WebApp;
+    const info = 'TG:' + (tg ? 'yes' : 'no') + ' initData:' + (tg && tg.initData ? tg.initData.length + 'chars' : 'empty');
+    if (window.showToast) showToast(info);
+
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
 
