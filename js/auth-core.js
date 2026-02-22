@@ -147,12 +147,14 @@
 
         try {
           await authRegister(email, password, name);
+          if (window.haptic) haptic('success');
           if (name) localStorage.setItem('userName', name);
           freshRegistration();
           closeLndModals();
           showApp();
           await goTo('scrWelcome');
         } catch (err) {
+          if (window.haptic) haptic('error');
           var msg = err.message || 'Ошибка регистрации';
           if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
           else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
@@ -185,6 +187,7 @@
 
         try {
           var data = await authLogin(email, password);
+          if (window.haptic) haptic('success');
           localStorage.setItem('mlm_saved_email', email);
 
           if (window.PasswordCredential) {
@@ -213,6 +216,7 @@
             initFeedFromDB();
           }
         } catch (err) {
+          if (window.haptic) haptic('error');
           var msg = err.message || 'Ошибка входа';
           if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
           showAuthError('login', msg);
@@ -244,6 +248,9 @@
 
   // ===== Ждём загрузки DOM =====
   window.addEventListener('DOMContentLoaded', async function() {
+
+    // Telegram Mini App
+    if (window.initTelegram) initTelegram();
 
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();

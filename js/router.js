@@ -198,6 +198,7 @@ function updateChrome(id){
 
 async function goTo(id) {
   if(isTransitioning) return;
+  if (window.haptic) haptic('light');
   if (window.chatUnsubscribe) chatUnsubscribe();
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   await ensureTemplate(id);
@@ -277,6 +278,7 @@ async function goTo(id) {
 async function goBack() {
   if(isTransitioning) return;
   if(navHistory.length<=1) return;
+  if (window.haptic) haptic('light');
 
   const current = navHistory.pop();
   const prev = navHistory[navHistory.length-1];
