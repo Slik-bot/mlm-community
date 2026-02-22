@@ -331,3 +331,74 @@ function contentPagination(total, cur, fn) {
   h += '<span class="page-info">' + total + ' всего</span></div>';
   return h;
 }
+
+
+// ===== КОНТЕНТ: МОДЕРАЦИЯ =====
+let _modFilter = '';
+
+async function loadModeration(statusFilter) {
+  try {
+    _modFilter = statusFilter || '';
+    const area = document.getElementById('contentArea');
+    area.innerHTML = 'Загрузка...';
+    let q = sb.from('moderation_queue').select('*')
+      .order('created_at', { ascending: false }).limit(50);
+    if (_modFilter) q = q.eq('status', _modFilter);
+    const r = await q;
+    if (r.error) throw r.error;
+    const data = r.data || [];
+    const badgeMap = { pending: 'badge-gold', approved: 'badge-green', rejected: 'badge-red' };
+    const fh = '<div class="toolbar"><select class="field field-select" onchange="loadModeration(this.value)">' +
+      '<option value="">Все статусы</option>' +
+      '<option value="pending"' + (_modFilter === 'pending' ? ' selected' : '') + '>Pending</option>' +
+      '<option value="approved"' + (_modFilter === 'approved' ? ' selected' : '') + '>Approved</option>' +
+      '<option value="rejected"' + (_modFilter === 'rejected' ? ' selected' : '') + '>Rejected</option>' +
+      '</select></div>';
+    if (!data.length) { area.innerHTML = fh + '<div class="empty">Очередь модерации пуста</div>'; return; }
+    let h = fh + '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+      '<th>Тип</th><th>ID контента</th><th>Причина</th><th>Статус</th><th>Дата</th><th>Действия</th>' +
+      '</tr></thead><tbody>';
+    data.forEach(function(item) {
+      const badge = badgeMap[item.status] || 'badge-purple';
+      const cid = item.content_id ? String(item.content_id).substring(0, 8) + '…' : '—';
+      const acts = item.status === 'pending'
+        ? '<button class="btn btn-success btn-sm" onclick="approveModItem(\'' + item.id + '\')">Одобрить</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="rejectModItem(\'' + item.id + '\')">Отклонить</button>'
+        : '';
+      h += '<tr><td><span class="badge badge-blue">' + esc(item.content_type || '—') + '</span></td>' +
+        '<td>' + cid + '</td><td>' + esc(item.reason || '—') + '</td>' +
+        '<td><span class="badge ' + badge + '">' + esc(item.status || '—') + '</span></td>' +
+        '<td>' + fmtDate(item.created_at) + '</td><td class="actions">' + acts + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    area.innerHTML = h;
+  } catch (err) {
+    console.error('loadModeration error:', err);
+    document.getElementById('contentArea').innerHTML = '<div class="empty">Ошибка загрузки модерации</div>';
+    showToast('Ошибка загрузки модерации', 'err');
+  }
+}
+
+async function approveModItem(id) {
+  try {
+    const r = await sb.from('moderation_queue').update({ status: 'approved' }).eq('id', id);
+    if (r.error) throw r.error;
+    showToast('Контент одобрен', 'ok');
+    loadModeration(_modFilter);
+  } catch (err) {
+    console.error('approveModItem error:', err);
+    showToast('Ошибка', 'err');
+  }
+}
+
+async function rejectModItem(id) {
+  try {
+    const r = await sb.from('moderation_queue').update({ status: 'rejected' }).eq('id', id);
+    if (r.error) throw r.error;
+    showToast('Контент отклонён', 'ok');
+    loadModeration(_modFilter);
+  } catch (err) {
+    console.error('rejectModItem error:', err);
+    showToast('Ошибка', 'err');
+  }
+}

@@ -405,7 +405,7 @@ async function doAdjustXp(id) {
 // ===== CONTENT =====
 let _contentTab = 'posts';
 function renderContent() {
-  const tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы';
+  const tabs = 'posts:Посты,comments:Комментарии,cases:Кейсы,reports:Жалобы,moderation:Модерация';
   let h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _contentTab ? ' active' : '') + '" onclick="switchContentTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
@@ -416,8 +416,8 @@ function switchContentTab(tab, btn) {
   _contentTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  const fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports }[tab];
-  if (fn) fn(tab === 'reports' ? '' : 1);
+  const fn = { posts: loadPosts, comments: loadComments, cases: loadCases, reports: loadReports, moderation: loadModeration }[tab];
+  if (fn) fn(tab === 'reports' || tab === 'moderation' ? '' : 1);
 }
 
 // ===== PLACEHOLDERS =====

@@ -3,7 +3,7 @@
 let _setTab = 'tariffs';
 
 function renderSettings() {
-  const tabs = 'tariffs:Тарифы,xp:XP и уровни,dna:ДНК-тест,reviews:Отзывы,integrations:Интеграции';
+  const tabs = 'tariffs:Тарифы,xp:XP и уровни,dna:ДНК-тест,reviews:Отзывы,integrations:Интеграции,audit:Аудит лог,admins:Администраторы';
   let h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _setTab ? ' active' : '') + '" onclick="switchSetTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
@@ -14,7 +14,7 @@ function switchSetTab(tab, btn) {
   _setTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  ({ tariffs: loadTariffs, xp: loadXpRules, dna: loadDnaQuestions, reviews: loadReviews, integrations: loadIntegrations }[tab] || function(){})();
+  ({ tariffs: loadTariffs, xp: loadXpRules, dna: loadDnaQuestions, reviews: loadReviews, integrations: loadIntegrations, audit: loadAuditLog, admins: loadAdminUsers }[tab] || function(){})();
 }
 
 // ===== ТАРИФЫ =====
@@ -222,4 +222,137 @@ async function saveIntegration(key) {
   const res = await sb.from('app_settings').upsert({ key: 'integrations', value: cfg, updated_at: new Date().toISOString() });
   if (res.error) { showToast(res.error.message, 'err'); return; }
   showToast('Сохранено', 'ok'); loadIntegrations();
+}
+
+
+// ===== АУДИТ ЛОГ =====
+let _auditAction = '', _auditDateFrom = '', _auditDateTo = '', _auditTimer = null;
+
+async function loadAuditLog() {
+  try {
+    const area = document.getElementById('contentArea');
+    area.innerHTML = 'Загрузка...';
+    let q = sb.from('admin_audit_log').select('*')
+      .order('created_at', { ascending: false }).limit(100);
+    if (_auditAction) q = q.ilike('action', '%' + _auditAction + '%');
+    if (_auditDateFrom) q = q.gte('created_at', _auditDateFrom + 'T00:00:00');
+    if (_auditDateTo) q = q.lte('created_at', _auditDateTo + 'T23:59:59');
+    const r = await q;
+    if (r.error) throw r.error;
+    const data = r.data || [];
+    const adminIds = [];
+    data.forEach(function(log) {
+      if (log.admin_id && adminIds.indexOf(log.admin_id) === -1) adminIds.push(log.admin_id);
+    });
+    const names = {};
+    if (adminIds.length) {
+      const nr = await sb.from('admin_users').select('id, name').in('id', adminIds);
+      (nr.data || []).forEach(function(a) { names[a.id] = a.name; });
+    }
+    let h = '<div class="toolbar">' +
+      '<input type="text" class="field field-search" placeholder="Фильтр по действию..." value="' + esc(_auditAction) + '" oninput="_auditAction=this.value;clearTimeout(_auditTimer);_auditTimer=setTimeout(loadAuditLog,300)">' +
+      '<input type="date" class="field" style="width:auto;margin:0" value="' + _auditDateFrom + '" onchange="_auditDateFrom=this.value;loadAuditLog()" title="Дата от">' +
+      '<input type="date" class="field" style="width:auto;margin:0" value="' + _auditDateTo + '" onchange="_auditDateTo=this.value;loadAuditLog()" title="Дата до">' +
+      '</div>';
+    if (!data.length) { area.innerHTML = h + '<div class="empty">Нет записей аудита</div>'; return; }
+    h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+      '<th>Админ</th><th>Действие</th><th>Тип цели</th><th>ID цели</th><th>Дата</th>' +
+      '</tr></thead><tbody>';
+    data.forEach(function(log) {
+      const admin = names[log.admin_id] || '—';
+      const tid = log.target_id ? String(log.target_id).substring(0, 8) + '…' : '—';
+      h += '<tr><td>' + esc(admin) + '</td>' +
+        '<td><span class="badge badge-blue">' + esc(log.action || '—') + '</span></td>' +
+        '<td>' + esc(log.target_type || '—') + '</td>' +
+        '<td>' + tid + '</td><td>' + fmtDate(log.created_at) + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    area.innerHTML = h;
+  } catch (err) {
+    console.error('loadAuditLog error:', err);
+    document.getElementById('contentArea').innerHTML = '<div class="empty">Ошибка загрузки аудита</div>';
+    showToast('Ошибка загрузки аудита', 'err');
+  }
+}
+
+
+// ===== УПРАВЛЕНИЕ АДМИНИСТРАТОРАМИ =====
+
+async function loadAdminUsers() {
+  try {
+    const area = document.getElementById('contentArea');
+    area.innerHTML = 'Загрузка...';
+    const r = await sb.from('admin_users').select('*').order('created_at', { ascending: false });
+    if (r.error) throw r.error;
+    const data = r.data || [];
+    const roleMap = { super_admin: 'badge-gold', admin: 'badge-purple', moderator: 'badge-blue' };
+    let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openAddAdminModal()">Добавить админа</button></div>';
+    if (!data.length) { area.innerHTML = h + '<div class="empty">Нет администраторов</div>'; return; }
+    h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+      '<th>Имя</th><th>Email</th><th>Роль</th><th>Активен</th><th>Дата</th><th>Действия</th>' +
+      '</tr></thead><tbody>';
+    data.forEach(function(a) {
+      const badge = roleMap[a.role] || 'badge-purple';
+      const act = a.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
+      const isSelf = adminProfile && adminProfile.id === a.id;
+      const acts = isSelf ? '' :
+        '<button class="btn btn-' + (a.is_active ? 'danger' : 'success') + ' btn-sm" onclick="toggleAdminActive(\'' + a.id + '\',' + a.is_active + ')">' +
+          (a.is_active ? 'Снять права' : 'Восстановить') + '</button>';
+      h += '<tr><td><b>' + esc(a.name || '—') + '</b></td><td>' + esc(a.email || '—') + '</td>' +
+        '<td><span class="badge ' + badge + '">' + esc(a.role || '—') + '</span></td>' +
+        '<td>' + act + '</td><td>' + fmtDate(a.created_at) + '</td>' +
+        '<td class="actions">' + acts + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    area.innerHTML = h;
+  } catch (err) {
+    console.error('loadAdminUsers error:', err);
+    document.getElementById('contentArea').innerHTML = '<div class="empty">Ошибка загрузки</div>';
+    showToast('Ошибка загрузки администраторов', 'err');
+  }
+}
+
+function openAddAdminModal() {
+  const body = '<div class="fg"><div class="fl">Email или Telegram ID</div>' +
+    '<input class="field" id="newAdminIdent" placeholder="email@example.com или 123456789"></div>' +
+    '<div class="fg"><div class="fl">Имя</div><input class="field" id="newAdminName" placeholder="Имя администратора"></div>' +
+    '<div class="fg"><div class="fl">Роль</div><select class="field" id="newAdminRole">' +
+      '<option value="admin">admin</option>' +
+      '<option value="moderator">moderator</option>' +
+      '<option value="super_admin">super_admin</option>' +
+    '</select></div>' +
+    '<div class="modal-actions"><button class="btn btn-primary" onclick="addAdminUser()">Добавить</button></div>';
+  openModal('Добавить администратора', body);
+}
+
+async function addAdminUser() {
+  try {
+    const ident = document.getElementById('newAdminIdent').value.trim();
+    const name = document.getElementById('newAdminName').value.trim();
+    const role = document.getElementById('newAdminRole').value;
+    if (!ident) { showToast('Введите email или Telegram ID', 'err'); return; }
+    if (!name) { showToast('Введите имя', 'err'); return; }
+    const isEmail = ident.includes('@');
+    const d = { name: name, role: role, is_active: true };
+    if (isEmail) { d.email = ident; } else { d.telegram_id = ident; }
+    const r = await sb.from('admin_users').insert(d);
+    if (r.error) throw r.error;
+    showToast('Администратор добавлен', 'ok');
+    closeModal(); loadAdminUsers();
+  } catch (err) {
+    console.error('addAdminUser error:', err);
+    showToast('Ошибка добавления', 'err');
+  }
+}
+
+async function toggleAdminActive(id, cur) {
+  try {
+    const r = await sb.from('admin_users').update({ is_active: !cur }).eq('id', id);
+    if (r.error) throw r.error;
+    showToast(cur ? 'Права сняты' : 'Права восстановлены', 'ok');
+    loadAdminUsers();
+  } catch (err) {
+    console.error('toggleAdminActive error:', err);
+    showToast('Ошибка', 'err');
+  }
 }
