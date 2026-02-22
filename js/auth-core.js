@@ -237,6 +237,7 @@
         if (text.includes('Telegram')) {
           btn.disabled = true;
           try {
+            console.error('BTN CLICK - isTelegram:', typeof isTelegram !== 'undefined' ? isTelegram() : 'not defined', 'initData:', window.Telegram?.WebApp?.initData?.length || 0);
             const result = await authTelegram();
             if (window.haptic) haptic('success');
             closeLndModals();
@@ -254,7 +255,7 @@
             }
           } catch (err) {
             if (window.haptic) haptic('error');
-            showToast(err.message || 'Ошибка входа через Telegram');
+            alert(err.message || 'Ошибка входа через Telegram');
           }
           btn.disabled = false;
         } else {
@@ -318,11 +319,6 @@
 
     // Telegram Mini App
     if (window.initTelegram) initTelegram();
-
-    // DEBUG: показать состояние Telegram окружения
-    const tg = window.Telegram && window.Telegram.WebApp;
-    const info = 'TG:' + (tg ? 'yes' : 'no') + ' initData:' + (tg && tg.initData ? tg.initData.length + 'chars' : 'empty');
-    if (window.showToast) showToast(info);
 
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
