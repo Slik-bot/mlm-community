@@ -32,7 +32,7 @@ window.openPostDetail = async function(postId) {
     const post = postResult.data;
     if (!post) { scroll.innerHTML = '<div class="cmt-loading">Пост не найден</div>'; return; }
 
-    _postAuthorId = post.user_id;
+    _postAuthorId = post.author_id;
     sb.from('posts').update({ views_count: (post.views_count || 0) + 1 }).eq('id', postId);
 
     const comments = await sbLoadComments(postId);
@@ -74,9 +74,9 @@ function renderDetailScreen(scroll, post, comments) {
   const replies = {};
   const sorted = (comments || []).slice().reverse();
   sorted.forEach(function(c) {
-    if (c.parent_comment_id) {
-      if (!replies[c.parent_comment_id]) replies[c.parent_comment_id] = [];
-      replies[c.parent_comment_id].push(c);
+    if (c.parent_id) {
+      if (!replies[c.parent_id]) replies[c.parent_id] = [];
+      replies[c.parent_id].push(c);
     } else {
       roots.push(c);
     }
@@ -112,7 +112,7 @@ function renderComment(c, isReply) {
   const ava = p.avatar_url || '';
   const dna = p.dna_type || '';
   const letter = name.charAt(0).toUpperCase();
-  const isOwn = currentAuthUser && c.user_id === currentAuthUser.id;
+  const isOwn = currentAuthUser && c.author_id === currentAuthUser.id;
   const time = sbFormatDate(c.created_at);
   const mention = (isReply && c._parentName) ? '<span class="mention">@' + escHtml(c._parentName) + '</span> ' : '';
 
@@ -132,7 +132,7 @@ function renderComment(c, isReply) {
   const safeName = escHtml(name).replace(/'/g, '&#39;');
   const safeId = String(c.id || '');
 
-  return '<div class="' + cls + '" data-id="' + safeId + '" data-user="' + (c.user_id || '') + '">' +
+  return '<div class="' + cls + '" data-id="' + safeId + '" data-user="' + (c.author_id || '') + '">' +
     '<div class="cmt-ava" style="background:' + avaColor + '">' + (ava ? '<img src="' + escHtml(ava) + '" alt="">' : letter) + '</div>' +
     '<div class="cmt-body">' +
       '<div class="cmt-top">' +
@@ -196,9 +196,9 @@ window.likeComment = async function(id, el) {
   setTimeout(function(){ el.style.transform = ''; }, 150);
   try {
     if (liked) {
-      await sb.from('reactions').insert({ user_id: currentAuthUser.id, comment_id: id });
+      await sb.from('reactions').insert({ user_id: currentAuthUser.id, target_type: 'comment', target_id: id, reaction_type: 'like' });
     } else {
-      await sb.from('reactions').delete().match({ user_id: currentAuthUser.id, comment_id: id });
+      await sb.from('reactions').delete().match({ user_id: currentAuthUser.id, target_type: 'comment', target_id: id });
     }
   } catch(e) {}
 };
@@ -299,11 +299,11 @@ function initCommentInput() {
     cancelReply();
     try {
       const res = await sb.from('comments').insert({
-        post_id:_postId, user_id:currentAuthUser.id, content:text, parent_comment_id:parentId||null
+        post_id:_postId, author_id:currentAuthUser.id, content:text, parent_id:parentId||null
       }).select('id,created_at').single();
       if(!res||!res.data) return;
       const prof = currentProfile||{name:'Вы',avatar_url:'',dna_type:''};
-      const nc = {id:res.data.id, user_id:currentAuthUser.id, content:text, created_at:res.data.created_at||new Date().toISOString(), parent_comment_id:parentId, author:prof};
+      const nc = {id:res.data.id, author_id:currentAuthUser.id, content:text, created_at:res.data.created_at||new Date().toISOString(), parent_id:parentId, author:prof};
       if(parentName) nc._parentName=parentName;
       const list = document.getElementById('cmtList');
       if(!list) return;

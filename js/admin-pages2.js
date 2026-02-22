@@ -169,20 +169,19 @@ async function delAch(id) {
 async function loadLeaderboard() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('users').select('id, name, level, xp_total, streak')
+  const r = await sb.from('vw_public_profiles').select('id, name, level, xp_total')
     .order('xp_total', { ascending: false }).limit(20);
   const data = r.data || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет данных</div>'; return; }
   let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-    '<th>#</th><th>Имя</th><th>Уровень</th><th>XP</th><th>Стрик</th>' +
+    '<th>#</th><th>Имя</th><th>Уровень</th><th>XP</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(u, i) {
     const medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
     h += '<tr><td><b>' + medal + (i + 1) + '</b></td>' +
       '<td>' + esc(u.name || '—') + '</td>' +
       '<td>' + (LN[u.level] || '—') + '</td>' +
-      '<td><b>' + (u.xp_total || 0) + '</b></td>' +
-      '<td>' + (u.streak || 0) + ' дн.</td></tr>';
+      '<td><b>' + (u.xp_total || 0) + '</b></td></tr>';
   });
   h += '</tbody></table></div>';
   area.innerHTML = h;

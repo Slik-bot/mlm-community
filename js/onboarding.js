@@ -26,11 +26,7 @@ function setupInit(){
   setupUpdateBtn1();
 }
 
-function getDnaColor(){
-  const t=localStorage.getItem('dnaType')||'S';
-  const colors={S:'#3b82f6',C:'#22c55e',K:'#f59e0b',A:'#a78bfa'};
-  return colors[t]||'#8b5cf6';
-}
+// getDnaColor — см. js/utils/dna.js
 
 function setupCheckName(){
   setupUpdateBtn1();

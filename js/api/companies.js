@@ -21,7 +21,7 @@ async function loadCompanies(filter, limit) {
 
 async function loadCompanyDetail(companyId) {
   const result = await window.sb.from('companies')
-    .select('*, experts:expert_cards(*, user:users(id, name, avatar_url, dna_type))')
+    .select('*, experts:expert_cards(*, user:vw_public_profiles(id, name, avatar_url, dna_type))')
     .eq('id', companyId)
     .single();
 

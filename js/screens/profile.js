@@ -1,13 +1,6 @@
 // ===== PROFILE SCREENS — просмотр, редактирование, настройки =====
 
-// ===== ДНК-цвета =====
-
-const DNA_COLORS = {
-  strategist: '#3b82f6',
-  communicator: '#22c55e',
-  creator: '#f59e0b',
-  analyst: '#a78bfa'
-};
+// ===== ДНК-цвета — см. js/utils/dna.js =====
 
 const DNA_NAMES = {
   strategist: 'Стратег',
@@ -38,9 +31,7 @@ function getChessIcon(level, color) {
   return icons[level] || icons.pawn;
 }
 
-function getDnaColor(dnaType) {
-  return DNA_COLORS[dnaType] || '#8b5cf6';
-}
+// getDnaColor — см. js/utils/dna.js
 
 // ===== initProfile =====
 

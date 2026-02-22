@@ -180,7 +180,7 @@ async function loadTools() {
     let ids = data.map(function(t) { return t.author_id; }).filter(Boolean);
     ids = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
     if (ids.length) {
-      const pr = await sb.from('users').select('id, name').in('id', ids);
+      const pr = await sb.from('vw_public_profiles').select('id, name').in('id', ids);
       const nm = {}; (pr.data || []).forEach(function(p) { nm[p.id] = p.name; });
       data.forEach(function(t) { t._author = nm[t.author_id] || '—'; });
     }

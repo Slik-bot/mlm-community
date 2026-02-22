@@ -4,13 +4,6 @@ let matchCandidates = [];
 let currentMatchIndex = 0;
 let isMatchAnimating = false;
 
-const DNA_COLORS = {
-  strategist: '#3b82f6',
-  communicator: '#22c55e',
-  creator: '#f59e0b',
-  analyst: '#a78bfa'
-};
-
 const DNA_LABELS = {
   strategist: 'Стратег',
   communicator: 'Коммуникатор',
@@ -35,24 +28,25 @@ function initMatch() {
 // ===== LOAD CANDIDATES =====
 
 function loadMatchCandidates() {
-  const sb = window.supabase;
+  const sb = window.sb;
   if (!sb || !window.currentUser) {
     renderMatchStack();
     return;
   }
 
   sb.from('matches')
-    .select('user2_id')
-    .eq('user1_id', window.currentUser.id)
+    .select('user_b_id')
+    .eq('user_a_id', window.currentUser.id)
     .then(function(res) {
       const seen = [window.currentUser.id];
       if (res.data) {
-        res.data.forEach(function(r) { seen.push(r.user2_id); });
+        res.data.forEach(function(r) { seen.push(r.user_b_id); });
       }
-      return sb.from('users')
-        .select('id, name, avatar_url, dna_type, level, bio, company')
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      return sb.from('vw_public_profiles')
+        .select('id, name, avatar_url, dna_type, level, bio, company_id')
         .not('id', 'in', '(' + seen.join(',') + ')')
-        .eq('is_active', true)
+        .gte('last_active_at', thirtyDaysAgo)
         .limit(20);
     })
     .then(function(res) {
@@ -105,7 +99,7 @@ function renderMatchCard(user, index) {
 
   const avatar = user.avatar_url || 'assets/default-avatar.png';
   const dna = user.dna_type || 'strategist';
-  const dnaColor = DNA_COLORS[dna] || '#8b5cf6';
+  const dnaColor = window.DNA_COLORS[dna] || '#8b5cf6';
   const dnaLabel = DNA_LABELS[dna] || dna;
   let bio = user.bio || '';
   if (bio.length > 80) bio = bio.substring(0, 80) + '...';
@@ -169,23 +163,30 @@ function processMatch(action) {
   const candidate = matchCandidates[currentMatchIndex];
   currentMatchIndex++;
 
-  if (action === 'like' && candidate && window.supabase && window.currentUser) {
-    const sb = window.supabase;
+  if (action === 'like' && candidate && window.sb && window.currentUser) {
+    const sb = window.sb;
     sb.from('matches').insert({
-      user1_id: window.currentUser.id,
-      user2_id: candidate.id,
+      user_a_id: window.currentUser.id,
+      user_b_id: candidate.id,
+      user_a_action: 'like',
       status: 'pending'
     }).then(function() {
       return sb.from('matches')
         .select('id')
-        .eq('user1_id', candidate.id)
-        .eq('user2_id', window.currentUser.id)
-        .eq('status', 'pending');
+        .eq('user_a_id', candidate.id)
+        .eq('user_b_id', window.currentUser.id)
+        .eq('user_a_action', 'like');
     }).then(function(res) {
       if (res.data && res.data.length > 0) {
+        const ts = new Date().toISOString();
         sb.from('matches')
-          .update({ status: 'matched', matched_at: new Date().toISOString() })
-          .or('and(user1_id.eq.' + window.currentUser.id + ',user2_id.eq.' + candidate.id + '),and(user1_id.eq.' + candidate.id + ',user2_id.eq.' + window.currentUser.id + ')')
+          .update({ status: 'matched', matched_at: ts })
+          .eq('user_a_id', window.currentUser.id)
+          .eq('user_b_id', candidate.id);
+        sb.from('matches')
+          .update({ user_b_action: 'like', status: 'matched', matched_at: ts })
+          .eq('user_a_id', candidate.id)
+          .eq('user_b_id', window.currentUser.id)
           .then(function() {
             showMatchModal(candidate);
           });
@@ -251,15 +252,15 @@ function initMatchList() {
 }
 
 function loadMatches() {
-  const sb = window.supabase;
+  const sb = window.sb;
   if (!sb || !window.currentUser) {
     renderMatchList([]);
     return;
   }
 
   sb.from('matches')
-    .select('*, partner:users!user2_id(id, name, avatar_url, dna_type, level, bio)')
-    .eq('user1_id', window.currentUser.id)
+    .select('*, partner:vw_public_profiles!user_b_id(id, name, avatar_url, dna_type, level)')
+    .eq('user_a_id', window.currentUser.id)
     .eq('status', 'matched')
     .order('matched_at', { ascending: false })
     .then(function(res) {
@@ -287,7 +288,7 @@ function renderMatchList(matches) {
     const p = m.partner || {};
     const avatar = p.avatar_url || 'assets/default-avatar.png';
     const dna = p.dna_type || 'strategist';
-    const dnaColor = DNA_COLORS[dna] || '#8b5cf6';
+    const dnaColor = window.DNA_COLORS[dna] || '#8b5cf6';
     let bio = p.bio || '';
     if (bio.length > 50) bio = bio.substring(0, 50) + '...';
 

@@ -186,7 +186,7 @@ async function initProductDetail() {
 
 async function loadProductReviews(productId) {
   const result = await window.sb.from('reviews')
-    .select('*, user:users(id, name, avatar_url)')
+    .select('*, user:vw_public_profiles(id, name, avatar_url)')
     .eq('product_id', productId)
     .order('created_at', { ascending: false })
     .limit(10);

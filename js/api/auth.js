@@ -61,6 +61,59 @@ async function authLogin(email, password) {
   return data;
 }
 
+// ═══ authTelegram ═══
+
+async function waitForSb(timeout) {
+  if (window.sb) return;
+  const start = Date.now();
+  await new Promise(function(resolve, reject) {
+    const interval = setInterval(function() {
+      if (window.sb) { clearInterval(interval); resolve(); }
+      else if (Date.now() - start > timeout) { clearInterval(interval); reject(new Error('Supabase клиент не инициализирован')); }
+    }, 100);
+  });
+}
+
+async function authTelegram() {
+  const tgApp = window.Telegram && window.Telegram.WebApp;
+  if (!tgApp) {
+    throw new Error('Telegram WebApp недоступен');
+  }
+  if (!tgApp.initData) {
+    throw new Error('Telegram initData отсутствует. Откройте приложение через Telegram');
+  }
+
+  const res = await fetch(EDGE_URL + '/auth-telegram', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ initData: tgApp.initData })
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data.error || 'Ошибка авторизации через Telegram');
+  }
+
+  await waitForSb(3000);
+
+  await window.sb.auth.setSession({
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token
+  });
+
+  const { data: profile } = await window.sb
+    .from('users')
+    .select('*')
+    .eq('id', data.user.id)
+    .single();
+
+  const user = profile || data.user;
+  window.setState('currentUser', user);
+  window.setState('session', data.session);
+  window.currentUser = user;
+  if (window.AppEvents) window.AppEvents.emit('user:login', user);
+  return { user: user, session: data.session };
+}
+
 // ═══ authLogout ═══
 
 async function authLogout() {
@@ -125,6 +178,7 @@ async function authCheckSession() {
 
 window.authRegister = authRegister;
 window.authLogin = authLogin;
+window.authTelegram = authTelegram;
 window.authLogout = authLogout;
 window.authCheckSession = authCheckSession;
 window.detectPlatform = detectPlatform;

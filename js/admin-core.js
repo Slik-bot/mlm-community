@@ -151,7 +151,7 @@ async function renderDashboard() {
 
   try {
     const counts = await Promise.all([
-      sb.from('users').select('id', { count: 'exact', head: true }),
+      sb.from('vw_public_profiles').select('id', { count: 'exact', head: true }),
       sb.from('posts').select('id', { count: 'exact', head: true }),
       sb.from('comments').select('id', { count: 'exact', head: true }),
       sb.from('companies').select('id', { count: 'exact', head: true }),
@@ -189,32 +189,30 @@ async function renderDashboard() {
         rd.map(function(r) {
           return '<tr>' +
             '<td><span class="badge badge-red">' + esc(r.target_type) + '</span></td>' +
-            '<td>' + esc(r.reason || '—') + '</td>' +
+            '<td>' + esc(r.reason_category || '—') + '</td>' +
             '<td>' + fmtDate(r.created_at) + '</td>' +
           '</tr>';
         }).join('') +
         '</tbody></table></div>';
 
     // Новые пользователи
-    const users = await sb.from('users').select('name, email, dna_type, plan, created_at')
+    const users = await sb.from('vw_public_profiles').select('name, dna_type, level, created_at')
       .order('created_at', { ascending: false }).limit(5);
     const ud = users.data || [];
 
     document.getElementById('dashUsers').innerHTML = !ud.length
       ? '<div class="empty">Нет пользователей</div>'
       : '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-        '<th>Имя</th><th>Email</th><th>ДНК</th><th>План</th><th>Дата</th>' +
+        '<th>Имя</th><th>ДНК</th><th>Уровень</th><th>Дата</th>' +
         '</tr></thead><tbody>' +
         ud.map(function(u) {
           const dna = u.dna_type
             ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
             : '—';
-          const planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
           return '<tr>' +
             '<td>' + esc(u.name || '—') + '</td>' +
-            '<td>' + esc(u.email || '—') + '</td>' +
             '<td>' + dna + '</td>' +
-            '<td><span class="badge ' + planBadge + '">' + (u.plan || 'free').toUpperCase() + '</span></td>' +
+            '<td>' + (LN[u.level] || u.level || '—') + '</td>' +
             '<td>' + fmtDate(u.created_at) + '</td>' +
           '</tr>';
         }).join('') +
@@ -284,7 +282,7 @@ async function loadUsersTable() {
         ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
         : '—';
 
-      const planBadge = u.plan === 'business' ? 'badge-gold' : u.plan === 'pro' ? 'badge-purple' : 'badge-blue';
+      const planBadge = u.tariff === 'business' ? 'badge-gold' : u.tariff === 'pro' ? 'badge-purple' : 'badge-blue';
 
       const st = u.is_banned
         ? '<span class="badge badge-red">Бан</span>'
@@ -298,8 +296,8 @@ async function loadUsersTable() {
         '<td>' + esc(u.email || '—') + '</td>' +
         '<td>' + dna + '</td>' +
         '<td>' + (LN[u.level] || '—') + '</td>' +
-        '<td>' + (u.xp || 0) + '</td>' +
-        '<td><span class="badge ' + planBadge + '">' + (u.plan || 'free').toUpperCase() + '</span></td>' +
+        '<td>' + (u.xp_total || 0) + '</td>' +
+        '<td><span class="badge ' + planBadge + '">' + (u.tariff || 'free').toUpperCase() + '</span></td>' +
         '<td>' + st + '</td>' +
         '<td class="actions">' +
           '<button class="btn btn-ghost btn-sm" onclick="viewUser(\'' + u.id + '\')">Подробнее</button>' +
@@ -348,11 +346,10 @@ function viewUser(id) {
   const body =
     '<div class="info-row"><div class="info-label">Email</div><div>' + esc(u.email || '—') + '</div></div>' +
     '<div class="info-row"><div class="info-label">ДНК</div><div>' + (DN[u.dna_type] || '—') + '</div></div>' +
-    '<div class="info-row"><div class="info-label">Уровень</div><div>' + (LN[u.level] || '—') + ' (' + (u.xp || 0) + ' XP)</div></div>' +
-    '<div class="info-row"><div class="info-label">Карма</div><div>' + (u.karma || 0) + '</div></div>' +
-    '<div class="info-row"><div class="info-label">План</div><div>' + (u.plan || 'free').toUpperCase() + '</div></div>' +
+    '<div class="info-row"><div class="info-label">Уровень</div><div>' + (LN[u.level] || '—') + ' (' + (u.xp_total || 0) + ' XP)</div></div>' +
+    '<div class="info-row"><div class="info-label">План</div><div>' + (u.tariff || 'free').toUpperCase() + '</div></div>' +
     '<div class="info-row"><div class="info-label">Город</div><div>' + esc(u.city || '—') + '</div></div>' +
-    '<div class="info-row"><div class="info-label">Стрик</div><div>' + (u.streak || 0) + ' дн.</div></div>' +
+    '<div class="info-row"><div class="info-label">Стрик</div><div>' + (u.streak_days || 0) + ' дн.</div></div>' +
     '<div class="info-row"><div class="info-label">Регистрация</div><div>' + fmtDate(u.created_at) + '</div></div>' +
     '<div class="modal-actions">' +
       '<button class="btn ' + (u.is_verified ? 'btn-ghost' : 'btn-success') + '" onclick="toggleVerify(\'' + u.id + '\',' + !u.is_verified + ')">' +
@@ -436,15 +433,7 @@ function openModal(title, html) {
 }
 function closeModal() { document.getElementById('modalOv').classList.remove('show'); }
 
-// ===== TOAST =====
-let _toastTimer = null;
-function showToast(msg, type) {
-  const el = document.getElementById('toastEl');
-  clearTimeout(_toastTimer);
-  el.textContent = msg;
-  el.className = 'toast show toast-' + (type || 'ok');
-  _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
-}
+// ===== TOAST — см. js/utils/format.js =====
 
 // ===== UTILITIES =====
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('ru') : '—'; }

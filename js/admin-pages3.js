@@ -139,7 +139,7 @@ async function loadReferrals() {
   data.forEach(function(ref) { if (ref.referrer_id) ids.push(ref.referrer_id); if (ref.referred_id) ids.push(ref.referred_id); });
   ids = ids.filter(function(v, i, a) { return a.indexOf(v) === i; });
   const nm = {};
-  if (ids.length) { const pr = await sb.from('users').select('id, name').in('id', ids); (pr.data || []).forEach(function(p) { nm[p.id] = p.name; }); }
+  if (ids.length) { const pr = await sb.from('vw_public_profiles').select('id, name').in('id', ids); (pr.data || []).forEach(function(p) { nm[p.id] = p.name; }); }
   const sm = { active: 'badge-green', pending: 'badge-gold', expired: 'badge-red' };
   let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Реферер</th><th>Приглашённый</th><th>Статус</th><th>Комиссия %</th><th>Заработано</th><th>Дата</th>' +

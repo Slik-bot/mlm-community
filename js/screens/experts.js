@@ -50,8 +50,8 @@ function initExperts() {
 }
 
 async function loadExperts() {
-  const result = await window.sb.from('mentors')
-    .select('*, user:users(id, name, avatar_url, dna_type, bio)')
+  const result = await window.sb.from('expert_cards')
+    .select('*, user:vw_public_profiles(id, name, avatar_url, dna_type, bio)')
     .eq('is_active', true)
     .order('rating', { ascending: false });
 
@@ -63,13 +63,13 @@ function applyExpertsFilters() {
   let filtered = allExperts;
 
   if (expertsSpec !== 'all') {
-    filtered = filtered.filter(function(e) { return e.specialization === expertsSpec; });
+    filtered = filtered.filter(function(e) { return e.title === expertsSpec; });
   }
 
   if (expertsSearchQuery) {
     filtered = filtered.filter(function(e) {
       const name = (e.user && e.user.name || '').toLowerCase();
-      const spec = getSpecLabel(e.specialization).toLowerCase();
+      const spec = getSpecLabel(e.title).toLowerCase();
       return name.indexOf(expertsSearchQuery) !== -1 || spec.indexOf(expertsSearchQuery) !== -1;
     });
   }
@@ -80,7 +80,7 @@ function applyExpertsFilters() {
   } else if (expertsSortMethod === 'price_desc') {
     sorted.sort(function(a, b) { return (b.hourly_rate || 0) - (a.hourly_rate || 0); });
   } else if (expertsSortMethod === 'sessions') {
-    sorted.sort(function(a, b) { return (b.sessions_count || 0) - (a.sessions_count || 0); });
+    sorted.sort(function(a, b) { return (b.orders_completed || 0) - (a.orders_completed || 0); });
   } else {
     sorted.sort(function(a, b) { return (b.rating || 0) - (a.rating || 0); });
   }
@@ -106,11 +106,11 @@ function renderExpertsList(experts) {
       '<img class="expert-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
       '<div class="expert-info">' +
         '<div class="expert-name">' + escHtml(user.name || 'Эксперт') + '</div>' +
-        '<div class="expert-spec">' + getSpecLabel(e.specialization) + '</div>' +
+        '<div class="expert-spec">' + getSpecLabel(e.title) + '</div>' +
         '<div class="expert-rating">' +
           '<span class="expert-stars">' + renderStars(e.rating) + '</span>' +
           '<span>' + (e.rating || 0).toFixed(1) + '</span>' +
-          '<span class="expert-sessions-count">' + (e.sessions_count || 0) + ' сессий</span>' +
+          '<span class="expert-sessions-count">' + (e.orders_completed || 0) + ' сессий</span>' +
         '</div>' +
         '<div class="expert-rate">' + formatRate(e.hourly_rate) + '</div>' +
       '</div>' +
@@ -160,7 +160,7 @@ function initExpertDetail() {
   if (nameEl) nameEl.textContent = user.name || 'Эксперт';
 
   const specEl = document.getElementById('edSpec');
-  if (specEl) specEl.textContent = getSpecLabel(currentExpert.specialization);
+  if (specEl) specEl.textContent = getSpecLabel(currentExpert.title);
 
   const starsEl = document.getElementById('edStars');
   if (starsEl) starsEl.innerHTML = renderStars(currentExpert.rating);
@@ -169,13 +169,13 @@ function initExpertDetail() {
   if (ratingEl) ratingEl.textContent = (currentExpert.rating || 0).toFixed(1);
 
   const sessionsEl = document.getElementById('edSessions');
-  if (sessionsEl) sessionsEl.textContent = (currentExpert.sessions_count || 0) + ' сессий';
+  if (sessionsEl) sessionsEl.textContent = (currentExpert.orders_completed || 0) + ' сессий';
 
   const rateEl = document.getElementById('edRate');
   if (rateEl) rateEl.textContent = formatRate(currentExpert.hourly_rate);
 
   const bioEl = document.getElementById('edBio');
-  if (bioEl) bioEl.textContent = currentExpert.bio || user.bio || '';
+  if (bioEl) bioEl.textContent = currentExpert.description || user.bio || '';
 
   const skillsEl = document.getElementById('edSkills');
   if (skillsEl) {
@@ -191,7 +191,7 @@ function initExpertDetail() {
 async function loadExpertReviews() {
   const result = await window.sb.from('reviews')
     .select('*, author:users(name, avatar_url)')
-    .eq('target_type', 'mentor')
+    .eq('target_type', 'expert')
     .eq('target_id', currentExpert.id)
     .order('created_at', { ascending: false })
     .limit(10);
@@ -229,11 +229,11 @@ async function expertBook() {
   const btn = document.getElementById('edBookBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
 
-  await window.sb.from('mentor_sessions').insert({
+  await window.sb.from('mentorships').insert({
     mentor_id: currentExpert.id,
-    client_id: window.currentUser.id,
+    mentee_id: window.currentUser.id,
     status: 'pending',
-    rate: currentExpert.hourly_rate
+    price: currentExpert.hourly_rate
   });
 
   if (window.showToast) showToast('Заявка отправлена! Эксперт свяжется с вами');
@@ -273,10 +273,10 @@ async function expertRegister() {
   }
   if (!window.currentUser) return;
 
-  await window.sb.from('mentors').insert({
+  await window.sb.from('expert_cards').insert({
     user_id: window.currentUser.id,
-    specialization: spec ? spec.value : 'other',
-    bio: bioVal,
+    title: spec ? spec.value : 'other',
+    description: bioVal,
     skills: skillsArr,
     hourly_rate: rateVal * 100,
     is_active: false

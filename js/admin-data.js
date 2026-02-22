@@ -7,18 +7,17 @@ const PER_PAGE = 20;
 
 async function loadUsers(page, search, dna, plan) {
   try {
-    let query = sb.from('users').select('*', { count: 'exact' });
-
-    if (search) query = query.ilike('name', '%' + search + '%');
-    if (dna) query = query.eq('dna_type', dna);
-    if (plan) query = query.eq('plan', plan);
-
-    query = query.order('created_at', { ascending: false });
-    query = query.range((page - 1) * PER_PAGE, page * PER_PAGE - 1);
-
-    const result = await query;
+    const result = await sb.rpc('admin_get_users', {
+      tariff_filter: plan || null,
+      search_filter: search || null,
+      dna_filter: dna || null,
+      page_num: page || 1,
+      page_size: PER_PAGE
+    });
     if (result.error) throw result.error;
-    return { data: result.data || [], count: result.count || 0 };
+    const rows = result.data || [];
+    const count = rows.length > 0 ? rows[0].total_count : 0;
+    return { data: rows, count: count };
   } catch (err) {
     console.error('loadUsers error:', err);
     showToast('Ошибка загрузки пользователей', 'err');
@@ -52,14 +51,15 @@ async function logXpChange(userId, amount) {
     await sb.from('transactions').insert({
       user_id: userId,
       amount: amount,
-      action_type: 'admin_adjust',
-      type: 'xp_conversion',
+      xp_amount: amount,
+      type: 'deposit',
       balance_after: 0,
-      xp_after: 0
+      xp_after: 0,
+      description: 'admin_adjust'
     });
 
     // Получаем текущий XP
-    const p = await sb.from('users').select('xp_total').eq('id', userId).single();
+    const p = await sb.from('vw_public_profiles').select('xp_total').eq('id', userId).single();
     if (!p.data) return;
 
     const newXp = Math.max(0, (p.data.xp_total || 0) + amount);
@@ -102,7 +102,7 @@ async function loadPosts(page) {
       const txt = (p.content || '').substring(0, 50);
       const vis = p.is_published !== false;
       h += '<tr><td>' + esc(author) + '</td><td>' + esc(txt) + '</td>' +
-        '<td><span class="badge badge-blue">' + esc(p.post_type || '—') + '</span></td>' +
+        '<td><span class="badge badge-blue">' + esc(p.type || '—') + '</span></td>' +
         '<td>' + (p.likes_count || 0) + '</td><td>' + (p.comments_count || 0) + '</td>' +
         '<td>' + (p.views_count || 0) + '</td><td>' + fmtDate(p.created_at) + '</td>' +
         '<td class="actions">' +
@@ -205,7 +205,7 @@ async function loadCases(page) {
     const area = document.getElementById('contentArea');
     area.innerHTML = 'Загрузка...';
     const r = await sb.from('posts').select('*, users(name)', { count: 'exact' })
-      .eq('post_type', 'case')
+      .eq('type', 'case')
       .order('created_at', { ascending: false })
       .range((_casesPage - 1) * PER_PAGE, _casesPage * PER_PAGE - 1);
     if (r.error) throw r.error;
@@ -218,7 +218,7 @@ async function loadCases(page) {
       const author = s.users ? s.users.name : '—';
       const txt = (s.content || '').substring(0, 50);
       h += '<tr><td>' + esc(author) + '</td>' +
-        '<td><span class="badge badge-blue">' + esc(s.post_type || '—') + '</span></td>' +
+        '<td><span class="badge badge-blue">' + esc(s.type || '—') + '</span></td>' +
         '<td>' + esc(txt) + '</td><td>' + (s.views_count || 0) + '</td>' +
         '<td>' + fmtDate(s.created_at) + '</td>' +
         '<td class="actions">' +
@@ -287,7 +287,7 @@ async function loadReports(statusFilter) {
         : '';
       h += '<tr><td>' + esc(reporter) + '</td>' +
         '<td><span class="badge badge-blue">' + esc(rep.target_type || '—') + '</span></td>' +
-        '<td>' + esc(rep.reason || '—') + '</td>' +
+        '<td>' + esc(rep.reason_category || '—') + '</td>' +
         '<td><span class="badge ' + badge + '">' + esc(rep.status || '—') + '</span></td>' +
         '<td>' + fmtDate(rep.created_at) + '</td>' +
         '<td class="actions">' + acts + '</td></tr>';
@@ -304,7 +304,7 @@ async function loadReports(statusFilter) {
 async function resolveReport(id, action) {
   try {
     const r = await sb.from('reports').update({
-      status: action, resolved_by: adminUser.id, resolved_at: new Date().toISOString()
+      status: action, reviewed_by: adminUser.id, reviewed_at: new Date().toISOString()
     }).eq('id', id);
     if (r.error) throw r.error;
     showToast(action === 'resolved' ? 'Жалоба решена' : 'Жалоба отклонена', 'ok');

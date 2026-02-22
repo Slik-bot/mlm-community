@@ -5,15 +5,14 @@ let allContests = [];
 let contestTab = 'active';
 let contestTimerInterval = null;
 
-const CONTEST_TYPES = {
-  sales:     { label: 'Продажи',    color: '#22c55e' },
-  referrals: { label: 'Рефералы',   color: '#8b5cf6' },
-  activity:  { label: 'Активность', color: '#f59e0b' },
-  content:   { label: 'Контент',    color: '#3b82f6' }
+const CONTEST_CATEGORIES = {
+  bronze: { label: 'Бронза', color: '#b45309' },
+  silver: { label: 'Серебро', color: '#94a3b8' },
+  gold:   { label: 'Золото', color: '#fbbf24' }
 };
 
-function getContestTypeLabel(type) {
-  return CONTEST_TYPES[type] || { label: type, color: 'rgba(255,255,255,0.3)' };
+function getContestCategoryLabel(category) {
+  return CONTEST_CATEGORIES[category] || { label: category, color: 'rgba(255,255,255,0.3)' };
 }
 
 function formatDate(dateStr) {
@@ -32,7 +31,7 @@ function initContests() {
 
 async function loadContests() {
   const result = await window.sb.from('contests')
-    .select('*, participants:contest_participants(user_id)')
+    .select('*, entries:contest_entries(user_id)')
     .order('starts_at', { ascending: false });
 
   allContests = result.data || [];
@@ -62,8 +61,8 @@ function renderContestsList(contests) {
   if (empty) empty.classList.add('hidden');
 
   list.innerHTML = contests.map(function(c) {
-    const ct = getContestTypeLabel(c.type);
-    const pCount = c.participants ? c.participants.length : 0;
+    const ct = getContestCategoryLabel(c.category);
+    const eCount = c.entries ? c.entries.length : 0;
     const prize = c.prize_pool ? c.prize_pool.toLocaleString('ru-RU') + ' P' : '';
 
     return '<div class="contest-card glass-card" onclick="openContest(\'' + c.id + '\')">' +
@@ -72,7 +71,7 @@ function renderContestsList(contests) {
       '<div class="contest-card-dates">' + formatDate(c.starts_at) + ' — ' + formatDate(c.ends_at) + '</div>' +
       '<div class="contest-card-footer">' +
         (prize ? '<span class="contest-prize">' + prize + '</span>' : '<span></span>') +
-        '<span class="contest-participants">' + pCount + ' участников</span>' +
+        '<span class="contest-participants">' + eCount + ' участников</span>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -101,7 +100,7 @@ function openContest(contestId) {
 function initContestDetail() {
   if (!currentContest) { goBack(); return; }
 
-  const ct = getContestTypeLabel(currentContest.type);
+  const ct = getContestCategoryLabel(currentContest.category);
   const badge = document.getElementById('cdTypeBadge');
   if (badge) {
     badge.textContent = ct.label;
@@ -124,27 +123,22 @@ function initContestDetail() {
     if (timer) timer.innerHTML = '<div class="cd-finished-label">Завершён</div>';
   }
 
-  renderPrizes();
+  renderPrizePool();
   loadContestLeaderboard();
   loadMyPosition();
 }
 
-function renderPrizes() {
+function renderPrizePool() {
   const el = document.getElementById('cdPrizes');
-  if (!el || !currentContest.prizes) { if (el) el.innerHTML = ''; return; }
+  if (!el || !currentContest.prize_pool) { if (el) el.innerHTML = ''; return; }
 
-  const colors = ['#fbbf24', '#94a3b8', '#b45309'];
-  const bgColors = ['rgba(251,191,36,0.2)', 'rgba(148,163,184,0.2)', 'rgba(180,83,9,0.2)'];
-
-  el.innerHTML = currentContest.prizes.map(function(p, i) {
-    const c = colors[i] || 'rgba(255,255,255,0.5)';
-    const bg = bgColors[i] || 'rgba(255,255,255,0.08)';
-    return '<div class="prize-row glass-card">' +
-      '<div class="prize-place" style="background:' + bg + ';color:' + c + '">#' + (i + 1) + '</div>' +
-      '<span class="prize-label">' + escHtml(p.label || 'Место ' + (i + 1)) + '</span>' +
-      '<span class="prize-amount">' + (p.amount ? p.amount.toLocaleString('ru-RU') + ' P' : '') + '</span>' +
-    '</div>';
-  }).join('');
+  el.innerHTML = '<div class="prize-row glass-card">' +
+    '<div class="prize-place" style="background:rgba(251,191,36,0.2);color:#fbbf24">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' +
+    '</div>' +
+    '<span class="prize-label">Призовой фонд</span>' +
+    '<span class="prize-amount">' + currentContest.prize_pool.toLocaleString('ru-RU') + ' P</span>' +
+  '</div>';
 }
 
 function startContestTimer(endsAt) {
@@ -174,28 +168,28 @@ function startContestTimer(endsAt) {
 }
 
 async function loadContestLeaderboard() {
-  const result = await window.sb.from('contest_participants')
-    .select('*, user:users(id, name, avatar_url, level)')
+  const result = await window.sb.from('contest_entries')
+    .select('*, user:vw_public_profiles(id, name, avatar_url, level)')
     .eq('contest_id', currentContest.id)
-    .order('score', { ascending: false })
+    .order('ticket_number', { ascending: true })
     .limit(20);
 
   renderLeaderboard(result.data || []);
 }
 
-function renderLeaderboard(participants) {
+function renderLeaderboard(entries) {
   const el = document.getElementById('cdLeaderboard');
   if (!el) return;
 
-  if (!participants.length) {
+  if (!entries.length) {
     el.innerHTML = '<div class="lb-empty">Пока нет участников</div>';
     return;
   }
 
   const myId = window.currentUser ? window.currentUser.id : null;
 
-  el.innerHTML = participants.map(function(p, i) {
-    const user = p.user || {};
+  el.innerHTML = entries.map(function(e, i) {
+    const user = e.user || {};
     const isMe = user.id === myId;
     const meClass = isMe ? ' lb-me' : '';
     const place = i + 1;
@@ -206,7 +200,7 @@ function renderLeaderboard(participants) {
       '<span class="lb-place" style="color:' + placeColor + '">' + place + '</span>' +
       '<img class="lb-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
       '<span class="lb-name">' + escHtml(user.name || 'Участник') + '</span>' +
-      '<span class="lb-score">' + (p.score || 0) + '</span>' +
+      '<span class="lb-score">#' + (e.ticket_number || 0) + '</span>' +
     '</div>';
   }).join('');
 }
@@ -216,8 +210,8 @@ async function loadMyPosition() {
   const joinWrap = document.getElementById('cdJoinWrap');
   if (!window.currentUser || !currentContest) return;
 
-  const result = await window.sb.from('contest_participants')
-    .select('score')
+  const result = await window.sb.from('contest_entries')
+    .select('ticket_number')
     .eq('contest_id', currentContest.id)
     .eq('user_id', window.currentUser.id)
     .maybeSingle();
@@ -225,7 +219,7 @@ async function loadMyPosition() {
   if (result.data) {
     if (posEl) {
       posEl.classList.remove('hidden');
-      posEl.textContent = 'Вы участвуете. Счёт: ' + (result.data.score || 0);
+      posEl.textContent = 'Вы участвуете. Билет #' + (result.data.ticket_number || 0);
     }
     if (joinWrap) joinWrap.classList.add('hidden');
   } else {
@@ -242,10 +236,12 @@ async function contestJoin() {
   const btn = document.getElementById('cdJoinBtn');
   if (btn) btn.disabled = true;
 
-  await window.sb.from('contest_participants').insert({
+  const ticketNum = (currentContest.entries_count || 0) + 1;
+
+  await window.sb.from('contest_entries').insert({
     contest_id: currentContest.id,
     user_id: window.currentUser.id,
-    score: 0
+    ticket_number: ticketNum
   });
 
   if (window.showToast) showToast('Вы участвуете в конкурсе!');

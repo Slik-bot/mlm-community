@@ -16,7 +16,7 @@ function initTelegram() {
 
 // Определение платформы
 function getPlatform() {
-  if (tg?.initData) return 'telegram';
+  if (tg) return 'telegram';
   if (window.Capacitor?.isNativePlatform()) return 'native';
   return 'web';
 }

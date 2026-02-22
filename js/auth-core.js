@@ -229,13 +229,34 @@
 
     // ===== Патчим кнопки OAuth (Telegram, Google, Apple) =====
     document.querySelectorAll('.lnd-btn-tg, .lnd-btn-gl').forEach(function(btn) {
-      btn.onclick = function(e) {
+      btn.onclick = async function(e) {
         e.preventDefault();
         e.stopPropagation();
 
         const text = btn.textContent.trim();
         if (text.includes('Telegram')) {
-          showToast('Вход через Telegram скоро будет доступен');
+          btn.disabled = true;
+          try {
+            const result = await authTelegram();
+            if (window.haptic) haptic('success');
+            closeLndModals();
+            showApp();
+            const user = result.user || {};
+            if (!user.dna_type) {
+              await goTo('scrDnaTest');
+              if (window.dnaReset) window.dnaReset();
+            } else if (!user.level) {
+              goTo('scrSetup1');
+            } else {
+              localStorage.setItem('onboardingDone', 'true');
+              goTo('scrFeed');
+              if (window.initFeedFromDB) initFeedFromDB();
+            }
+          } catch (err) {
+            if (window.haptic) haptic('error');
+            showToast(err.message || 'Ошибка входа через Telegram');
+          }
+          btn.disabled = false;
         } else {
           showToast('Скоро будет доступен');
         }
@@ -246,6 +267,52 @@
   // Экспорт для router.js (динамическая загрузка landing)
   window.initLandingModals = initAuthHandlers;
 
+  // ===== Routing после успешной авторизации =====
+  async function routeAfterAuth(profile) {
+    clearTimeout(_fallbackTimer);
+    if (window._authRoutingDone) return;
+    window._authRoutingDone = true;
+
+    if (profile) {
+      const onboardingDone = localStorage.getItem('onboardingDone');
+      const localDna = localStorage.getItem('dnaType');
+
+      if (profile.name) localStorage.setItem('userName', profile.name);
+
+      const hasDna = profile.dna_type || localDna;
+      const hasName = profile.name && profile.name !== 'Участник';
+
+      if (onboardingDone) {
+        if (profile.dna_type) {
+          const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
+          localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
+        }
+        await switchScreenInstant('scrFeed');
+        showApp();
+        if (window.initFeedFromDB) initFeedFromDB();
+      } else if (hasDna && hasName) {
+        localStorage.setItem('onboardingDone', 'true');
+        if (profile.dna_type) {
+          const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
+          localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
+        }
+        await switchScreenInstant('scrFeed');
+        showApp();
+        if (window.initFeedFromDB) initFeedFromDB();
+      } else if (hasDna && !hasName) {
+        await switchScreenInstant('scrSetup1');
+        showApp();
+      } else {
+        await switchScreenInstant('scrWelcome');
+        showApp();
+      }
+    } else {
+      await switchScreenInstant('scrLanding');
+      if (window.initLandingModals) window.initLandingModals();
+      showApp();
+    }
+  }
+
   // ===== Ждём загрузки DOM =====
   window.addEventListener('DOMContentLoaded', async function() {
 
@@ -255,55 +322,29 @@
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
 
-    // ===== АВТОЛОГИН при загрузке =====
-    authCheckSession().then(async function(profile) {
-      clearTimeout(_fallbackTimer);
-      if (window._authRoutingDone) return;
-      window._authRoutingDone = true;
-
-      if (profile) {
-        const onboardingDone = localStorage.getItem('onboardingDone');
-        const localDna = localStorage.getItem('dnaType');
-        const localName = localStorage.getItem('userName');
-
-        // Синхронизируем имя
-        if (profile.name) localStorage.setItem('userName', profile.name);
-
-        const hasDna = profile.dna_type || localDna;
-        const hasName = profile.name && profile.name !== 'Участник';
-
-        // onboardingDone — главный приоритет, проверяем ПЕРВЫМ
-        if (onboardingDone) {
-          if (profile.dna_type) {
-            const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
-            localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
-          }
-          await switchScreenInstant('scrFeed');
-          showApp();
-          if (window.initFeedFromDB) initFeedFromDB();
-        } else if (hasDna && hasName) {
-          localStorage.setItem('onboardingDone', 'true');
-          if (profile.dna_type) {
-            const revMap2 = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
-            localStorage.setItem('dnaType', revMap2[profile.dna_type] || localDna || 'S');
-          }
-          await switchScreenInstant('scrFeed');
-          showApp();
-          if (window.initFeedFromDB) initFeedFromDB();
-        } else if (hasDna && !hasName) {
-          await switchScreenInstant('scrSetup1');
-          showApp();
-        } else {
-          await switchScreenInstant('scrWelcome');
-          showApp();
+    // ===== Telegram Mini App — автовход без участия пользователя =====
+    if (window.isTelegram && isTelegram()) {
+      try {
+        const result = await authTelegram();
+        await routeAfterAuth(result.user);
+      } catch (err) {
+        console.error('Telegram auto-login error:', err);
+        if (window.showToast) showToast('Ошибка автовхода. Попробуйте войти вручную');
+        try {
+          const profile = await authCheckSession();
+          await routeAfterAuth(profile);
+        } catch (e) {
+          console.error('Session fallback error:', e);
         }
-
-      } else {
-        await switchScreenInstant('scrLanding');
-        if (window.initLandingModals) window.initLandingModals();
-        showApp();
       }
-    });
+    }
+
+    // ===== АВТОЛОГИН при загрузке =====
+    if (!window._authRoutingDone) {
+      authCheckSession().then(async function(profile) {
+        await routeAfterAuth(profile);
+      });
+    }
 
     // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
 
