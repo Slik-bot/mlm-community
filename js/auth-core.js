@@ -255,7 +255,7 @@
             }
           } catch (err) {
             if (window.haptic) haptic('error');
-            alert(err.message || 'Ошибка входа через Telegram');
+            alert('ERROR: ' + err.message + ' | stack: ' + (err.stack || 'no stack'));
           }
           btn.disabled = false;
         } else {
