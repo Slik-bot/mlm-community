@@ -258,6 +258,15 @@ function initProfileSettings() {
   const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
+  // Push toggle: скрыть если не поддерживается
+  const pushRow = document.getElementById('pushToggleRow');
+  if (pushRow) {
+    pushRow.style.display = window.isPushSupported && window.isPushSupported() ? '' : 'none';
+  }
+
+  // Инициализировать состояние push toggle
+  if (window.initPush) window.initPush();
+
   window.sb.from('user_settings').select('*').eq('user_id', user.id).single().then(function(result) {
     const settings = result.data || {};
     setToggleState('toggleMoney', settings.push_money !== false);
@@ -289,6 +298,20 @@ async function profileToggleSetting(key, el) {
   await window.sb.from('user_settings').update(update).eq('user_id', user.id);
 }
 
+// ===== togglePushNotifications =====
+
+async function togglePushNotifications(el) {
+  const isActive = el.classList.contains('active');
+
+  if (isActive) {
+    const ok = await window.unsubscribeFromPush();
+    if (ok) el.classList.remove('active');
+  } else {
+    const ok = await window.subscribeToPush();
+    if (ok) el.classList.add('active');
+  }
+}
+
 // ===== Экспорт =====
 
 window.initProfile = initProfile;
@@ -297,3 +320,4 @@ window.initProfileSettings = initProfileSettings;
 window.profileSaveEdit = profileSaveEdit;
 window.profilePickAvatar = profilePickAvatar;
 window.profileToggleSetting = profileToggleSetting;
+window.togglePushNotifications = togglePushNotifications;

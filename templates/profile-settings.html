@@ -10,6 +10,12 @@
 
   <div class="settings-section">
     <div class="settings-title">Уведомления</div>
+    <div class="settings-row" id="pushToggleRow">
+      <span class="settings-label">Push-уведомления</span>
+      <div class="toggle" id="togglePush" onclick="togglePushNotifications(this)">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
     <div class="settings-row">
       <span class="settings-label">Деньги и начисления</span>
       <div class="toggle" id="toggleMoney" onclick="profileToggleSetting('push_money', this)">
