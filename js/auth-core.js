@@ -237,7 +237,6 @@
         if (text.includes('Telegram')) {
           btn.disabled = true;
           try {
-            console.error('BTN CLICK - isTelegram:', typeof isTelegram !== 'undefined' ? isTelegram() : 'not defined', 'initData:', window.Telegram?.WebApp?.initData?.length || 0);
             const result = await authTelegram();
             if (window.haptic) haptic('success');
             closeLndModals();
@@ -255,7 +254,7 @@
             }
           } catch (err) {
             if (window.haptic) haptic('error');
-            alert('ERROR: ' + err.message + ' | stack: ' + (err.stack || 'no stack'));
+            showToast(err.message || 'Ошибка входа через Telegram');
           }
           btn.disabled = false;
         } else {

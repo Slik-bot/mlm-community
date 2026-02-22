@@ -1,6 +1,7 @@
 // ═══ Auth API — регистрация, вход, сессия (БД v5.1) ═══
 
 const EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
+const SUPABASE_ANON_KEY = 'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4';
 
 // ═══ detectPlatform ═══
 
@@ -85,12 +86,15 @@ async function authTelegram() {
 
   const res = await fetch(EDGE_URL + '/auth-telegram', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'apikey': SUPABASE_ANON_KEY
+    },
     body: JSON.stringify({ initData: tgApp.initData })
   });
   const data = await res.json();
   if (!res.ok || data.error) {
-    alert('SERVER ERROR: ' + JSON.stringify(data));
     throw new Error(data.error || 'Ошибка авторизации через Telegram');
   }
 
