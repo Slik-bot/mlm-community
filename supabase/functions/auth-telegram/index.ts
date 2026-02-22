@@ -197,7 +197,7 @@ serve(async (req) => {
       id: userId,
       telegram_id: telegramId,
       name: fullName,
-      username,
+      telegram_username: username,
       avatar_url: photoUrl,
       auth_provider: "telegram",
       supabase_auth_id: userId,

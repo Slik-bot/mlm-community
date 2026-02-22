@@ -119,7 +119,6 @@
 
   // ===== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ МОДАЛОК =====
   function initAuthHandlers() {
-    alert('initAuthHandlers called, buttons found: ' + document.querySelectorAll('.lnd-btn-tg').length);
     // ===== Патчим кнопку РЕГИСТРАЦИИ =====
     const reg = getRegisterInputs();
     if (reg && reg.submit) {
@@ -231,9 +230,6 @@
     // ===== Патчим кнопки OAuth (Telegram, Google, Apple) =====
     document.querySelectorAll('.lnd-btn-tg, .lnd-btn-gl').forEach(function(btn) {
       btn.onclick = async function(e) {
-        alert('TG button clicked');
-        alert('step1: isTelegram=' + (typeof isTelegram !== 'undefined'));
-        alert('step2: initData=' + (window.Telegram?.WebApp?.initData?.length || 0));
         e.preventDefault();
         e.stopPropagation();
 
@@ -241,7 +237,6 @@
         if (text.includes('Telegram')) {
           btn.disabled = true;
           try {
-            alert('step3: calling authTelegram');
             const result = await authTelegram();
             if (window.haptic) haptic('success');
             closeLndModals();
@@ -259,7 +254,7 @@
             }
           } catch (err) {
             if (window.haptic) haptic('error');
-            alert('CATCH: ' + err.message);
+            showToast(err.message || 'Ошибка входа через Telegram');
           }
           btn.disabled = false;
         } else {
