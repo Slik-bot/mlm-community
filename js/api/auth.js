@@ -76,12 +76,9 @@ async function waitForSb(timeout) {
 }
 
 async function authTelegram() {
-  const tgApp = window.Telegram && window.Telegram.WebApp;
-  if (!tgApp) {
-    throw new Error('Telegram WebApp недоступен');
-  }
-  if (!tgApp.initData) {
-    throw new Error('Telegram initData отсутствует. Откройте приложение через Telegram');
+  const tgApp = window.Telegram?.WebApp;
+  if (!tgApp || !tgApp.initData) {
+    throw new Error('Для входа через Telegram откройте приложение в Telegram');
   }
 
   const res = await fetch(EDGE_URL + '/auth-telegram', {
