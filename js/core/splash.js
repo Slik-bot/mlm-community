@@ -118,7 +118,7 @@ window.initSplash = function(callback) {
   }
 
   // Защитный таймаут — если что-то пошло не так
-  const safetyTimer = setTimeout(finish, 7000);
+  const safetyTimer = setTimeout(finish, 15000);
 
   // —— ANIMATE — 5 секунд ——
   // Тайминги:
@@ -157,8 +157,8 @@ window.initSplash = function(callback) {
       // Буквы (1.5-4s)
       if (elapsed >= 1.5) {
         letterEls.forEach((el, i) => {
-          const s = 1.5 + i * 0.18;
-          const e = s + 0.9;
+          const s = 1.5 + i * 0.45;
+          const e = s + 1.8;
           const p = easeOut4(clamp((elapsed - s) / (e - s)));
           el.style.opacity = p;
           el.style.transform = `scale(${lerp(3, 1, p)}) translateY(${lerp(-30, 0, p)}px)`;
@@ -167,28 +167,28 @@ window.initSplash = function(callback) {
       }
 
       // Линия (3.6-5.6s)
-      if (elapsed >= 3.6 && elapsed < 5.6) {
-        const p = easeOut3(clamp((elapsed - 3.6) / 2));
+      if (elapsed >= 6.5 && elapsed < 9.0) {
+        const p = easeOut3(clamp((elapsed - 6.5) / 2));
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${p * letterWidthCache}px`;
         underlineEl.style.opacity = '1';
-      } else if (elapsed >= 5.6) {
+      } else if (elapsed >= 9.0) {
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${letterWidthCache}px`;
       }
 
       // Подпись (4.2-5.5s)
-      if (elapsed >= 4.2 && elapsed < 5.5) {
-        const p = easeOut3(clamp((elapsed - 4.2) / 1.3));
+      if (elapsed >= 9.0 && elapsed < 11.0) {
+        const p = easeOut3(clamp((elapsed - 9.0) / 2.0));
         subEl.style.color = `rgba(255,255,255,${p * 0.38})`;
         subEl.style.clipPath = `inset(0 ${(1-p)*100}% 0 0)`;
-      } else if (elapsed >= 5.5) {
+      } else if (elapsed >= 11.0) {
         subEl.style.color = 'rgba(255,255,255,0.38)';
         subEl.style.clipPath = 'inset(0 0% 0 0)';
       }
 
       // Конец на 5s
-      if (elapsed >= 5) {
+      if (elapsed >= 12) {
         clearTimeout(safetyTimer);
         finish();
         return;
