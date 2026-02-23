@@ -16,12 +16,13 @@ function initTelegram() {
 
 // Определение платформы
 function getPlatform() {
-  if (tg) return 'telegram';
+  // Telegram Mini App: объект существует И initData непустой
+  if (tg && tg.initData && tg.initData.length > 0) return 'telegram_mini_app';
   if (window.Capacitor?.isNativePlatform()) return 'native';
   return 'web';
 }
 
-function isTelegram() { return getPlatform() === 'telegram'; }
+function isTelegram() { return getPlatform() === 'telegram_mini_app'; }
 
 // Haptic feedback
 function haptic(type) {
