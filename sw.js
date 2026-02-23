@@ -1,18 +1,34 @@
-const CACHE_NAME = 'mlm-v2';
+const CACHE_NAME = 'mlm-v3';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/admin.html',
+  '/css/splash.css',
   '/css/base.css',
-  '/css/feed.css',
+  '/css/platform.css',
   '/css/landing.css',
-  '/css/onboarding.css',
+  '/css/feed.css',
   '/css/dna.css',
+  '/css/onboarding.css',
+  '/css/lightbox.css',
   '/css/profile.css',
   '/css/chat.css',
+  '/css/deals.css',
   '/css/shop.css',
   '/css/forum.css',
+  '/css/tasks.css',
+  '/css/contests.css',
+  '/css/experts.css',
+  '/css/match.css',
+  '/css/academy.css',
+  '/css/webinars.css',
+  '/css/alliances.css',
+  '/css/more.css',
+  '/css/wallet.css',
+  '/css/notifications.css',
+  '/css/quest.css',
+  '/css/admin.css',
   '/assets/logo.png'
 ];
 
