@@ -71,9 +71,9 @@ function drawGrid(ctx, grid, now, elapsed) {
   ctx.clearRect(0, 0, w, h);
 
   let alpha = 1;
-  if (elapsed > 6 && elapsed <= 9) {
-    alpha = 1 - 0.97 * ((elapsed - 6) / 3);
-  } else if (elapsed > 9) {
+  if (elapsed > 1 && elapsed <= 2.5) {
+    alpha = 1 - 0.97 * ((elapsed - 1) / 1.5);
+  } else if (elapsed > 2.5) {
     alpha = 0.03;
   }
 
@@ -99,12 +99,12 @@ function drawGrid(ctx, grid, now, elapsed) {
 
 function updateLetters(letters, elapsed) {
   for (let i = 0; i < letters.length; i++) {
-    const t0 = 7 + i * 0.38;
+    const t0 = 1.5 + i * 0.18;
     const el = letters[i];
     if (elapsed < t0) {
       el.style.opacity = '0';
-    } else if (elapsed < t0 + 1.6) {
-      const p = (elapsed - t0) / 1.6;
+    } else if (elapsed < t0 + 0.9) {
+      const p = (elapsed - t0) / 0.9;
       const e = 1 - Math.pow(1 - p, 4);
       el.style.opacity = String(e);
       el.style.transform = 'scale(' + (3 - 2 * e) + ')';
@@ -118,15 +118,15 @@ function updateLetters(letters, elapsed) {
 }
 
 function updateLine(line, elapsed) {
-  if (elapsed < 11.8) return;
-  const t = Math.min((elapsed - 11.8) / 2, 1);
+  if (elapsed < 3.8) return;
+  const t = Math.min((elapsed - 3.8) / 2, 1);
   line.style.transform = 'scaleX(' + t + ')';
   line.style.opacity = '1';
 }
 
 function updateSubtitle(sub, elapsed) {
-  if (elapsed < 13) return;
-  const t = Math.min((elapsed - 13) / 2.5, 1);
+  if (elapsed < 4.3) return;
+  const t = Math.min((elapsed - 4.3) / 2.5, 1);
   sub.style.clipPath = 'inset(0 ' + ((1 - t) * 100) + '% 0 0)';
   sub.style.opacity = '1';
 }
@@ -154,13 +154,13 @@ window.initSplash = function(callback) {
 
   function tick(now) {
     const elapsed = (now - startTime) / 1000;
-    if (elapsed >= 21) return;
+    if (elapsed >= 6) return;
     animId = requestAnimationFrame(tick);
     drawGrid(dom.ctx, grid, now, elapsed);
     updateLetters(dom.letters, elapsed);
     updateLine(dom.line, elapsed);
     updateSubtitle(dom.sub, elapsed);
-    if (elapsed >= 20) splash.classList.add('done');
+    if (elapsed >= 5) splash.classList.add('done');
   }
 
   animId = requestAnimationFrame(tick);
@@ -170,7 +170,7 @@ window.initSplash = function(callback) {
     window.removeEventListener('resize', onResize);
     splash.remove();
     if (callback) callback();
-  }, 21000);
+  }, 6000);
 };
 
 })();
