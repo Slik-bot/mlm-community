@@ -117,8 +117,9 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
   }
 }
 
-/* Telegram Mini App — safe area fix */
-#app, .screen, .page {
-  padding-top: max(16px, env(safe-area-inset-top));
+/* Safe area for Telegram iPhone */
+.scr,
+.hdr {
+  padding-top: calc(var(--tg-safe-top) + 16px) !important;
   box-sizing: border-box;
 }
