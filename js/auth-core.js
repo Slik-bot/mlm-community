@@ -17,7 +17,7 @@
     if (ph) ph.remove();
   }
 
-  // Страховка: 8 секунд максимум
+  // Страховка: 16 секунд максимум (splash = 14с + запас 2с)
   const _fallbackTimer = setTimeout(async function() {
     const ph = document.getElementById('preload-hide');
     if (ph) {
@@ -26,7 +26,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 8000);
+  }, 16000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {
