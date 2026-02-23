@@ -407,11 +407,13 @@
   // ===== Выход из аккаунта =====
   window.doAppLogout = async function() {
     const savedEmail = localStorage.getItem('mlm_saved_email');
+    const questShown = localStorage.getItem('quest_shown_permanent');
     try {
       await authLogout();
     } catch (e) {}
     localStorage.clear();
     if (savedEmail) localStorage.setItem('mlm_saved_email', savedEmail);
+    if (questShown) localStorage.setItem('quest_shown_permanent', questShown);
     sessionStorage.setItem('manually_logged_out', '1');
     location.reload();
   };
