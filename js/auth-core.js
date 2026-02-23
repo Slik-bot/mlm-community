@@ -303,8 +303,8 @@
           const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
-        if (!profile.quest_completed && !sessionStorage.getItem('quest_shown')) {
-          sessionStorage.setItem('quest_shown', '1');
+        if (!profile.quest_completed && !localStorage.getItem('quest_shown_permanent')) {
+          localStorage.setItem('quest_shown_permanent', '1');
           await switchScreenInstant('scrQuest');
           showApp();
         } else {
@@ -318,8 +318,8 @@
           const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
-        if (!profile.quest_completed && !sessionStorage.getItem('quest_shown')) {
-          sessionStorage.setItem('quest_shown', '1');
+        if (!profile.quest_completed && !localStorage.getItem('quest_shown_permanent')) {
+          localStorage.setItem('quest_shown_permanent', '1');
           await switchScreenInstant('scrQuest');
           showApp();
         } else {
