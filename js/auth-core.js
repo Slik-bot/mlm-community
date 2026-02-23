@@ -26,7 +26,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 8000);
+  }, 12000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {
