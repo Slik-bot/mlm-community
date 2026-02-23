@@ -3,7 +3,7 @@
 if (!window._sbClient) {
   window._sbClient = supabase.createClient(
     'https://tydavmiamwdrfjbcgwny.supabase.co',
-    'sb_publishable_OBX-vskypeogQyJlViaqpQ_9kI1mDY4',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGF2bWlhbXdkcmZqYmNnd255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTUxNTUsImV4cCI6MjA4MzQzMTE1NX0.Wyhhvdy-EnzazbFywr5Nk3d0F3JknWVXz1Sgvz3x67g',
     {
       auth: {
         persistSession: true,
