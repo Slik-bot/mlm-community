@@ -346,54 +346,67 @@
     // Новые модули v5.1
     if (window.detectPlatform) detectPlatform();
 
-    // ===== Telegram Mini App — показываем лендинг, если нет сессии =====
-    if (window.isTelegram && isTelegram()) {
-      if (sessionStorage.getItem('manually_logged_out')) {
-        await routeAfterAuth(null);
-      } else {
-        try {
-          const profile = await authCheckSession();
-          if (profile) {
-            await routeAfterAuth(profile);
-          } else {
+    async function runAppInit() {
+      window._authRoutingDone = false;
+
+      // ===== Telegram Mini App — показываем лендинг, если нет сессии =====
+      if (window.isTelegram && isTelegram()) {
+        if (sessionStorage.getItem('manually_logged_out')) {
+          await routeAfterAuth(null);
+        } else {
+          try {
+            const profile = await authCheckSession();
+            if (profile) {
+              await routeAfterAuth(profile);
+            } else {
+              await routeAfterAuth(null);
+            }
+          } catch (e) {
+            console.error('Telegram session check error:', e);
             await routeAfterAuth(null);
           }
-        } catch (e) {
-          console.error('Telegram session check error:', e);
-          await routeAfterAuth(null);
         }
       }
-    }
 
-    // ===== АВТОЛОГИН при загрузке =====
-    if (!window._authRoutingDone) {
-      authCheckSession().then(async function(profile) {
-        await routeAfterAuth(profile);
-      });
-    }
+      // ===== АВТОЛОГИН при загрузке =====
+      if (!window._authRoutingDone) {
+        authCheckSession().then(async function(profile) {
+          await routeAfterAuth(profile);
+        });
+      }
 
-    // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
-
-    const hdrAvatar = document.querySelector('#scrFeed .hdr-avatar');
-    if (hdrAvatar) {
-      hdrAvatar.removeAttribute('onclick');
-      hdrAvatar.style.cssText += ';min-width:44px;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;z-index:100;';
-      hdrAvatar.addEventListener('click', function(e) {
-        e.stopPropagation();
-        showProfileMenu();
-      });
-    }
-
-    // Перехват вкладки "Профиль" в нижней навигации
-    document.querySelectorAll('.nav .nav-i').forEach(function(item) {
-      const lb = item.querySelector('.nav-lb');
-      if (lb && lb.textContent.trim() === 'Профиль') {
-        item.addEventListener('click', function(e) {
+      // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
+      const hdrAvatar = document.querySelector('#scrFeed .hdr-avatar');
+      if (hdrAvatar) {
+        hdrAvatar.removeAttribute('onclick');
+        hdrAvatar.style.cssText += ';min-width:44px;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;z-index:100;';
+        hdrAvatar.addEventListener('click', function(e) {
           e.stopPropagation();
           showProfileMenu();
         });
       }
-    });
+
+      // Перехват вкладки "Профиль" в нижней навигации
+      document.querySelectorAll('.nav .nav-i').forEach(function(item) {
+        const lb = item.querySelector('.nav-lb');
+        if (lb && lb.textContent.trim() === 'Профиль') {
+          item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showProfileMenu();
+          });
+        }
+      });
+    }
+
+    if (!sessionStorage.getItem('splashShown')) {
+      sessionStorage.setItem('splashShown', '1');
+      clearTimeout(_fallbackTimer);
+      window.initSplash(function() {
+        runAppInit();
+      });
+    } else {
+      runAppInit();
+    }
   });
 
   // ===== Выход из аккаунта =====
