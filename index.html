@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<style>
-  :root {
-    --tg-safe-top: 0px;
-  }
-</style>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MLM Community — Лента</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b5cf6">
@@ -48,17 +43,6 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-<script>
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.setHeaderColor('#000000');
-    tg.setBackgroundColor('#000000');
-    const inset = tg.safeAreaInset || {};
-    const top = inset.top || 0;
-    document.documentElement.style.setProperty('--tg-safe-top', top + 'px');
-  }
-</script>
 
 <div class="app">
 

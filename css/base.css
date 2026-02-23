@@ -116,10 +116,3 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     animation-duration:.01s !important;
   }
 }
-
-/* Safe area for Telegram iPhone */
-.scr,
-.hdr {
-  padding-top: calc(var(--tg-safe-top) + 16px) !important;
-  box-sizing: border-box;
-}
