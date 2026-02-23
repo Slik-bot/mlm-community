@@ -235,6 +235,12 @@
 
         const originalText = btn.textContent.trim();
         if (originalText.includes('Telegram')) {
+          // На вебе Telegram авторизация недоступна —
+          // она работает только внутри Telegram Mini App
+          if (!window.isTelegram || !isTelegram()) {
+            showToast('Откройте приложение через Telegram бота');
+            return;
+          }
           if (window.haptic) haptic('medium');
           btn.disabled = true;
           btn.classList.add('loading');
