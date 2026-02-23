@@ -23,11 +23,16 @@ function detectPlatform() {
 async function authRegister(email, password, name) {
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'apikey': SUPABASE_ANON_KEY
+    },
     body: JSON.stringify({ action: 'register', email: email, password: password, name: name })
   });
   const data = await res.json();
   if (!res.ok || data.error) {
+    console.error('AUTH REGISTER ERROR:', res.status, data);
     throw new Error(data.error || 'Ошибка регистрации');
   }
   await window.sb.auth.setSession({
@@ -45,11 +50,16 @@ async function authRegister(email, password, name) {
 async function authLogin(email, password) {
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'apikey': SUPABASE_ANON_KEY
+    },
     body: JSON.stringify({ action: 'login', email: email, password: password })
   });
   const data = await res.json();
   if (!res.ok || data.error) {
+    console.error('AUTH LOGIN ERROR:', res.status, data);
     throw new Error(data.error || 'Ошибка входа');
   }
   await window.sb.auth.setSession({
@@ -77,8 +87,13 @@ async function waitForSb(timeout) {
 
 async function authTelegram() {
   const tgApp = window.Telegram?.WebApp;
-  if (!tgApp || !tgApp.initData) {
-    throw new Error('Для входа через Telegram откройте приложение в Telegram');
+  let initData = tgApp?.initData || '';
+  if (!initData && tgApp) {
+    await new Promise(function(r) { setTimeout(r, 500); });
+    initData = tgApp.initData || '';
+  }
+  if (!initData) {
+    throw new Error('Откройте приложение через бота в Telegram');
   }
 
   const res = await fetch(EDGE_URL + '/auth-telegram', {
@@ -88,7 +103,7 @@ async function authTelegram() {
       'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
       'apikey': SUPABASE_ANON_KEY
     },
-    body: JSON.stringify({ initData: tgApp.initData })
+    body: JSON.stringify({ initData: initData })
   });
   const data = await res.json();
   if (!res.ok || data.error) {
