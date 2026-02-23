@@ -16,6 +16,7 @@ const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 // ===== INIT =====
 
 async function initQuest() {
+  renderSkipButton();
   const steps = await checkAllQuestSteps();
   renderQuestSteps(steps);
   updateQuestProgress(steps);
@@ -237,9 +238,31 @@ function showQuestComplete() {
   setTimeout(function() { overlay.classList.add('active'); }, 10);
 }
 
+// ===== SKIP BUTTON =====
+
+function renderSkipButton() {
+  const scr = document.getElementById('scrQuest');
+  if (!scr) return;
+  const head = scr.querySelector('.scr-head');
+  if (!head) return;
+  const placeholder = head.children[2];
+  if (!placeholder) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'icon-btn';
+  btn.style.cssText = 'font-size:13px;opacity:0.5;width:auto;padding:0 4px';
+  btn.textContent = 'Пропустить';
+  btn.onclick = function() {
+    localStorage.setItem('quest_shown_permanent', '1');
+    goTo('scrFeed');
+  };
+  placeholder.replaceWith(btn);
+}
+
 // ===== SHOULD SHOW QUEST =====
 
 function shouldShowQuest() {
+  if (localStorage.getItem('quest_shown_permanent') === '1') return false;
   const user = window.currentUser;
   if (!user) return false;
   return !user.quest_completed;
