@@ -118,16 +118,16 @@ window.initSplash = function(callback) {
   }
 
   // Защитный таймаут — если что-то пошло не так
-  const safetyTimer = setTimeout(finish, 8000);
+  const safetyTimer = setTimeout(finish, 17000);
 
-  // —— ANIMATE — 6 секунд ——
+  // —— ANIMATE — 5 секунд ——
   // Тайминги:
   // 0-1s   — фон расцветает
-  // 1-2s   — фон угасает
-  // 2-4.5s — буквы появляются (каждая с задержкой 0.3s)
-  // 4.5-5s — линия прорисовывается
-  // 5-5.5s — подпись проявляется
-  // 6s     — конец
+  // 1-2.5s — фон угасает до 3%
+  // 1.5s   — буквы начинают появляться (задержка 0.18s, каждая 0.9s)
+  // 3.6s   — линия прорисовывается (2s)
+  // 4.2s   — подпись проявляется
+  // 5s     — конец
 
   const startTime = Date.now();
   let rafId = null;
@@ -140,13 +140,13 @@ window.initSplash = function(callback) {
       ctx.fillRect(0, 0, W, H);
       updateGrid();
 
-      // Фон расцветает (0-1s)
-      if (elapsed < 1) {
-        drawGrid(easeOut3(clamp(elapsed / 1)));
+      // Фон расцветает (0-3s) — +2 секунды
+      if (elapsed < 3) {
+        drawGrid(easeOut3(clamp(elapsed / 2)));
       }
-      // Фон угасает (1-2s)
-      else if (elapsed < 2) {
-        const p = easeInOut(clamp((elapsed - 1) / 1));
+      // Фон угасает ДО НУЛЯ (3-5s) — полностью чистый
+      else if (elapsed < 5) {
+        const p = easeInOut(clamp((elapsed - 3) / 2));
         drawGrid(lerp(1, 0, p));
       }
       // После 5s — фон ПОЛНОСТЬЮ чёрный, никаких символов
@@ -154,41 +154,41 @@ window.initSplash = function(callback) {
         // ничего не рисуем — чистый тёмный фон
       }
 
-      // Буквы (2s — начинают появляться)
-      if (elapsed >= 2) {
+      // Буквы (4s — начинают появляться пока фон ещё угасает)
+      if (elapsed >= 4) {
         letterEls.forEach((el, i) => {
-          const s = 2 + i * 0.3;
-          const e = s + 1.2;
+          const s = 4 + i * 0.45;
+          const e = s + 1.8;
           const p = easeOut4(clamp((elapsed - s) / (e - s)));
           el.style.opacity = p;
-          el.style.transform = `scale(${lerp(2.5, 1, p)}) translateY(${lerp(-20, 0, p)}px)`;
-          el.style.filter = p < 0.99 ? `blur(${lerp(12, 0, p)}px)` : 'none';
+          el.style.transform = `scale(${lerp(3, 1, p)}) translateY(${lerp(-30, 0, p)}px)`;
+          el.style.filter = p < 0.99 ? `blur(${lerp(20, 0, p)}px)` : 'none';
         });
       }
 
-      // Линия (4.5-5s)
-      if (elapsed >= 4.5 && elapsed < 5) {
-        const p = easeOut3(clamp((elapsed - 4.5) / 0.5));
+      // Линия (8.5-11s)
+      if (elapsed >= 8.5 && elapsed < 11) {
+        const p = easeOut3(clamp((elapsed - 8.5) / 2.5));
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${p * letterWidthCache}px`;
         underlineEl.style.opacity = '1';
-      } else if (elapsed >= 5) {
+      } else if (elapsed >= 11) {
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${letterWidthCache}px`;
       }
 
-      // Подпись (5-5.5s)
-      if (elapsed >= 5 && elapsed < 5.5) {
-        const p = easeOut3(clamp((elapsed - 5) / 0.5));
+      // Подпись (10-12.5s)
+      if (elapsed >= 10 && elapsed < 12.5) {
+        const p = easeOut3(clamp((elapsed - 10) / 2.5));
         subEl.style.color = `rgba(255,255,255,${p * 0.5})`;
         subEl.style.clipPath = `inset(0 ${(1-p)*100}% 0 0)`;
-      } else if (elapsed >= 5.5) {
+      } else if (elapsed >= 12.5) {
         subEl.style.color = 'rgba(255,255,255,0.5)';
         subEl.style.clipPath = 'inset(0 0% 0 0)';
       }
 
-      // Конец на 6s
-      if (elapsed >= 6) {
+      // Конец на 14s
+      if (elapsed >= 14) {
         clearTimeout(safetyTimer);
         finish();
         return;

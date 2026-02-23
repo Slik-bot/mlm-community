@@ -26,7 +26,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 12000);
+  }, 8000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {
@@ -155,7 +155,7 @@
           await goTo('scrWelcome');
         } catch (err) {
           if (window.haptic) haptic('error');
-          let msg = err.message || 'Ошибка регистрации';
+          const msg = err.message || 'Ошибка регистрации';
           if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
           else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
           else if (msg.includes('invalid')) msg = 'Некорректный email';
@@ -217,7 +217,7 @@
           }
         } catch (err) {
           if (window.haptic) haptic('error');
-          let msg = err.message || 'Ошибка входа';
+          const msg = err.message || 'Ошибка входа';
           if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
           showAuthError('login', msg);
         }
@@ -235,12 +235,6 @@
 
         const originalText = btn.textContent.trim();
         if (originalText.includes('Telegram')) {
-          // На вебе Telegram авторизация недоступна —
-          // она работает только внутри Telegram Mini App
-          if (!window.isTelegram || !isTelegram()) {
-            showToast('Откройте приложение через Telegram бота');
-            return;
-          }
           if (window.haptic) haptic('medium');
           btn.disabled = true;
           btn.classList.add('loading');
@@ -343,22 +337,6 @@
     }
   }
 
-  // ═══ DEBUG OVERLAY — удалить после фикса ═══
-  window.onerror = function(msg, src, line, col, err) {
-    const d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#ef4444;color:#fff;font-size:12px;padding:8px;word-break:break-all;';
-    d.textContent = 'ERR: ' + msg + ' | ' + (src||'').split('/').pop() + ':' + line;
-    document.body.appendChild(d);
-    return false;
-  };
-  window.addEventListener('unhandledrejection', function(e) {
-    const d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:40px;left:0;right:0;z-index:99999;background:#f97316;color:#fff;font-size:12px;padding:8px;word-break:break-all;';
-    d.textContent = 'PROMISE: ' + (e.reason?.message || e.reason || 'unknown');
-    document.body.appendChild(d);
-  });
-  // ═══ END DEBUG ═══
-
   // ===== Ждём загрузки DOM =====
   window.addEventListener('DOMContentLoaded', async function() {
 
@@ -371,35 +349,22 @@
     async function runAppInit() {
       window._authRoutingDone = false;
 
-      // ===== Telegram Mini App — авто-вход через initData =====
+      // ===== Telegram Mini App — показываем лендинг, если нет сессии =====
       if (window.isTelegram && isTelegram()) {
         if (sessionStorage.getItem('manually_logged_out')) {
           await routeAfterAuth(null);
         } else {
-          // Сначала проверяем существующую сессию
           try {
             const profile = await authCheckSession();
             if (profile) {
               await routeAfterAuth(profile);
-              return;
+            } else {
+              await routeAfterAuth(null);
             }
           } catch (e) {
             console.error('Telegram session check error:', e);
+            await routeAfterAuth(null);
           }
-
-          // Нет сессии — авто-вход через Telegram initData
-          try {
-            const result = await authTelegram();
-            if (result && result.user) {
-              await routeAfterAuth(result.user);
-              return;
-            }
-          } catch (e) {
-            console.error('Telegram auto-auth error:', e);
-          }
-
-          // Fallback — показываем лендинг
-          await routeAfterAuth(null);
         }
       }
 

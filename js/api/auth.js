@@ -21,7 +21,6 @@ function detectPlatform() {
 // ═══ authRegister ═══
 
 async function authRegister(email, password, name) {
-  await waitForSb(5000);
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: {
@@ -49,7 +48,6 @@ async function authRegister(email, password, name) {
 // ═══ authLogin ═══
 
 async function authLogin(email, password) {
-  await waitForSb(5000);
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: {
@@ -159,7 +157,6 @@ async function authTelegram() {
 // ═══ authLogout ═══
 
 async function authLogout() {
-  if (!window.sb) return;
   try {
     await window.sb.auth.signOut();
   } catch (err) {
@@ -175,7 +172,6 @@ async function authLogout() {
 // ═══ authCheckSession ═══
 
 async function authCheckSession() {
-  await waitForSb(5000);
   try {
     const result = await window.sb.auth.getSession();
     const session = result.data && result.data.session;
