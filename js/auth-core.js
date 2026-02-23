@@ -343,6 +343,22 @@
     }
   }
 
+  // ═══ DEBUG OVERLAY — удалить после фикса ═══
+  window.onerror = function(msg, src, line, col, err) {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#ef4444;color:#fff;font-size:12px;padding:8px;word-break:break-all;';
+    d.textContent = 'ERR: ' + msg + ' | ' + (src||'').split('/').pop() + ':' + line;
+    document.body.appendChild(d);
+    return false;
+  };
+  window.addEventListener('unhandledrejection', function(e) {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:40px;left:0;right:0;z-index:99999;background:#f97316;color:#fff;font-size:12px;padding:8px;word-break:break-all;';
+    d.textContent = 'PROMISE: ' + (e.reason?.message || e.reason || 'unknown');
+    document.body.appendChild(d);
+  });
+  // ═══ END DEBUG ═══
+
   // ===== Ждём загрузки DOM =====
   window.addEventListener('DOMContentLoaded', async function() {
 
