@@ -7,6 +7,7 @@
   --nav-h:68px;--radius:14px;
   --fs-hero:30px;--fs-h2:22px;--fs-h3:18px;--fs-body:14px;--fs-small:13px;--fs-caption:12px;--fs-micro:11px;
   --lh-tight:1.25;--lh-normal:1.5;--lh-relaxed:1.6;
+  --safe-top:env(safe-area-inset-top, 0px);--safe-bottom:env(safe-area-inset-bottom, 0px);
 }
 
 /* ═══ BUTTON SYSTEM ═══ */
@@ -24,7 +25,7 @@
 .lnd-btn--ghost:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.10);}
 .lnd-btn--sm{padding:10px 20px;font-size:var(--fs-small);border-radius:12px;}
 
-html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Outfit',-apple-system,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Outfit',-apple-system,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);}
 .app{height:100%;max-width:420px;margin:0 auto;position:relative;overflow:hidden;}
 
 /* ============ SCREENS ============ */
