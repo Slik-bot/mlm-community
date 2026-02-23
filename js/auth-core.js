@@ -400,10 +400,13 @@
 
     if (!sessionStorage.getItem('splashShown')) {
       sessionStorage.setItem('splashShown', '1');
-      clearTimeout(_fallbackTimer);
-      window.initSplash(function() {
+      try {
+        window.initSplash(function() {
+          runAppInit();
+        });
+      } catch(e) {
         runAppInit();
-      });
+      }
     } else {
       runAppInit();
     }
