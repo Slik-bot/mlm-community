@@ -118,7 +118,7 @@ window.initSplash = function(callback) {
   }
 
   // Защитный таймаут — если что-то пошло не так
-  const safetyTimer = setTimeout(finish, 15000);
+  const safetyTimer = setTimeout(finish, 17000);
 
   // —— ANIMATE — 5 секунд ——
   // Тайминги:
@@ -140,24 +140,24 @@ window.initSplash = function(callback) {
       ctx.fillRect(0, 0, W, H);
       updateGrid();
 
-      // Фон расцветает (0-1s)
-      if (elapsed < 1) {
-        drawGrid(easeOut3(clamp(elapsed / 1)));
+      // Фон расцветает (0-3s) — +2 секунды
+      if (elapsed < 3) {
+        drawGrid(easeOut3(clamp(elapsed / 2)));
       }
-      // Фон угасает (1-2.5s)
-      else if (elapsed < 2.5) {
-        const p = easeInOut(clamp((elapsed - 1) / 1.5));
-        drawGrid(lerp(1, 0.03, p));
+      // Фон угасает ДО НУЛЯ (3-5s) — полностью чистый
+      else if (elapsed < 5) {
+        const p = easeInOut(clamp((elapsed - 3) / 2));
+        drawGrid(lerp(1, 0, p));
       }
-      // Фон остаётся на 3%
+      // После 5s — фон ПОЛНОСТЬЮ чёрный, никаких символов
       else {
-        drawGrid(0.03);
+        // ничего не рисуем — чистый тёмный фон
       }
 
-      // Буквы (1.5-4s)
-      if (elapsed >= 1.5) {
+      // Буквы (4s — начинают появляться пока фон ещё угасает)
+      if (elapsed >= 4) {
         letterEls.forEach((el, i) => {
-          const s = 1.5 + i * 0.45;
+          const s = 4 + i * 0.45;
           const e = s + 1.8;
           const p = easeOut4(clamp((elapsed - s) / (e - s)));
           el.style.opacity = p;
@@ -166,29 +166,29 @@ window.initSplash = function(callback) {
         });
       }
 
-      // Линия (3.6-5.6s)
-      if (elapsed >= 6.5 && elapsed < 9.0) {
-        const p = easeOut3(clamp((elapsed - 6.5) / 2));
+      // Линия (8.5-11s)
+      if (elapsed >= 8.5 && elapsed < 11) {
+        const p = easeOut3(clamp((elapsed - 8.5) / 2.5));
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${p * letterWidthCache}px`;
         underlineEl.style.opacity = '1';
-      } else if (elapsed >= 9.0) {
+      } else if (elapsed >= 11) {
         if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
         underlineEl.style.width = `${letterWidthCache}px`;
       }
 
-      // Подпись (4.2-5.5s)
-      if (elapsed >= 9.0 && elapsed < 11.0) {
-        const p = easeOut3(clamp((elapsed - 9.0) / 2.0));
-        subEl.style.color = `rgba(255,255,255,${p * 0.38})`;
+      // Подпись (10-12.5s)
+      if (elapsed >= 10 && elapsed < 12.5) {
+        const p = easeOut3(clamp((elapsed - 10) / 2.5));
+        subEl.style.color = `rgba(255,255,255,${p * 0.5})`;
         subEl.style.clipPath = `inset(0 ${(1-p)*100}% 0 0)`;
-      } else if (elapsed >= 11.0) {
-        subEl.style.color = 'rgba(255,255,255,0.38)';
+      } else if (elapsed >= 12.5) {
+        subEl.style.color = 'rgba(255,255,255,0.5)';
         subEl.style.clipPath = 'inset(0 0% 0 0)';
       }
 
-      // Конец на 5s
-      if (elapsed >= 12) {
+      // Конец на 14s
+      if (elapsed >= 14) {
         clearTimeout(safetyTimer);
         finish();
         return;
