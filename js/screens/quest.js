@@ -192,6 +192,7 @@ async function completeQuest() {
 
     user.quest_completed = true;
     user.balance = (user.balance || 0) + QUEST_REWARD;
+    localStorage.setItem('quest_shown_permanent', '1');
 
     showQuestComplete();
   } catch (err) {
