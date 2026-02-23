@@ -1,5 +1,9 @@
 // ═══ Supabase Client — единственное подключение к БД ═══
 
+if (typeof supabase === 'undefined') {
+  console.error('FATAL: Supabase CDN не загружен. Проверьте подключение к интернету.');
+}
+
 if (!window._sbClient) {
   window._sbClient = supabase.createClient(
     'https://tydavmiamwdrfjbcgwny.supabase.co',

@@ -21,6 +21,10 @@ function detectPlatform() {
 // ═══ authRegister ═══
 
 async function authRegister(email, password, name) {
+  if (!window.sb) {
+    console.error('FATAL: window.sb не инициализирован (authRegister)');
+    throw new Error('Ошибка инициализации. Обновите страницу.');
+  }
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: {
@@ -48,6 +52,10 @@ async function authRegister(email, password, name) {
 // ═══ authLogin ═══
 
 async function authLogin(email, password) {
+  if (!window.sb) {
+    console.error('FATAL: window.sb не инициализирован (authLogin)');
+    throw new Error('Ошибка инициализации. Обновите страницу.');
+  }
   const res = await fetch(EDGE_URL + '/auth-email', {
     method: 'POST',
     headers: {
@@ -157,6 +165,10 @@ async function authTelegram() {
 // ═══ authLogout ═══
 
 async function authLogout() {
+  if (!window.sb) {
+    console.error('FATAL: window.sb не инициализирован (authLogout)');
+    return;
+  }
   try {
     await window.sb.auth.signOut();
   } catch (err) {
@@ -172,6 +184,10 @@ async function authLogout() {
 // ═══ authCheckSession ═══
 
 async function authCheckSession() {
+  if (!window.sb) {
+    console.error('FATAL: window.sb не инициализирован (authCheckSession)');
+    return null;
+  }
   try {
     const result = await window.sb.auth.getSession();
     const session = result.data && result.data.session;
