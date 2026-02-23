@@ -235,6 +235,10 @@
 
         const originalText = btn.textContent.trim();
         if (originalText.includes('Telegram')) {
+          if (!window.isTelegram || !isTelegram()) {
+            showToast('Доступно только в Telegram приложении');
+            return;
+          }
           if (window.haptic) haptic('medium');
           btn.disabled = true;
           btn.classList.add('loading');
