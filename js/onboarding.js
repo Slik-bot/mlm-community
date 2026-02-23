@@ -24,9 +24,21 @@ function setupInit(){
     const savedName = localStorage.getItem('userName');
     inp.value = savedName && savedName !== 'Участник' ? savedName : '';
   }
+  loadTelegramAvatar();
   setupSelectedInterests=[];
   setupSelectedGoal=null;
   setupUpdateBtn1();
+}
+
+function loadTelegramAvatar() {
+  const user = window.getState && window.getState('currentUser');
+  if (!user || !user.avatar_url) return;
+  const img = document.getElementById('stpAvatarImg');
+  const svg = document.querySelector('#stpAvatarInner svg');
+  if (!img) return;
+  img.src = user.avatar_url;
+  img.style.display = 'block';
+  if (svg) svg.style.display = 'none';
 }
 
 // getDnaColor — см. js/utils/dna.js
