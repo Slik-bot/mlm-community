@@ -85,15 +85,38 @@ async function waitForSb(timeout) {
   });
 }
 
-async function authTelegram() {
-  const tgApp = window.Telegram?.WebApp;
-  let initData = tgApp?.initData || '';
-  if (!initData && tgApp) {
-    await new Promise(function(r) { setTimeout(r, 500); });
-    initData = tgApp.initData || '';
+async function getTelegramInitData() {
+  // Попытка 1 — стандартный способ
+  let tg = window.Telegram?.WebApp;
+  if (tg?.initData) return tg.initData;
+
+  // Попытка 2 — ждём инициализации до 3 секунд
+  for (let i = 0; i < 12; i++) {
+    await new Promise(function(r) { setTimeout(r, 250); });
+    tg = window.Telegram?.WebApp;
+    if (tg?.initData) return tg.initData;
   }
+
+  // Попытка 3 — читаем из URL hash
+  const hash = window.location.hash;
+  if (hash && hash.includes('tgWebAppData')) {
+    return decodeURIComponent(hash.split('tgWebAppData=')[1]?.split('&')[0] || '');
+  }
+
+  return null;
+}
+
+async function authTelegram() {
+  const initData = await getTelegramInitData();
   if (!initData) {
-    throw new Error('Откройте приложение через бота в Telegram');
+    console.error('TG DEBUG:', {
+      hasTelegram: !!window.Telegram,
+      hasWebApp: !!window.Telegram?.WebApp,
+      initData: window.Telegram?.WebApp?.initData,
+      platform: window.Telegram?.WebApp?.platform,
+      hash: window.location.hash?.substring(0, 100),
+    });
+    throw new Error('Ошибка Telegram. Закройте и откройте приложение снова.');
   }
 
   const res = await fetch(EDGE_URL + '/auth-telegram', {
