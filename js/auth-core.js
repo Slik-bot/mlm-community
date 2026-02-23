@@ -155,7 +155,7 @@
           await goTo('scrWelcome');
         } catch (err) {
           if (window.haptic) haptic('error');
-          const msg = err.message || 'Ошибка регистрации';
+          let msg = err.message || 'Ошибка регистрации';
           if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
           else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
           else if (msg.includes('invalid')) msg = 'Некорректный email';
@@ -217,7 +217,7 @@
           }
         } catch (err) {
           if (window.haptic) haptic('error');
-          const msg = err.message || 'Ошибка входа';
+          let msg = err.message || 'Ошибка входа';
           if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
           showAuthError('login', msg);
         }
@@ -349,22 +349,35 @@
     async function runAppInit() {
       window._authRoutingDone = false;
 
-      // ===== Telegram Mini App — показываем лендинг, если нет сессии =====
+      // ===== Telegram Mini App — авто-вход через initData =====
       if (window.isTelegram && isTelegram()) {
         if (sessionStorage.getItem('manually_logged_out')) {
           await routeAfterAuth(null);
         } else {
+          // Сначала проверяем существующую сессию
           try {
             const profile = await authCheckSession();
             if (profile) {
               await routeAfterAuth(profile);
-            } else {
-              await routeAfterAuth(null);
+              return;
             }
           } catch (e) {
             console.error('Telegram session check error:', e);
-            await routeAfterAuth(null);
           }
+
+          // Нет сессии — авто-вход через Telegram initData
+          try {
+            const result = await authTelegram();
+            if (result && result.user) {
+              await routeAfterAuth(result.user);
+              return;
+            }
+          } catch (e) {
+            console.error('Telegram auto-auth error:', e);
+          }
+
+          // Fallback — показываем лендинг
+          await routeAfterAuth(null);
         }
       }
 
