@@ -97,6 +97,9 @@ async function ensureTemplate(id) {
     if (id === 'scrDnaTest') {
       if (window.dnaReset) window.dnaReset();
     }
+    if (id === 'scrDnaResult') {
+      if (window.initDnaResult) window.initDnaResult();
+    }
     return;
   }
   const html = await loadTemplate(id);
@@ -216,6 +219,9 @@ async function ensureTemplate(id) {
   if (id === 'scrQuest') {
     if (window.initQuest) window.initQuest();
   }
+  if (id === 'scrDnaResult') {
+    if (window.initDnaResult) window.initDnaResult();
+  }
   if (id === 'scrWelcome') {
     createParticles('welcomeParticles');
     resetWelcomeAnimations();
@@ -263,14 +269,12 @@ async function goTo(id) {
   const nextEl = document.getElementById(id);
   if(!nextEl) return;
 
-  // Clean up DNA result inline styles when leaving
+  // Сброс состояния DNA-карточки при уходе с экрана
   if(current==='scrDnaResult'){
-    const dnrRv=document.getElementById('dnrReveal');
-    if(dnrRv){dnrRv.classList.remove('active');dnrRv.style.opacity='';dnrRv.style.pointerEvents='';}
-    const dnrSc=document.getElementById('dnrScreen');
-    if(dnrSc){dnrSc.classList.remove('active');dnrSc.style.opacity='';dnrSc.style.pointerEvents='';}
-    const dnrCd=document.getElementById('dnrCard');
-    if(dnrCd){dnrCd.style.cssText='';}
+    const rv=document.getElementById('revealScreen');
+    if(rv) rv.classList.add('hidden');
+    const mc=document.getElementById('mainCard');
+    if(mc){mc.classList.remove('revealed');mc.style.cssText='';}
   }
 
   navHistory.push(id);

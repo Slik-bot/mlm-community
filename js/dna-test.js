@@ -33,17 +33,9 @@ async function dnaFromOnboarding(){
 
 
 function updateDnaResultButton(){
-  const btn = document.getElementById('dnrMainBtn');
-  const retry = document.getElementById('dnrRetryBtn');
+  const btn = document.getElementById('dnrContinueBtn');
   if(!btn) return;
-
-  if(dnaSource === 'landing'){
-    btn.textContent = 'Создать аккаунт и сохранить →';
-    if(retry) retry.textContent = 'Пройти заново';
-  } else {
-    btn.textContent = 'Продолжить →';
-    if(retry) retry.textContent = 'Пройти заново';
-  }
+  btn.textContent = dnaSource === 'landing' ? 'Создать аккаунт и сохранить →' : 'Продолжить →';
 }
 
 async function dnaResultAction(){
@@ -98,8 +90,6 @@ heart:'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67
 video:'<svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
 map:'<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>'
 };
-
-const dnaPawnSVG='<svg viewBox="0 0 80 100" fill="none"><circle cx="40" cy="20" r="11" fill="currentColor" opacity=".95"/><path d="M30 36c0-5 5-9 10-9h0c5 0 10 4 10 9 0 3-2 6-4 7l2 22H32l2-22c-2-1-4-4-4-7z" fill="currentColor" opacity=".8"/><path d="M30 65l-3 12h26l-3-12z" fill="currentColor" opacity=".7"/><rect x="23" y="77" width="34" height="7" rx="2.5" fill="currentColor" opacity=".85"/><rect x="19" y="84" width="42" height="8" rx="3" fill="currentColor" opacity=".95"/></svg>';
 
 const dnaQuestions=[
 {ic:0,text:'Что для тебя важнее всего в бизнесе?',opts:[
@@ -175,237 +165,22 @@ requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.re
 },600);
 }
 
+// ── Переход к результату ──
 async function startDnaReveal(){
   let mx='S',ms=0;
   for(const t in dnaScores) if(dnaScores[t]>ms){ms=dnaScores[t];mx=t}
   localStorage.setItem('dnaType',mx);
   localStorage.setItem('dnaScores',JSON.stringify(dnaScores));
-  if (window.saveDnaResult) {
-    window.saveDnaResult(mx, dnaScores).catch(console.error);
-  }
-  const tp=dnaTypes[mx],cl=tp.color;
-
+  if(window.saveDnaResult) window.saveDnaResult(mx,dnaScores).catch(console.error);
+  const tp=dnaTypes[mx];
+  window.dnaResult = { type: mx, name: tp.name };
   await goTo('scrDnaResult');
-
-  let rv=document.getElementById('dnrReveal');
-  if(!rv){
-    await new Promise(function(r){setTimeout(r,500)});
-    await goTo('scrDnaResult');
-    rv=document.getElementById('dnrReveal');
-  }
-  if(!rv){dnaBusy=false;return;}
-  const roulette=document.getElementById('dnrRoulette');
-  if(!roulette){dnaBusy=false;return;}
-  const label=document.getElementById('dnrRevLabel');
-  const orbs=roulette.querySelectorAll('.dnr-orb-spin');
-  const wave=document.getElementById('dnrWave');
-  const screen=document.getElementById('dnrScreen');
-
-  // Full reset
-  rv.classList.add('active');
-  screen.classList.remove('active');
-  roulette.className='dnr-roulette';
-  roulette.style.cssText='';
-  orbs.forEach(function(o){o.className='dnr-orb-spin dnr-orb-'+o.getAttribute('data-type').toLowerCase();o.style.cssText='';});
-  wave.className='dnr-wave';wave.style.background='';
-  label.className='dnr-reveal-label';label.textContent='Кто ты?';
-  document.getElementById('dnrRevBg').style.background='radial-gradient(circle,rgba(139,92,246,.04),transparent 60%)';
-
-  // ─── PHASE 1: Roulette fast (0–1.5s) ───
-
-  // ─── PHASE 2: Slowing (1.5s) ───
-  setTimeout(function(){
-    roulette.classList.add('slowing');
-    label.textContent='Определяем...';
-  },1500);
-
-  // ─── PHASE 3: Stop + fade losers (3s) ───
-  setTimeout(function(){
-    roulette.classList.add('stopped');
-    orbs.forEach(function(o){
-      if(o.getAttribute('data-type')!==mx) o.classList.add('fade');
-      else o.classList.add('winner');
-    });
-    label.textContent='Найдено';
-    label.classList.add('big');
-    document.getElementById('dnrRevBg').style.background='radial-gradient(circle,'+cl+'06,transparent 55%)';
-  },3000);
-
-  // ─── PHASE 4: Golden moment — float + aura (4s) ───
-  setTimeout(function(){
-    // Find winner orb and float it up
-    orbs.forEach(function(o){
-      if(o.getAttribute('data-type')===mx){
-        o.style.transition='all 1.2s cubic-bezier(.16,1,.3,1)';
-        o.style.transform='translateY(-20px)';
-        o.style.boxShadow='0 0 60px '+cl+',0 0 120px '+cl+'80,0 0 180px '+cl+'40';
-        o.style.width='44px';
-        o.style.height='44px';
-        o.style.margin='-10px';
-      }
-    });
-    // Darken background slightly
-    document.getElementById('dnrRevBg').style.background='radial-gradient(circle,'+cl+'10,rgba(0,0,0,.15) 60%)';
-    label.textContent='';
-  },4000);
-
-  // ─── PHASE 5: Pause... then WAVE (5.2s) ───
-  setTimeout(function(){
-    if(navigator.vibrate) navigator.vibrate([30,60,100]);
-
-    roulette.classList.add('shrink');
-    label.classList.add('hide');
-
-    wave.style.background='radial-gradient(circle,'+cl+'12 0%,'+cl+'06 30%,'+cl+'02 55%,transparent 70%)';
-    wave.classList.add('fire');
-  },5200);
-
-  // ─── PHASE 6: Show luxury card (6.5s) ───
-  setTimeout(function(){
-    wave.classList.add('done');
-    rv.classList.remove('active');
-    screen.classList.add('active');
-    screen.style.opacity = '1';
-    screen.style.pointerEvents = 'all';
-    const actions=document.querySelector('.dnr-fixed-actions');
-    if(actions) actions.classList.add('visible');
-
-    // ── Set all card colors ──
-    document.getElementById('dnrOrb1').style.background='radial-gradient(circle,'+cl+'14,transparent 70%)';
-    document.getElementById('dnrOrb2').style.background='radial-gradient(circle,'+cl+'08,transparent 70%)';
-
-    // Card header gradient
-    document.getElementById('dnrCardHeader').style.background='linear-gradient(180deg,'+cl+'08 0%,'+cl+'03 60%,transparent 100%)';
-
-    // Card top glow
-    document.getElementById('dnrCard').style.borderTopColor=cl+'15';
-
-    // Pawn ripple
-    const ripple=document.getElementById('dnrPawnRipple');
-    if(ripple){
-      ripple.querySelectorAll('.dnr-ripple-ring').forEach(function(r){
-        r.style.borderColor=cl+'30';
-        r.style.setProperty('--dnr-c',cl+'25');
-        r.style.boxShadow='0 0 8px '+cl+'10,inset 0 0 8px '+cl+'05';
-      });
-    }
-
-    // Pawn
-    const pw=document.getElementById('dnrPawn');
-    pw.style.background='linear-gradient(180deg,'+cl+'14,'+cl+'06)';
-    pw.style.border='1.5px solid '+cl+'18';
-    pw.style.setProperty('--dnr-c',cl+'20');
-    pw.style.color=cl;
-    pw.innerHTML=dnaPawnSVG;
-
-    // Badge
-    const bdg=document.getElementById('dnrBadge');
-    bdg.style.background=cl+'06';bdg.style.color=cl;bdg.style.borderColor=cl+'12';
-
-    // Exclusive text
-    document.getElementById('dnrExclusive').style.color=cl;
-
-    // Label
-    document.getElementById('dnrLabel').style.color=cl;
-
-    // Name with focus effect
-    const nm=document.getElementById('dnrName');
-    nm.classList.add('focusing');
-    nm.textContent=tp.name;
-    setTimeout(function(){nm.classList.remove('focusing')},150);
-
-    // Accent line
-    const acc=document.querySelector('.dnr-accent');
-    if(acc) acc.style.background=cl;
-
-    // Decorative quote color
-    document.getElementById('dnrDescQuote').style.color=cl;
-
-    // Description
-    document.getElementById('dnrDesc').textContent=tp.desc;
-
-    // Tags
-    const tg=document.getElementById('dnrTags');tg.innerHTML='';
-    tp.tags.forEach(function(t){
-      const s=document.createElement('span');s.className='dnr-tag';
-      s.style.color=cl;s.style.borderColor=cl+'10';
-      s.textContent=t;tg.appendChild(s);
-    });
-
-    // Career — active figure
-    const fig0=document.getElementById('dnrFig0');
-    if(fig0){fig0.style.setProperty('--dnr-c',cl+'40');fig0.style.color=cl;fig0.style.textShadow='0 0 12px '+cl+'50';}
-
-    // Career line fill
-    const lf=document.getElementById('dnrLineFill0');
-    if(lf){lf.style.background='linear-gradient(90deg,'+cl+','+cl+'30)';setTimeout(function(){lf.style.width='100%'},500);}
-
-    // XP bar
-    const xb=document.getElementById('dnrXpBar');
-    xb.style.background='linear-gradient(90deg,'+cl+','+cl+'50)';
-    setTimeout(function(){xb.style.width='3%'},500);
-
-    // Serial number
-    const serial=document.getElementById('dnrSerial');
-    if(serial) serial.textContent='#DNA-'+String(Math.floor(10000+Math.random()*89999));
-
-    // Background particles
-    const bp=document.getElementById('dnrBgParticles');bp.innerHTML='';
-    for(let i=0;i<10;i++){
-      const p=document.createElement('div');p.className='dnr-bg-p';
-      p.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+(1+Math.random()*1.5)+'px;height:'+(1+Math.random()*1.5)+'px;background:'+cl+';opacity:'+(0.06+Math.random()*0.12)+';animation-duration:'+(10+Math.random()*12)+'s;animation-delay:'+Math.random()*5+'s;';
-      bp.appendChild(p);
-    }
-
-    updateDnaResultButton();
-    playDnaReveal(cl);
-  },6500);
-}
-
-// ── DNA Result Reveal Animation ──
-function playDnaReveal(cl){
-  const scr=document.getElementById('scrDnaResult');
-  if(!scr) return;
-
-  // Glow color подстраивается под тип ДНК
-  const glow=scr.querySelector('.dna-rv-glow');
-  if(glow) glow.style.setProperty('--dna-glow-color',cl+'40');
-
-  // Сброс + каскад появлений
-  const items=scr.querySelectorAll('.dna-rv-item');
-  items.forEach(function(el){el.classList.remove('dna-rv-visible');});
-  items.forEach(function(el){
-    const delay=parseInt(el.getAttribute('data-dna-rv-delay'))||0;
-    setTimeout(function(){el.classList.add('dna-rv-visible');},delay);
-  });
-
+  updateDnaResultButton();
+  dnaBusy=false;
 }
 
 function dnaReset(){
   dnaCur=0;dnaScores={S:0,C:0,K:0,A:0};dnaBusy=false;
-  const rv=document.getElementById('dnrReveal');
-  if(rv){rv.classList.remove('active');rv.style.display='';rv.style.opacity='';rv.style.pointerEvents='';}
-  const scr=document.getElementById('dnrScreen');
-  if(scr){scr.classList.remove('active');scr.style.opacity='';scr.style.pointerEvents='';}
-  const actions=document.querySelector('.dnr-fixed-actions');
-  if(actions) actions.classList.remove('visible');
-  const card=document.getElementById('dnrCard');
-  if(card){card.style.opacity='';card.style.transform='';}
-  const btn=document.getElementById('dnrMainBtn');
-  if(btn){btn.style.opacity='';btn.style.transform='';}
-  const retry=document.getElementById('dnrRetryBtn');
-  if(retry){retry.style.opacity='';}
-  const roulette=document.getElementById('dnrRoulette');
-  if(roulette){roulette.className='dnr-roulette';roulette.style.cssText='';}
-  const wave=document.getElementById('dnrWave');
-  if(wave){wave.className='dnr-wave';wave.style.background='';}
-  const nm=document.getElementById('dnrName');
-  if(nm) nm.classList.remove('focusing');
-  const orbs=document.querySelectorAll('.dnr-orb-spin');
-  orbs.forEach(function(o){o.style.cssText='';});
-  // Сброс reveal-анимаций
-  const scrEl=document.getElementById('scrDnaResult');
-  if(scrEl){scrEl.querySelectorAll('.dna-rv-item').forEach(function(el){el.classList.remove('dna-rv-visible');});}
   dnaRender();
 }
 
