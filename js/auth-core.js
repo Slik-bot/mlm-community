@@ -313,20 +313,8 @@
           if (window.initFeedFromDB) initFeedFromDB();
         }
       } else if (hasDna && hasName) {
-        localStorage.setItem('onboardingDone', 'true');
-        if (profile.dna_type) {
-          const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
-          localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
-        }
-        if (!profile.quest_completed && !localStorage.getItem('quest_shown_permanent')) {
-          localStorage.setItem('quest_shown_permanent', '1');
-          await switchScreenInstant('scrQuest');
-          showApp();
-        } else {
-          await switchScreenInstant('scrFeed');
-          showApp();
-          if (window.initFeedFromDB) initFeedFromDB();
-        }
+        await switchScreenInstant('scrSetup1');
+        showApp();
       } else if (hasDna && !hasName) {
         await switchScreenInstant('scrSetup1');
         showApp();
