@@ -45,8 +45,7 @@
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.04),
     0 40px 100px rgba(0,0,0,0.95),
-    0 0 120px var(--dna-cg),
-    0 0 60px var(--dna-cg),
+    0 0 80px var(--dna-cg),
     inset 0 1px 0 rgba(255,255,255,0.06);
   will-change: transform, opacity;
 }
@@ -158,18 +157,12 @@
 .dnr-header-bg {
   position: absolute;
   inset: 0;
-  background: var(--dna-c);
+  background: linear-gradient(180deg,
+    var(--dna-c) 0%,
+    color-mix(in srgb, var(--dna-c) 40%, #000) 40%,
+    transparent 100%
+  );
   opacity: 0.22;
-  mask-image: linear-gradient(180deg,
-    black 0%,
-    black 50%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(180deg,
-    black 0%,
-    black 50%,
-    transparent 100%
-  );
 }
 canvas.pattern-canvas {
   position: absolute;
@@ -235,7 +228,7 @@ canvas.pattern-canvas {
   width: 80px;
   height: 30px;
   background: radial-gradient(ellipse, var(--dna-c) 0%, transparent 70%);
-  opacity: 0.8;
+  opacity: 0.5;
   filter: blur(6px);
   animation: dcGlowPulse 3s ease-in-out infinite;
   transition: background 0.6s ease;
@@ -248,11 +241,7 @@ canvas.pattern-canvas {
   width: 72px;
   height: 72px;
   color: var(--dna-c);
-  filter:
-    drop-shadow(0 0 20px var(--dna-c))
-    drop-shadow(0 0 40px var(--dna-c))
-    drop-shadow(0 0 60px var(--dna-c))
-    drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  filter: drop-shadow(0 0 16px var(--dna-c)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));
   animation: dcFigBreathe 4s ease-in-out infinite;
   position: relative;
   z-index: 2;
