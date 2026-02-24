@@ -320,9 +320,7 @@ function initDnaResult() {
   const card = el('mainCard');
   if (card) {
     card.classList.remove('revealed');
-    card.style.opacity = '0';
-    card.style.transform = 'scale(0.5) translateY(80px)';
-    card.style.filter = 'blur(30px)';
+    card.removeAttribute('style');
   }
   setTimeout(() => {
     if (el('xpFill')) el('xpFill').style.width = '4%';
