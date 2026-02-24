@@ -18,63 +18,48 @@ const LB_SVG_RIGHT = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none
  * @param {string|Array} urls — URL or array of URLs
  * @param {number} startIndex — starting index
  */
+function buildLightboxHtml(urls, startIndex) {
+  const total = urls.length;
+  const hasMultiple = total > 1;
+  let slidesHtml = '';
+  for (let i = 0; i < total; i++) {
+    slidesHtml += '<div class="lb-slide"><img class="lb-img" src="' + urls[i] + '" alt="" draggable="false"></div>';
+  }
+  let thumbsHtml = '';
+  if (hasMultiple) {
+    thumbsHtml = '<div class="lb-thumbs">';
+    for (let t = 0; t < total; t++) {
+      thumbsHtml += '<div class="lb-th' + (t === startIndex ? ' lb-th-on' : '') + '" data-i="' + t + '"><img src="' + urls[t] + '" alt=""></div>';
+    }
+    thumbsHtml += '</div>';
+  }
+  return '<div class="lb-overlay"></div>' +
+    '<div class="lb-hdr"><button class="lb-btn lb-close" aria-label="Close">' + LB_SVG_CLOSE + '</button>' +
+    (hasMultiple ? '<div class="lb-counter"><span class="lb-cur">' + (startIndex + 1) + '</span><span class="lb-sep">/</span><span class="lb-tot">' + total + '</span></div>' : '') +
+    '<button class="lb-btn lb-download" aria-label="Download">' + LB_SVG_DOWN + '</button></div>' +
+    '<div class="lb-stage">' +
+    (hasMultiple ? '<button class="lb-arrow lb-arrow-l" aria-label="Previous">' + LB_SVG_LEFT + '</button>' : '') +
+    '<div class="lb-track">' + slidesHtml + '</div>' +
+    (hasMultiple ? '<button class="lb-arrow lb-arrow-r" aria-label="Next">' + LB_SVG_RIGHT + '</button>' : '') +
+    '</div>' + thumbsHtml;
+}
+
 function openLightbox(urls, startIndex) {
   try {
     if (_lb) closeLightbox();
-
     if (typeof urls === 'string') urls = [urls];
-    if (!urls || !urls.length) {
-      console.error('[LIGHTBOX] No URLs provided');
-      return;
-    }
-
+    if (!urls || !urls.length) { console.error('[LIGHTBOX] No URLs provided'); return; }
     _lbImages = urls;
     _lbIndex = startIndex || 0;
 
-    const total = urls.length;
-    const hasMultiple = total > 1;
-
-    // Build ALL slides HTML
-    let slidesHtml = '';
-    for (let i = 0; i < total; i++) {
-      slidesHtml += '<div class="lb-slide"><img class="lb-img" src="' + urls[i] + '" alt="" draggable="false"></div>';
-    }
-
-    // Build thumbs HTML
-    let thumbsHtml = '';
-    if (hasMultiple) {
-      thumbsHtml = '<div class="lb-thumbs">';
-      for (let t = 0; t < total; t++) {
-        thumbsHtml += '<div class="lb-th' + (t === _lbIndex ? ' lb-th-on' : '') + '" data-i="' + t + '"><img src="' + urls[t] + '" alt=""></div>';
-      }
-      thumbsHtml += '</div>';
-    }
-
     const el = document.createElement('div');
     el.className = 'lb';
-    el.innerHTML =
-      '<div class="lb-overlay"></div>' +
-      '<div class="lb-hdr">' +
-        '<button class="lb-btn lb-close" aria-label="Close">' + LB_SVG_CLOSE + '</button>' +
-        (hasMultiple
-          ? '<div class="lb-counter"><span class="lb-cur">' + (_lbIndex + 1) + '</span><span class="lb-sep">/</span><span class="lb-tot">' + total + '</span></div>'
-          : '') +
-        '<button class="lb-btn lb-download" aria-label="Download">' + LB_SVG_DOWN + '</button>' +
-      '</div>' +
-      '<div class="lb-stage">' +
-        (hasMultiple ? '<button class="lb-arrow lb-arrow-l" aria-label="Previous">' + LB_SVG_LEFT + '</button>' : '') +
-        '<div class="lb-track">' + slidesHtml + '</div>' +
-        (hasMultiple ? '<button class="lb-arrow lb-arrow-r" aria-label="Next">' + LB_SVG_RIGHT + '</button>' : '') +
-      '</div>' +
-      thumbsHtml;
-
+    el.innerHTML = buildLightboxHtml(urls, _lbIndex);
     document.body.appendChild(el);
     _lb = el;
     document.body.style.overflow = 'hidden';
-
     _lbBindEvents(el);
 
-    // Scroll to start index (instant, before visibility animation)
     requestAnimationFrame(function() {
       const track = el.querySelector('.lb-track');
       if (track && _lbIndex > 0) {
@@ -92,29 +77,27 @@ function openLightbox(urls, startIndex) {
 /**
  * Bind all events
  */
+function _lbBindNavigation(el) {
+  const close = el.querySelector('.lb-close');
+  const overlay = el.querySelector('.lb-overlay');
+  const download = el.querySelector('.lb-download');
+  const arrowL = el.querySelector('.lb-arrow-l');
+  const arrowR = el.querySelector('.lb-arrow-r');
+  const thumbs = el.querySelectorAll('.lb-th');
+  if (close) close.addEventListener('click', closeLightbox);
+  if (overlay) overlay.addEventListener('click', closeLightbox);
+  if (download) download.addEventListener('click', _lbDownload);
+  if (arrowL) arrowL.addEventListener('click', function() { _lbNav(-1); });
+  if (arrowR) arrowR.addEventListener('click', function() { _lbNav(1); });
+  thumbs.forEach(function(th) {
+    th.addEventListener('click', function() { _lbGoTo(parseInt(th.dataset.i)); });
+  });
+}
+
 function _lbBindEvents(el) {
   try {
-    const close = el.querySelector('.lb-close');
-    const overlay = el.querySelector('.lb-overlay');
-    const download = el.querySelector('.lb-download');
-    const arrowL = el.querySelector('.lb-arrow-l');
-    const arrowR = el.querySelector('.lb-arrow-r');
+    _lbBindNavigation(el);
     const track = el.querySelector('.lb-track');
-    const thumbs = el.querySelectorAll('.lb-th');
-
-    if (close) close.addEventListener('click', closeLightbox);
-    if (overlay) overlay.addEventListener('click', closeLightbox);
-    if (download) download.addEventListener('click', _lbDownload);
-    if (arrowL) arrowL.addEventListener('click', function() { _lbNav(-1); });
-    if (arrowR) arrowR.addEventListener('click', function() { _lbNav(1); });
-
-    thumbs.forEach(function(th) {
-      th.addEventListener('click', function() {
-        _lbGoTo(parseInt(th.dataset.i));
-      });
-    });
-
-    // Scroll listener — update counter + thumbs on native swipe
     if (track) {
       let scrollRaf = null;
       track.addEventListener('scroll', function() {
@@ -124,14 +107,11 @@ function _lbBindEvents(el) {
           if (w === 0) return;
           const index = Math.round(track.scrollLeft / w);
           if (index !== _lbIndex && index >= 0 && index < _lbImages.length) {
-            _lbIndex = index;
-            _lbUpdateUI();
+            _lbIndex = index; _lbUpdateUI();
           }
         });
       }, { passive: true });
     }
-
-    // Keyboard navigation
     function onKey(e) {
       if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') _lbNav(-1);
@@ -139,21 +119,13 @@ function _lbBindEvents(el) {
     }
     document.addEventListener('keydown', onKey);
     el._onKey = onKey;
-
-    // Drag-dismiss: swipe down to close
     const stageEl = el.querySelector('.lb-stage');
     if (stageEl && typeof window.addDragDismiss === 'function') {
       window.addDragDismiss(stageEl, {
-        moveTarget: track,
-        fadeTarget: el.querySelector('.lb-overlay'),
+        moveTarget: track, fadeTarget: el.querySelector('.lb-overlay'),
         threshold: 100,
-        canStart: function(e) {
-          if (e.target.closest('.lb-arrow')) return false;
-          return true;
-        },
-        onDismiss: function() {
-          closeLightbox();
-        }
+        canStart: function(e) { return !e.target.closest('.lb-arrow'); },
+        onDismiss: function() { closeLightbox(); }
       });
     }
   } catch (err) {

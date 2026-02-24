@@ -38,18 +38,19 @@
   async function loadStreakDisplay() {
     const _u = window.getCurrentUser ? window.getCurrentUser() : null;
     if (!_u) return;
-    const result = await window.sb.from('user_streaks').select('current_streak').eq('user_id', _u.id).maybeSingle();
+    const result = await window.sb.from('user_stats').select('streak_days').eq('user_id', _u.id).maybeSingle();
     if (!result.data) return;
     const streakEl = document.querySelector('.imp-streak-val');
     if (streakEl) {
-      streakEl.innerHTML = result.data.current_streak + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
+      streakEl.innerHTML = result.data.streak_days + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
     }
   }
 
   async function loadWisdomCard() {
     const result = await window.sb
-      .from('wisdom_cards')
+      .from('posts')
       .select('*')
+      .eq('type', 'wisdom')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -60,33 +61,30 @@
     const textEl = document.querySelector('.wis-text');
     const authorEl = document.querySelector('.wis-author');
     if (textEl) textEl.textContent = '«' + result.data.text + '»';
-    if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'MLM Community');
+    if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
+  }
+
+  async function fetchQuestsData(userId) {
+    const questsResult = await window.sb
+      .from('task_completions').select('*, tasks(*)')
+      .eq('user_id', userId).order('created_at', { ascending: false }).limit(5);
+    const streakRes = await window.sb.from('user_stats').select('streak_days').eq('user_id', userId).maybeSingle();
+    return { quests: questsResult.data || [], streak: streakRes.data };
   }
 
   async function loadQuestsBar() {
     const _u = window.getCurrentUser ? window.getCurrentUser() : null;
     if (!_u) return;
     try {
-      const questsResult = await window.sb
-        .from('user_quests')
-        .select('*')
-        .eq('user_id', _u.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      const quests = (questsResult.data) || [];
-
-      // Streak
-      const streakRes = await window.sb.from('user_streaks').select('current_streak').eq('user_id', _u.id).maybeSingle();
+      const data = await fetchQuestsData(_u.id);
       const streakEl = document.querySelector('.imp-streak-val');
-      if (streakEl && streakRes.data) streakEl.textContent = streakRes.data.current_streak || 0;
-
-      // XP and level from profile
-      const xpEl = document.querySelector('.imp-xp-val');
-      const xpMaxEl = document.querySelector('.imp-xp-max');
-      const lvlEl = document.querySelector('.imp-lvl');
+      if (streakEl && data.streak) streakEl.textContent = data.streak.streak_days || 0;
 
       const _profile = window.getCurrentUser ? window.getCurrentUser() : null;
       if (_profile) {
+        const xpEl = document.querySelector('.imp-xp-val');
+        const xpMaxEl = document.querySelector('.imp-xp-max');
+        const lvlEl = document.querySelector('.imp-lvl');
         if (xpEl) xpEl.textContent = _profile.xp || 0;
         const levels = { pawn: 0, knight: 500, bishop: 2000, rook: 5000, queen: 15000 };
         const levelLabels = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
@@ -95,7 +93,6 @@
         const nextXP = levels[lvlNames[lvlNames.indexOf(curLvl) + 1]] || 20000;
         if (xpMaxEl) xpMaxEl.textContent = nextXP;
         if (lvlEl) lvlEl.textContent = levelLabels[curLvl] || 'Пешка';
-
         const progressBar = document.querySelector('.imp-bar-fill');
         if (progressBar) {
           const prevXP = levels[curLvl] || 0;
@@ -104,11 +101,10 @@
         }
       }
 
-      // Render quests
       const questsBox = document.querySelector('.imp-quests');
-      if (questsBox && quests.length) {
-        questsBox.innerHTML = quests.map(function(q) {
-          return '<div class="q-item imp-quest' + (q.is_completed ? ' done' : '') + '"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">' + (q.quest_templates ? q.quest_templates.title : '') + '</div><div class="q-xp">' + (q.is_completed ? '✓ ' : '') + '+' + (q.quest_templates ? q.quest_templates.xp_reward : 0) + '</div></div>';
+      if (questsBox && data.quests.length) {
+        questsBox.innerHTML = data.quests.map(function(q) {
+          return '<div class="q-item imp-quest' + (q.is_completed ? ' done' : '') + '"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">' + (q.tasks ? q.tasks.title : '') + '</div><div class="q-xp">' + (q.is_completed ? '✓ ' : '') + '+' + (q.tasks ? q.tasks.xp_reward : 0) + '</div></div>';
         }).join('');
       }
     } catch (err) {
@@ -225,47 +221,45 @@
     loadFeedPosts(filter);
   };
 
-  function createPostElement(post) {
-    const profile = post.author || {};
-    const dnaNames = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-    const dnaClasses = { strategist: 'dna-blue', communicator: 'dna-green', creator: 'dna-orange', analyst: 'dna-purple' };
-    const dnaDots = { strategist: '#3b82f6', communicator: '#22c55e', creator: '#f59e0b', analyst: '#a78bfa' };
-    const levelIcons = { pawn: '♟', knight: '♞', bishop: '♝', rook: '♜', queen: '♛' };
+  const POST_DNA_NAMES = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
+  const POST_DNA_CLASSES = { strategist: 'dna-blue', communicator: 'dna-green', creator: 'dna-orange', analyst: 'dna-purple' };
+  const POST_DNA_DOTS = { strategist: '#3b82f6', communicator: '#22c55e', creator: '#f59e0b', analyst: '#a78bfa' };
+  const POST_LEVEL_ICONS = { pawn: '♟', knight: '♞', bishop: '♝', rook: '♜', queen: '♛' };
 
-    const div = document.createElement('div');
-    div.className = 'post-card';
-    div.setAttribute('data-post-id', post.id);
-    div.setAttribute('data-author-dna', profile.dna_type || '');
-
+  function buildPostAuthor(post, profile) {
     let typeBadge = '';
     if (post.type === 'case') typeBadge = '<span class="post-tag t-case">Кейс</span>';
     else if (post.type === 'poll') typeBadge = '<span class="post-tag t-poll">Опрос</span>';
     else if (post.type === 'tip') typeBadge = '<span class="post-tag t-expert">Совет</span>';
     else if (post.type === 'announcement') typeBadge = '<span class="post-tag t-announce">Объявление</span>';
-
-    const ringCls = 'post-ava-ring' + (dnaClasses[profile.dna_type] ? ' ' + dnaClasses[profile.dna_type] : '');
+    const ringCls = 'post-ava-ring' + (POST_DNA_CLASSES[profile.dna_type] ? ' ' + POST_DNA_CLASSES[profile.dna_type] : '');
     const avaContent = profile.avatar_url
       ? '<img src="' + escHtml(profile.avatar_url) + '" alt="">'
       : '<span style="font-size:15px">' + escHtml((profile.name || '?')[0]) + '</span>';
-
     const verBadge = profile.is_verified ? '<span class="post-badge">' + SVG_CHECK + '</span>' : '';
-    const levelIcon = levelIcons[profile.level] || '♟';
-    const dotColor = dnaDots[profile.dna_type] || 'rgba(255,255,255,.15)';
+    const levelIcon = POST_LEVEL_ICONS[profile.level] || '♟';
+    const dotColor = POST_DNA_DOTS[profile.dna_type] || 'rgba(255,255,255,.15)';
+    const cu = getCurrentUser(); const isOwn = cu && post.author_id === cu.id, pid = post.id;
+    const popHtml = isOwn ? '<div class="pop-i" onclick="editPost(\'' + pid + '\')">' + SVG_EDIT + ' Редактировать</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i dng" onclick="deletePost(\'' + pid + '\')">' + SVG_TRASH + ' Удалить</div>'
+      : '<div class="pop-i" onclick="closePopovers();handleBookmark(\'' + pid + '\',this.closest(\'.post-card\').querySelector(\'.r-btn:last-child\'))">' + SVG_SAVE + ' Сохранить</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i" onclick="hidePost(\'' + pid + '\')">' + SVG_HIDE + ' Скрыть</div><div class="pop-i dng" onclick="reportPost(\'' + pid + '\')">' + SVG_WARN + ' Пожаловаться</div>';
+    return '<div class="post-top"><div class="' + ringCls + '"><div class="post-ava">' + avaContent + '</div></div>' +
+      '<div class="post-info"><div class="post-name">' + escHtml(profile.name || 'Участник') + ' ' + verBadge + ' ' + typeBadge + '</div>' +
+      '<div class="post-meta">' + sbFormatDate(post.created_at) + ' · ' + levelIcon + ' · <span class="dna-dot" style="background:' + dotColor + '"></span> ' + (POST_DNA_NAMES[profile.dna_type] || '') + '</div></div>' +
+      '<div class="post-more">' + SVG_DOTS + '<div class="pop">' + popHtml + '</div></div></div>';
+  }
+
+  function buildPostBody(post) {
     let bodyHtml = escHtml(post.content || ''), bodyAttr = '';
     if (bodyHtml.length > 200) { bodyAttr = ' data-full="' + bodyHtml.replace(/"/g, '&quot;') + '"'; bodyHtml = bodyHtml.substring(0, 200) + '... <span class="more-text" onclick="expandPost(this)">Ещё</span>'; }
     bodyHtml = bodyHtml.replace(/#([a-zA-Zа-яА-ЯёЁ0-9_]+)/g, '<span class="hashtag">#$1</span>');
-
     let caseHtml = '';
     if (post.type === 'case' && post.case_data) {
       try {
         const cd = typeof post.case_data === 'string' ? JSON.parse(post.case_data) : post.case_data;
-        caseHtml = '<div class="case-row">' +
-          '<div class="case-bl case-was"><div class="case-lb">БЫЛО</div><div class="case-num">' + escHtml(String(cd.was || '0')) + '</div><div class="case-desc">' + escHtml(cd.was_desc || '') + '</div></div>' +
-          '<div class="case-bl case-now"><div class="case-lb">СТАЛО</div><div class="case-num">' + escHtml(String(cd.now || '0')) + '</div><div class="case-desc">' + escHtml(cd.now_desc || '') + '</div></div>' +
-          '</div>';
+        caseHtml = '<div class="case-row"><div class="case-bl case-was"><div class="case-lb">БЫЛО</div><div class="case-num">' + escHtml(String(cd.was || '0')) + '</div><div class="case-desc">' + escHtml(cd.was_desc || '') + '</div></div>' +
+          '<div class="case-bl case-now"><div class="case-lb">СТАЛО</div><div class="case-num">' + escHtml(String(cd.now || '0')) + '</div><div class="case-desc">' + escHtml(cd.now_desc || '') + '</div></div></div>';
       } catch(e) {}
     }
-
     let pollHtml = '';
     if (post.type === 'poll' && post.poll_data) {
       try {
@@ -275,40 +269,32 @@
           pollHtml = '<div class="poll-opts">';
           opts.forEach(function(o, i) {
             const pct = totalV > 0 ? Math.round((o.votes || 0) / totalV * 100) : 0;
-            pollHtml += '<div class="poll-opt" data-option="' + i + '" data-post-id="' + post.id + '">' +
-              '<div class="poll-fill" style="width:' + pct + '%"></div>' +
-              '<span class="poll-tx">' + escHtml(o.text || '') + '</span>' +
-              '<span class="poll-pct">' + pct + '%</span></div>';
+            pollHtml += '<div class="poll-opt" data-option="' + i + '" data-post-id="' + post.id + '"><div class="poll-fill" style="width:' + pct + '%"></div><span class="poll-tx">' + escHtml(o.text || '') + '</span><span class="poll-pct">' + pct + '%</span></div>';
           });
           pollHtml += '</div><div style="padding:0 16px 8px;font-size:12px;color:rgba(255,255,255,.2)">' + totalV + ' голосов</div>';
         }
       } catch(e) {}
     }
-    const cu = getCurrentUser(); const isOwn = cu && post.author_id === cu.id, pid = post.id;
-    const popHtml = isOwn ? '<div class="pop-i" onclick="editPost(\'' + pid + '\')">' + SVG_EDIT + ' Редактировать</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i dng" onclick="deletePost(\'' + pid + '\')">' + SVG_TRASH + ' Удалить</div>'
-      : '<div class="pop-i" onclick="closePopovers();handleBookmark(\'' + pid + '\',this.closest(\'.post-card\').querySelector(\'.r-btn:last-child\'))">' + SVG_SAVE + ' Сохранить</div><div class="pop-i" onclick="copyPostText(\'' + pid + '\')">' + SVG_COPY + ' Копировать текст</div><div class="pop-i" onclick="copyPostLink(\'' + pid + '\')">' + SVG_LINK + ' Копировать ссылку</div><div class="pop-d"></div><div class="pop-i" onclick="hidePost(\'' + pid + '\')">' + SVG_HIDE + ' Скрыть</div><div class="pop-i dng" onclick="reportPost(\'' + pid + '\')">' + SVG_WARN + ' Пожаловаться</div>';
+    return '<div class="post-body"' + bodyAttr + '>' + bodyHtml + '</div>' + caseHtml + pollHtml;
+  }
 
-    div.innerHTML =
-      '<div class="post-top">' +
-        '<div class="' + ringCls + '"><div class="post-ava">' + avaContent + '</div></div>' +
-        '<div class="post-info">' +
-          '<div class="post-name">' + escHtml(profile.name || 'Участник') + ' ' + verBadge + ' ' + typeBadge + '</div>' +
-          '<div class="post-meta">' + sbFormatDate(post.created_at) + ' · ' + levelIcon + ' · <span class="dna-dot" style="background:' + dotColor + '"></span> ' + (dnaNames[profile.dna_type] || '') + '</div>' +
-        '</div>' +
-        '<div class="post-more">' + SVG_DOTS + '<div class="pop">' + popHtml + '</div></div>' +
-      '</div>' +
-      buildPostImages(post) +
-      '<div class="post-body"' + bodyAttr + '>' + bodyHtml + '</div>' +
-      caseHtml + pollHtml +
-      '<div class="post-react">' +
-        '<div class="r-btn" onclick="handleLike(\'' + post.id + '\',this)"><span class="r-icon">' + SVG_HEART + '</span><span class="r-n">' + (post.likes_count || 0) + '</span></div>' +
-        '<div class="r-btn" onclick="handleComment(\'' + post.id + '\')"><span class="r-icon">' + SVG_CMT + '</span><span class="r-n">' + (post.comments_count || 0) + '</span></div>' +
-        '<div class="r-btn" onclick="showShareSheet(\'' + post.id + '\')"><span class="r-icon">' + SVG_SHARE + '</span></div>' +
-        '<div class="r-spacer"></div>' +
-        '<div class="r-views">' + fmtViews(post.views_count) + '</div>' +
-        '<div class="r-btn" onclick="handleBookmark(\'' + post.id + '\',this)"><span class="r-icon">' + SVG_SAVE + '</span></div>' +
-      '</div>';
+  function buildPostActions(post) {
+    return '<div class="post-react">' +
+      '<div class="r-btn" onclick="handleLike(\'' + post.id + '\',this)"><span class="r-icon">' + SVG_HEART + '</span><span class="r-n">' + (post.likes_count || 0) + '</span></div>' +
+      '<div class="r-btn" onclick="handleComment(\'' + post.id + '\')"><span class="r-icon">' + SVG_CMT + '</span><span class="r-n">' + (post.comments_count || 0) + '</span></div>' +
+      '<div class="r-btn" onclick="showShareSheet(\'' + post.id + '\')"><span class="r-icon">' + SVG_SHARE + '</span></div>' +
+      '<div class="r-spacer"></div>' +
+      '<div class="r-views">' + fmtViews(post.views_count) + '</div>' +
+      '<div class="r-btn" onclick="handleBookmark(\'' + post.id + '\',this)"><span class="r-icon">' + SVG_SAVE + '</span></div></div>';
+  }
 
+  function createPostElement(post) {
+    const profile = post.author || {};
+    const div = document.createElement('div');
+    div.className = 'post-card';
+    div.setAttribute('data-post-id', post.id);
+    div.setAttribute('data-author-dna', profile.dna_type || '');
+    div.innerHTML = buildPostAuthor(post, profile) + buildPostImages(post) + buildPostBody(post) + buildPostActions(post);
     return div;
   }
 

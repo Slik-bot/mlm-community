@@ -173,8 +173,7 @@ function switchShopTab(tab, btn) {
 async function loadTools() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  let r = await sb.from('products').select('*, tool_categories(name)').order('created_at', { ascending: false });
-  if (r.error) r = await sb.from('products').select('*').order('created_at', { ascending: false });
+  let r = await sb.from('products').select('*').order('created_at', { ascending: false });
   let data = r.data || [];
   if (data.length) {
     let ids = data.map(function(t) { return t.author_id; }).filter(Boolean);
@@ -190,7 +189,7 @@ async function loadTools() {
     '<th>Название</th><th>Автор</th><th>Категория</th><th>Цена</th><th>Скач.</th><th>Рейтинг</th><th>Статус</th><th>Действия</th>' +
     '</tr></thead><tbody>';
   data.forEach(function(t) {
-    const cat = t.tool_categories ? t.tool_categories.name : '—';
+    const cat = t.category || '—';
     const price = t.is_free ? '<span class="badge badge-green">Free</span>' : (t.price || 0) + ' ₽';
     const st = t.is_active !== false ? '<span class="badge badge-green">Акт</span>' : '<span class="badge badge-red">Скрыт</span>';
     h += '<tr><td><b>' + esc(t.title) + '</b></td><td>' + esc(t._author || '—') + '</td>' +
@@ -219,48 +218,57 @@ async function delTool(id) {
 async function loadToolCats() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('tool_categories').select('*').order('sort_order', { ascending: true });
-  const data = r.data || [];
+  const r = await sb.from('platform_settings').select('*').eq('key', 'product_categories').single();
+  const data = (r.data && r.data.value) || [];
   let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openCatModal()">Добавить категорию</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет категорий</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Иконка</th><th>Название</th><th>Порядок</th><th>Активна</th><th>Действия</th>' +
     '</tr></thead><tbody>';
-  data.forEach(function(c) {
+  data.forEach(function(c, idx) {
     const act = c.is_active !== false ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td>' + esc(c.icon || '—') + '</td><td><b>' + esc(c.name) + '</b></td>' +
       '<td>' + (c.sort_order || 0) + '</td><td>' + act + '</td>' +
       '<td class="actions">' +
-        '<button class="btn btn-ghost btn-sm" onclick="openCatModal(\'' + c.id + '\')">Ред.</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delCat(\'' + c.id + '\')">Удалить</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="openCatModal(' + idx + ')">Ред.</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="delCat(' + idx + ')">Удалить</button>' +
       '</td></tr>';
   });
   h += '</tbody></table></div>';
   area.innerHTML = h;
 }
 
-async function openCatModal(id) {
+async function openCatModal(idx) {
   let c = {};
-  if (id) { const r = await sb.from('tool_categories').select('*').eq('id', id).single(); c = r.data || {}; }
+  if (idx !== undefined) {
+    const r = await sb.from('platform_settings').select('*').eq('key', 'product_categories').single();
+    c = ((r.data && r.data.value) || [])[idx] || {};
+  }
   const body = '<div class="fg"><div class="fl">Название</div><input class="field" id="catName" value="' + esc(c.name || '') + '"></div>' +
     '<div class="fg"><div class="fl">Иконка</div><input class="field" id="catIcon" value="' + esc(c.icon || '') + '"></div>' +
     '<div class="fg"><div class="fl">Порядок</div><input type="number" class="field" id="catOrder" value="' + (c.sort_order || 0) + '"></div>' +
-    '<div class="modal-actions"><button class="btn btn-primary" onclick="saveCat(\'' + (id || '') + '\')">Сохранить</button></div>';
-  openModal(id ? 'Редактировать категорию' : 'Новая категория', body);
+    '<div class="modal-actions"><button class="btn btn-primary" onclick="saveCat(' + (idx !== undefined ? idx : -1) + ')">Сохранить</button></div>';
+  openModal(idx !== undefined ? 'Редактировать категорию' : 'Новая категория', body);
 }
 
-async function saveCat(id) {
+async function saveCat(idx) {
   const d = { name: document.getElementById('catName').value.trim(), icon: document.getElementById('catIcon').value.trim(), sort_order: parseInt(document.getElementById('catOrder').value) || 0 };
   if (!d.name) { showToast('Введите название', 'err'); return; }
-  const r = id ? await sb.from('tool_categories').update(d).eq('id', id) : await sb.from('tool_categories').insert(d);
-  if (r.error) { showToast(r.error.message, 'err'); return; }
-  showToast(id ? 'Обновлена' : 'Создана', 'ok');
+  const r = await sb.from('platform_settings').select('*').eq('key', 'product_categories').single();
+  const arr = (r.data && r.data.value) || [];
+  if (idx >= 0) { arr[idx] = Object.assign(arr[idx] || {}, d); } else { arr.push(d); }
+  const res = await sb.from('platform_settings').upsert({ key: 'product_categories', value: arr, updated_at: new Date().toISOString() });
+  if (res.error) { showToast(res.error.message, 'err'); return; }
+  showToast(idx >= 0 ? 'Обновлена' : 'Создана', 'ok');
   closeModal(); loadToolCats();
 }
 
-async function delCat(id) {
+async function delCat(idx) {
   if (!confirm('Удалить категорию?')) return;
-  await sb.from('tool_categories').delete().eq('id', id);
+  const r = await sb.from('platform_settings').select('*').eq('key', 'product_categories').single();
+  const arr = (r.data && r.data.value) || [];
+  arr.splice(idx, 1);
+  await sb.from('platform_settings').upsert({ key: 'product_categories', value: arr, updated_at: new Date().toISOString() });
   showToast('Удалена', 'ok'); loadToolCats();
 }
 
@@ -268,21 +276,21 @@ async function delCat(id) {
 async function loadPromos() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('promo_codes').select('*').order('created_at', { ascending: false });
-  const data = r.data || [];
+  const r = await sb.from('platform_settings').select('*').eq('key', 'promo_codes').single();
+  const data = (r.data && r.data.value) || [];
   let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openPromoModal()">Создать промокод</button></div>';
   if (!data.length) { area.innerHTML = h + '<div class="empty">Нет промокодов</div>'; return; }
   h += '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>Код</th><th>Скидка</th><th>Исп./Макс</th><th>Применяется</th><th>Истекает</th><th>Активен</th><th>Действия</th>' +
     '</tr></thead><tbody>';
-  data.forEach(function(p) {
+  data.forEach(function(p, idx) {
     const act = p.is_active ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>';
     h += '<tr><td><b>' + esc(p.code) + '</b></td><td>' + (p.discount_percent || 0) + '%</td>' +
       '<td>' + (p.used_count || 0) + '/' + (p.max_uses || '∞') + '</td>' +
       '<td>' + esc(p.applies_to || '—') + '</td><td>' + fmtDate(p.expires_at) + '</td><td>' + act + '</td>' +
       '<td class="actions">' +
-        '<button class="btn btn-ghost btn-sm" onclick="togPromo(\'' + p.id + '\',' + p.is_active + ')">' + (p.is_active ? 'Деактив.' : 'Актив.') + '</button>' +
-        '<button class="btn btn-danger btn-sm" onclick="delPromo(\'' + p.id + '\')">Удалить</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="togPromo(' + idx + ')">' + (p.is_active ? 'Деактив.' : 'Актив.') + '</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="delPromo(' + idx + ')">Удалить</button>' +
       '</td></tr>';
   });
   h += '</tbody></table></div>';
@@ -306,22 +314,32 @@ async function savePromo() {
     max_uses: parseInt(document.getElementById('pmMax').value) || null,
     applies_to: document.getElementById('pmApplies').value.trim() || null,
     expires_at: document.getElementById('pmExp').value || null,
-    is_active: true
+    is_active: true,
+    used_count: 0
   };
   if (!d.code || !d.discount_percent) { showToast('Заполните код и скидку', 'err'); return; }
-  const r = await sb.from('promo_codes').insert(d);
-  if (r.error) { showToast(r.error.message, 'err'); return; }
+  const r = await sb.from('platform_settings').select('*').eq('key', 'promo_codes').single();
+  const arr = (r.data && r.data.value) || [];
+  arr.push(d);
+  const res = await sb.from('platform_settings').upsert({ key: 'promo_codes', value: arr, updated_at: new Date().toISOString() });
+  if (res.error) { showToast(res.error.message, 'err'); return; }
   showToast('Промокод создан', 'ok'); closeModal(); loadPromos();
 }
 
-async function togPromo(id, cur) {
-  await sb.from('promo_codes').update({ is_active: !cur }).eq('id', id);
-  showToast(!cur ? 'Активирован' : 'Деактивирован', 'ok'); loadPromos();
+async function togPromo(idx) {
+  const r = await sb.from('platform_settings').select('*').eq('key', 'promo_codes').single();
+  const arr = (r.data && r.data.value) || [];
+  if (arr[idx]) arr[idx].is_active = !arr[idx].is_active;
+  await sb.from('platform_settings').upsert({ key: 'promo_codes', value: arr, updated_at: new Date().toISOString() });
+  showToast(arr[idx] && arr[idx].is_active ? 'Активирован' : 'Деактивирован', 'ok'); loadPromos();
 }
 
-async function delPromo(id) {
+async function delPromo(idx) {
   if (!confirm('Удалить промокод?')) return;
-  await sb.from('promo_codes').delete().eq('id', id);
+  const r = await sb.from('platform_settings').select('*').eq('key', 'promo_codes').single();
+  const arr = (r.data && r.data.value) || [];
+  arr.splice(idx, 1);
+  await sb.from('platform_settings').upsert({ key: 'promo_codes', value: arr, updated_at: new Date().toISOString() });
   showToast('Удалён', 'ok'); loadPromos();
 }
 

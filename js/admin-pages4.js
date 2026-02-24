@@ -21,7 +21,7 @@ function switchSetTab(tab, btn) {
 async function loadTariffs() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('app_settings').select('*').eq('key', 'tariffs').single();
+  const r = await sb.from('platform_settings').select('*').eq('key', 'tariffs').single();
   const cfg = (r.data && r.data.value) || {
     free: { monthly: 0, yearly: 0, posts_day: 3, cases: 1, tools: 0 },
     pro: { monthly: 499, yearly: 4990, posts_day: 10, cases: 5, tools: 5 },
@@ -57,7 +57,7 @@ async function saveTariffs() {
       tools: parseInt(document.getElementById('tf_' + p + '_tl').value) || 0
     };
   });
-  const r = await sb.from('app_settings').upsert({ key: 'tariffs', value: val, updated_at: new Date().toISOString() });
+  const r = await sb.from('platform_settings').upsert({ key: 'tariffs', value: val, updated_at: new Date().toISOString() });
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast('Тарифы сохранены', 'ok');
 }
@@ -66,8 +66,8 @@ async function saveTariffs() {
 async function loadXpRules() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const xpR = await sb.from('app_settings').select('*').eq('key', 'xp_rules').single();
-  const lvlR = await sb.from('app_settings').select('*').eq('key', 'levels').single();
+  const xpR = await sb.from('platform_settings').select('*').eq('key', 'xp_rules').single();
+  const lvlR = await sb.from('platform_settings').select('*').eq('key', 'levels').single();
   const xp = (xpR.data && xpR.data.value) || { post: 15, like: 5, comment: 10, share: 25, friend: 10 };
   const lvl = (lvlR.data && lvlR.data.value) || { pawn: 0, knight: 500, bishop: 1500, rook: 3000, queen: 5000, king: 10000 };
   const actions = ['post', 'like', 'comment', 'share', 'friend'];
@@ -96,8 +96,8 @@ async function saveXpRules() {
   const lvl = {};
   levels.forEach(function(l) { lvl[l] = parseInt(document.getElementById('lv_' + l).value) || 0; });
   const now = new Date().toISOString();
-  await sb.from('app_settings').upsert({ key: 'xp_rules', value: xp, updated_at: now });
-  await sb.from('app_settings').upsert({ key: 'levels', value: lvl, updated_at: now });
+  await sb.from('platform_settings').upsert({ key: 'xp_rules', value: xp, updated_at: now });
+  await sb.from('platform_settings').upsert({ key: 'levels', value: lvl, updated_at: now });
   showToast('XP и уровни сохранены', 'ok');
 }
 
@@ -105,8 +105,8 @@ async function saveXpRules() {
 async function loadDnaQuestions() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('dna_questions').select('*').order('sort_order', { ascending: true });
-  const data = r.data || [];
+  const r = await sb.from('platform_settings').select('*').eq('key', 'dna_questions').single();
+  const data = (r.data && r.data.value) || [];
   if (!data.length) { area.innerHTML = '<div class="empty">Нет вопросов</div>'; return; }
   let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
     '<th>#</th><th>Вопрос</th><th>Вариантов</th><th>Порядок</th><th>Активен</th>' +
@@ -188,7 +188,7 @@ async function delReview(id) {
 async function loadIntegrations() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
+  const r = await sb.from('platform_settings').select('*').eq('key', 'integrations').single();
   const cfg = (r.data && r.data.value) || {};
   const items = [
     { key: 'telegram_bot', name: 'Telegram Bot', icon: '🤖', field: 'Токен бота', placeholder: 'bot123456:ABC...' },
@@ -215,11 +215,11 @@ async function loadIntegrations() {
   area.innerHTML = h;
 }
 async function saveIntegration(key) {
-  const r = await sb.from('app_settings').select('*').eq('key', 'integrations').single();
+  const r = await sb.from('platform_settings').select('*').eq('key', 'integrations').single();
   const cfg = (r.data && r.data.value) || {};
   const token = document.getElementById('int_' + key).value.trim();
   cfg[key] = { token: token, connected: !!token };
-  const res = await sb.from('app_settings').upsert({ key: 'integrations', value: cfg, updated_at: new Date().toISOString() });
+  const res = await sb.from('platform_settings').upsert({ key: 'integrations', value: cfg, updated_at: new Date().toISOString() });
   if (res.error) { showToast(res.error.message, 'err'); return; }
   showToast('Сохранено', 'ok'); loadIntegrations();
 }

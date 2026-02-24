@@ -22,7 +22,7 @@ function switchGamTab(tab, btn) {
 async function loadQuests() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('quest_templates').select('*').order('created_at', { ascending: false });
+  const r = await sb.from('tasks').select('*').order('created_at', { ascending: false });
   _questsCache = r.data || [];
   let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openQuestModal()">Создать квест</button></div>';
   if (!_questsCache.length) { area.innerHTML = h + '<div class="empty">Нет квестов</div>'; return; }
@@ -47,7 +47,7 @@ async function loadQuests() {
 
 async function openQuestModal(id) {
   let q = {};
-  if (id) { const r = await sb.from('quest_templates').select('*').eq('id', id).single(); q = r.data || {}; }
+  if (id) { const r = await sb.from('tasks').select('*').eq('id', id).single(); q = r.data || {}; }
   const dnaOpts = '<option value="">Все</option><option value="strategist"' + (q.dna_type === 'strategist' ? ' selected' : '') + '>Стратег</option>' +
     '<option value="mentor"' + (q.dna_type === 'mentor' ? ' selected' : '') + '>Ментор</option>' +
     '<option value="communicator"' + (q.dna_type === 'communicator' ? ' selected' : '') + '>Коммуникатор</option>' +
@@ -79,19 +79,19 @@ async function saveQuest(id) {
     is_active: document.getElementById('qActive').value === 'true'
   };
   if (!d.title) { showToast('Введите название', 'err'); return; }
-  const r = id ? await sb.from('quest_templates').update(d).eq('id', id) : await sb.from('quest_templates').insert(d);
+  const r = id ? await sb.from('tasks').update(d).eq('id', id) : await sb.from('tasks').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Квест обновлён' : 'Квест создан', 'ok');
   closeModal(); loadQuests();
 }
 
 async function togQuest(id, cur) {
-  await sb.from('quest_templates').update({ is_active: !cur }).eq('id', id);
+  await sb.from('tasks').update({ is_active: !cur }).eq('id', id);
   showToast(!cur ? 'Активирован' : 'Деактивирован', 'ok'); loadQuests();
 }
 async function delQuest(id) {
   if (!confirm('Удалить квест?')) return;
-  await sb.from('quest_templates').delete().eq('id', id);
+  await sb.from('tasks').delete().eq('id', id);
   showToast('Квест удалён', 'ok'); loadQuests();
 }
 
@@ -99,7 +99,7 @@ async function delQuest(id) {
 async function loadAchievements() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('achievements_catalog').select('*').order('created_at', { ascending: false });
+  const r = await sb.from('achievements').select('*').order('created_at', { ascending: false });
   _achCache = r.data || [];
   let h = '<div class="toolbar"><button class="btn btn-primary" onclick="openAchModal()">Создать достижение</button></div>';
   if (!_achCache.length) { area.innerHTML = h + '<div class="empty">Нет достижений</div>'; return; }
@@ -124,7 +124,7 @@ async function loadAchievements() {
 
 async function openAchModal(id) {
   let a = {};
-  if (id) { const r = await sb.from('achievements_catalog').select('*').eq('id', id).single(); a = r.data || {}; }
+  if (id) { const r = await sb.from('achievements').select('*').eq('id', id).single(); a = r.data || {}; }
   const catOpts = '<option value="social"' + (a.category === 'social' ? ' selected' : '') + '>social</option>' +
     '<option value="content"' + (a.category === 'content' ? ' selected' : '') + '>content</option>' +
     '<option value="trading"' + (a.category === 'trading' ? ' selected' : '') + '>trading</option>' +
@@ -153,7 +153,7 @@ async function saveAch(id) {
     condition_value: parseInt(document.getElementById('achCondVal').value) || null
   };
   if (!d.key || !d.title) { showToast('Введите ключ и название', 'err'); return; }
-  const r = id ? await sb.from('achievements_catalog').update(d).eq('id', id) : await sb.from('achievements_catalog').insert(d);
+  const r = id ? await sb.from('achievements').update(d).eq('id', id) : await sb.from('achievements').insert(d);
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast(id ? 'Достижение обновлено' : 'Достижение создано', 'ok');
   closeModal(); loadAchievements();
@@ -161,7 +161,7 @@ async function saveAch(id) {
 
 async function delAch(id) {
   if (!confirm('Удалить достижение?')) return;
-  await sb.from('achievements_catalog').delete().eq('id', id);
+  await sb.from('achievements').delete().eq('id', id);
   showToast('Достижение удалено', 'ok'); loadAchievements();
 }
 

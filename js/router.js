@@ -55,6 +55,47 @@ const TEMPLATES = {
 };
 const loadedTemplates = {};
 
+const SCREEN_INITS = {
+  scrLanding: ['initLandingModals', 'initLanding'],
+  scrFeed: ['initFeed'],
+  scrProfile: ['initProfile'],
+  scrProfileEdit: ['initProfileEdit'],
+  scrProfileSettings: ['initProfileSettings'],
+  scrChatList: ['initChatList'],
+  scrChat: ['initChat'],
+  scrChatInfo: ['initChatInfo'],
+  scrDealList: ['initDealList'],
+  scrDealCreate: ['initDealCreate'],
+  scrDealDetail: ['initDealDetail'],
+  scrShop: ['initShop'],
+  scrProductDetail: ['initProductDetail'],
+  scrProductCreate: ['initProductCreate'],
+  scrForum: ['initForum'],
+  scrForumTopic: ['initForumTopic'],
+  scrForumCreate: ['initForumCreate'],
+  scrTasks: ['initTasks'],
+  scrTaskDetail: ['initTaskDetail'],
+  scrContests: ['initContests'],
+  scrContestDetail: ['initContestDetail'],
+  scrExperts: ['initExperts'],
+  scrExpertDetail: ['initExpertDetail'],
+  scrBecomeExpert: ['initBecomeExpert'],
+  scrMatch: ['initMatch'],
+  scrMatchList: ['initMatchList'],
+  scrAcademy: ['initAcademy'],
+  scrCourse: ['initCourse'],
+  scrLesson: ['initLesson'],
+  scrWebinars: ['initWebinars'],
+  scrWebinarDetail: ['initWebinarDetail'],
+  scrAlliances: ['initAlliances'],
+  scrWallet: ['initWallet'],
+  scrVerification: ['initVerification'],
+  scrNotifications: ['initNotifications'],
+  scrMore: ['initMore'],
+  scrQuest: ['initQuest'],
+  scrDnaResult: ['initDnaResult']
+};
+
 async function loadTemplate(id) {
   if (loadedTemplates[id]) return loadedTemplates[id];
   const path = TEMPLATES[id];
@@ -85,153 +126,69 @@ function resetWelcomeAnimations() {
   });
 }
 
+function handleExistingTemplate(id) {
+  if (id === 'scrLanding' && window.initLandingModals) window.initLandingModals();
+  if (id === 'scrWelcome') {
+    const scrW = document.getElementById('scrWelcome');
+    if (scrW) scrW.classList.add('w-no-anim');
+  }
+  if (id === 'scrDnaTest' && window.dnaReset) window.dnaReset();
+  if (id === 'scrDnaResult' && window.initDnaResult) window.initDnaResult();
+}
+
+function initScreenModule(id) {
+  if (id === 'scrWelcome') {
+    createParticles('welcomeParticles');
+    resetWelcomeAnimations();
+    return;
+  }
+  const inits = SCREEN_INITS[id];
+  if (!inits) return;
+  inits.forEach(function(fnName) {
+    if (window[fnName]) window[fnName]();
+  });
+}
+
 async function ensureTemplate(id) {
   if (document.getElementById(id)) {
-    if (id === 'scrLanding') {
-      if (window.initLandingModals) window.initLandingModals();
-    }
-    if (id === 'scrWelcome') {
-      const scrW = document.getElementById('scrWelcome');
-      if (scrW) scrW.classList.add('w-no-anim');
-    }
-    if (id === 'scrDnaTest') {
-      if (window.dnaReset) window.dnaReset();
-    }
-    if (id === 'scrDnaResult') {
-      if (window.initDnaResult) window.initDnaResult();
-    }
+    handleExistingTemplate(id);
     return;
   }
   const html = await loadTemplate(id);
   if (!html) return;
   const app = document.querySelector('.app');
   app.insertAdjacentHTML('beforeend', html);
-
-  if (id === 'scrLanding') {
-    if (window.initLandingModals) window.initLandingModals();
-    if (window.initLanding) window.initLanding();
-  }
-  if (id === 'scrFeed') {
-    if (window.initFeed) window.initFeed();
-  }
-  if (id === 'scrProfile') {
-    if (window.initProfile) window.initProfile();
-  }
-  if (id === 'scrProfileEdit') {
-    if (window.initProfileEdit) window.initProfileEdit();
-  }
-  if (id === 'scrProfileSettings') {
-    if (window.initProfileSettings) window.initProfileSettings();
-  }
-  if (id === 'scrChatList') {
-    if (window.initChatList) window.initChatList();
-  }
-  if (id === 'scrChat') {
-    if (window.initChat) window.initChat();
-  }
-  if (id === 'scrChatInfo') {
-    if (window.initChatInfo) window.initChatInfo();
-  }
-  if (id === 'scrDealList') {
-    if (window.initDealList) window.initDealList();
-  }
-  if (id === 'scrDealCreate') {
-    if (window.initDealCreate) window.initDealCreate();
-  }
-  if (id === 'scrDealDetail') {
-    if (window.initDealDetail) window.initDealDetail();
-  }
-  if (id === 'scrShop') {
-    if (window.initShop) window.initShop();
-  }
-  if (id === 'scrProductDetail') {
-    if (window.initProductDetail) window.initProductDetail();
-  }
-  if (id === 'scrProductCreate') {
-    if (window.initProductCreate) window.initProductCreate();
-  }
-  if (id === 'scrForum') {
-    if (window.initForum) window.initForum();
-  }
-  if (id === 'scrForumTopic') {
-    if (window.initForumTopic) window.initForumTopic();
-  }
-  if (id === 'scrForumCreate') {
-    if (window.initForumCreate) window.initForumCreate();
-  }
-  if (id === 'scrTasks') {
-    if (window.initTasks) window.initTasks();
-  }
-  if (id === 'scrTaskDetail') {
-    if (window.initTaskDetail) window.initTaskDetail();
-  }
-  if (id === 'scrContests') {
-    if (window.initContests) window.initContests();
-  }
-  if (id === 'scrContestDetail') {
-    if (window.initContestDetail) window.initContestDetail();
-  }
-  if (id === 'scrExperts') {
-    if (window.initExperts) window.initExperts();
-  }
-  if (id === 'scrExpertDetail') {
-    if (window.initExpertDetail) window.initExpertDetail();
-  }
-  if (id === 'scrBecomeExpert') {
-    if (window.initBecomeExpert) window.initBecomeExpert();
-  }
-  if (id === 'scrMatch') {
-    if (window.initMatch) window.initMatch();
-  }
-  if (id === 'scrMatchList') {
-    if (window.initMatchList) window.initMatchList();
-  }
-  if (id === 'scrAcademy') {
-    if (window.initAcademy) window.initAcademy();
-  }
-  if (id === 'scrCourse') {
-    if (window.initCourse) window.initCourse();
-  }
-  if (id === 'scrLesson') {
-    if (window.initLesson) window.initLesson();
-  }
-  if (id === 'scrWebinars') {
-    if (window.initWebinars) window.initWebinars();
-  }
-  if (id === 'scrWebinarDetail') {
-    if (window.initWebinarDetail) window.initWebinarDetail();
-  }
-  if (id === 'scrAlliances') {
-    if (window.initAlliances) window.initAlliances();
-  }
-  if (id === 'scrWallet') {
-    if (window.initWallet) window.initWallet();
-  }
-  if (id === 'scrVerification') {
-    if (window.initVerification) window.initVerification();
-  }
-  if (id === 'scrNotifications') {
-    if (window.initNotifications) window.initNotifications();
-  }
-  if (id === 'scrMore') {
-    if (window.initMore) window.initMore();
-  }
-  if (id === 'scrQuest') {
-    if (window.initQuest) window.initQuest();
-  }
-  if (id === 'scrDnaResult') {
-    if (window.initDnaResult) window.initDnaResult();
-  }
-  if (id === 'scrWelcome') {
-    createParticles('welcomeParticles');
-    resetWelcomeAnimations();
-  }
+  initScreenModule(id);
 }
 
 function updateChrome(id){
   const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop'||id==='scrMore';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
+}
+
+function handleScreenTransition(currentEl, nextEl, direction) {
+  const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canAnimate && currentEl) {
+    isTransitioning = true;
+    nextEl.scrollTop = 0;
+    nextEl.classList.remove('hidden', 'back-hidden');
+    const enterCls = direction === 'forward' ? 'scr-tr-enter-right' : 'scr-tr-enter-left';
+    const exitCls = direction === 'forward' ? 'scr-tr-exit-left' : 'scr-tr-exit-right';
+    nextEl.classList.add('scr-tr-enter', enterCls);
+    if (direction === 'back') currentEl.classList.remove('back-hidden');
+    currentEl.classList.add(exitCls);
+    setTimeout(function() {
+      nextEl.classList.remove('scr-tr-enter', enterCls);
+      currentEl.classList.remove(exitCls);
+      currentEl.classList.add(direction === 'forward' ? 'back-hidden' : 'hidden');
+      isTransitioning = false;
+    }, 400);
+  } else {
+    if (direction === 'forward') { currentEl.classList.add('back-hidden'); }
+    else { currentEl.classList.add('hidden'); currentEl.classList.remove('back-hidden'); }
+    nextEl.classList.remove('hidden', 'back-hidden');
+  }
 }
 
 async function goTo(id) {
@@ -243,72 +200,37 @@ async function goTo(id) {
   await ensureTemplate(id);
 
   const onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
-  if (onbScreens.indexOf(id) !== -1) {
-    document.body.classList.add('onboarding-mode');
-  } else {
-    document.body.classList.remove('onboarding-mode');
-  }
+  if (onbScreens.indexOf(id) !== -1) { document.body.classList.add('onboarding-mode'); }
+  else { document.body.classList.remove('onboarding-mode'); }
   closePopovers(); closeFab();
-  // Скрываем лендинг при переходе к любому экрану (у него нет .scr)
   const lndEl = document.getElementById('scrLanding');
   if (lndEl && id !== 'scrLanding') lndEl.classList.add('hidden');
 
   const current = navHistory[navHistory.length-1];
   if(current===id) return;
 
-  // Сброс классов анимаций Welcome при уходе с экрана
   if (current === 'scrWelcome') {
     const wEl = document.getElementById('scrWelcome');
-    if (wEl) {
-      wEl.classList.remove('scr-welcome-ready');
-      wEl.classList.remove('w-no-anim');
-    }
+    if (wEl) { wEl.classList.remove('scr-welcome-ready'); wEl.classList.remove('w-no-anim'); }
   }
 
   const currentEl = document.getElementById(current);
   const nextEl = document.getElementById(id);
   if(!nextEl) return;
 
-  // Сброс состояния DNA-карточки при уходе с экрана
   if(current==='scrDnaResult'){
-    const rv=document.getElementById('revealScreen');
-    if(rv) rv.classList.add('hidden');
-    const mc=document.getElementById('mainCard');
-    if(mc){mc.classList.remove('revealed');mc.style.cssText='';}
+    const rv=document.getElementById('revealScreen'); if(rv) rv.classList.add('hidden');
+    const mc=document.getElementById('mainCard'); if(mc){mc.classList.remove('revealed');mc.style.cssText='';}
   }
 
   navHistory.push(id);
   updateChrome(id);
-
-  const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if(canAnimate && currentEl){
-    isTransitioning = true;
-    nextEl.scrollTop = 0;
-    /* Показать новый экран, запустить анимации */
-    nextEl.classList.remove('hidden','back-hidden');
-    nextEl.classList.add('scr-tr-enter','scr-tr-enter-right');
-    currentEl.classList.add('scr-tr-exit-left');
-
-    setTimeout(function(){
-      nextEl.classList.remove('scr-tr-enter','scr-tr-enter-right');
-      currentEl.classList.remove('scr-tr-exit-left');
-      currentEl.classList.add('back-hidden');
-      isTransitioning = false;
-    }, 400);
-  } else {
-    /* Мгновенный переход (reduced-motion fallback) */
-    currentEl.classList.add('back-hidden');
-    nextEl.classList.remove('hidden','back-hidden');
-  }
+  handleScreenTransition(currentEl, nextEl, 'forward');
 
   if(id==='scrSearch') setTimeout(function(){document.getElementById('searchInp').focus()},450);
   if(id==='scrFeed'){
     const feedName=document.getElementById('feedUserName');
-    if(feedName){
-      const uName=localStorage.getItem('userName')||'Участник';
-      feedName.textContent='Привет, '+uName+'!';
-    }
+    if(feedName){ feedName.textContent='Привет, '+(localStorage.getItem('userName')||'Участник')+'!'; }
   }
 }
 
@@ -316,39 +238,14 @@ async function goBack() {
   if(isTransitioning) return;
   if(navHistory.length<=1) return;
   if (window.haptic) haptic('light');
-
   const current = navHistory.pop();
   const prev = navHistory[navHistory.length-1];
   await ensureTemplate(prev);
   const currentEl = document.getElementById(current);
   const prevEl = document.getElementById(prev);
   if(!prevEl) return;
-
   updateChrome(prev);
-
-  const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if(canAnimate && currentEl){
-    isTransitioning = true;
-    prevEl.scrollTop = 0;
-    /* Показать предыдущий экран, запустить анимации */
-    prevEl.classList.remove('hidden','back-hidden');
-    prevEl.classList.add('scr-tr-enter','scr-tr-enter-left');
-    currentEl.classList.remove('back-hidden');
-    currentEl.classList.add('scr-tr-exit-right');
-
-    setTimeout(function(){
-      prevEl.classList.remove('scr-tr-enter','scr-tr-enter-left');
-      currentEl.classList.remove('scr-tr-exit-right');
-      currentEl.classList.add('hidden');
-      isTransitioning = false;
-    }, 400);
-  } else {
-    /* Мгновенный переход (reduced-motion fallback) */
-    currentEl.classList.add('hidden');
-    currentEl.classList.remove('back-hidden');
-    prevEl.classList.remove('back-hidden','hidden');
-  }
+  handleScreenTransition(currentEl, prevEl, 'back');
 }
 
 // Init: hide nav & FAB on landing

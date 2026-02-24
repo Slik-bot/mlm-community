@@ -132,68 +132,52 @@ window.initSplash = function(callback) {
   const startTime = Date.now();
   let rafId = null;
 
+  function animateProgress(elapsed) {
+    // Буквы (4s — начинают появляться пока фон ещё угасает)
+    if (elapsed >= 4) {
+      letterEls.forEach((el, i) => {
+        const s = 4 + i * 0.45;
+        const e = s + 1.8;
+        const p = easeOut4(clamp((elapsed - s) / (e - s)));
+        el.style.opacity = p;
+        el.style.transform = `scale(${lerp(3, 1, p)}) translateY(${lerp(-30, 0, p)}px)`;
+        el.style.filter = p < 0.99 ? `blur(${lerp(20, 0, p)}px)` : 'none';
+      });
+    }
+    // Линия (8.5-11s)
+    if (elapsed >= 8.5 && elapsed < 11) {
+      const p = easeOut3(clamp((elapsed - 8.5) / 2.5));
+      if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
+      underlineEl.style.width = `${p * letterWidthCache}px`;
+      underlineEl.style.opacity = '1';
+    } else if (elapsed >= 11) {
+      if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
+      underlineEl.style.width = `${letterWidthCache}px`;
+    }
+    // Подпись (10-12.5s)
+    if (elapsed >= 10 && elapsed < 12.5) {
+      const p = easeOut3(clamp((elapsed - 10) / 2.5));
+      subEl.style.color = `rgba(255,255,255,${p * 0.5})`;
+      subEl.style.clipPath = `inset(0 ${(1-p)*100}% 0 0)`;
+    } else if (elapsed >= 12.5) {
+      subEl.style.color = 'rgba(255,255,255,0.5)';
+      subEl.style.clipPath = 'inset(0 0% 0 0)';
+    }
+  }
+
   function animate() {
     try {
       const elapsed = (Date.now() - startTime) / 1000;
-
       ctx.fillStyle = 'rgba(0,0,0,0.08)';
       ctx.fillRect(0, 0, W, H);
       updateGrid();
 
-      // Фон расцветает (0-3s) — +2 секунды
-      if (elapsed < 3) {
-        drawGrid(easeOut3(clamp(elapsed / 2)));
-      }
-      // Фон угасает ДО НУЛЯ (3-5s) — полностью чистый
-      else if (elapsed < 5) {
-        const p = easeInOut(clamp((elapsed - 3) / 2));
-        drawGrid(lerp(1, 0, p));
-      }
-      // После 5s — фон ПОЛНОСТЬЮ чёрный, никаких символов
-      else {
-        // ничего не рисуем — чистый тёмный фон
-      }
+      if (elapsed < 3) { drawGrid(easeOut3(clamp(elapsed / 2))); }
+      else if (elapsed < 5) { drawGrid(lerp(1, 0, easeInOut(clamp((elapsed - 3) / 2)))); }
 
-      // Буквы (4s — начинают появляться пока фон ещё угасает)
-      if (elapsed >= 4) {
-        letterEls.forEach((el, i) => {
-          const s = 4 + i * 0.45;
-          const e = s + 1.8;
-          const p = easeOut4(clamp((elapsed - s) / (e - s)));
-          el.style.opacity = p;
-          el.style.transform = `scale(${lerp(3, 1, p)}) translateY(${lerp(-30, 0, p)}px)`;
-          el.style.filter = p < 0.99 ? `blur(${lerp(20, 0, p)}px)` : 'none';
-        });
-      }
+      animateProgress(elapsed);
 
-      // Линия (8.5-11s)
-      if (elapsed >= 8.5 && elapsed < 11) {
-        const p = easeOut3(clamp((elapsed - 8.5) / 2.5));
-        if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
-        underlineEl.style.width = `${p * letterWidthCache}px`;
-        underlineEl.style.opacity = '1';
-      } else if (elapsed >= 11) {
-        if (!letterWidthCache) letterWidthCache = lettersEl.offsetWidth || W * 0.7;
-        underlineEl.style.width = `${letterWidthCache}px`;
-      }
-
-      // Подпись (10-12.5s)
-      if (elapsed >= 10 && elapsed < 12.5) {
-        const p = easeOut3(clamp((elapsed - 10) / 2.5));
-        subEl.style.color = `rgba(255,255,255,${p * 0.5})`;
-        subEl.style.clipPath = `inset(0 ${(1-p)*100}% 0 0)`;
-      } else if (elapsed >= 12.5) {
-        subEl.style.color = 'rgba(255,255,255,0.5)';
-        subEl.style.clipPath = 'inset(0 0% 0 0)';
-      }
-
-      // Конец на 14s
-      if (elapsed >= 14) {
-        clearTimeout(safetyTimer);
-        finish();
-        return;
-      }
-
+      if (elapsed >= 14) { clearTimeout(safetyTimer); finish(); return; }
       rafId = requestAnimationFrame(animate);
     } catch(err) {
       clearTimeout(safetyTimer);

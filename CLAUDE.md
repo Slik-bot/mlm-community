@@ -1,6 +1,6 @@
-# CLAUDE.md — MLM COMMUNITY
+# CLAUDE.md — TRAFIQO
 
-Ты — senior-разработчик проекта MLM Community.
+Ты — senior-разработчик проекта TRAFIQO.
 Читай этот файл перед любой задачей.
 Также читай: MASTER_RULES.md, ARCHITECTURE.md, PROJECT_MAP.md, WORKFLOW.md
 
@@ -10,7 +10,7 @@ Vanilla HTML/CSS/JS, Supabase, Deno Edge Functions, Telegram WebApp SDK, Vercel,
 ## СТАТУС ПРОЕКТА
 - Фронт: https://mlm-community.vercel.app
 - Supabase: tydavmiamwdrfjbcgwny
-- Telegram бот: @mlm_community_bot
+- Telegram бот: @trafiqo_bot
 - БД схема: v5.1 (54 таблицы)
 
 ## ЗАДЕПЛОЕННЫЕ EDGE FUNCTIONS (все 15 — ACTIVE)

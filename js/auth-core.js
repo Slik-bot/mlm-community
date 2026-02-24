@@ -10,7 +10,7 @@
 
 (function() {
 
-  localStorage.removeItem('mlm_saved_pass');
+  localStorage.removeItem('trafiqo_saved_pass');
 
   function showApp() {
     const ph = document.getElementById('preload-hide');
@@ -117,122 +117,109 @@
     setTimeout(function() { errEl.textContent = ''; }, 5000);
   }
 
-  // ===== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ МОДАЛОК =====
-  function initAuthHandlers() {
-    // ===== Патчим кнопку РЕГИСТРАЦИИ =====
+  // ===== ОБРАБОТЧИК РЕГИСТРАЦИИ =====
+  function handleRegister() {
     const reg = getRegisterInputs();
-    if (reg && reg.submit) {
-      reg.submit.onclick = async function(e) {
-        e.preventDefault();
+    if (!reg || !reg.submit) return;
+    reg.submit.onclick = async function(e) {
+      e.preventDefault();
+      const name = reg.name ? reg.name.value.trim() : '';
+      const email = reg.email ? reg.email.value.trim().toLowerCase() : '';
+      const password = reg.password ? reg.password.value : '';
+      if (!email || !password) {
+        showAuthError('register', 'Введите email и пароль');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAuthError('register', 'Некорректный формат email');
+        return;
+      }
+      if (password.length < 6) {
+        showAuthError('register', 'Пароль минимум 6 символов');
+        return;
+      }
+      reg.submit.textContent = 'Создание...';
+      reg.submit.disabled = true;
+      try {
+        await authRegister(email, password, name);
+        if (window.haptic) haptic('success');
+        if (name) localStorage.setItem('userName', name);
+        freshRegistration();
+        closeLndModals();
+        showApp();
+        await goTo('scrWelcome');
+      } catch (err) {
+        if (window.haptic) haptic('error');
+        let msg = err.message || 'Ошибка регистрации';
+        if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
+        else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
+        else if (msg.includes('invalid')) msg = 'Некорректный email';
+        else if (msg.includes('Database error')) msg = 'Ошибка базы данных. Попробуйте позже';
+        showAuthError('register', msg);
+      }
+      reg.submit.textContent = 'Создать аккаунт';
+      reg.submit.disabled = false;
+    };
+  }
+  window.handleRegister = handleRegister;
 
-        const name = reg.name ? reg.name.value.trim() : '';
-        const email = reg.email ? reg.email.value.trim().toLowerCase() : '';
-        const password = reg.password ? reg.password.value : '';
-
-        if (!email || !password) {
-          showAuthError('register', 'Введите email и пароль');
-          return;
-        }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          showAuthError('register', 'Некорректный формат email');
-          return;
-        }
-        if (password.length < 6) {
-          showAuthError('register', 'Пароль минимум 6 символов');
-          return;
-        }
-
-        reg.submit.textContent = 'Создание...';
-        reg.submit.disabled = true;
-
-        try {
-          await authRegister(email, password, name);
-          if (window.haptic) haptic('success');
-          if (name) localStorage.setItem('userName', name);
-          freshRegistration();
-          closeLndModals();
-          showApp();
-          await goTo('scrWelcome');
-        } catch (err) {
-          if (window.haptic) haptic('error');
-          const msg = err.message || 'Ошибка регистрации';
-          if (msg.includes('already registered')) msg = 'Email уже зарегистрирован';
-          else if (msg.includes('validate email') || msg.includes('invalid format')) msg = 'Некорректный формат email';
-          else if (msg.includes('invalid')) msg = 'Некорректный email';
-          else if (msg.includes('Database error')) msg = 'Ошибка базы данных. Попробуйте позже';
-          showAuthError('register', msg);
-        }
-
-        reg.submit.textContent = 'Создать аккаунт';
-        reg.submit.disabled = false;
-      };
-    }
-
-    // ===== Патчим кнопку ВХОДА =====
+  // ===== ОБРАБОТЧИК ВХОДА =====
+  function handleLogin() {
     const login = getLoginInputs();
-    if (login && login.submit) {
-      login.submit.onclick = async function(e) {
-        e.preventDefault();
-
-        const email = login.email ? login.email.value.trim() : '';
-        const password = login.password ? login.password.value : '';
-
-        if (!email || !password) {
-          showAuthError('login', 'Введите email и пароль');
-          return;
+    if (!login || !login.submit) return;
+    login.submit.onclick = async function(e) {
+      e.preventDefault();
+      const email = login.email ? login.email.value.trim() : '';
+      const password = login.password ? login.password.value : '';
+      if (!email || !password) {
+        showAuthError('login', 'Введите email и пароль');
+        return;
+      }
+      login.submit.textContent = 'Вход...';
+      login.submit.disabled = true;
+      try {
+        const data = await authLogin(email, password);
+        if (window.haptic) haptic('success');
+        localStorage.setItem('trafiqo_saved_email', email);
+        if (window.PasswordCredential) {
+          try {
+            const cred = new PasswordCredential({ id: email, password: password, name: email });
+            navigator.credentials.store(cred);
+          } catch (e) {}
         }
-
-        login.submit.textContent = 'Вход...';
-        login.submit.disabled = true;
-
-        try {
-          const data = await authLogin(email, password);
-          if (window.haptic) haptic('success');
-          localStorage.setItem('mlm_saved_email', email);
-
-          if (window.PasswordCredential) {
-            try {
-              const cred = new PasswordCredential({ id: email, password: password, name: email });
-              navigator.credentials.store(cred);
-            } catch (e) {}
-          }
-
-          const loginForm = document.querySelector('#lndLoginModal form');
-          if (loginForm) {
-            try { loginForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); } catch(e) {}
-          }
-
-          closeLndModals();
-
-          const user = data.user || {};
-          if (!user.dna_type) {
-            await goTo('scrDnaTest');
-            if (window.dnaReset) window.dnaReset();
-          } else if (!user.level) {
-            goTo('scrSetup1');
-          } else {
-            localStorage.setItem('onboardingDone', 'true');
-            goTo('scrFeed');
-            initFeedFromDB();
-          }
-        } catch (err) {
-          if (window.haptic) haptic('error');
-          const msg = err.message || 'Ошибка входа';
-          if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
-          showAuthError('login', msg);
+        const loginForm = document.querySelector('#lndLoginModal form');
+        if (loginForm) {
+          try { loginForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); } catch(e) {}
         }
+        closeLndModals();
+        const user = data.user || {};
+        if (!user.dna_type) {
+          await goTo('scrDnaTest');
+          if (window.dnaReset) window.dnaReset();
+        } else if (!user.level) {
+          goTo('scrSetup1');
+        } else {
+          localStorage.setItem('onboardingDone', 'true');
+          goTo('scrFeed');
+          initFeedFromDB();
+        }
+      } catch (err) {
+        if (window.haptic) haptic('error');
+        let msg = err.message || 'Ошибка входа';
+        if (msg.includes('Invalid login')) msg = 'Неверный email или пароль';
+        showAuthError('login', msg);
+      }
+      login.submit.textContent = 'Войти';
+      login.submit.disabled = false;
+    };
+  }
+  window.handleLogin = handleLogin;
 
-        login.submit.textContent = 'Войти';
-        login.submit.disabled = false;
-      };
-    }
-
-    // ===== Патчим кнопки OAuth (Telegram, Google, Apple) =====
+  // ===== ОБРАБОТЧИК OAuth (Telegram, Google) =====
+  function handleOAuth() {
     document.querySelectorAll('.lnd-btn-tg, .lnd-btn-gl').forEach(function(btn) {
       btn.onclick = async function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
+        e.preventDefault(); e.stopPropagation();
         const originalText = btn.textContent.trim();
         if (originalText.includes('Telegram')) {
           if (!window.isTelegram || !isTelegram()) {
@@ -240,8 +227,7 @@
             return;
           }
           if (window.haptic) haptic('medium');
-          btn.disabled = true;
-          btn.classList.add('loading');
+          btn.disabled = true; btn.classList.add('loading');
           btn.textContent = 'Подключение...';
           try {
             const result = await authTelegram();
@@ -279,9 +265,18 @@
       };
     });
   }
+  window.handleOAuth = handleOAuth;
+
+  // ===== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ МОДАЛОК =====
+  function initAuthHandlers() {
+    handleRegister();
+    handleLogin();
+    handleOAuth();
+  }
 
   // Экспорт для router.js (динамическая загрузка landing)
   window.initLandingModals = initAuthHandlers;
+  window.initAuthHandlers = initAuthHandlers;
 
   // ===== Routing после успешной авторизации =====
   async function routeAfterAuth(profile) {
@@ -409,13 +404,13 @@
 
   // ===== Выход из аккаунта =====
   window.doAppLogout = async function() {
-    const savedEmail = localStorage.getItem('mlm_saved_email');
+    const savedEmail = localStorage.getItem('trafiqo_saved_email');
     const questShown = localStorage.getItem('quest_shown_permanent');
     try {
       await authLogout();
     } catch (e) {}
     localStorage.clear();
-    if (savedEmail) localStorage.setItem('mlm_saved_email', savedEmail);
+    if (savedEmail) localStorage.setItem('trafiqo_saved_email', savedEmail);
     if (questShown) localStorage.setItem('quest_shown_permanent', questShown);
     sessionStorage.setItem('manually_logged_out', '1');
     location.reload();

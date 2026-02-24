@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mlm-v3';
+const CACHE_NAME = 'trafiqo-v1';
 
 const STATIC_ASSETS = [
   '/',
@@ -83,7 +83,7 @@ self.addEventListener('fetch', function(event) {
 // ═══ Push Notifications ═══
 
 self.addEventListener('push', function(event) {
-  let data = { title: 'MLM Community', body: 'Новое уведомление' };
+  let data = { title: 'TRAFIQO', body: 'Новое уведомление' };
 
   if (event.data) {
     try {
@@ -97,13 +97,13 @@ self.addEventListener('push', function(event) {
     body: data.body || '',
     icon: '/assets/logo.png',
     badge: '/assets/logo.png',
-    tag: data.tag || 'mlm-notification',
+    tag: data.tag || 'trafiqo-notification',
     data: { url: data.url || '/' },
     vibrate: [100, 50, 100]
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'MLM Community', options)
+    self.registration.showNotification(data.title || 'TRAFIQO', options)
   );
 });
 

@@ -41,7 +41,7 @@ window.editPost = function(postId) {
 window.deletePost = function(postId) {
   closePopovers();
   if (!confirm('Удалить пост?')) return;
-  sb.from('posts').delete().eq('id', postId).eq('user_id', (getCurrentUser()?.id || currentAuthUser?.id)).then(function() {
+  sb.from('posts').delete().eq('id', postId).eq('author_id', (getCurrentUser()?.id || currentAuthUser?.id)).then(function() {
     const card = document.querySelector('.post-card[data-post-id="' + postId + '"]');
     if (card) { card.style.transition = 'all .3s'; card.style.opacity = '0'; card.style.transform = 'scale(.95)'; setTimeout(function() { card.remove(); }, 300); }
     showToast('Пост удалён');
@@ -194,7 +194,7 @@ function closeShareSheet(sheet) {
 
 async function handleShare(postId, type) {
   const postUrl = location.origin + '/post/' + postId;
-  const text = 'Смотри какой крутой пост в MLM Community!';
+  const text = 'Смотри какой крутой пост в TRAFIQO!';
   switch (type) {
     case 'telegram': window.open('https://t.me/share/url?url=' + encodeURIComponent(postUrl) + '&text=' + encodeURIComponent(text), '_blank'); break;
     case 'whatsapp': window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + postUrl), '_blank'); break;
@@ -203,7 +203,7 @@ async function handleShare(postId, type) {
       break;
     case 'native':
       if (navigator.share) {
-        try { await navigator.share({ title: 'MLM Community', text: text, url: postUrl }); } catch(e) { if (e.name !== 'AbortError') console.error('Share failed:', e); }
+        try { await navigator.share({ title: 'TRAFIQO', text: text, url: postUrl }); } catch(e) { if (e.name !== 'AbortError') console.error('Share failed:', e); }
       }
       break;
   }

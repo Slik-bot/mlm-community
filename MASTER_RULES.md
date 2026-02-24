@@ -1,4 +1,4 @@
-# MASTER RULES — MLM COMMUNITY
+# MASTER RULES — TRAFIQO
 Полный свод правил разработки проекта
 
 ВЕРСИЯ: 1.0
@@ -537,8 +537,8 @@ currentProfile — глобальное состояние:
 window.currentProfile = null;
 
 Очистка при logout:
-localStorage.removeItem('mlm_user');
-localStorage.removeItem('mlm_token');
+localStorage.removeItem('trafiqo_user');
+localStorage.removeItem('trafiqo_token');
 window.currentProfile = null;
 
 ═══════════════════════════════════════════════════

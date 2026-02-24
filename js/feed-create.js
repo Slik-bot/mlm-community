@@ -96,16 +96,7 @@ function openCreate(type) {
   setupCreateModal(modal);
 }
 
-function setupCreateModal(modal) {
-  const textarea = modal.querySelector('.create-textarea');
-  const counter = modal.querySelector('.create-counter-current');
-  const publishBtn = modal.querySelector('#publish-btn');
-  const closeBtn = modal.querySelector('.create-close-btn');
-  const backBtn = modal.querySelector('.create-back-btn');
-  const overlay = modal.querySelector('.create-overlay');
-  const maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
-
-  // Кнопка фото
+function setupCreateMedia(modal) {
   const photoBtn = modal.querySelector('[data-type="image"]');
   if (photoBtn) {
     photoBtn.addEventListener('click', function() {
@@ -118,11 +109,9 @@ function setupCreateModal(modal) {
     });
   }
 
-  // Кнопка опроса
   const pollBtn = modal.querySelector('[data-type="poll"]');
   if (pollBtn) {
     pollBtn.addEventListener('click', function() {
-      // Если билдер уже открыт — закрываем
       if (currentPollInstance) {
         currentPollInstance.destroy();
         currentPollInstance = null;
@@ -138,11 +127,15 @@ function setupCreateModal(modal) {
       }
     });
   }
+}
 
-  // Автофокус с задержкой для анимации
+function setupCreateTextarea(modal, publishBtn) {
+  const textarea = modal.querySelector('.create-textarea');
+  const counter = modal.querySelector('.create-counter-current');
+  const maxLen = (typeof MAX_POST_LENGTH !== 'undefined') ? MAX_POST_LENGTH : 5000;
+
   setTimeout(function() { if (textarea) textarea.focus(); }, 250);
 
-  // Счётчик символов + автоувеличение
   if (textarea) {
     textarea.addEventListener('input', function() {
       const len = textarea.value.length;
@@ -156,45 +149,34 @@ function setupCreateModal(modal) {
       textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px';
     });
   }
+}
 
-  // Закрытие модалки
+function setupCreateActions(modal, closeModal) {
+  const closeBtn = modal.querySelector('.create-close-btn');
+  const backBtn = modal.querySelector('.create-back-btn');
+  const overlay = modal.querySelector('.create-overlay');
   const container = modal.querySelector('.create-container');
-
-  function closeModal() {
-    if (currentPollInstance) { currentPollInstance.destroy(); currentPollInstance = null; }
-    if (typeof window.clearSelectedImages === 'function') window.clearSelectedImages();
-    // Удалить drag-dismiss
-    const header = modal.querySelector('.create-header');
-    if (header && typeof window.removeDragDismiss === 'function') {
-      window.removeDragDismiss(header);
-    }
-    modal.classList.remove('create-modal--visible');
-    setTimeout(function() { modal.remove(); }, 250);
-    document.removeEventListener('keydown', escHandler);
-  }
+  const textarea = modal.querySelector('.create-textarea');
+  const publishBtn = modal.querySelector('#publish-btn');
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (backBtn) backBtn.addEventListener('click', closeModal);
   if (overlay) overlay.addEventListener('click', closeModal);
 
-  // Drag-dismiss: свайп по хедеру → закрыть модалку
   const header = modal.querySelector('.create-header');
   if (header && container && typeof window.addDragDismiss === 'function') {
     window.addDragDismiss(header, {
       moveTarget: container,
       fadeTarget: overlay,
       threshold: 100,
-      onDismiss: function() {
-        closeModal();
-      }
+      onDismiss: function() { closeModal(); }
     });
   }
 
-  // ESC закрытие
   function escHandler(e) { if (e.key === 'Escape') closeModal(); }
   document.addEventListener('keydown', escHandler);
+  modal._escHandler = escHandler;
 
-  // Публикация
   if (publishBtn) {
     publishBtn.addEventListener('click', async function() {
       const content = textarea ? textarea.value.trim() : '';
@@ -206,6 +188,26 @@ function setupCreateModal(modal) {
       await window.doPublish(content);
     });
   }
+}
+
+function setupCreateModal(modal) {
+  const publishBtn = modal.querySelector('#publish-btn');
+
+  function closeModal() {
+    if (currentPollInstance) { currentPollInstance.destroy(); currentPollInstance = null; }
+    if (typeof window.clearSelectedImages === 'function') window.clearSelectedImages();
+    const header = modal.querySelector('.create-header');
+    if (header && typeof window.removeDragDismiss === 'function') {
+      window.removeDragDismiss(header);
+    }
+    modal.classList.remove('create-modal--visible');
+    setTimeout(function() { modal.remove(); }, 250);
+    if (modal._escHandler) document.removeEventListener('keydown', modal._escHandler);
+  }
+
+  setupCreateMedia(modal);
+  setupCreateTextarea(modal, publishBtn);
+  setupCreateActions(modal, closeModal);
 }
 
 // ===== PHOTO UPLOAD =====
@@ -291,3 +293,8 @@ function checkPublish() {
   ta.style.height = 'auto';
   ta.style.height = Math.min(ta.scrollHeight, 300) + 'px';
 }
+
+// ЭКСПОРТЫ
+window.setupCreateMedia = setupCreateMedia;
+window.setupCreateTextarea = setupCreateTextarea;
+window.setupCreateActions = setupCreateActions;

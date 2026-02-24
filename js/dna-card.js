@@ -189,7 +189,99 @@ function dcSpawnParticles(color) {
   }
 }
 
-// --- 7-фазная REVEAL анимация ---
+// --- REVEAL: Фазовые подфункции ---
+
+function revealPhase2Slow(orbs, label) {
+  const roulette = document.getElementById('roulette');
+  if (roulette) roulette.classList.remove('spinning');
+  label.textContent = 'Анализируем данные...';
+  orbs.forEach(function(o) {
+    if (!o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
+      o.style.opacity = '0.08'; o.style.transform += ' scale(0.6)'; o.style.filter = 'blur(2px)';
+    }
+  });
+}
+
+function revealPhase3Winner(orbs, label, d) {
+  label.textContent = 'Тип определён!'; label.style.color = d.color;
+  orbs.forEach(function(o) {
+    if (o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
+      o.style.transform = 'scale(1.5)';
+      o.style.boxShadow = '0 0 60px '+d.color+', 0 0 20px '+d.color;
+      o.style.borderColor = d.color;
+      o.style.background = 'radial-gradient(circle, '+d.color+'40, '+d.color+'08)';
+    }
+  });
+  const wr = document.getElementById('winnerRings');
+  wr.querySelectorAll('.winner-ring').forEach(function(r) { r.style.borderColor = d.color; });
+  wr.style.display = 'block';
+}
+
+function revealPhase4Ascend(orbs, label, d) {
+  orbs.forEach(function(o) {
+    if (o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
+      o.style.transform = 'scale(1.8) translateY(-20px)';
+      o.style.boxShadow = '0 0 80px '+d.color+', 0 0 30px '+d.color+', 0 30px 60px rgba(0,0,0,0.5)';
+    }
+  });
+  label.textContent = 'Найдено!'; label.style.fontSize = '13px'; label.style.letterSpacing = '6px';
+}
+
+function revealPhase5Explode(screen, d) {
+  document.getElementById('revWave').style.background = 'radial-gradient(circle, '+d.color+', transparent 70%)';
+  document.getElementById('revWave').classList.add('explode');
+  document.getElementById('revWave2').style.borderColor = d.color;
+  document.getElementById('revWave2').classList.add('explode');
+  document.getElementById('winnerRings').style.display = 'none';
+  screen.style.animation = 'dcScreenShake 0.4s ease';
+}
+
+function revealPhase6Flash(d) {
+  const flash = document.getElementById('revFlash');
+  flash.style.background = d.color; flash.classList.add('go');
+  document.getElementById('revDark').classList.add('go');
+}
+
+function revealPhase7Card(screen, card, orbs, aurora, label) {
+  screen.classList.add('hidden');
+  document.getElementById('revWave').classList.remove('explode');
+  document.getElementById('revWave2').classList.remove('explode');
+  document.getElementById('revFlash').classList.remove('go');
+  document.getElementById('revDark').classList.remove('go');
+  orbs.forEach(function(o) { o.style.cssText = ''; });
+  aurora.classList.remove('active');
+  label.style.cssText = ''; screen.style.animation = '';
+
+  applyDNA(dcActiveDNA);
+
+  card.style.opacity = ''; card.style.transform = ''; card.style.filter = '';
+  card.classList.add('revealed');
+
+  setTimeout(function() {
+    const fill = document.getElementById('xpFill');
+    if (fill) fill.style.width = '4%';
+    const stars = document.querySelectorAll('#scrDnaResult .dnr-star');
+    stars.forEach(function(s, i) {
+      setTimeout(function() {
+        s.style.opacity = '1'; s.style.transform = 'scale(1) rotate(0)';
+        if (i === 0) { s.className = 'dnr-star lit'; s.textContent = '★'; }
+      }, i*130 + 300);
+    });
+    setTimeout(function() {
+      const cd = document.getElementById('careerDone');
+      if (cd) cd.style.width = '0%';
+    }, 600);
+  }, 700);
+
+  dcRevealRunning = false;
+
+  const revDark = document.getElementById('revDark');
+  if (revDark) revDark.style.opacity = '0';
+  const revFlash = document.getElementById('revFlash');
+  if (revFlash) revFlash.style.opacity = '0';
+}
+
+// --- REVEAL: Оркестратор ---
 function runReveal() {
   if (dcRevealRunning) return;
 
@@ -197,7 +289,6 @@ function runReveal() {
   const screen = document.getElementById('revealScreen');
   const roulette = document.getElementById('roulette');
 
-  // Защита: если DOM не готов — показать карточку без анимации
   if (!card || !screen || !roulette) {
     if (card) {
       card.classList.add('revealed');
@@ -208,10 +299,8 @@ function runReveal() {
   }
 
   dcRevealRunning = true;
-
   card.classList.remove('revealed');
   card.style.opacity = '0'; card.style.transform = 'scale(0.5) translateY(80px)'; card.style.filter = 'blur(30px)';
-
   screen.classList.remove('hidden');
 
   const label = document.getElementById('revLabel');
@@ -223,107 +312,15 @@ function runReveal() {
   aurora.classList.add('active');
   dcSpawnParticles(d.color);
 
-  // Фаза 1: Вращение (0-2с)
   roulette.classList.add('spinning');
   label.textContent = 'Сканируем профиль...'; label.style.opacity = '1';
 
-  // Фаза 2: Замедление (2с)
-  setTimeout(function() {
-    roulette.classList.remove('spinning');
-    label.textContent = 'Анализируем данные...';
-    orbs.forEach(function(o) {
-      if (!o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
-        o.style.opacity = '0.08'; o.style.transform += ' scale(0.6)'; o.style.filter = 'blur(2px)';
-      }
-    });
-  }, 2000);
-
-  // Фаза 3: Определение (3с)
-  setTimeout(function() {
-    label.textContent = 'Тип определён!'; label.style.color = d.color;
-    orbs.forEach(function(o) {
-      if (o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
-        o.style.transform = 'scale(1.5)';
-        o.style.boxShadow = '0 0 60px '+d.color+', 0 0 20px '+d.color;
-        o.style.borderColor = d.color;
-        o.style.background = 'radial-gradient(circle, '+d.color+'40, '+d.color+'08)';
-      }
-    });
-    const wr = document.getElementById('winnerRings');
-    wr.querySelectorAll('.winner-ring').forEach(function(r) { r.style.borderColor = d.color; });
-    wr.style.display = 'block';
-  }, 3000);
-
-  // Фаза 4: Вознесение (3.8с)
-  setTimeout(function() {
-    orbs.forEach(function(o) {
-      if (o.classList.contains('orb-' + dcActiveDNA.toLowerCase())) {
-        o.style.transform = 'scale(1.8) translateY(-20px)';
-        o.style.boxShadow = '0 0 80px '+d.color+', 0 0 30px '+d.color+', 0 30px 60px rgba(0,0,0,0.5)';
-      }
-    });
-    label.textContent = 'Найдено!'; label.style.fontSize = '13px'; label.style.letterSpacing = '6px';
-  }, 3800);
-
-  // Фаза 5: Взрыв (4.5с)
-  setTimeout(function() {
-    document.getElementById('revWave').style.background = 'radial-gradient(circle, '+d.color+', transparent 70%)';
-    document.getElementById('revWave').classList.add('explode');
-    document.getElementById('revWave2').style.borderColor = d.color;
-    document.getElementById('revWave2').classList.add('explode');
-    document.getElementById('winnerRings').style.display = 'none';
-    screen.style.animation = 'dcScreenShake 0.4s ease';
-  }, 4500);
-
-  // Фаза 6: Вспышка (4.7с)
-  setTimeout(function() {
-    const flash = document.getElementById('revFlash');
-    flash.style.background = d.color; flash.classList.add('go');
-    document.getElementById('revDark').classList.add('go');
-  }, 4700);
-
-  // Фаза 7: Материализация (5.3с)
-  setTimeout(function() {
-    screen.classList.add('hidden');
-    // Сброс reveal-элементов
-    document.getElementById('revWave').classList.remove('explode');
-    document.getElementById('revWave2').classList.remove('explode');
-    document.getElementById('revFlash').classList.remove('go');
-    document.getElementById('revDark').classList.remove('go');
-    orbs.forEach(function(o) { o.style.cssText = ''; });
-    aurora.classList.remove('active');
-    label.style.cssText = ''; screen.style.animation = '';
-
-    applyDNA(dcActiveDNA);
-
-    // Материализация карточки
-    card.style.opacity = ''; card.style.transform = ''; card.style.filter = '';
-    card.classList.add('revealed');
-
-    // Stagger-анимации внутренних элементов
-    setTimeout(function() {
-      const fill = document.getElementById('xpFill');
-      if (fill) fill.style.width = '4%';
-      const stars = document.querySelectorAll('#scrDnaResult .dnr-star');
-      stars.forEach(function(s, i) {
-        setTimeout(function() {
-          s.style.opacity = '1'; s.style.transform = 'scale(1) rotate(0)';
-          if (i === 0) { s.className = 'dnr-star lit'; s.textContent = '★'; }
-        }, i*130 + 300);
-      });
-      setTimeout(function() {
-        const cd = document.getElementById('careerDone');
-        if (cd) cd.style.width = '0%';
-      }, 600);
-    }, 700);
-
-    dcRevealRunning = false;
-
-    const revDark = document.getElementById('revDark');
-    if (revDark) revDark.style.opacity = '0';
-    const revFlash = document.getElementById('revFlash');
-    if (revFlash) revFlash.style.opacity = '0';
-  }, 5300);
+  setTimeout(function() { revealPhase2Slow(orbs, label); }, 2000);
+  setTimeout(function() { revealPhase3Winner(orbs, label, d); }, 3000);
+  setTimeout(function() { revealPhase4Ascend(orbs, label, d); }, 3800);
+  setTimeout(function() { revealPhase5Explode(screen, d); }, 4500);
+  setTimeout(function() { revealPhase6Flash(d); }, 4700);
+  setTimeout(function() { revealPhase7Card(screen, card, orbs, aurora, label); }, 5300);
 }
 
 // --- XP Toast ---
@@ -376,9 +373,9 @@ function dcSpawnConfetti() {
 function shareCard() {
   const d = DNA_CARD[dcActiveDNA];
   const serial = document.getElementById('serialNum').textContent;
-  const text = 'Я — ' + d.name + ' в MLM Community!\nУровень: Пешка ★\nID: ' + serial;
+  const text = 'Я — ' + d.name + ' в TRAFIQO!\nУровень: Пешка ★\nID: ' + serial;
   if (navigator.share) {
-    navigator.share({ title: 'MLM Community — DNA', text: text });
+    navigator.share({ title: 'TRAFIQO — DNA', text: text });
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(text);
     showXpToast(0);
@@ -419,3 +416,9 @@ window.showXpToast = showXpToast;
 window.showLevelUp = showLevelUp;
 window.closeLevelUp = closeLevelUp;
 window.shareCard = shareCard;
+window.revealPhase2Slow = revealPhase2Slow;
+window.revealPhase3Winner = revealPhase3Winner;
+window.revealPhase4Ascend = revealPhase4Ascend;
+window.revealPhase5Explode = revealPhase5Explode;
+window.revealPhase6Flash = revealPhase6Flash;
+window.revealPhase7Card = revealPhase7Card;

@@ -145,7 +145,7 @@
       if (type === 'login') {
         const loginInputs = getLoginInputs();
         if (loginInputs) {
-          const savedEmail = localStorage.getItem('mlm_saved_email');
+          const savedEmail = localStorage.getItem('trafiqo_saved_email');
           if (savedEmail && loginInputs.email) {
             loginInputs.email.value = savedEmail;
           }

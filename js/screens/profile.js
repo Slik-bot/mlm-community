@@ -48,95 +48,68 @@ function initProfile() {
 
 // ===== renderProfile =====
 
-function renderProfile(user) {
-  const dnaColor = getDnaColor(user.dna_type);
-  const stats = (user.user_stats && user.user_stats[0]) || user.user_stats || {};
-  const level = user.level || 'pawn';
-  const lvl = LEVELS[level] || LEVELS.pawn;
-  const xp = user.xp_total || 0;
-  const xpProgress = lvl.max > 0 ? Math.min(100, Math.round((xp - lvl.min) / (lvl.max - lvl.min + 1) * 100)) : 0;
-
-  // Avatar
+function renderProfileHeader(user, dnaColor, level, lvl) {
   const avatar = document.getElementById('profileAvatar');
-  if (avatar) {
-    avatar.src = user.avatar_url || '';
-    avatar.style.display = user.avatar_url ? '' : 'none';
-  }
-
-  // DNA ring
+  if (avatar) { avatar.src = user.avatar_url || ''; avatar.style.display = user.avatar_url ? '' : 'none'; }
   const ring = document.getElementById('profileDnaRing');
   if (ring) ring.style.borderColor = dnaColor;
-
-  // Chess icon
   const chessEl = document.getElementById('profileChessIcon');
   if (chessEl) chessEl.innerHTML = getChessIcon(level, dnaColor);
-
-  // Level name
   const levelEl = document.getElementById('profileLevel');
   if (levelEl) levelEl.textContent = lvl.name;
-
-  // Name
   const nameEl = document.getElementById('profileName');
   if (nameEl) nameEl.textContent = user.name || 'Участник';
-
-  // DNA badge
   const badge = document.getElementById('profileDnaBadge');
   if (badge) {
     const dnaName = DNA_NAMES[user.dna_type] || '';
     if (dnaName) {
-      badge.textContent = dnaName;
-      badge.style.background = dnaColor + '20';
-      badge.style.color = dnaColor;
-      badge.style.display = '';
-    } else {
-      badge.style.display = 'none';
-    }
+      badge.textContent = dnaName; badge.style.background = dnaColor + '20';
+      badge.style.color = dnaColor; badge.style.display = '';
+    } else { badge.style.display = 'none'; }
   }
+}
 
-  // Balance
+function renderProfileStats(user, xp, xpProgress, lvl) {
   const balanceEl = document.getElementById('profileBalance');
-  if (balanceEl) {
-    const bal = (user.balance || 0) / 100;
-    balanceEl.textContent = bal.toFixed(2) + ' руб.';
-  }
-
-  // XP bar
+  if (balanceEl) { const bal = (user.balance || 0) / 100; balanceEl.textContent = bal.toFixed(2) + ' руб.'; }
   const xpFill = document.getElementById('profileXpFill');
   if (xpFill) xpFill.style.width = xpProgress + '%';
-
   const xpLabel = document.getElementById('profileXpLabel');
   if (xpLabel) xpLabel.textContent = xp + ' / ' + (lvl.max + 1) + ' XP';
-
-  // Stats
+  const stats = (user.user_stats && user.user_stats[0]) || user.user_stats || {};
   let el;
   el = document.getElementById('statTasks'); if (el) el.textContent = stats.tasks_completed || 0;
   el = document.getElementById('statDeals'); if (el) el.textContent = stats.deals_count || 0;
   el = document.getElementById('statReferrals'); if (el) el.textContent = stats.referrals_count || 0;
   el = document.getElementById('statRating'); if (el) el.textContent = stats.rating || 0;
+}
 
-  // Achievements
+function renderProfileActions(user) {
   const achEl = document.getElementById('profileAchievements');
   if (achEl && user.achievements && user.achievements.length) {
-    let html = '';
     const items = user.achievements.slice(0, 6);
-    items.forEach(function(a) {
-      html += '<div class="achievement-badge" title="' + (a.name || '') + '">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="' + (a.color || '#8b5cf6') + '" stroke-width="1.5" width="24" height="24"><path d="M6 9a6 6 0 0012 0V3H6v6z"/><path d="M12 15v3"/><path d="M8 21h8"/></svg>' +
-        '</div>';
-    });
-    achEl.innerHTML = html;
+    achEl.innerHTML = items.map(function(a) {
+      return '<div class="achievement-badge" title="' + (a.name || '') + '"><svg viewBox="0 0 24 24" fill="none" stroke="' + (a.color || '#8b5cf6') + '" stroke-width="1.5" width="24" height="24"><path d="M6 9a6 6 0 0012 0V3H6v6z"/><path d="M12 15v3"/><path d="M8 21h8"/></svg></div>';
+    }).join('');
   }
-
-  // Streak
   const streak = user.streak_days || 0;
   const streakDays = document.getElementById('streakDays');
   if (streakDays) streakDays.textContent = streak + ' ' + getDaysWord(streak);
-
   const streakFire = document.getElementById('streakFire');
   if (streakFire) streakFire.classList.toggle('active', streak > 0);
-
   const mult = document.getElementById('streakMultiplier');
   if (mult) mult.textContent = 'x' + getStreakMultiplier(streak);
+}
+
+function renderProfile(user) {
+  const dnaColor = getDnaColor(user.dna_type);
+  const level = user.level || 'pawn';
+  const lvl = LEVELS[level] || LEVELS.pawn;
+  const xp = user.xp_total || 0;
+  const xpProgress = lvl.max > 0 ? Math.min(100, Math.round((xp - lvl.min) / (lvl.max - lvl.min + 1) * 100)) : 0;
+  renderProfileHeader(user, dnaColor, level, lvl);
+  renderProfileStats(user, xp, xpProgress, lvl);
+  renderProfileActions(user);
 }
 
 function getDaysWord(n) {

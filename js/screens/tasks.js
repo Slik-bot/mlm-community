@@ -173,60 +173,45 @@ function openTask(taskId) {
 
 // ===== TASK DETAIL =====
 
-function initTaskDetail() {
-  if (!currentTask) { goBack(); return; }
-
-  const typeColor = getTaskTypeColor(currentTask.type);
-  const typeLabel = (TASK_TYPES[currentTask.type] || TASK_TYPES.platform).label;
-
+function renderTaskInfo(task) {
+  const typeColor = getTaskTypeColor(task.type);
+  const typeLabel = (TASK_TYPES[task.type] || TASK_TYPES.platform).label;
   const iconEl = document.getElementById('tdTypeIcon');
-  if (iconEl) {
-    iconEl.innerHTML = getTaskTypeIcon(currentTask.type);
-    iconEl.style.background = typeColor + '22';
-  }
-
+  if (iconEl) { iconEl.innerHTML = getTaskTypeIcon(task.type); iconEl.style.background = typeColor + '22'; }
   const labelEl = document.getElementById('tdTypeLabel');
   if (labelEl) labelEl.textContent = typeLabel;
-
   const titleEl = document.getElementById('tdTitle');
-  if (titleEl) titleEl.textContent = currentTask.title;
-
+  if (titleEl) titleEl.textContent = task.title;
   const descEl = document.getElementById('tdDesc');
-  if (descEl) descEl.textContent = currentTask.description || '';
-
+  if (descEl) descEl.textContent = task.description || '';
   const xpEl = document.getElementById('tdXp');
-  if (xpEl) xpEl.textContent = '+' + (currentTask.reward_xp || 0) + ' XP';
-
+  if (xpEl) xpEl.textContent = '+' + (task.reward_xp || 0) + ' XP';
   const moneyRow = document.getElementById('tdMoneyRow');
   const moneyEl = document.getElementById('tdMoney');
-  if (currentTask.reward_money && currentTask.reward_money > 0) {
+  if (task.reward_money && task.reward_money > 0) {
     if (moneyRow) moneyRow.classList.remove('hidden');
-    if (moneyEl) moneyEl.textContent = currentTask.reward_money + ' P';
-  } else {
-    if (moneyRow) moneyRow.classList.add('hidden');
-  }
-
+    if (moneyEl) moneyEl.textContent = task.reward_money + ' P';
+  } else { if (moneyRow) moneyRow.classList.add('hidden'); }
   const screenshotWrap = document.getElementById('tdScreenshotWrap');
-  if (currentTask.requires_screenshot) {
-    if (screenshotWrap) screenshotWrap.classList.remove('hidden');
-  } else {
-    if (screenshotWrap) screenshotWrap.classList.add('hidden');
-  }
-
+  if (task.requires_screenshot) { if (screenshotWrap) screenshotWrap.classList.remove('hidden'); }
+  else { if (screenshotWrap) screenshotWrap.classList.add('hidden'); }
   const preview = document.getElementById('tdScreenshotPreview');
   const placeholder = document.getElementById('tdScreenshotPlaceholder');
   if (preview) { preview.classList.add('hidden'); preview.src = ''; }
   if (placeholder) placeholder.classList.remove('hidden');
-
   const reqEl = document.getElementById('tdRequirements');
   if (reqEl) {
     const reqs = [];
-    if (currentTask.dna_types && currentTask.dna_types.length) {
-      reqs.push('<div class="td-req-item">ДНК: ' + currentTask.dna_types.join(', ') + '</div>');
+    if (task.dna_types && task.dna_types.length) {
+      reqs.push('<div class="td-req-item">ДНК: ' + task.dna_types.join(', ') + '</div>');
     }
     reqEl.innerHTML = reqs.join('');
   }
+}
 
+function initTaskDetail() {
+  if (!currentTask) { goBack(); return; }
+  renderTaskInfo(currentTask);
   const done = isCompletedToday(currentTask);
   const statusEl = document.getElementById('tdStatus');
   const btn = document.getElementById('tdActionBtn');

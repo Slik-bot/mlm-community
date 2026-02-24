@@ -4,7 +4,7 @@
 
 ```
 # ЗАДАЧА: Добавить экран [НАЗВАНИЕ]
-# ПУТЬ: /Users/slikair369/Desktop/mlm-community/
+# ПУТЬ: /Users/slikair369/Desktop/trafiqo/
 
 ## ЧТО СОЗДАТЬ
 
@@ -32,7 +32,7 @@
 
 ```
 # ЗАДАЧА: Изменить [файл]
-# ПУТЬ: /Users/slikair369/Desktop/mlm-community/
+# ПУТЬ: /Users/slikair369/Desktop/trafiqo/
 
 ## РЕЗЕРВНАЯ КОПИЯ
 cp [файл] [файл].backup.[описание]
@@ -55,7 +55,7 @@ cp [файл] [файл].backup.[описание]
 
 ```
 # ЗАДАЧА: Исправить [описание бага]
-# ПУТЬ: /Users/slikair369/Desktop/mlm-community/
+# ПУТЬ: /Users/slikair369/Desktop/trafiqo/
 
 ## СИМПТОМЫ
 [что не работает]
@@ -79,7 +79,7 @@ cp [файл] [файл].backup.[описание]
 
 ```
 # ЗАДАЧА: Рефакторинг [файл/модуль]
-# ПУТЬ: /Users/slikair369/Desktop/mlm-community/
+# ПУТЬ: /Users/slikair369/Desktop/trafiqo/
 
 ## РЕЗЕРВНАЯ КОПИЯ
 cp [файл] [файл].backup.refactor
@@ -111,8 +111,8 @@ cp [файл] [файл].backup.refactor
 
 ```
 # ═══════════════════════════════════════════════════
-# ПРОЕКТ: MLM COMMUNITY — [НАЗВАНИЕ ЗАДАЧИ]
-# ПУТЬ: /Users/slikair369/Desktop/mlm-community/
+# ПРОЕКТ: TRAFIQO — [НАЗВАНИЕ ЗАДАЧИ]
+# ПУТЬ: /Users/slikair369/Desktop/trafiqo/
 # ЗАДАЧА: [Описание]
 # ═══════════════════════════════════════════════════
 

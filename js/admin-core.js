@@ -15,57 +15,43 @@ const LN = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: '
 const TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', finance:'Финансы', settings:'Настройки' };
 
 // ===== AUTH =====
-async function adminLogin() {
+function validateAdminCreds() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
   const errEl = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-
   errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = 'Введите email и пароль'; return; }
+  if (!email || !pass) { errEl.textContent = 'Введите email и пароль'; return null; }
+  return { email: email, pass: pass, errEl: errEl };
+}
 
-  btn.textContent = 'Вход...';
-  btn.disabled = true;
-
+async function adminLogin() {
+  const creds = validateAdminCreds();
+  if (!creds) return;
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = 'Вход...'; btn.disabled = true;
   try {
-    // 1. Авторизация через Supabase Auth
-    const signIn = await sb.auth.signInWithPassword({ email: email, password: pass });
+    const signIn = await sb.auth.signInWithPassword({ email: creds.email, password: creds.pass });
     if (signIn.error) {
-      errEl.textContent = 'Неверный email или пароль';
-      btn.textContent = 'Войти';
-      btn.disabled = false;
-      return;
+      creds.errEl.textContent = 'Неверный email или пароль';
+      btn.textContent = 'Войти'; btn.disabled = false; return;
     }
-
-    // 2. Проверка прав через таблицу admin_users
-    const adminCheck = await sb
-      .from('admin_users')
-      .select('id, name, role, is_active')
-      .eq('email', email)
-      .maybeSingle();
-
+    const adminCheck = await sb.from('admin_users')
+      .select('id, name, role, is_active').eq('email', creds.email).maybeSingle();
     if (!adminCheck.data || !adminCheck.data.is_active) {
       await sb.auth.signOut();
-      errEl.textContent = 'Нет прав администратора';
-      btn.textContent = 'Войти';
-      btn.disabled = false;
-      return;
+      creds.errEl.textContent = 'Нет прав администратора';
+      btn.textContent = 'Войти'; btn.disabled = false; return;
     }
-
-    // 3. Сохранить сессию и войти
     adminUser = signIn.data.user;
     adminProfile = adminCheck.data;
     localStorage.setItem('adminUser', JSON.stringify({
-      id: adminCheck.data.id,
-      name: adminCheck.data.name,
-      role: adminCheck.data.role
+      id: adminCheck.data.id, name: adminCheck.data.name, role: adminCheck.data.role
     }));
     initApp();
   } catch (err) {
     console.error('adminLogin error:', err);
-    errEl.textContent = 'Ошибка входа. Попробуйте позже';
-    btn.textContent = 'Войти';
-    btn.disabled = false;
+    creds.errEl.textContent = 'Ошибка входа. Попробуйте позже';
+    btn.textContent = 'Войти'; btn.disabled = false;
   }
 }
 async function checkSession() {
@@ -140,6 +126,54 @@ function toggleSidebar() {
 }
 
 // ===== DASHBOARD =====
+async function loadDashboardStats() {
+  return Promise.all([
+    sb.from('vw_public_profiles').select('id', { count: 'exact', head: true }),
+    sb.from('posts').select('id', { count: 'exact', head: true }),
+    sb.from('comments').select('id', { count: 'exact', head: true }),
+    sb.from('companies').select('id', { count: 'exact', head: true }),
+    sb.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+    sb.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active')
+  ]);
+}
+
+function renderDashboardCards(counts) {
+  const cards = [
+    { icon: '\ud83d\udc65', val: counts[0].count || 0, label: '\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438', color: 'purple' },
+    { icon: '\ud83d\udcdd', val: counts[1].count || 0, label: '\u041f\u043e\u0441\u0442\u044b', color: 'green' },
+    { icon: '\ud83d\udcac', val: counts[2].count || 0, label: '\u041a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0438', color: 'blue' },
+    { icon: '\ud83c\udfe2', val: counts[3].count || 0, label: '\u041a\u043e\u043c\u043f\u0430\u043d\u0438\u0438', color: 'gold' },
+    { icon: '\u26a0\ufe0f', val: counts[4].count || 0, label: '\u0416\u0430\u043b\u043e\u0431\u044b', color: 'red' },
+    { icon: '\ud83d\udc8e', val: counts[5].count || 0, label: '\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0438', color: 'green' }
+  ];
+  document.getElementById('dashStats').innerHTML = cards.map(function(c) {
+    return '<div class="stat-card"><div class="stat-icon">' + c.icon + '</div><div class="stat-val ' + c.color + '">' + c.val + '</div><div class="stat-label">' + c.label + '</div></div>';
+  }).join('');
+}
+
+async function renderDashboardTables() {
+  const reps = await sb.from('reports').select('*')
+    .eq('status', 'pending').order('created_at', { ascending: false }).limit(5);
+  const rd = reps.data || [];
+  document.getElementById('dashReports').innerHTML = !rd.length
+    ? '<div class="empty">Нет активных жалоб</div>'
+    : '<div class="table-wrap"><table class="data-table"><thead><tr><th>Тип</th><th>Причина</th><th>Дата</th></tr></thead><tbody>' +
+      rd.map(function(r) {
+        return '<tr><td><span class="badge badge-red">' + esc(r.target_type) + '</span></td><td>' + esc(r.reason_category || '—') + '</td><td>' + fmtDate(r.created_at) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+
+  const users = await sb.from('vw_public_profiles').select('name, dna_type, level, created_at')
+    .order('created_at', { ascending: false }).limit(5);
+  const ud = users.data || [];
+  document.getElementById('dashUsers').innerHTML = !ud.length
+    ? '<div class="empty">Нет пользователей</div>'
+    : '<div class="table-wrap"><table class="data-table"><thead><tr><th>Имя</th><th>ДНК</th><th>Уровень</th><th>Дата</th></tr></thead><tbody>' +
+      ud.map(function(u) {
+        const dna = u.dna_type ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>' : '—';
+        return '<tr><td>' + esc(u.name || '—') + '</td><td>' + dna + '</td><td>' + (LN[u.level] || u.level || '—') + '</td><td>' + fmtDate(u.created_at) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+}
+
 async function renderDashboard() {
   const el = document.getElementById('pageContent');
   el.innerHTML =
@@ -148,75 +182,10 @@ async function renderDashboard() {
     '<div id="dashReports"></div>' +
     '<div class="section-title">Новые пользователи</div>' +
     '<div id="dashUsers"></div>';
-
   try {
-    const counts = await Promise.all([
-      sb.from('vw_public_profiles').select('id', { count: 'exact', head: true }),
-      sb.from('posts').select('id', { count: 'exact', head: true }),
-      sb.from('comments').select('id', { count: 'exact', head: true }),
-      sb.from('companies').select('id', { count: 'exact', head: true }),
-      sb.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      sb.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active')
-    ]);
-
-    const cards = [
-      { icon: '👥', val: counts[0].count || 0, label: 'Пользователи', color: 'purple' },
-      { icon: '📝', val: counts[1].count || 0, label: 'Посты', color: 'green' },
-      { icon: '💬', val: counts[2].count || 0, label: 'Комментарии', color: 'blue' },
-      { icon: '🏢', val: counts[3].count || 0, label: 'Компании', color: 'gold' },
-      { icon: '⚠️', val: counts[4].count || 0, label: 'Жалобы', color: 'red' },
-      { icon: '💎', val: counts[5].count || 0, label: 'Подписки', color: 'green' }
-    ];
-
-    document.getElementById('dashStats').innerHTML = cards.map(function(c) {
-      return '<div class="stat-card">' +
-        '<div class="stat-icon">' + c.icon + '</div>' +
-        '<div class="stat-val ' + c.color + '">' + c.val + '</div>' +
-        '<div class="stat-label">' + c.label + '</div>' +
-      '</div>';
-    }).join('');
-
-    // Последние жалобы
-    const reps = await sb.from('reports').select('*')
-      .eq('status', 'pending').order('created_at', { ascending: false }).limit(5);
-    const rd = reps.data || [];
-
-    document.getElementById('dashReports').innerHTML = !rd.length
-      ? '<div class="empty">Нет активных жалоб</div>'
-      : '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-        '<th>Тип</th><th>Причина</th><th>Дата</th>' +
-        '</tr></thead><tbody>' +
-        rd.map(function(r) {
-          return '<tr>' +
-            '<td><span class="badge badge-red">' + esc(r.target_type) + '</span></td>' +
-            '<td>' + esc(r.reason_category || '—') + '</td>' +
-            '<td>' + fmtDate(r.created_at) + '</td>' +
-          '</tr>';
-        }).join('') +
-        '</tbody></table></div>';
-
-    // Новые пользователи
-    const users = await sb.from('vw_public_profiles').select('name, dna_type, level, created_at')
-      .order('created_at', { ascending: false }).limit(5);
-    const ud = users.data || [];
-
-    document.getElementById('dashUsers').innerHTML = !ud.length
-      ? '<div class="empty">Нет пользователей</div>'
-      : '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-        '<th>Имя</th><th>ДНК</th><th>Уровень</th><th>Дата</th>' +
-        '</tr></thead><tbody>' +
-        ud.map(function(u) {
-          const dna = u.dna_type
-            ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
-            : '—';
-          return '<tr>' +
-            '<td>' + esc(u.name || '—') + '</td>' +
-            '<td>' + dna + '</td>' +
-            '<td>' + (LN[u.level] || u.level || '—') + '</td>' +
-            '<td>' + fmtDate(u.created_at) + '</td>' +
-          '</tr>';
-        }).join('') +
-        '</tbody></table></div>';
+    const counts = await loadDashboardStats();
+    renderDashboardCards(counts);
+    await renderDashboardTables();
   } catch (err) {
     console.error('renderDashboard error:', err);
     showToast('Ошибка загрузки дашборда', 'err');
@@ -270,81 +239,64 @@ function debounceUsers() {
   _searchTimer = setTimeout(loadUsersTable, 300);
 }
 
+async function fetchUsersData() {
+  const result = await loadUsers(_usersPage, _usersSearch, _usersDna, _usersPlan);
+  _usersCache = result.data;
+  _usersTotal = result.count;
+}
+
+function renderUsersRows() {
+  let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+    '<th></th><th>Имя</th><th>Email</th><th>ДНК</th><th>Уровень</th><th>XP</th><th>План</th><th>Статус</th><th>Действия</th>' +
+    '</tr></thead><tbody>';
+  _usersCache.forEach(function(u) {
+    const avatar = u.avatar_url
+      ? '<img class="avatar-sm" src="' + esc(u.avatar_url) + '" alt="">'
+      : '<div class="avatar-sm" style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-dim)">\ud83d\udc64</div>';
+    const dna = u.dna_type
+      ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>' : '—';
+    const planBadge = u.tariff === 'business' ? 'badge-gold' : u.tariff === 'pro' ? 'badge-purple' : 'badge-blue';
+    const st = u.is_banned ? '<span class="badge badge-red">Бан</span>'
+      : u.is_verified ? '<span class="badge badge-green">✓</span>' : '<span class="badge badge-purple">Акт</span>';
+    h += '<tr><td>' + avatar + '</td><td><b>' + esc(u.name || '—') + '</b></td><td>' + esc(u.email || '—') + '</td>' +
+      '<td>' + dna + '</td><td>' + (LN[u.level] || '—') + '</td><td>' + (u.xp_total || 0) + '</td>' +
+      '<td><span class="badge ' + planBadge + '">' + (u.tariff || 'free').toUpperCase() + '</span></td>' +
+      '<td>' + st + '</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="viewUser(\'' + u.id + '\')">Подробнее</button></td></tr>';
+  });
+  h += '</tbody></table></div>';
+  document.getElementById('usersTableWrap').innerHTML = h;
+}
+
+function renderUsersPagination() {
+  const perPage = 20;
+  const totalPages = Math.ceil(_usersTotal / perPage);
+  if (totalPages <= 1) {
+    document.getElementById('usersPagination').innerHTML = '<span class="page-info">' + _usersTotal + ' всего</span>';
+    return;
+  }
+  let pg = '<div class="pagination">';
+  pg += '<button' + (_usersPage <= 1 ? ' disabled' : '') + ' onclick="_usersPage--;loadUsersTable()">&laquo;</button>';
+  const start = Math.max(1, _usersPage - 2);
+  const end = Math.min(totalPages, start + 4);
+  const start2 = Math.max(1, end - 4);
+  for (let i = start2; i <= end; i++) {
+    pg += '<button' + (i === _usersPage ? ' class="active"' : '') + ' onclick="_usersPage=' + i + ';loadUsersTable()">' + i + '</button>';
+  }
+  pg += '<button' + (_usersPage >= totalPages ? ' disabled' : '') + ' onclick="_usersPage++;loadUsersTable()">&raquo;</button>';
+  pg += '<span class="page-info">' + _usersTotal + ' всего</span></div>';
+  document.getElementById('usersPagination').innerHTML = pg;
+}
+
 async function loadUsersTable() {
   try {
-    const result = await loadUsers(_usersPage, _usersSearch, _usersDna, _usersPlan);
-    _usersCache = result.data;
-    _usersTotal = result.count;
-
+    await fetchUsersData();
     if (!_usersCache.length) {
       document.getElementById('usersTableWrap').innerHTML = '<div class="empty">Пользователи не найдены</div>';
       document.getElementById('usersPagination').innerHTML = '';
       return;
     }
-
-    let h = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-      '<th></th><th>Имя</th><th>Email</th><th>ДНК</th><th>Уровень</th><th>XP</th><th>План</th><th>Статус</th><th>Действия</th>' +
-      '</tr></thead><tbody>';
-
-    _usersCache.forEach(function(u) {
-      const avatar = u.avatar_url
-        ? '<img class="avatar-sm" src="' + esc(u.avatar_url) + '" alt="">'
-        : '<div class="avatar-sm" style="display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-dim)">👤</div>';
-
-      const dna = u.dna_type
-        ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
-        : '—';
-
-      const planBadge = u.tariff === 'business' ? 'badge-gold' : u.tariff === 'pro' ? 'badge-purple' : 'badge-blue';
-
-      const st = u.is_banned
-        ? '<span class="badge badge-red">Бан</span>'
-        : u.is_verified
-          ? '<span class="badge badge-green">✓</span>'
-          : '<span class="badge badge-purple">Акт</span>';
-
-      h += '<tr>' +
-        '<td>' + avatar + '</td>' +
-        '<td><b>' + esc(u.name || '—') + '</b></td>' +
-        '<td>' + esc(u.email || '—') + '</td>' +
-        '<td>' + dna + '</td>' +
-        '<td>' + (LN[u.level] || '—') + '</td>' +
-        '<td>' + (u.xp_total || 0) + '</td>' +
-        '<td><span class="badge ' + planBadge + '">' + (u.tariff || 'free').toUpperCase() + '</span></td>' +
-        '<td>' + st + '</td>' +
-        '<td class="actions">' +
-          '<button class="btn btn-ghost btn-sm" onclick="viewUser(\'' + u.id + '\')">Подробнее</button>' +
-        '</td>' +
-      '</tr>';
-    });
-
-    h += '</tbody></table></div>';
-    document.getElementById('usersTableWrap').innerHTML = h;
-
-    // Pagination
-    const perPage = 20;
-    const totalPages = Math.ceil(_usersTotal / perPage);
-
-    if (totalPages <= 1) {
-      document.getElementById('usersPagination').innerHTML = '<span class="page-info">' + _usersTotal + ' всего</span>';
-      return;
-    }
-
-    let pg = '<div class="pagination">';
-    pg += '<button' + (_usersPage <= 1 ? ' disabled' : '') + ' onclick="_usersPage--;loadUsersTable()">&laquo;</button>';
-
-    const start = Math.max(1, _usersPage - 2);
-    const end = Math.min(totalPages, start + 4);
-    const start2 = Math.max(1, end - 4);
-
-    for (let i = start2; i <= end; i++) {
-      pg += '<button' + (i === _usersPage ? ' class="active"' : '') + ' onclick="_usersPage=' + i + ';loadUsersTable()">' + i + '</button>';
-    }
-
-    pg += '<button' + (_usersPage >= totalPages ? ' disabled' : '') + ' onclick="_usersPage++;loadUsersTable()">&raquo;</button>';
-    pg += '<span class="page-info">' + _usersTotal + ' всего</span>';
-    pg += '</div>';
-    document.getElementById('usersPagination').innerHTML = pg;
+    renderUsersRows();
+    renderUsersPagination();
   } catch (err) {
     console.error('loadUsersTable error:', err);
     document.getElementById('usersTableWrap').innerHTML = '<div class="empty">Ошибка загрузки</div>';

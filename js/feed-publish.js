@@ -66,169 +66,186 @@ function compressImage(file) {
   });
 }
 
-// ===== ПУБЛИКАЦИЯ =====
+// ===== ПУБЛИКАЦИЯ — ПОДФУНКЦИИ =====
 
-async function doPublish(contentArg) {
-  // Поддержка модалки и шаблона scrCreate
+function validatePostData(contentArg) {
   const ta = document.getElementById('post-content') || document.getElementById('createTa');
   const btn = document.getElementById('publish-btn') || document.getElementById('pubBtn');
   const content = contentArg || (ta ? ta.value : '');
   const photo = typeof getPendingPhoto === 'function' ? getPendingPhoto() : null;
 
-  // Валидация текста
   const textResult = validatePostContent(content);
   if (!textResult.ok && !photo) {
     window.showToast?.(textResult.error);
     if (ta) ta.focus();
-    return;
+    return null;
   }
   const trimmed = textResult.ok ? textResult.text : '';
 
-  // Валидация фото
   if (photo) {
     const imgResult = validateImage(photo);
     if (!imgResult.ok) {
       window.showToast?.(imgResult.error);
-      return;
+      return null;
     }
   }
 
-  // Нужен хотя бы текст или фото
   if (!trimmed && !photo) {
     window.showToast?.('Напишите что-нибудь!');
-    return;
+    return null;
   }
 
-  // Проверка авторизации
   if (!getCurrentUser()) {
     window.showToast?.('Необходима авторизация');
-    return;
+    return null;
   }
 
-  // Состояние загрузки
-  let originalText = '';
-  if (btn) {
-    originalText = btn.textContent;
-    btn.disabled = true;
-    const txtEl = btn.querySelector('.create-publish-text');
-    const loadEl = btn.querySelector('.create-publish-loader');
-    if (txtEl && loadEl) {
-      txtEl.style.display = 'none';
-      loadEl.style.display = 'inline-flex';
-    } else {
-      btn.textContent = 'Публикую...';
+  return { ta: ta, btn: btn, trimmed: trimmed, photo: photo };
+}
+
+function setPublishLoading(btn) {
+  if (!btn) return '';
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  const txtEl = btn.querySelector('.create-publish-text');
+  const loadEl = btn.querySelector('.create-publish-loader');
+  if (txtEl && loadEl) {
+    txtEl.style.display = 'none';
+    loadEl.style.display = 'inline-flex';
+  } else {
+    btn.textContent = 'Публикую...';
+  }
+  return originalText;
+}
+
+async function uploadPostMedia(photo, btn) {
+  let imageUrl = null;
+  let imageUrls = [];
+
+  const selImages = typeof getSelectedImages === 'function' ? getSelectedImages() : [];
+  if (selImages.length > 0) {
+    try {
+      imageUrls = await window.uploadSelectedImages(function(cur, tot) {
+        const txtEl = btn ? btn.querySelector('.create-publish-text') : null;
+        if (txtEl) txtEl.textContent = 'Загрузка ' + cur + '/' + tot + '...';
+        else if (btn) btn.textContent = 'Загрузка ' + cur + '/' + tot + '...';
+      });
+      if (imageUrls.length) imageUrl = imageUrls[0];
+    } catch (uploadErr) {
+      console.error('[PUBLISH] Image upload failed:', uploadErr);
+      window.showToast?.('Ошибка загрузки фото');
+      return null;
     }
+  } else if (photo && typeof sbUploadImage === 'function') {
+    const compressed = await compressImage(photo);
+    imageUrl = await sbUploadImage(compressed);
+    if (imageUrl) imageUrls = [imageUrl];
   }
 
-  try {
-    let imageUrl = null;
-    let imageUrls = [];
+  return { imageUrl: imageUrl, imageUrls: imageUrls };
+}
 
-    // Множественные фото (feed-media.js)
-    const selImages = typeof getSelectedImages === 'function' ? getSelectedImages() : [];
-    if (selImages.length > 0) {
-      try {
-        imageUrls = await window.uploadSelectedImages(function(cur, tot) {
-          const txtEl = btn ? btn.querySelector('.create-publish-text') : null;
-          if (txtEl) txtEl.textContent = 'Загрузка ' + cur + '/' + tot + '...';
-          else if (btn) btn.textContent = 'Загрузка ' + cur + '/' + tot + '...';
-        });
-        if (imageUrls.length) imageUrl = imageUrls[0];
-      } catch (uploadErr) {
-        console.error('[PUBLISH] Image upload failed:', uploadErr);
-        window.showToast?.('Ошибка загрузки фото');
-        return;
-      }
-    } else if (photo && typeof sbUploadImage === 'function') {
-      // Одиночное фото (старый способ)
-      const compressed = await compressImage(photo);
-      imageUrl = await sbUploadImage(compressed);
-      if (imageUrl) imageUrls = [imageUrl];
+async function savePostToDb(trimmed, imageUrl, imageUrls) {
+  const isEdit = window._editingPostId;
+
+  if (isEdit) {
+    const update = { content: trimmed };
+    if (imageUrl) update.image_url = imageUrl;
+    if (imageUrls.length) update.images = imageUrls;
+    const resp = await sb.from('posts').update(update).eq('id', isEdit).select().single();
+    if (resp.error) throw resp.error;
+    window._editingPostId = null;
+    return { result: resp.data, isEdit: true };
+  }
+
+  const postType = window.currentPostType || 'post';
+  let pollData = null;
+  if (postType === 'poll' && window.currentPollInstance) {
+    pollData = window.currentPollInstance.getData();
+    if (!pollData) {
+      window.showToast?.('Добавьте минимум 2 варианта ответа');
+      return null;
     }
+  }
+  const result = await sbCreatePost(trimmed, postType, imageUrl, pollData, imageUrls);
+  if (!result) throw new Error('Не удалось создать пост');
+  return { result: result, isEdit: false };
+}
 
-    const isEdit = window._editingPostId;
-    let result;
+async function notifyAfterPublish(ta, isEdit) {
+  if (ta) ta.value = '';
+  if (typeof clearPendingPhoto === 'function') clearPendingPhoto();
+  if (typeof clearSelectedImages === 'function') clearSelectedImages();
 
-    if (isEdit) {
-      const update = { content: trimmed };
-      if (imageUrl) update.image_url = imageUrl;
-      if (imageUrls.length) update.images = imageUrls;
-      const resp = await sb.from('posts').update(update).eq('id', isEdit).select().single();
-      if (resp.error) throw resp.error;
-      result = resp.data;
-      window._editingPostId = null;
-    } else {
-      const postType = window.currentPostType || 'post';
-      let pollData = null;
-      if (postType === 'poll' && window.currentPollInstance) {
-        pollData = window.currentPollInstance.getData();
-        if (!pollData) {
-          window.showToast?.('Добавьте минимум 2 варианта ответа');
-          return;
-        }
-      }
-      result = await sbCreatePost(trimmed, postType, imageUrl, pollData, imageUrls);
-    }
+  const modal = document.querySelector('.create-modal');
+  if (modal) {
+    modal.classList.remove('create-modal--visible');
+    setTimeout(function() { modal.remove(); }, 250);
+  } else {
+    goTo('scrFeed');
+  }
 
-    if (!result) throw new Error('Не удалось создать пост');
+  await new Promise(function(r) { setTimeout(r, 300); });
 
-    // Очистить форму
-    if (ta) ta.value = '';
-    if (typeof clearPendingPhoto === 'function') clearPendingPhoto();
-    if (typeof clearSelectedImages === 'function') clearSelectedImages();
-
-    // Закрыть модалку или вернуться в ленту
-    const modal = document.querySelector('.create-modal');
-    if (modal) {
-      modal.classList.remove('create-modal--visible');
-      setTimeout(function() { modal.remove(); }, 250);
-    } else {
-      goTo('scrFeed');
-    }
-
-    // Подождать анимацию закрытия
-    await new Promise(function(r) { setTimeout(r, 300); });
-
-    // Обновить ленту
-    if (typeof window.loadFeed === 'function') {
-      try {
-        await window.loadFeed();
-      } catch (feedErr) {
-        console.error('Failed to reload feed:', feedErr);
-        location.reload();
-      }
-    } else {
-      console.error('window.loadFeed not found, reloading page');
+  if (typeof window.loadFeed === 'function') {
+    try {
+      await window.loadFeed();
+    } catch (feedErr) {
+      console.error('Failed to reload feed:', feedErr);
       location.reload();
     }
+  } else {
+    console.error('window.loadFeed not found, reloading page');
+    location.reload();
+  }
 
-    window.showToast?.(isEdit ? 'Пост обновлён!' : 'Пост опубликован! +15 XP');
+  window.showToast?.(isEdit ? 'Пост обновлён!' : 'Пост опубликован! +15 XP');
+}
 
+function handlePublishError(err) {
+  console.error('Publish error:', err);
+  let message = 'Ошибка публикации';
+  if (err && err.message) {
+    if (err.message.includes('auth')) message = 'Необходима авторизация';
+    else if (err.message.includes('permission')) message = 'Нет прав на создание поста';
+    else if (err.message.includes('network') || err.message.includes('fetch')) message = 'Проблема с интернетом';
+  }
+  window.showToast?.(message);
+}
+
+function resetPublishButton(btn, originalText) {
+  if (!btn) return;
+  btn.disabled = false;
+  const txtEl = btn.querySelector('.create-publish-text');
+  const loadEl = btn.querySelector('.create-publish-loader');
+  if (txtEl && loadEl) {
+    txtEl.style.display = '';
+    loadEl.style.display = 'none';
+  } else {
+    btn.textContent = originalText || 'Опубликовать';
+  }
+}
+
+// ===== ПУБЛИКАЦИЯ — ОРКЕСТРАТОР =====
+
+async function doPublish(contentArg) {
+  const data = validatePostData(contentArg);
+  if (!data) return;
+
+  const originalText = setPublishLoading(data.btn);
+
+  try {
+    const media = await uploadPostMedia(data.photo, data.btn);
+    if (!media) return;
+
+    const saved = await savePostToDb(data.trimmed, media.imageUrl, media.imageUrls);
+    if (!saved) return;
+
+    await notifyAfterPublish(data.ta, saved.isEdit);
   } catch (err) {
-    console.error('Publish error:', err);
-
-    // Понятное сообщение пользователю
-    let message = 'Ошибка публикации';
-    if (err && err.message) {
-      if (err.message.includes('auth')) message = 'Необходима авторизация';
-      else if (err.message.includes('permission')) message = 'Нет прав на создание поста';
-      else if (err.message.includes('network') || err.message.includes('fetch')) message = 'Проблема с интернетом';
-    }
-    window.showToast?.(message);
-
+    handlePublishError(err);
   } finally {
-    // Восстановить кнопку
-    if (btn) {
-      btn.disabled = false;
-      const txtEl2 = btn.querySelector('.create-publish-text');
-      const loadEl2 = btn.querySelector('.create-publish-loader');
-      if (txtEl2 && loadEl2) {
-        txtEl2.style.display = '';
-        loadEl2.style.display = 'none';
-      } else {
-        btn.textContent = originalText || 'Опубликовать';
-      }
-    }
+    resetPublishButton(data.btn, originalText);
   }
 }
 
@@ -237,3 +254,7 @@ window.doPublish = doPublish;
 window.validatePostContent = validatePostContent;
 window.validateImage = validateImage;
 window.compressImage = compressImage;
+window.validatePostData = validatePostData;
+window.uploadPostMedia = uploadPostMedia;
+window.savePostToDb = savePostToDb;
+window.notifyAfterPublish = notifyAfterPublish;

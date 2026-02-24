@@ -178,7 +178,7 @@ function setupGoDone(){
 
 function setupShowDone(){
   localStorage.setItem('onboardingDone','true');
-  localStorage.setItem('mlm_onboarding_step','done');
+  localStorage.setItem('trafiqo_onboarding_step','done');
   if (window.saveOnboardingStep) {
     window.saveOnboardingStep('complete').catch(console.error);
   }

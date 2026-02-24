@@ -52,60 +52,41 @@ async function loadConversations() {
 
 // ===== renderChatList =====
 
+function buildChatItem(conv, myId) {
+  const members = conv.conversation_members || [];
+  let other = null;
+  for (let i = 0; i < members.length; i++) {
+    if (members[i].users && members[i].users.id !== myId) { other = members[i].users; break; }
+  }
+  if (!other) other = { name: 'Диалог', avatar_url: '', dna_type: '' };
+  const lastMsg = (conv.last_msg && conv.last_msg[0]) || {};
+  const timeStr = lastMsg.created_at ? formatChatTime(lastMsg.created_at) : '';
+  let preview = lastMsg.content || '';
+  if (preview.length > 40) preview = preview.substring(0, 40) + '...';
+  const item = document.createElement('div');
+  item.className = 'chat-item';
+  item.setAttribute('data-conv-id', conv.id);
+  item.onclick = function() { openChat(conv.id, other); };
+  const avaHtml = other.avatar_url
+    ? '<img class="chat-item-avatar" src="' + other.avatar_url + '" alt="">'
+    : '<div class="chat-item-avatar chat-item-avatar-placeholder">' + (other.name || 'U').charAt(0).toUpperCase() + '</div>';
+  const unreadHtml = conv.unread_count > 0 ? '<div class="chat-unread">' + conv.unread_count + '</div>' : '';
+  item.innerHTML = avaHtml +
+    '<div class="chat-item-body"><div class="chat-item-name">' + (other.name || 'Пользователь') + '</div>' +
+    '<div class="chat-item-last">' + preview + '</div></div>' +
+    '<div class="chat-item-meta"><div class="chat-item-time">' + timeStr + '</div>' + unreadHtml + '</div>';
+  return item;
+}
+
 function renderChatList(conversations) {
   const list = document.getElementById('chatList');
   const emptyEl = document.getElementById('chatEmpty');
   if (!list) return;
-
   list.querySelectorAll('.chat-item').forEach(function(el) { el.remove(); });
-
-  if (!conversations.length) {
-    if (emptyEl) emptyEl.classList.remove('hidden');
-    return;
-  }
+  if (!conversations.length) { if (emptyEl) emptyEl.classList.remove('hidden'); return; }
   if (emptyEl) emptyEl.classList.add('hidden');
-
   const myId = getCurrentUser().id;
-  conversations.forEach(function(conv) {
-    const members = conv.conversation_members || [];
-    let other = null;
-    for (let i = 0; i < members.length; i++) {
-      if (members[i].users && members[i].users.id !== myId) {
-        other = members[i].users; break;
-      }
-    }
-    if (!other) other = { name: 'Диалог', avatar_url: '', dna_type: '' };
-
-    const lastMsg = (conv.last_msg && conv.last_msg[0]) || {};
-    const timeStr = lastMsg.created_at ? formatChatTime(lastMsg.created_at) : '';
-    let preview = lastMsg.content || '';
-    if (preview.length > 40) preview = preview.substring(0, 40) + '...';
-
-    const item = document.createElement('div');
-    item.className = 'chat-item';
-    item.setAttribute('data-conv-id', conv.id);
-    item.onclick = function() { openChat(conv.id, other); };
-
-    const avaHtml = other.avatar_url
-      ? '<img class="chat-item-avatar" src="' + other.avatar_url + '" alt="">'
-      : '<div class="chat-item-avatar chat-item-avatar-placeholder">' + (other.name || 'U').charAt(0).toUpperCase() + '</div>';
-
-    const unreadHtml = conv.unread_count > 0
-      ? '<div class="chat-unread">' + conv.unread_count + '</div>'
-      : '';
-
-    item.innerHTML = avaHtml +
-      '<div class="chat-item-body">' +
-        '<div class="chat-item-name">' + (other.name || 'Пользователь') + '</div>' +
-        '<div class="chat-item-last">' + preview + '</div>' +
-      '</div>' +
-      '<div class="chat-item-meta">' +
-        '<div class="chat-item-time">' + timeStr + '</div>' +
-        unreadHtml +
-      '</div>';
-
-    list.appendChild(item);
-  });
+  conversations.forEach(function(conv) { list.appendChild(buildChatItem(conv, myId)); });
 }
 
 // ===== filterConversations =====
@@ -214,17 +195,22 @@ function createBubble(msg, myId) {
   div.className = 'chat-bubble ' + (isOwn ? 'own' : 'other');
   div.setAttribute('data-msg-id', msg.id);
 
-  let content = msg.content || '';
-  if (msg.type === 'file' && msg.file_url) {
-    content = '<a class="chat-file-link" href="' + msg.file_url + '" target="_blank">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> ' +
-      (msg.file_name || 'Файл') + '</a>';
-  }
-
   const time = msg.created_at ? formatMsgTime(msg.created_at) : '';
 
-  div.innerHTML = '<div class="chat-bubble-content">' + content + '</div>' +
-    '<div class="chat-bubble-time">' + time + '</div>';
+  const bubbleContent = document.createElement('div');
+  bubbleContent.className = 'chat-bubble-content';
+  if (msg.type === 'file' && msg.file_url) {
+    bubbleContent.innerHTML = '<a class="chat-file-link" href="' + msg.file_url + '" target="_blank">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> ' +
+      (msg.file_name || 'Файл') + '</a>';
+  } else {
+    bubbleContent.textContent = msg.content || '';
+  }
+  const bubbleTime = document.createElement('div');
+  bubbleTime.className = 'chat-bubble-time';
+  bubbleTime.textContent = time;
+  div.appendChild(bubbleContent);
+  div.appendChild(bubbleTime);
 
   return div;
 }

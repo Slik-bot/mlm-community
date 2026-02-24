@@ -90,7 +90,7 @@ function loadTxPage(p) { _txPage = p; loadTransactions(); }
 async function loadPayouts() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  let q = sb.from('payouts').select('*, users(name)').order('requested_at', { ascending: false });
+  let q = sb.from('withdrawals').select('*, users(name)').order('requested_at', { ascending: false });
   if (_payFilter) q = q.eq('status', _payFilter);
   const r = await q;
   const data = r.data || [];
@@ -123,7 +123,7 @@ async function loadPayouts() {
 async function handlePayout(id, status) {
   const upd = { status: status };
   if (status === 'paid') upd.paid_at = new Date().toISOString();
-  await sb.from('payouts').update(upd).eq('id', id);
+  await sb.from('withdrawals').update(upd).eq('id', id);
   showToast(status === 'approved' ? 'Одобрена' : status === 'paid' ? 'Оплачена' : 'Отклонена', 'ok');
   loadPayouts();
 }
@@ -159,7 +159,7 @@ async function loadReferrals() {
 async function loadPayChannels() {
   const area = document.getElementById('contentArea');
   area.innerHTML = 'Загрузка...';
-  const r = await sb.from('app_settings').select('*').eq('key', 'payment_channels').single();
+  const r = await sb.from('platform_settings').select('*').eq('key', 'payment_channels').single();
   const cfg = (r.data && r.data.value) || {};
   const channels = [
     { key: 'telegram_stars', name: 'Telegram Stars', icon: '⭐' },
@@ -187,7 +187,7 @@ async function savePayChannels() {
   keys.forEach(function(k) {
     val[k] = { config: document.getElementById('ch_' + k).value.trim(), enabled: document.getElementById('ch_' + k + '_on').checked };
   });
-  const r = await sb.from('app_settings').upsert({ key: 'payment_channels', value: val, updated_at: new Date().toISOString() });
+  const r = await sb.from('platform_settings').upsert({ key: 'payment_channels', value: val, updated_at: new Date().toISOString() });
   if (r.error) { showToast(r.error.message, 'err'); return; }
   showToast('Каналы сохранены', 'ok');
 }
