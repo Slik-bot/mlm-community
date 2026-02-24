@@ -101,7 +101,9 @@ function applyDNA(type) {
   root.style.setProperty('--cb', b);
 
   const el = (id) => document.getElementById(id);
-  el('typeName').textContent = d.name;
+  const typeNameEl = el('typeName');
+  typeNameEl.textContent = d.name;
+  typeNameEl.classList.toggle('long', d.name.length > 7);
   el('typeDesc').textContent = d.desc;
   el('dnaLabel').textContent = 'ТВОЙ БИЗНЕС-ДНК';
   el('dnrBadge').textContent = '♟ ПЕШКА · УРОВЕНЬ 1';
