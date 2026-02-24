@@ -57,6 +57,12 @@
   transform: scale(0.5) translateY(80px);
   filter: blur(30px);
 }
+#mainCard.dna-card.revealed {
+  animation: dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
 .dna-card.revealed {
   animation: dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
 }
