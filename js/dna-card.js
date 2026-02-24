@@ -319,7 +319,14 @@ function initDnaResult() {
   dcApplyDNA(dcActive);
   const card = el('mainCard');
   if (card) {
+    card.classList.remove('revealed');
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.5) translateY(80px)';
+    card.style.filter = 'blur(30px)';
+    void card.offsetHeight;
     card.style.opacity = '';
+    card.style.transform = '';
+    card.style.filter = '';
     card.classList.add('revealed');
   }
   setTimeout(() => {
