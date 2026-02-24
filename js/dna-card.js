@@ -299,8 +299,6 @@ function runReveal() {
     // Материализация карточки
     card.style.opacity = ''; card.style.transform = ''; card.style.filter = '';
     card.classList.add('revealed');
-    const holo = document.getElementById('cardHolo');
-    if (holo) holo.classList.add('active');
 
     // Stagger-анимации внутренних элементов
     setTimeout(function() {
@@ -398,8 +396,6 @@ function initDnaResult() {
   if (window.applyDnaTheme) applyDnaTheme(type);
   applyDNA(type);
   dcInitHolo();
-  const holo = document.getElementById('cardHolo');
-  if (holo) holo.classList.add('active');
   runReveal();
 
   // Гарантия: если reveal не показал карточку — показать напрямую

@@ -143,7 +143,7 @@
 
 /* 3D Scene */
 #scrDnaResult .scene { perspective:1200px; width:100%; max-width:360px; position:relative; z-index:1; }
-#scrDnaResult .card-wrap { transform-style:preserve-3d; transition:transform 0.1s ease-out; position:relative; }
+#scrDnaResult .card-wrap { transform-style:preserve-3d; transition:transform 0.1s ease-out; position:relative; border-radius:26px; -webkit-mask-image:-webkit-radial-gradient(white, black); }
 
 /* Card reveal state */
 #scrDnaResult .dna-card {
