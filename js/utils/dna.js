@@ -21,6 +21,19 @@ function getDnaColor(dnaType) {
   return DNA_COLORS[dnaType] || '#8b5cf6';
 }
 
+function applyDnaTheme(dnaType) {
+  const map = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
+  const short = map[dnaType] || dnaType || localStorage.getItem('dnaType') || 'S';
+  const app = document.querySelector('.app');
+  if (app) app.dataset.dna = short;
+}
+
 // ЭКСПОРТЫ
 window.DNA_COLORS = DNA_COLORS;
 window.getDnaColor = getDnaColor;
+window.applyDnaTheme = applyDnaTheme;
+
+// ВРЕМЕННО для теста — удалить после проверки
+if (!window.currentProfile) {
+  applyDnaTheme('C');
+}

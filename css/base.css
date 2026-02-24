@@ -2,7 +2,7 @@
 :root{
   --bg:#06060b;--surface:#0e0e16;--primary:#8b5cf6;--primary-dark:#7c3aed;--primary-light:#a78bfa;
   --text:#f4f4f6;--text-muted:rgba(255,255,255,0.45);--text-dim:rgba(255,255,255,0.22);
-  --glass:rgba(255,255,255,0.035);--glass-border:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.09);
   --green:#22c55e;--red:#ef4444;--blue:#3b82f6;--orange:#f59e0b;
   --nav-h:68px;--radius:14px;
   --fs-hero:30px;--fs-h2:22px;--fs-h3:18px;--fs-body:14px;--fs-small:13px;--fs-caption:12px;--fs-micro:11px;
@@ -124,3 +124,25 @@ input, textarea, select {
 * {
   touch-action: pan-x pan-y;
 }
+
+/* ═══ DNA AMBIENT ORB ═══ */
+.app::before {
+  content:''; position:fixed; top:-120px; left:50%; transform:translateX(-50%);
+  width:340px; height:340px; pointer-events:none; z-index:0; transition:background 0.8s ease;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%);
+}
+.app[data-dna="S"]::before { background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%); }
+.app[data-dna="C"]::before { background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(34,197,94,0.08) 0%, transparent 70%); }
+.app[data-dna="K"]::before { background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 70%); }
+.app[data-dna="A"]::before { background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(167,139,250,0.08) 0%, transparent 70%); }
+
+/* ═══ DNA CSS VARIABLES ═══ */
+:root {
+  --dna-c:#3b82f6; --dna-c2:#1d4ed8; --dna-cl:#93c5fd;
+  --dna-cg:rgba(59,130,246,0.55);
+  --dna-cr:59; --dna-cg-val:130; --dna-cb:246;
+}
+[data-dna="S"] { --dna-c:#3b82f6; --dna-c2:#1d4ed8; --dna-cl:#93c5fd; --dna-cg:rgba(59,130,246,0.55); --dna-cr:59; --dna-cg-val:130; --dna-cb:246; }
+[data-dna="C"] { --dna-c:#22c55e; --dna-c2:#16a34a; --dna-cl:#86efac; --dna-cg:rgba(34,197,94,0.55); --dna-cr:34; --dna-cg-val:197; --dna-cb:94; }
+[data-dna="K"] { --dna-c:#f59e0b; --dna-c2:#d97706; --dna-cl:#fcd34d; --dna-cg:rgba(245,158,11,0.55); --dna-cr:245; --dna-cg-val:158; --dna-cb:11; }
+[data-dna="A"] { --dna-c:#a78bfa; --dna-c2:#7c3aed; --dna-cl:#c4b5fd; --dna-cg:rgba(167,139,250,0.55); --dna-cr:167; --dna-cg-val:139; --dna-cb:250; }

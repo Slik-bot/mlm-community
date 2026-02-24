@@ -64,7 +64,7 @@
 .route-arrow svg{width:14px;height:14px;}
 
 /* ============ POST CARD ============ */
-.post-card{margin:0 10px 14px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04);position:relative;animation:cardIn .5s cubic-bezier(.16,1,.3,1) both}
+.post-card{margin:0 10px 14px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-border);position:relative;animation:cardIn .5s cubic-bezier(.16,1,.3,1) both}
 .post-card.pop-open{z-index:40}
 .post-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06) 50%,transparent);pointer-events:none;z-index:1}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}

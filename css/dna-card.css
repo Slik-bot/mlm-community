@@ -1,326 +1,371 @@
 /* ═══════════════════════════════════════
-   DNA CARD — Премиальная карточка v2
-   Всё свечение ВНУТРИ (overflow:hidden safe)
+   DNA CARD SYSTEM — Premium v3
+   Перенесено из макета trafiqo-card-premium
+   Адаптировано под Outfit
    ═══════════════════════════════════════ */
 
-/* ═══ ЭКРАН ═══ */
-#scrDnaResult {
-  --c: #3b82f6;
-  --c2: #1d4ed8;
-  --cl: #93c5fd;
-  --cg: rgba(59,130,246,0.3);
-  --cr: 59; --cg-val: 130; --cb: 246;
-  background: #06060b !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-}
-#scrDnaResult .dna-result-wrap {
-  width: 100%; max-width: 420px; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 32px 16px 60px; min-height: 100vh;
-  position: relative;
+/* ═══ REUSABLE DNA CARD COMPONENTS ═══ */
+
+/* 1. Card container */
+.dna-card {
+  width:100%; border-radius:26px; position:relative; overflow:hidden;
+  background:linear-gradient(160deg, #0c0c1e 0%, #080818 50%, #0a0a16 100%);
+  border:1px solid rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.25);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 20px 40px rgba(0,0,0,0.4),
+    0 0 60px var(--dna-cg),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transition:box-shadow 0.8s ease;
 }
 
-/* ═══ 3D SCENE ═══ */
-#scrDnaResult .scene {
-  perspective: 1200px; width: 100%; max-width: 360px; position: relative; z-index: 1;
-}
-#scrDnaResult .card-wrap {
-  transform-style: preserve-3d; transition: transform 0.1s ease-out; position: relative;
-}
-
-/* ═══ КАРТОЧКА ═══ */
-#scrDnaResult .dnr-card {
-  width: 100%; border-radius: 16px; position: relative; overflow: hidden;
-  background: linear-gradient(160deg,
-    rgba(var(--cr),var(--cg-val),var(--cb),0.30) 0%,
-    #141430 40%,
-    rgba(var(--cr),var(--cg-val),var(--cb),0.22) 100%);
-  border: 1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.4);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
-    inset 0 0 120px rgba(var(--cr),var(--cg-val),var(--cb),0.15);
-  opacity: 0; transform: scale(0.5) translateY(80px); filter: blur(30px);
-  will-change: transform, opacity;
-}
-#scrDnaResult .dnr-card.revealed {
-  animation: dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
-}
-@keyframes dcMaterialize {
-  0%   { opacity:0; transform:scale(0.5) translateY(80px); filter:blur(30px); }
-  55%  { opacity:1; filter:blur(0); }
-  70%  { transform:scale(1.035) translateY(-6px); }
-  85%  { transform:scale(0.985) translateY(2px); }
-  100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
-}
-
-/* Внутренний glow сверху */
-#scrDnaResult .dnr-card::before {
-  content: ''; position: absolute; top: -40%; left: -20%; width: 140%; height: 100%;
-  background: radial-gradient(ellipse at 50% 20%,
-    rgba(var(--cr),var(--cg-val),var(--cb),0.35) 0%, transparent 55%);
-  pointer-events: none; z-index: 1;
-}
-/* Цветная линия сверху */
-#scrDnaResult .dnr-card::after {
-  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--c), transparent);
-  z-index: 12; opacity: 1;
-}
-
-/* Голографический оверлей — ВСЕГДА видим */
-#scrDnaResult .card-holo {
-  position: absolute; inset: 0; border-radius: 16px; pointer-events: none; z-index: 10;
-  background: conic-gradient(
+/* 2. Holographic overlay */
+.dna-card__holo {
+  position:absolute; inset:0; border-radius:26px; opacity:0; pointer-events:none; z-index:10;
+  background:conic-gradient(
     from var(--holo-angle, 0deg) at 50% 50%,
     rgba(255,0,128,0.12) 0deg, rgba(255,200,0,0.10) 60deg,
     rgba(0,255,128,0.10) 120deg, rgba(0,200,255,0.12) 180deg,
     rgba(128,0,255,0.10) 240deg, rgba(255,0,128,0.12) 360deg
   );
-  mix-blend-mode: screen; opacity: 0.35; transition: opacity 0.4s;
+  mix-blend-mode:screen; transition:opacity 0.4s;
 }
-#scrDnaResult .dnr-card:hover .card-holo,
-#scrDnaResult .card-holo.active { opacity: 0.8; }
+.dna-card:hover .dna-card__holo,
+.dna-card__holo.active { opacity:1; }
 
-/* Шум */
-#scrDnaResult .card-noise {
-  position: absolute; inset: 0; border-radius: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 2; opacity: 0.4;
+/* 3. Noise texture */
+.dna-card__noise {
+  position:absolute; inset:0; border-radius:26px;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:2; opacity:0.05;
+}
+
+/* 4. Shine sweep */
+.dna-card__shine {
+  display:none;
+}
+@keyframes dcShineSweep { 0%,100%{left:-120%;} 50%{left:160%;} }
+
+/* 5. Figure */
+.dna-figure {
+  position:relative; display:flex; align-items:center; justify-content:center;
+  width:80px; height:80px;
+}
+.dna-figure__icon {
+  color:var(--dna-c);
+  filter:
+    drop-shadow(0 0 24px var(--dna-c))
+    drop-shadow(0 0 48px var(--dna-c))
+    drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+  animation:dcFigBreathe 4s ease-in-out infinite;
+  position:relative; z-index:2; transition:filter 0.6s ease;
+}
+@keyframes dcFigBreathe { 0%,100%{transform:scale(1) translateY(0);} 50%{transform:scale(1.03) translateY(-2px);} }
+
+/* Glow pedestal */
+.dna-figure__glow {
+  position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+  width:90px; height:36px;
+  background:radial-gradient(ellipse, var(--dna-c) 0%, transparent 70%);
+  opacity:0.7; filter:blur(6px);
+  animation:dcGlowPulse 3s ease-in-out infinite; transition:background 0.6s ease;
+}
+@keyframes dcGlowPulse {
+  0%,100% { opacity:0.7; transform:translateX(-50%) scaleX(1); }
+  50%     { opacity:1.0; transform:translateX(-50%) scaleX(1.3); }
+}
+
+/* Ripple rings */
+.dna-figure__ripple { position:absolute; inset:-16px; border-radius:50%; pointer-events:none; }
+.dna-ring {
+  position:absolute; inset:0; border-radius:50%;
+  border:1.5px solid var(--dna-c); opacity:0;
+  animation:dcRingPulse 3.6s ease-out infinite; transition:border-color 0.6s ease;
+}
+.dna-ring:nth-child(2) { animation-delay:1.2s; }
+.dna-ring:nth-child(3) { animation-delay:2.4s; }
+@keyframes dcRingPulse { 0%{transform:scale(0.7);opacity:0.5;} 100%{transform:scale(1.8);opacity:0;} }
+
+/* 6. Career node glow */
+.career-node--current {
+  background:var(--dna-c) !important; color:#000 !important;
+  box-shadow:0 0 20px var(--dna-cg), 0 0 6px var(--dna-c);
+  animation:dcNodeGlow 2.5s ease-in-out infinite;
+  transition:background 0.6s ease, box-shadow 0.6s ease;
+}
+@keyframes dcNodeGlow {
+  0%,100% { box-shadow:0 0 20px var(--dna-cg),0 0 6px var(--dna-c); }
+  50%     { box-shadow:0 0 32px var(--dna-cg),0 0 10px var(--dna-c); }
+}
+
+/* 7. XP fill */
+.xp-fill--dna {
+  background:linear-gradient(90deg, var(--dna-c), var(--dna-cl));
+  box-shadow:0 0 8px var(--dna-cg);
+  transition:background 0.6s ease, box-shadow 0.6s ease;
+}
+
+/* 8. DNA tag */
+.dna-tag {
+  padding:4px 12px; border-radius:20px;
+  border:1px solid rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.2);
+  font-size:11px; color:var(--dna-c);
+  background:rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.06);
+  font-weight:500; letter-spacing:0.3px;
+  transition:color 0.6s ease, border-color 0.6s ease, background 0.6s ease;
+}
+
+/* 9. Accent line */
+.dna-accent-line {
+  height:1px; background:linear-gradient(90deg, var(--dna-c), transparent);
+  width:0%; animation:dcAccentDraw 0.8s ease forwards;
+  animation-play-state:paused; transition:background 0.6s ease;
+}
+.dna-accent-line.go { animation-play-state:running; }
+@keyframes dcAccentDraw { to { width:60%; } }
+
+/* ═══ #scrDnaResult SCREEN ═══ */
+
+#scrDnaResult {
+  --c:#3b82f6; --c2:#1d4ed8; --cl:#93c5fd;
+  --cg:rgba(59,130,246,0.55);
+  --cr:59; --cg-val:130; --cb:246;
+  --dna-c:var(--c); --dna-c2:var(--c2); --dna-cl:var(--cl);
+  --dna-cg:var(--cg); --dna-cr:var(--cr); --dna-cg-val:var(--cg-val); --dna-cb:var(--cb);
+  background:#06060b !important;
+  overflow-x:hidden !important; overflow-y:auto !important;
+}
+#scrDnaResult .dna-result-wrap {
+  width:100%; max-width:420px; margin:0 auto;
+  display:flex; flex-direction:column; align-items:center;
+  padding:32px 16px 60px; min-height:100vh; position:relative;
+}
+
+/* 3D Scene */
+#scrDnaResult .scene { perspective:1200px; width:100%; max-width:360px; position:relative; z-index:1; }
+#scrDnaResult .card-wrap { transform-style:preserve-3d; transition:transform 0.1s ease-out; position:relative; }
+
+/* Card reveal state */
+#scrDnaResult .dna-card {
+  opacity:0; transform:scale(0.5) translateY(80px); filter:blur(30px); will-change:transform,opacity;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 0 80px var(--dna-cg),
+    0 0 40px var(--dna-cg),
+    0 20px 40px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+#scrDnaResult .dna-card.revealed { opacity:1; transform:scale(1) translateY(0); filter:blur(0); animation:dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes dcMaterialize {
+  0%{opacity:0;transform:scale(0.5) translateY(80px);filter:blur(30px);}
+  55%{opacity:1;filter:blur(0);}
+  70%{transform:scale(1.035) translateY(-6px);}
+  85%{transform:scale(0.985) translateY(2px);}
+  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0);}
+}
+
+/* Top color line */
+#scrDnaResult .dna-card::after {
+  content:''; position:absolute; top:0; left:10%; right:10%; height:2px;
+  background:linear-gradient(90deg, transparent, var(--c), transparent);
+  z-index:12;
 }
 
 /* ═══ HEADER ═══ */
 #scrDnaResult .dnr-header {
-  position: relative; height: 200px; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position:relative; height:200px; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 #scrDnaResult .dnr-header-bg {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, var(--c) 0%, rgba(var(--cr),var(--cg-val),var(--cb),0.4) 40%, transparent 100%);
-  opacity: 0.5;
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, var(--c) 0%, rgba(var(--cr),var(--cg-val),var(--cb),0.4) 40%, transparent 100%);
+  opacity:0.18;
 }
 #scrDnaResult .dnr-header::after {
-  content: ''; position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
-  width: 80%; height: 60%;
-  background: radial-gradient(ellipse, var(--c) 0%, transparent 65%);
-  opacity: 0.25; filter: blur(25px); pointer-events: none; z-index: 1;
-  animation: dcHeaderGlow 4s ease-in-out infinite;
+  content:''; position:absolute; bottom:10%; left:50%; transform:translateX(-50%);
+  width:80%; height:60%;
+  background:radial-gradient(ellipse, var(--c) 0%, transparent 65%);
+  opacity:0.35; filter:blur(25px); pointer-events:none; z-index:1;
+  animation:dcHeaderGlow 4s ease-in-out infinite;
 }
 @keyframes dcHeaderGlow {
-  0%,100% { opacity:0.2; transform:translateX(-50%) scaleX(1); }
-  50%     { opacity:0.35; transform:translateX(-50%) scaleX(1.2); }
+  0%,100%{opacity:0.15;transform:translateX(-50%) scaleX(1);}
+  50%{opacity:0.25;transform:translateX(-50%) scaleX(1.2);}
 }
-#scrDnaResult .pattern-canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.9; pointer-events: none;
-}
+#scrDnaResult .pattern-canvas { position:absolute; inset:0; width:100%; height:100%; opacity:0.4; pointer-events:none; }
 #scrDnaResult .card-brand {
-  position: absolute; top: 16px; left: 0; right: 0;
-  display: flex; justify-content: space-between; padding: 0 20px; z-index: 5;
-  font-family: 'Outfit', sans-serif; font-weight: 700;
-  font-size: 9px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase;
+  position:absolute; top:16px; left:0; right:0;
+  display:flex; justify-content:space-between; padding:0 20px; z-index:5;
+  font-family:'Outfit',sans-serif; font-weight:700;
+  font-size:9px; letter-spacing:4px; color:rgba(255,255,255,0.25); text-transform:uppercase;
 }
 
-/* ═══ ФИГУРА ═══ */
-#scrDnaResult .dnr-figure-wrap {
-  position: relative; width: 100px; height: 100px;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 5; margin-top: 24px;
-}
-#scrDnaResult .fig-glow {
-  position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-  width: 120px; height: 50px;
-  background: radial-gradient(ellipse, var(--c) 0%, transparent 70%);
-  opacity: 1; filter: blur(15px);
-  animation: dcGlowPulse 3s ease-in-out infinite;
-}
-@keyframes dcGlowPulse {
-  0%,100% { opacity:0.8; transform:translateX(-50%) scaleX(1); }
-  50%     { opacity:1; transform:translateX(-50%) scaleX(1.2); }
-}
-#scrDnaResult .fig-ripple { position: absolute; inset: -20px; border-radius: 50%; pointer-events: none; }
-#scrDnaResult .fig-ring {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 1px solid var(--c); opacity: 0; animation: dcRingPulse 3.6s ease-out infinite;
-}
-#scrDnaResult .fig-ring:nth-child(2) { animation-delay: 1.2s; }
-#scrDnaResult .fig-ring:nth-child(3) { animation-delay: 2.4s; }
-@keyframes dcRingPulse { 0%{transform:scale(0.7);opacity:0.8;} 100%{transform:scale(1.6);opacity:0;} }
-#scrDnaResult .fig-svg {
-  width: 72px; height: 72px; color: var(--c);
-  filter: drop-shadow(0 0 24px var(--c)) drop-shadow(0 0 50px var(--c)) drop-shadow(0 0 80px var(--cg)) drop-shadow(0 4px 12px rgba(0,0,0,0.8));
-  animation: dcFigBreathe 4s ease-in-out infinite; position: relative; z-index: 2;
-}
-@keyframes dcFigBreathe { 0%,100%{transform:scale(1) translateY(0);} 50%{transform:scale(1.03) translateY(-2px);} }
+/* Figure overrides for this screen */
+#scrDnaResult .dna-figure { width:100px; height:100px; z-index:5; margin-top:24px; }
+#scrDnaResult .dna-figure__glow { bottom:-10px; width:80px; height:30px; }
+#scrDnaResult .dna-figure__ripple { inset:-20px; }
+#scrDnaResult .dna-figure__icon { width:72px; height:72px; }
 
 /* ═══ BADGE + STARS ═══ */
 #scrDnaResult .dnr-badge {
-  position: relative; z-index: 5; margin-top: 10px; padding: 5px 16px;
-  background: rgba(var(--cr),var(--cg-val),var(--cb),0.12);
-  border: 1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.45);
-  border-radius: 20px; font-size: 10px; font-weight: 700;
-  letter-spacing: 3px; text-transform: uppercase; color: var(--c);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 25px rgba(var(--cr),var(--cg-val),var(--cb),0.25);
+  position:relative; z-index:5; margin-top:10px; padding:5px 16px;
+  background:rgba(0,0,0,0.5);
+  border:1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.25);
+  border-radius:20px; font-size:10px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase; color:var(--c);
+  backdrop-filter:blur(10px);
 }
-#scrDnaResult .dnr-stars { position: relative; z-index: 5; display: flex; align-items: center; gap: 4px; margin-top: 8px; padding-bottom: 4px; }
-#scrDnaResult .dnr-star { font-size: 14px; transition: all 0.3s; opacity: 0; transform: scale(0) rotate(-30deg); }
-#scrDnaResult .dnr-star.lit { color: var(--c); opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 6px var(--c)); text-shadow: 0 0 10px var(--c); }
-#scrDnaResult .dnr-star.dim { color: rgba(255,255,255,0.15); opacity: 1; transform: scale(1) rotate(0deg); }
+#scrDnaResult .dnr-stars { position:relative; z-index:5; display:flex; align-items:center; gap:4px; margin-top:8px; padding-bottom:4px; }
+#scrDnaResult .dnr-star { font-size:14px; transition:all 0.3s; opacity:0; transform:scale(0) rotate(-30deg); }
+#scrDnaResult .dnr-star.lit { color:var(--c); filter:drop-shadow(0 0 4px var(--c)); opacity:1; transform:scale(1) rotate(0deg); }
+#scrDnaResult .dnr-star.dim { color:rgba(255,255,255,0.12); opacity:1; transform:scale(1) rotate(0deg); }
 
 /* ═══ BODY ═══ */
-#scrDnaResult .dnr-body {
-  padding: 20px 22px 16px; position: relative; z-index: 3;
-  background: linear-gradient(180deg, rgba(var(--cr),var(--cg-val),var(--cb),0.08) 0%, transparent 50%);
-}
-#scrDnaResult .dnr-exclusive { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; opacity: 0; animation: dcFadeUp 0.5s ease forwards; animation-play-state: paused; }
-#scrDnaResult .dnr-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--c); margin-bottom: 10px; opacity: 0; animation: dcFadeUp 0.5s ease forwards; animation-play-state: paused; }
+#scrDnaResult .dnr-body { padding:20px 22px 16px; position:relative; z-index:3; }
+#scrDnaResult .dnr-exclusive { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:4px; opacity:0; animation:dcFadeUp 0.5s ease forwards; animation-play-state:paused; }
+#scrDnaResult .dnr-label { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--c); margin-bottom:10px; opacity:0; animation:dcFadeUp 0.5s ease forwards; animation-play-state:paused; }
 #scrDnaResult .dnr-type-name {
-  font-family: 'Outfit', sans-serif; font-size: clamp(18px, 6vw, 30px); font-weight: 900;
-  letter-spacing: clamp(2px, 1.5vw, 6px); text-transform: uppercase;
-  color: #fff; text-shadow: 0 0 40px var(--c), 0 0 80px var(--c), 0 0 120px var(--cg);
-  margin-bottom: 8px; opacity: 0; white-space: nowrap;
-  animation: dcTypeReveal 0.7s cubic-bezier(0.16,1,0.3,1) forwards; animation-play-state: paused;
+  font-family:'Outfit',sans-serif; font-size:clamp(18px,6vw,30px); font-weight:900;
+  letter-spacing:clamp(2px,1.5vw,6px); text-transform:uppercase;
+  background:linear-gradient(135deg, #fff 30%, var(--cl) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:8px; opacity:0; white-space:nowrap;
+  animation:dcTypeReveal 0.7s cubic-bezier(0.16,1,0.3,1) forwards; animation-play-state:paused;
 }
 @keyframes dcTypeReveal { from{opacity:0;filter:blur(12px);letter-spacing:14px;} to{opacity:1;filter:blur(0);letter-spacing:clamp(2px,1.5vw,6px);} }
-#scrDnaResult .dnr-accent { height: 3px; background: linear-gradient(90deg, var(--c), rgba(var(--cr),var(--cg-val),var(--cb),0.3), transparent); margin-bottom: 14px; width: 0%; animation: dcAccentDraw 0.8s ease forwards; animation-play-state: paused; }
-@keyframes dcAccentDraw { to { width: 70%; } }
-#scrDnaResult .dnr-desc { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.75); margin-bottom: 14px; opacity: 0; animation: dcFadeUp 0.6s ease forwards; animation-play-state: paused; }
-#scrDnaResult .dnr-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; opacity: 0; animation: dcFadeUp 0.5s ease forwards; animation-play-state: paused; }
-#scrDnaResult .dnr-tag { padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.35); font-size: 11px; color: var(--c); background: rgba(var(--cr),var(--cg-val),var(--cb),0.1); font-weight: 500; letter-spacing: 0.3px; }
-#scrDnaResult .dnr-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--cr),var(--cg-val),var(--cb),0.25), transparent); margin: 0 -22px 18px; }
+#scrDnaResult .dna-accent-line { margin-bottom:14px; }
+#scrDnaResult .dnr-desc { font-size:13px; line-height:1.65; color:rgba(255,255,255,0.6); margin-bottom:14px; opacity:0; animation:dcFadeUp 0.6s ease forwards; animation-play-state:paused; }
+#scrDnaResult .dnr-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; opacity:0; animation:dcFadeUp 0.5s ease forwards; animation-play-state:paused; }
+#scrDnaResult .dnr-divider { height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); margin:0 -22px 18px; }
 
 /* ═══ CAREER PATH ═══ */
-#scrDnaResult .dnr-career { opacity: 0; animation: dcFadeUp 0.6s ease forwards; animation-play-state: paused; }
-#scrDnaResult .career-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 14px; }
-#scrDnaResult .career-path { display: flex; align-items: center; justify-content: space-between; position: relative; margin-bottom: 16px; }
-#scrDnaResult .career-track { position: absolute; top: 50%; left: 18px; right: 18px; height: 1px; background: rgba(255,255,255,0.07); transform: translateY(-50%); z-index: 0; }
-#scrDnaResult .career-track-done { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--c), rgba(var(--cr),var(--cg-val),var(--cb),0.3)); width: 0%; transition: width 1.5s cubic-bezier(0.4,0,0.2,1); border-radius: 1px; }
-#scrDnaResult .career-item { display: flex; flex-direction: column; align-items: center; }
-#scrDnaResult .career-node { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; position: relative; z-index: 1; transition: all 0.3s; }
-#scrDnaResult .career-node.done { background: rgba(var(--cr),var(--cg-val),var(--cb),0.15); border: 1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.35); color: var(--c); }
-#scrDnaResult .career-node.current { background: var(--c); border: none; color: #000; font-size: 17px; box-shadow: 0 0 25px var(--cg), 0 0 8px var(--c), 0 0 50px rgba(var(--cr),var(--cg-val),var(--cb),0.2); animation: dcNodeGlow 2.5s ease-in-out infinite; }
-@keyframes dcNodeGlow { 0%,100%{box-shadow:0 0 25px var(--cg),0 0 8px var(--c);} 50%{box-shadow:0 0 50px var(--cg),0 0 20px var(--c);} }
-#scrDnaResult .career-node.future { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.25); }
-#scrDnaResult .career-label { font-size: 8px; color: rgba(255,255,255,0.25); margin-top: 6px; letter-spacing: 0.5px; text-align: center; }
-#scrDnaResult .career-label.current-l { color: var(--c); font-weight: 600; }
+#scrDnaResult .dnr-career { opacity:0; animation:dcFadeUp 0.6s ease forwards; animation-play-state:paused; }
+#scrDnaResult .career-title { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.2); margin-bottom:14px; }
+#scrDnaResult .career-path { display:flex; align-items:center; justify-content:space-between; position:relative; margin-bottom:16px; }
+#scrDnaResult .career-track { position:absolute; top:50%; left:18px; right:18px; height:1px; background:rgba(255,255,255,0.07); transform:translateY(-50%); z-index:0; }
+#scrDnaResult .career-track-done { position:absolute; top:0; left:0; height:100%; background:linear-gradient(90deg, var(--c), rgba(var(--cr),var(--cg-val),var(--cb),0.3)); width:0%; transition:width 1.5s cubic-bezier(0.4,0,0.2,1); border-radius:1px; }
+#scrDnaResult .career-item { display:flex; flex-direction:column; align-items:center; }
+#scrDnaResult .career-node { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; position:relative; z-index:1; transition:all 0.3s; }
+#scrDnaResult .career-node.done { background:rgba(var(--cr),var(--cg-val),var(--cb),0.12); border:1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.3); color:var(--c); }
+#scrDnaResult .career-node.current { background:var(--c); border:none; color:#000; font-size:17px; box-shadow:0 0 20px var(--cg),0 0 6px var(--c); animation:dcNodeGlow 2.5s ease-in-out infinite; }
+#scrDnaResult .career-node.future { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.2); }
+#scrDnaResult .career-label { font-size:8px; color:rgba(255,255,255,0.2); margin-top:6px; letter-spacing:0.5px; text-align:center; }
+#scrDnaResult .career-label.current-l { color:var(--c); font-weight:600; }
 
 /* ═══ XP ═══ */
-#scrDnaResult .dnr-xp { margin-bottom: 4px; }
-#scrDnaResult .xp-header { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
-#scrDnaResult .xp-header strong { color: rgba(255,255,255,0.85); }
-#scrDnaResult .xp-track { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
-#scrDnaResult .xp-fill { height: 100%; border-radius: 2px; width: 0%; background: linear-gradient(90deg, var(--c), var(--cl)); box-shadow: 0 0 10px var(--cg), 0 0 3px var(--c); transition: width 1.8s cubic-bezier(0.4,0,0.2,1); }
-#scrDnaResult .xp-hint { font-size: 10px; color: rgba(255,255,255,0.3); text-align: right; }
-#scrDnaResult .xp-hint span { color: var(--c); font-weight: 600; }
+#scrDnaResult .dnr-xp { margin-bottom:4px; }
+#scrDnaResult .xp-header { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:8px; }
+#scrDnaResult .xp-header strong { color:rgba(255,255,255,0.8); }
+#scrDnaResult .xp-track { height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+#scrDnaResult .xp-fill { height:100%; border-radius:2px; width:0%; background:linear-gradient(90deg, var(--c), var(--cl)); box-shadow:0 0 8px var(--cg); transition:width 1.8s cubic-bezier(0.4,0,0.2,1); }
+#scrDnaResult .xp-hint { font-size:10px; color:rgba(255,255,255,0.25); text-align:right; }
+#scrDnaResult .xp-hint span { color:var(--c); font-weight:600; }
 
 /* ═══ FOOTER ═══ */
-#scrDnaResult .dnr-footer { padding: 14px 22px 18px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(var(--cr),var(--cg-val),var(--cb),0.15); position: relative; z-index: 3; }
-#scrDnaResult .footer-brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 3px; color: rgba(255,255,255,0.4); }
-#scrDnaResult .footer-serial { font-size: 10px; letter-spacing: 2px; color: var(--c); opacity: 0.8; font-weight: 600; }
-#scrDnaResult .footer-share { width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.5); }
-#scrDnaResult .footer-share:active { background: rgba(255,255,255,0.12); color: #fff; }
+#scrDnaResult .dnr-footer { padding:14px 22px 18px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); position:relative; z-index:3; }
+#scrDnaResult .footer-brand { font-family:'Outfit',sans-serif; font-weight:700; font-size:12px; letter-spacing:3px; color:rgba(255,255,255,0.35); }
+#scrDnaResult .footer-serial { font-size:10px; letter-spacing:2px; color:var(--c); opacity:0.7; font-weight:600; }
+#scrDnaResult .footer-share { width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; color:rgba(255,255,255,0.5); }
+#scrDnaResult .footer-share:active { background:rgba(255,255,255,0.12); color:#fff; }
 
-/* Блик */
-#scrDnaResult .card-shine { position: absolute; top: 0; left: -120%; width: 60%; height: 100%; background: linear-gradient(105deg, transparent, rgba(255,255,255,0.06), transparent); pointer-events: none; z-index: 11; animation: dcShineSweep 10s ease-in-out 2s infinite; }
-@keyframes dcShineSweep { 0%,100% { left:-120%; } 50% { left:160%; } }
-
-/* ═══ КНОПКИ ═══ */
-#scrDnaResult .dnr-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; margin-top: 24px; position: relative; z-index: 1; }
-#scrDnaResult .dnr-btn-primary { width: 100%; padding: 16px; border-radius: 12px; background: var(--c); color: #000; border: none; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 0 35px var(--cg), 0 0 10px var(--c), 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.15s, box-shadow 0.15s; }
-#scrDnaResult .dnr-btn-primary:active { transform: scale(0.97); }
-#scrDnaResult .dnr-btn-secondary { width: 100%; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
-#scrDnaResult .dnr-btn-secondary:active { transform: scale(0.97); background: rgba(255,255,255,0.08); }
+/* ═══ BUTTONS ═══ */
+#scrDnaResult .dnr-actions { display:flex; flex-direction:column; gap:10px; width:100%; max-width:360px; margin-top:24px; position:relative; z-index:1; }
+#scrDnaResult .dnr-btn-primary { width:100%; padding:16px; border-radius:12px; background:var(--c); color:#000; border:none; font-family:'Outfit',sans-serif; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 0 35px var(--cg),0 0 10px var(--c),0 4px 15px rgba(0,0,0,0.5); transition:transform 0.15s,box-shadow 0.15s; }
+#scrDnaResult .dnr-btn-primary:active { transform:scale(0.97); }
+#scrDnaResult .dnr-btn-secondary { width:100%; padding:14px; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.6); font-family:'Outfit',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+#scrDnaResult .dnr-btn-secondary:active { transform:scale(0.97); background:rgba(255,255,255,0.08); }
 
 /* ═══ REVEAL SCREEN ═══ */
-#scrDnaResult .reveal-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #06060b; z-index: 100; flex-direction: column; }
-#scrDnaResult .reveal-screen.hidden { display: none; }
-#scrDnaResult .reveal-flash { position: absolute; inset: 0; opacity: 0; pointer-events: none; z-index: 10; }
-#scrDnaResult .reveal-flash.go { animation: dcFlashBoom 0.6s ease forwards; }
+#scrDnaResult .reveal-screen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:#06060b; z-index:100; flex-direction:column; }
+#scrDnaResult .reveal-screen.hidden { display:none; }
+#scrDnaResult .reveal-flash { position:absolute; inset:0; opacity:0; pointer-events:none; z-index:10; }
+#scrDnaResult .reveal-flash.go { animation:dcFlashBoom 0.6s ease forwards; }
 @keyframes dcFlashBoom { 0%{opacity:0;} 30%{opacity:0.7;} 100%{opacity:0;} }
-#scrDnaResult .reveal-darkness { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 9; }
-#scrDnaResult .reveal-darkness.go { animation: dcDarkPulse 0.8s ease forwards; }
+#scrDnaResult .reveal-darkness { position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:9; }
+#scrDnaResult .reveal-darkness.go { animation:dcDarkPulse 0.8s ease forwards; }
 @keyframes dcDarkPulse { 0%{opacity:0;} 50%{opacity:0.5;} 100%{opacity:0;} }
-#scrDnaResult .reveal-wave { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); width: 100px; height: 100px; border-radius: 50%; opacity: 0; pointer-events: none; z-index: 5; }
-#scrDnaResult .reveal-wave.explode { animation: dcWaveExplode 1s cubic-bezier(0.2,0,0.4,1) forwards; }
+#scrDnaResult .reveal-wave { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); width:100px; height:100px; border-radius:50%; opacity:0; pointer-events:none; z-index:5; }
+#scrDnaResult .reveal-wave.explode { animation:dcWaveExplode 1s cubic-bezier(0.2,0,0.4,1) forwards; }
 @keyframes dcWaveExplode { 0%{transform:translate(-50%,-50%) scale(0);opacity:0.6;} 100%{transform:translate(-50%,-50%) scale(30);opacity:0;} }
-#scrDnaResult .reveal-wave2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; pointer-events: none; z-index: 6; }
-#scrDnaResult .reveal-wave2.explode { animation: dcWaveExplode 1.2s cubic-bezier(0.2,0,0.4,1) 0.1s forwards; }
-#scrDnaResult .roulette { position: relative; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; }
-#scrDnaResult .roulette-center { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
-#scrDnaResult .orb-spin { position: absolute; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; letter-spacing: 1px; transition: all 0.5s; font-family: 'Outfit', sans-serif; }
+#scrDnaResult .reveal-wave2 { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); width:80px; height:80px; border-radius:50%; border:2px solid var(--c); opacity:0; pointer-events:none; z-index:6; }
+#scrDnaResult .reveal-wave2.explode { animation:dcWaveExplode 1.2s cubic-bezier(0.2,0,0.4,1) 0.1s forwards; }
+#scrDnaResult .roulette { position:relative; width:160px; height:160px; display:flex; align-items:center; justify-content:center; }
+#scrDnaResult .roulette-center { width:20px; height:20px; border-radius:50%; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); }
+#scrDnaResult .orb-spin { position:absolute; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; letter-spacing:1px; transition:all 0.5s; font-family:'Outfit',sans-serif; }
 #scrDnaResult .orb-s { background:radial-gradient(circle,#3b82f620,#3b82f608); border:1px solid #3b82f640; color:#3b82f6; top:0; left:50%; transform:translateX(-50%); }
 #scrDnaResult .orb-c { background:radial-gradient(circle,#22c55e20,#22c55e08); border:1px solid #22c55e40; color:#22c55e; bottom:0; left:50%; transform:translateX(-50%); }
 #scrDnaResult .orb-k { background:radial-gradient(circle,#f59e0b20,#f59e0b08); border:1px solid #f59e0b40; color:#f59e0b; left:0; top:50%; transform:translateY(-50%); }
 #scrDnaResult .orb-a { background:radial-gradient(circle,#a78bfa20,#a78bfa08); border:1px solid #a78bfa40; color:#a78bfa; right:0; top:50%; transform:translateY(-50%); }
-#scrDnaResult .roulette.spinning .orb-spin { animation: dcOrbRotate 1s linear infinite; }
+#scrDnaResult .roulette.spinning .orb-spin { animation:dcOrbRotate 1s linear infinite; }
 @keyframes dcOrbRotate { from{transform:rotate(0deg) translateX(60px) rotate(0deg);} to{transform:rotate(360deg) translateX(60px) rotate(-360deg);} }
-#scrDnaResult .reveal-label { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-top: 32px; animation: dcLabelPulse 1.5s ease-in-out infinite; }
+#scrDnaResult .reveal-label { font-family:'Outfit',sans-serif; font-weight:700; font-size:13px; letter-spacing:4px; color:rgba(255,255,255,0.5); text-transform:uppercase; margin-top:32px; animation:dcLabelPulse 1.5s ease-in-out infinite; }
 @keyframes dcLabelPulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
-#scrDnaResult .rev-aurora { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
-#scrDnaResult .rev-aurora.active { opacity: 1; }
-#scrDnaResult .rev-aurora-band { position: absolute; width: 200%; height: 40%; left: -50%; filter: blur(60px); opacity: 0.4; border-radius: 50%; }
-#scrDnaResult .rev-aurora-band:nth-child(1) { top: 10%; animation: dcA1 4s ease-in-out infinite; }
-#scrDnaResult .rev-aurora-band:nth-child(2) { top: 40%; animation: dcA2 5s ease-in-out infinite; }
-#scrDnaResult .rev-aurora-band:nth-child(3) { top: 65%; animation: dcA3 6s ease-in-out infinite; }
+#scrDnaResult .rev-aurora { position:absolute; inset:0; opacity:0; transition:opacity 0.5s; pointer-events:none; }
+#scrDnaResult .rev-aurora.active { opacity:1; }
+#scrDnaResult .rev-aurora-band { position:absolute; width:200%; height:40%; left:-50%; filter:blur(60px); opacity:0.4; border-radius:50%; }
+#scrDnaResult .rev-aurora-band:nth-child(1) { top:10%; animation:dcA1 4s ease-in-out infinite; }
+#scrDnaResult .rev-aurora-band:nth-child(2) { top:40%; animation:dcA2 5s ease-in-out infinite; }
+#scrDnaResult .rev-aurora-band:nth-child(3) { top:65%; animation:dcA3 6s ease-in-out infinite; }
 @keyframes dcA1 { 0%,100%{transform:translateX(-20%) scaleY(1);opacity:0.35;} 50%{transform:translateX(10%) scaleY(1.3);opacity:0.55;} }
 @keyframes dcA2 { 0%,100%{transform:translateX(10%) scaleY(1);opacity:0.25;} 50%{transform:translateX(-15%) scaleY(1.5);opacity:0.45;} }
 @keyframes dcA3 { 0%,100%{transform:translateX(-10%) scaleY(1);opacity:0.2;} 50%{transform:translateX(20%) scaleY(1.2);opacity:0.4;} }
-#scrDnaResult .rev-particles { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-#scrDnaResult .rev-particle { position: absolute; border-radius: 50%; animation: dcPFloat 4s ease-in-out infinite; }
+#scrDnaResult .rev-particles { position:absolute; inset:0; pointer-events:none; z-index:3; }
+#scrDnaResult .rev-particle { position:absolute; border-radius:50%; animation:dcPFloat 4s ease-in-out infinite; }
 @keyframes dcPFloat { 0%{transform:translateY(0);opacity:0;} 20%{opacity:0.8;} 100%{transform:translateY(-100vh);opacity:0;} }
-#scrDnaResult .winner-rings { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 120px; height: 120px; pointer-events: none; z-index: 4; }
-#scrDnaResult .winner-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--c); opacity: 0; animation: dcRingPulse 2s ease-out infinite; }
-#scrDnaResult .winner-ring:nth-child(2) { animation-delay: 0.6s; }
-#scrDnaResult .winner-ring:nth-child(3) { animation-delay: 1.2s; }
+#scrDnaResult .winner-rings { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:120px; height:120px; pointer-events:none; z-index:4; }
+#scrDnaResult .winner-ring { position:absolute; inset:0; border-radius:50%; border:1px solid var(--c); opacity:0; animation:dcRingPulse 2s ease-out infinite; }
+#scrDnaResult .winner-ring:nth-child(2) { animation-delay:0.6s; }
+#scrDnaResult .winner-ring:nth-child(3) { animation-delay:1.2s; }
 
-/* Stagger */
-#scrDnaResult .go .dnr-exclusive  { animation-play-state: running; animation-delay: 0.1s; }
-#scrDnaResult .go .dnr-label      { animation-play-state: running; animation-delay: 0.2s; }
-#scrDnaResult .go .dnr-type-name  { animation-play-state: running; animation-delay: 0.35s; }
-#scrDnaResult .go .dnr-accent     { animation-play-state: running; animation-delay: 0.55s; }
-#scrDnaResult .go .dnr-desc       { animation-play-state: running; animation-delay: 0.7s; }
-#scrDnaResult .go .dnr-tags       { animation-play-state: running; animation-delay: 0.9s; }
-#scrDnaResult .go .dnr-career     { animation-play-state: running; animation-delay: 1.1s; }
+/* ═══ STAGGER ═══ */
+#scrDnaResult .go .dnr-exclusive  { animation-play-state:running; animation-delay:0.1s; }
+#scrDnaResult .go .dnr-label      { animation-play-state:running; animation-delay:0.2s; }
+#scrDnaResult .go .dnr-type-name  { animation-play-state:running; animation-delay:0.35s; }
+#scrDnaResult .go .dna-accent-line { animation-play-state:running; animation-delay:0.55s; }
+#scrDnaResult .go .dnr-desc       { animation-play-state:running; animation-delay:0.7s; }
+#scrDnaResult .go .dnr-tags       { animation-play-state:running; animation-delay:0.9s; }
+#scrDnaResult .go .dnr-career     { animation-play-state:running; animation-delay:1.1s; }
 @keyframes dcFadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
 
 /* ═══ XP TOAST ═══ */
-#scrDnaResult .xp-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-80px); background: rgba(8,8,24,0.95); border: 1px solid var(--c); border-radius: 24px; padding: 12px 24px; font-weight: 700; color: var(--c); z-index: 999; backdrop-filter: blur(12px); box-shadow: 0 8px 32px var(--cg); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; font-size: 16px; }
-#scrDnaResult .xp-toast.show { transform: translateX(-50%) translateY(0); }
+#scrDnaResult .xp-toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-80px); background:rgba(8,8,24,0.95); border:1px solid var(--c); border-radius:24px; padding:12px 24px; font-weight:700; color:var(--c); z-index:999; backdrop-filter:blur(12px); box-shadow:0 8px 32px var(--cg); transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); white-space:nowrap; font-size:16px; }
+#scrDnaResult .xp-toast.show { transform:translateX(-50%) translateY(0); }
 
 /* ═══ LEVEL UP ═══ */
-#scrDnaResult .levelup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0); display: flex; align-items: center; justify-content: center; z-index: 200; pointer-events: none; transition: background 0.4s; }
-#scrDnaResult .levelup-overlay.active { background: rgba(0,0,0,0.93); pointer-events: all; }
-#scrDnaResult .levelup-box { text-align: center; padding: 40px 28px; max-width: 300px; opacity: 0; transform: scale(0.8); transition: all 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s; }
-#scrDnaResult .levelup-overlay.active .levelup-box { opacity: 1; transform: scale(1); }
-#scrDnaResult .lu-fig { font-size: 72px; display: block; margin-bottom: 16px; filter: drop-shadow(0 0 30px var(--c)); animation: dcLuFloat 3s ease-in-out infinite; }
+#scrDnaResult .levelup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0); display:flex; align-items:center; justify-content:center; z-index:200; pointer-events:none; transition:background 0.4s; }
+#scrDnaResult .levelup-overlay.active { background:rgba(0,0,0,0.93); pointer-events:all; }
+#scrDnaResult .levelup-box { text-align:center; padding:40px 28px; max-width:300px; opacity:0; transform:scale(0.8); transition:all 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s; }
+#scrDnaResult .levelup-overlay.active .levelup-box { opacity:1; transform:scale(1); }
+#scrDnaResult .lu-fig { font-size:72px; display:block; margin-bottom:16px; filter:drop-shadow(0 0 30px var(--c)); animation:dcLuFloat 3s ease-in-out infinite; }
 @keyframes dcLuFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-8px) scale(1.02);} }
-#scrDnaResult .lu-eyebrow { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 6px; font-family: 'Outfit', sans-serif; font-weight: 700; }
-#scrDnaResult .lu-title { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900; color: var(--c); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; }
-#scrDnaResult .lu-sub { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
-#scrDnaResult .lu-sub strong { color: #fbbf24; }
-#scrDnaResult .lu-unlocks { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px 16px; margin-bottom: 24px; text-align: left; }
-#scrDnaResult .lu-unlock { font-size: 13px; padding: 5px 0; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px; }
-#scrDnaResult .lu-unlock::before { content:'✦'; color: var(--c); font-size: 9px; }
-#scrDnaResult .lu-btn { width: 100%; padding: 14px; background: var(--c); color: #000; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
-.confetti { position: fixed; width: 7px; height: 7px; border-radius: 1px; pointer-events: none; z-index: 201; animation: dcCfFall var(--d) ease-in var(--delay) forwards; }
+#scrDnaResult .lu-eyebrow { font-size:10px; letter-spacing:4px; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:6px; font-family:'Outfit',sans-serif; font-weight:700; }
+#scrDnaResult .lu-title { font-family:'Outfit',sans-serif; font-size:32px; font-weight:900; color:var(--c); letter-spacing:4px; text-transform:uppercase; margin-bottom:6px; }
+#scrDnaResult .lu-sub { font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:20px; }
+#scrDnaResult .lu-sub strong { color:#fbbf24; }
+#scrDnaResult .lu-unlocks { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:14px 16px; margin-bottom:24px; text-align:left; }
+#scrDnaResult .lu-unlock { font-size:13px; padding:5px 0; color:rgba(255,255,255,0.8); display:flex; align-items:center; gap:8px; }
+#scrDnaResult .lu-unlock::before { content:'\2726'; color:var(--c); font-size:9px; }
+#scrDnaResult .lu-btn { width:100%; padding:14px; background:var(--c); color:#000; border:none; border-radius:12px; font-family:'Outfit',sans-serif; font-size:15px; font-weight:700; cursor:pointer; }
+.confetti { position:fixed; width:7px; height:7px; border-radius:1px; pointer-events:none; z-index:201; animation:dcCfFall var(--d) ease-in var(--delay) forwards; }
 @keyframes dcCfFall { 0%{transform:translateX(0) translateY(0) rotate(0deg);opacity:1;} 100%{transform:translateX(var(--dx)) translateY(110vh) rotate(540deg);opacity:0;} }
 @keyframes dcScreenShake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px) rotate(-0.5deg);} 40%{transform:translateX(6px) rotate(0.5deg);} 60%{transform:translateX(-4px);} 80%{transform:translateX(4px);} }
 
 /* ═══ MOBILE ═══ */
-@media (max-width: 480px) {
-  #scrDnaResult .dna-result-wrap { padding: 16px 12px 40px; }
-  #scrDnaResult .scene { max-width: 100%; }
-  #scrDnaResult .dnr-header { height: 180px; }
-  #scrDnaResult .dnr-figure-wrap { width: 88px; height: 88px; }
-  #scrDnaResult .fig-svg { width: 64px; height: 64px; }
-  #scrDnaResult .dnr-body { padding: 16px 18px 14px; }
-  #scrDnaResult .dnr-type-name { font-size: clamp(16px, 5.5vw, 26px); }
-  #scrDnaResult .dnr-desc { font-size: 12px; }
-  #scrDnaResult .career-node { width: 30px; height: 30px; font-size: 13px; }
-  #scrDnaResult .career-node.current { font-size: 15px; }
+@media (max-width:480px) {
+  #scrDnaResult .dna-result-wrap { padding:16px 12px 40px; }
+  #scrDnaResult .scene { max-width:100%; }
+  #scrDnaResult .dnr-header { height:180px; }
+  #scrDnaResult .dna-figure { width:88px; height:88px; }
+  #scrDnaResult .dna-figure__icon { width:64px; height:64px; }
+  #scrDnaResult .dnr-body { padding:16px 18px 14px; }
+  #scrDnaResult .dnr-type-name { font-size:clamp(16px,5.5vw,26px); }
+  #scrDnaResult .dnr-desc { font-size:12px; }
+  #scrDnaResult .career-node { width:30px; height:30px; font-size:13px; }
+  #scrDnaResult .career-node.current { font-size:15px; }
 }
-@media (max-height: 700px) and (max-width: 480px) {
-  #scrDnaResult .dnr-header { height: 160px; }
-  #scrDnaResult .dnr-body { padding: 12px 16px 10px; }
-  #scrDnaResult .dnr-desc { font-size: 11px; line-height: 1.55; }
-  #scrDnaResult .career-title { margin-bottom: 10px; }
+@media (max-height:700px) and (max-width:480px) {
+  #scrDnaResult .dnr-header { height:160px; }
+  #scrDnaResult .dnr-body { padding:12px 16px 10px; }
+  #scrDnaResult .dnr-desc { font-size:11px; line-height:1.55; }
+  #scrDnaResult .career-title { margin-bottom:10px; }
 }

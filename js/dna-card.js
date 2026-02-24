@@ -5,19 +5,19 @@
 
 // --- Конфиг ДНК-типов ---
 const DNA_CARD = {
-  S: { color:'#3b82f6', light:'#93c5fd', glow:'rgba(59,130,246,0.3)',
+  S: { color:'#3b82f6', light:'#93c5fd', glow:'rgba(59,130,246,0.6)',
     name:'СТРАТЕГ', serial:'STR',
     desc:'Ты — архитектор систем. Видишь паттерны там, где другие видят хаос. Твоя сила — стратегическое мышление и умение превращать сложное в простое и масштабируемое.',
     tags:['Структуры','Стратегия','Делегирование','Системы'], pattern:'geo' },
-  C: { color:'#22c55e', light:'#86efac', glow:'rgba(34,197,94,0.3)',
+  C: { color:'#22c55e', light:'#86efac', glow:'rgba(34,197,94,0.6)',
     name:'КОММУНИКАТОР', serial:'COM',
     desc:'Ты — связующее звено мира. Умеешь вдохновлять и объединять людей. Твоя сила в словах, эмпатии и способности создавать доверие с первых секунд.',
     tags:['Нетворкинг','Переговоры','Вдохновение','Команда'], pattern:'waves' },
-  K: { color:'#f59e0b', light:'#fcd34d', glow:'rgba(245,158,11,0.3)',
+  K: { color:'#f59e0b', light:'#fcd34d', glow:'rgba(245,158,11,0.6)',
     name:'КРЕАТОР', serial:'CRE',
     desc:'Ты — творческая сила. Видишь красоту и возможности там, где другие видят обыденность. Создаёшь уникальные идеи и воплощаешь их с особым вкусом.',
     tags:['Творчество','Контент','Инновации','Визуализация'], pattern:'sparks' },
-  A: { color:'#a78bfa', light:'#c4b5fd', glow:'rgba(167,139,250,0.3)',
+  A: { color:'#a78bfa', light:'#c4b5fd', glow:'rgba(167,139,250,0.6)',
     name:'АНАЛИТИК', serial:'ANL',
     desc:'Ты — кристаллический разум. Данные — твой язык, точность — твой стиль. Находишь скрытые закономерности и превращаешь информацию в решения.',
     tags:['Данные','Аналитика','Точность','Исследование'], pattern:'crystal' }
@@ -111,7 +111,7 @@ function applyDNA(type) {
   tagsEl.innerHTML = '';
   d.tags.forEach(function(t) {
     const s = document.createElement('span');
-    s.className = 'dnr-tag'; s.textContent = t; tagsEl.appendChild(s);
+    s.className = 'dna-tag'; s.textContent = t; tagsEl.appendChild(s);
   });
 
   // Серийный номер
@@ -192,16 +192,28 @@ function dcSpawnParticles(color) {
 // --- 7-фазная REVEAL анимация ---
 function runReveal() {
   if (dcRevealRunning) return;
-  dcRevealRunning = true;
 
   const card = document.getElementById('mainCard');
+  const screen = document.getElementById('revealScreen');
+  const roulette = document.getElementById('roulette');
+
+  // Защита: если DOM не готов — показать карточку без анимации
+  if (!card || !screen || !roulette) {
+    if (card) {
+      card.classList.add('revealed');
+      const body = document.getElementById('cardBody');
+      if (body) body.classList.add('go');
+    }
+    return;
+  }
+
+  dcRevealRunning = true;
+
   card.classList.remove('revealed');
   card.style.opacity = '0'; card.style.transform = 'scale(0.5) translateY(80px)'; card.style.filter = 'blur(30px)';
 
-  const screen = document.getElementById('revealScreen');
   screen.classList.remove('hidden');
 
-  const roulette = document.getElementById('roulette');
   const label = document.getElementById('revLabel');
   const orbs = roulette.querySelectorAll('.orb-spin');
   const aurora = document.getElementById('revAurora');
@@ -383,11 +395,24 @@ function shareCard() {
 function initDnaResult() {
   const type = window.dnaResult?.type || localStorage.getItem('dnaType') || 'S';
   dcActiveDNA = type;
+  if (window.applyDnaTheme) applyDnaTheme(type);
   applyDNA(type);
   dcInitHolo();
   const holo = document.getElementById('cardHolo');
   if (holo) holo.classList.add('active');
   runReveal();
+
+  // Гарантия: если reveal не показал карточку — показать напрямую
+  const card = document.getElementById('mainCard');
+  if (card && !card.classList.contains('revealed')) {
+    card.classList.add('revealed');
+    const body = document.getElementById('cardBody');
+    if (body) body.classList.add('go');
+    setTimeout(() => {
+      const xp = document.getElementById('xpFill');
+      if (xp) xp.style.width = '4%';
+    }, 800);
+  }
 }
 
 // ЭКСПОРТЫ

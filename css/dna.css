@@ -17,13 +17,13 @@
 .dna-q-num{font-size:10px;font-weight:700;color:#a78bfa;text-align:center;margin-bottom:5px;letter-spacing:.14em;}
 .dna-q-text{font-size:18px;font-weight:700;text-align:center;line-height:1.3;margin-bottom:18px;color:rgba(255,255,255,.88);padding:0 6px;}
 .dna-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.dna-card{padding:14px;border-radius:18px;background:rgba(255,255,255,.025);border:1.5px solid rgba(255,255,255,.06);cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;gap:6px;position:relative;-webkit-tap-highlight-color:transparent;overflow:hidden;}
-.dna-card::after{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,.02));pointer-events:none;}
-.dna-card:active{transform:scale(.97);}
-.dna-card.selected{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.2);transform:scale(1.02);box-shadow:0 8px 32px rgba(139,92,246,.12);}
-.dna-card.dimmed{opacity:.2;transform:scale(.94);pointer-events:none;}
+#scrDnaTest .dna-card{padding:14px;border-radius:18px;background:rgba(255,255,255,.025);border:1.5px solid rgba(255,255,255,.06);cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;gap:6px;position:relative;-webkit-tap-highlight-color:transparent;overflow:hidden;}
+#scrDnaTest .dna-card::after{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,.02));pointer-events:none;}
+#scrDnaTest .dna-card:active{transform:scale(.97);}
+#scrDnaTest .dna-card.selected{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.2);transform:scale(1.02);box-shadow:0 8px 32px rgba(139,92,246,.12);}
+#scrDnaTest .dna-card.dimmed{opacity:.2;transform:scale(.94);pointer-events:none;}
 .dna-card-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:transform .3s;}
-.dna-card.selected .dna-card-ic{transform:scale(1.1);}
+#scrDnaTest .dna-card.selected .dna-card-ic{transform:scale(1.1);}
 .dna-card-ic svg{width:20px;height:20px;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
 .dna-card-ic.bl{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(59,130,246,.04));}
 .dna-card-ic.bl svg{stroke:#3b82f6;}
@@ -36,5 +36,5 @@
 .dna-card-t{font-size:13px;font-weight:700;color:rgba(255,255,255,.82);line-height:1.2;}
 .dna-card-d{font-size:10px;color:rgba(255,255,255,.3);line-height:1.35;}
 .dna-card-chk{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--c);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:all .35s cubic-bezier(.34,1.56,.64,1);}
-.dna-card.selected .dna-card-chk{opacity:1;transform:scale(1);}
+#scrDnaTest .dna-card.selected .dna-card-chk{opacity:1;transform:scale(1);}
 .dna-footer{padding:12px 20px 22px;text-align:center;font-size:11px;color:rgba(255,255,255,.2);flex-shrink:0;}
