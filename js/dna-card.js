@@ -313,7 +313,8 @@ function shareCard() {
 
 // ── Инициализация ──
 function initDnaResult() {
-  const type = document.querySelector('.app')?.dataset?.dna || 'S';
+  const type = localStorage.getItem('dnaType') ||
+    document.querySelector('.app')?.dataset?.dna || 'S';
   dcActive = ['S','C','K','A'].includes(type) ? type : 'S';
   dcApplyDNA(dcActive);
   const card = el('mainCard');
