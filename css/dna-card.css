@@ -45,7 +45,8 @@
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.04),
     0 40px 100px rgba(0,0,0,0.95),
-    0 0 80px var(--dna-cg),
+    0 0 120px var(--dna-cg),
+    0 0 60px var(--dna-cg),
     inset 0 1px 0 rgba(255,255,255,0.06);
   will-change: transform, opacity;
 }
@@ -155,7 +156,7 @@
     rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.35) 40%,
     transparent 100%
   );
-  opacity: 0.22;
+  opacity: 0.45;
 }
 canvas.pattern-canvas {
   position: absolute;
@@ -235,7 +236,8 @@ canvas.pattern-canvas {
   height: 72px;
   color: var(--dna-c);
   filter:
-    drop-shadow(0 0 16px var(--dna-c))
+    drop-shadow(0 0 24px var(--dna-c))
+    drop-shadow(0 0 48px var(--dna-c))
     drop-shadow(0 4px 12px rgba(0,0,0,0.8));
   animation: dcFigBreathe 4s ease-in-out infinite;
   position: relative;
