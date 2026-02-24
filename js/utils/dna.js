@@ -58,3 +58,32 @@ const LEVEL_KEYS = {
 window.DNA_TYPES  = DNA_TYPES;
 window.CHESS_SVG  = CHESS_SVG;
 window.LEVEL_KEYS = LEVEL_KEYS;
+
+// ── Обратная совместимость ──
+
+const DNA_COLORS = {
+  S: '#3b82f6',
+  C: '#22c55e',
+  K: '#f59e0b',
+  A: '#a78bfa'
+};
+
+function getDnaColor(type) {
+  return DNA_COLORS[type] || '#3b82f6';
+}
+
+function applyDnaTheme(type) {
+  const d = DNA_TYPES[type];
+  if (!d) return;
+  const root = document.documentElement;
+  root.style.setProperty('--dna-c',      d.color);
+  root.style.setProperty('--dna-cl',     d.light);
+  root.style.setProperty('--dna-cg',     d.glow);
+  root.style.setProperty('--dna-cr',     d.r);
+  root.style.setProperty('--dna-cg-val', d.g);
+  root.style.setProperty('--dna-cb',     d.b);
+}
+
+window.DNA_COLORS    = DNA_COLORS;
+window.getDnaColor   = getDnaColor;
+window.applyDnaTheme = applyDnaTheme;
