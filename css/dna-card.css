@@ -105,7 +105,7 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 2;
-  opacity: 0.15;
+  opacity: 0.05;
 }
 
 /* ── Блик ── */
@@ -162,7 +162,7 @@
     var(--dna-c) 35%,
     transparent 100%
   );
-  opacity: 0.5;
+  opacity: 0.6;
 }
 canvas.pattern-canvas {
   position: absolute;
@@ -228,8 +228,8 @@ canvas.pattern-canvas {
   width: 80px;
   height: 30px;
   background: radial-gradient(ellipse, var(--dna-c) 0%, transparent 70%);
-  opacity: 0.5;
-  filter: blur(8px);
+  opacity: 0.8;
+  filter: blur(6px);
   animation: dcGlowPulse 3s ease-in-out infinite;
   transition: background 0.6s ease;
 }
