@@ -52,15 +52,17 @@
   width:80px; height:80px;
 }
 .dna-figure__icon {
-  color:var(--dna-c);
+  width: 72px;
+  height: 72px;
+  color: var(--dna-c);
   filter:
-    drop-shadow(0 0 24px var(--dna-c))
-    drop-shadow(0 0 48px var(--dna-c))
-    drop-shadow(0 4px 8px rgba(0,0,0,0.6));
-  animation:dcFigBreathe 4s ease-in-out infinite;
-  position:relative; z-index:2; transition:filter 0.6s ease;
+    drop-shadow(0 0 16px var(--dna-c))
+    drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  animation: figBreathe 4s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
 }
-@keyframes dcFigBreathe { 0%,100%{transform:scale(1) translateY(0);} 50%{transform:scale(1.03) translateY(-2px);} }
+@keyframes figBreathe { 0%,100%{transform:scale(1) translateY(0);} 50%{transform:scale(1.03) translateY(-2px);} }
 
 /* Glow pedestal */
 .dna-figure__glow {
@@ -178,7 +180,7 @@
 }
 #scrDnaResult .dnr-header-bg {
   position:absolute; inset:0;
-  background:linear-gradient(180deg, var(--c) 0%, rgba(var(--cr),var(--cg-val),var(--cb),0.4) 40%, transparent 100%);
+  background:linear-gradient(180deg, var(--dna-c) 0%, rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.4) 40%, transparent 100%);
   opacity:0.18;
 }
 #scrDnaResult .dnr-header::after {
