@@ -175,6 +175,7 @@ async function startDnaReveal(){
   const tp=dnaTypes[mx];
   window.dnaResult = { type: mx, name: tp.name };
   await goTo('scrDnaResult');
+  if (window.runReveal) window.runReveal();
   updateDnaResultButton();
   dnaBusy=false;
 }
