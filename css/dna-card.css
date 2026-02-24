@@ -151,12 +151,17 @@
 .dnr-header-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
-    var(--dna-c) 0%,
-    rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.35) 40%,
-    transparent 100%
-  );
-  opacity: 0.75;
+  background: var(--dna-c);
+  opacity: 0.35;
+  mask-image: linear-gradient(180deg, black 0%, black 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 30%, transparent 100%);
+}
+.dnr-header-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--dna-c) 0%, transparent 100%);
+  opacity: 0.5;
 }
 canvas.pattern-canvas {
   position: absolute;
