@@ -1,18 +1,68 @@
 <!-- =============== SCREEN: DNA TEST =============== -->
-<div id="scrDnaTest" class="scr hidden" style="display:flex;flex-direction:column;overflow:hidden;">
-  <div class="dna-top">
-    <div class="dna-back" onclick="dnaGoBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
-    <div class="dna-title">ДНК-тест бизнеса</div>
-    <div class="dna-step" id="dnaStep">1 / 7</div>
+<div id="scrDnaTest" class="scr hidden"
+  style="display:flex;flex-direction:column;overflow:hidden;">
+
+  <!-- Ambient background -->
+  <div class="dna-ambient">
+    <div class="dna-amb1" id="dnaAmb1"></div>
+    <div class="dna-amb2" id="dnaAmb2"></div>
   </div>
-  <div class="dna-prog"><div class="dna-prog-track"><div class="dna-prog-fill" id="dnaFill"></div></div></div>
-  <div class="dna-body">
-    <div class="dna-q" id="dnaQ">
-      <div class="dna-q-icon" id="dnaQIcon"></div>
-      <div class="dna-q-num" id="dnaNum"></div>
-      <div class="dna-q-text" id="dnaText"></div>
-      <div class="dna-grid" id="dnaGrid"></div>
+
+  <!-- Top bar -->
+  <div class="dna-top">
+    <div class="dna-back" onclick="dnaGoBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </div>
+    <div class="dna-top-mid">
+      <div class="dna-title">ДНК-тест бизнеса</div>
+    </div>
+    <div class="dna-step-pill">
+      <div class="dna-step-dot"></div>
+      <span id="dnaStep">1 / 7</span>
     </div>
   </div>
-  <div class="dna-footer">Выбери вариант, который ближе всего к тебе</div>
+
+  <!-- Progress -->
+  <div class="dna-prog">
+    <div class="dna-prog-track">
+      <div class="dna-prog-fill" id="dnaFill"></div>
+    </div>
+    <div class="dna-prog-dots" id="dnaProgDots"></div>
+  </div>
+
+  <!-- Body -->
+  <div class="dna-body">
+    <div class="dna-q" id="dnaQ">
+
+      <!-- Icon -->
+      <div class="dna-q-icon-wrap">
+        <div class="dna-q-icon" id="dnaQIcon">
+          <div class="dna-q-icon-ring"></div>
+          <div class="dna-q-icon-ring2"></div>
+        </div>
+      </div>
+
+      <!-- Badge -->
+      <div class="dna-q-badge">
+        <div class="dna-q-badge-dot"></div>
+        <span id="dnaNum">ВОПРОС 1 ИЗ 7</span>
+      </div>
+
+      <!-- Question text -->
+      <div class="dna-q-text" id="dnaText"></div>
+
+      <!-- Answers grid -->
+      <div class="dna-grid" id="dnaGrid"></div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="dna-footer">
+    Выбери вариант, который ближе всего к тебе
+  </div>
 </div>

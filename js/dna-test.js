@@ -138,31 +138,135 @@ A:{name:'Аналитик',color:'#a78bfa',desc:'Ты — эксперт и ис
 
 let dnaCur=0,dnaScores={S:0,C:0,K:0,A:0},dnaBusy=false;
 
-function dnaRender(){
-const q=dnaQuestions[dnaCur];
-const el=document.getElementById('dnaQIcon');if(!el)return;
-el.innerHTML=dnaQIcons[q.ic];
-document.getElementById('dnaNum').textContent='ВОПРОС '+(dnaCur+1)+' ИЗ 7';
-document.getElementById('dnaText').textContent=q.text;
-document.getElementById('dnaStep').textContent=(dnaCur+1)+' / 7';
-document.getElementById('dnaFill').style.width=((dnaCur+1)/7*100)+'%';
-const g=document.getElementById('dnaGrid');g.innerHTML='';
-q.opts.forEach(function(o){
-const d=document.createElement('div');d.className='dna-card';
-d.innerHTML='<div class="dna-card-chk"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="dna-card-ic '+o.c+'">'+dnaIc[o.ic]+'</div><div class="dna-card-t">'+o.t+'</div><div class="dna-card-d">'+o.d+'</div>';
-d.onclick=function(){dnaSelect(d,o.ty)};g.appendChild(d);});
+function dnaSetAmb(r, g, b) {
+  const a1 = document.getElementById('dnaAmb1');
+  const a2 = document.getElementById('dnaAmb2');
+  if (a1) a1.style.setProperty('--da1', 'rgba('+r+','+g+','+b+',.13)');
+  if (a2) a2.style.setProperty('--da2', 'rgba('+r+','+g+','+b+',.07)');
 }
 
-function dnaSelect(el,ty){
-if(dnaBusy)return;dnaBusy=true;
-document.querySelectorAll('#dnaGrid .dna-card').forEach(function(c){c===el?c.classList.add('selected'):c.classList.add('dimmed')});
-dnaScores[ty]++;
-setTimeout(function(){
-if(dnaCur<6){const b=document.getElementById('dnaQ');b.classList.add('exit');
-setTimeout(function(){dnaCur++;dnaRender();b.classList.remove('exit');b.classList.add('enter');
-requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.remove('enter');dnaBusy=false})})},300);
-}else{startDnaReveal();}
-},600);
+function dnaRender(idx, dir) {
+  if (idx === undefined) idx = dnaCur;
+  const total = dnaQuestions.length;
+  const qEl = document.getElementById('dnaQ');
+
+  if (dir === 'next' && qEl) {
+    qEl.classList.add('exit');
+    qEl.addEventListener('animationend', function handler() {
+      qEl.removeEventListener('animationend', handler);
+      qEl.classList.remove('exit');
+      dnaRenderContent(idx, total);
+      qEl.classList.add('enter');
+      qEl.addEventListener('animationend', function h2() {
+        qEl.removeEventListener('animationend', h2);
+        qEl.classList.remove('enter');
+        dnaBusy = false;
+      });
+    });
+  } else {
+    dnaRenderContent(idx, total);
+  }
+
+  document.getElementById('dnaStep').textContent = (idx + 1) + ' / ' + total;
+  document.getElementById('dnaFill').style.width = ((idx + 1) / total * 100) + '%';
+
+  const dots = document.getElementById('dnaProgDots');
+  if (dots) {
+    dots.innerHTML = Array.from({length: total}, function(_, i) {
+      let c = 'dna-pdot';
+      if (i < idx) c += ' done';
+      if (i === idx) c += ' active';
+      return '<div class="' + c + '"></div>';
+    }).join('');
+  }
+}
+
+function dnaRenderContent(idx, total) {
+  const q = dnaQuestions[idx];
+
+  const icon = document.getElementById('dnaQIcon');
+  if (icon) {
+    const existing = icon.querySelector('svg');
+    if (existing) existing.remove();
+    const tmp = document.createElement('div');
+    tmp.innerHTML = dnaQIcons[q.ic] || '';
+    const svgEl = tmp.firstElementChild;
+    if (svgEl) icon.appendChild(svgEl);
+  }
+
+  const numEl = document.getElementById('dnaNum');
+  if (numEl) numEl.textContent = 'ВОПРОС ' + (idx + 1) + ' ИЗ ' + total;
+
+  const textEl = document.getElementById('dnaText');
+  if (textEl) textEl.textContent = q.text;
+
+  const grid = document.getElementById('dnaGrid');
+  if (!grid) return;
+
+  grid.innerHTML = q.opts.map(function(o) {
+    const t = o.ty.toLowerCase();
+    return '<div class="dna-card dc-' + t + '" data-ty="' + o.ty + '">'
+      + '<div class="dna-card-ic ' + o.c + '">' + (dnaIc[o.ic] || '') + '</div>'
+      + '<div class="dna-card-t">' + o.t + '</div>'
+      + '<div class="dna-card-d">' + o.d + '</div>'
+      + '<div class="dna-card-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '</div>';
+  }).join('');
+
+  grid.querySelectorAll('.dna-card').forEach(function(c, i) {
+    c.onclick = function(ev) { dnaSelect(c, o_tyFromCard(c), ev); };
+    setTimeout(function() { c.classList.add('dna-card-show'); }, i * 55);
+  });
+}
+
+function o_tyFromCard(card) {
+  return card.getAttribute('data-ty');
+}
+
+function dnaSelect(el, ty, ev) {
+  if (dnaBusy) return;
+  dnaBusy = true;
+
+  const cards = document.querySelectorAll('#dnaGrid .dna-card');
+  el.classList.add('selected');
+  cards.forEach(function(c) {
+    if (c !== el) c.classList.add('dimmed');
+  });
+
+  if (ev) {
+    const r = document.createElement('div');
+    r.className = 'dna-ripple';
+    const rect = el.getBoundingClientRect();
+    const s = Math.max(rect.width, rect.height);
+    r.style.cssText = 'width:' + s + 'px;height:' + s + 'px;'
+      + 'left:' + (ev.clientX - rect.left - s / 2) + 'px;'
+      + 'top:' + (ev.clientY - rect.top - s / 2) + 'px;'
+      + 'background:rgba(255,255,255,.08)';
+    el.appendChild(r);
+    setTimeout(function() { r.remove(); }, 700);
+  }
+
+  const colMap = {
+    S: {r:59, g:130, b:246},
+    C: {r:34, g:197, b:94},
+    K: {r:245, g:158, b:11},
+    A: {r:167, g:139, b:250}
+  };
+  const col = colMap[ty];
+  if (col) dnaSetAmb(col.r, col.g, col.b);
+
+  if (navigator.vibrate) navigator.vibrate(20);
+
+  dnaScores[ty]++;
+
+  setTimeout(function() {
+    if (dnaCur < dnaQuestions.length - 1) {
+      dnaCur++;
+      dnaRender(dnaCur, 'next');
+    } else {
+      startDnaReveal();
+    }
+  }, 550);
 }
 
 // ── Переход к результату ──
