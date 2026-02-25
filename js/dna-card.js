@@ -449,7 +449,8 @@ async function runNewReveal() {
 
   await dl(300);
   wrap.classList.remove('active');
-  window.goTo('scrDnaResult');
+  const card = document.getElementById('dnrCard');
+  if (card) card.classList.remove('hidden');
 }
 
 window.initDnaResult = initDnaResult;
