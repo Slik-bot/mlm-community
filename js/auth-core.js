@@ -389,6 +389,17 @@
 
       // ===== ВОССТАНОВЛЕНИЕ СЕССИИ ЧЕРЕЗ SUPABASE =====
       window.sb.auth.onAuthStateChange(function(event, session) {
+        if (event === 'INITIAL_SESSION') {
+          if (session && !window._authRoutingDone) {
+            authCheckSession().then(function(profile) {
+              routeAfterAuth(profile);
+            });
+          } else if (!session && !window._authRoutingDone) {
+            showApp();
+            switchScreenInstant('scrLanding');
+          }
+          return;
+        }
         if (event === 'SIGNED_IN' && session && !window._authRoutingDone) {
           authCheckSession().then(function(profile) {
             routeAfterAuth(profile);
