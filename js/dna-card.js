@@ -199,34 +199,7 @@ function initHolo() {
 
 // ─── REVEAL ANIMATION ──────────────────
 
-// ─── XP TOAST ──────────────────────────
-
-function showXpToast(amount) {
-  const toast = document.getElementById('xpToast');
-  const d = window.DNA_TYPES[activeDNA];
-  const big = amount >= 5000;
-  toast.textContent = '+' + amount.toLocaleString('ru') + ' XP';
-  toast.style.fontSize = big ? '18px' : '16px';
-  toast.style.color = big ? '#fbbf24' : d.color;
-  toast.style.borderColor = big ? '#fbbf24' : d.color;
-  toast.style.boxShadow = `0 8px 32px ${
-    big ? 'rgba(251,191,36,0.35)' : d.glow
-  }`;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// ─── LEVEL UP ──────────────────────────
-
-function showLevelUp() {
-  const d = window.DNA_TYPES[activeDNA];
-  document.getElementById('luFig').textContent = '\u265E';
-  document.getElementById('luFig').style.color = d.color;
-  document.getElementById('luTitle').textContent = 'КОНЬ';
-  document.getElementById('luTitle').style.color = d.color;
-  document.getElementById('luOverlay').classList.add('active');
-  spawnConfetti();
-}
+// ─── XP TOAST / LEVEL UP — см. xp-animations.js ──
 
 function closeLevelUp() {
   document.getElementById('luOverlay').classList.remove('active');
