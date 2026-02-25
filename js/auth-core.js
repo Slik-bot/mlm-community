@@ -293,9 +293,14 @@
       const hasDna = profile.dna_type || localDna;
       const hasName = profile.name && profile.name !== 'Участник';
 
-      if (onboardingDone) {
+      // Серверный фоллбэк: профиль с dna_type+level = онбординг завершён
+      if (!onboardingDone && profile.dna_type && profile.level) {
+        localStorage.setItem('onboardingDone', '1');
+      }
+
+      if (onboardingDone || (profile.dna_type && profile.level)) {
+        const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
         if (profile.dna_type) {
-          const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
         if (window.applyDnaTheme) {
