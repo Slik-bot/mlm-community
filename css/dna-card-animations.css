@@ -1,0 +1,80 @@
+/* ═══════════════════════════════════════
+   DNA CARD ANIMATIONS — css/dna-card-animations.css
+   Все @keyframes для ДНК-карточки
+   ═══════════════════════════════════════ */
+
+@keyframes cardMaterialize {
+  0%   { opacity:0; transform:scale(0.5) translateY(80px); filter:blur(30px); }
+  55%  { opacity:1; filter:blur(0); }
+  70%  { transform:scale(1.035) translateY(-6px); }
+  85%  { transform:scale(0.985) translateY(2px); }
+  100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
+}
+
+@keyframes glowPulse {
+  0%,100% { opacity: 0.4; transform: translateX(-50%) scaleX(1); }
+  50%     { opacity: 0.7; transform: translateX(-50%) scaleX(1.2); }
+}
+
+@keyframes ringPulse {
+  0%   { transform: scale(0.7); opacity: 0.5; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes figBreathe {
+  0%,100% { transform: scale(1) translateY(0); }
+  50%     { transform: scale(1.03) translateY(-2px); }
+}
+
+@keyframes typeReveal {
+  from { opacity:0; filter:blur(12px); letter-spacing:12px; }
+  to   { opacity:1; filter:blur(0); letter-spacing:6px; }
+}
+
+@keyframes accentDraw { to { width: 60%; } }
+
+@keyframes nodeGlow {
+  0%,100% { box-shadow: 0 0 20px var(--dna-cg), 0 0 6px var(--dna-c); }
+  50%     { box-shadow: 0 0 32px var(--dna-cg), 0 0 10px var(--dna-c); }
+}
+
+@keyframes shineSweep {
+  0%,100% { left: -120%; }
+  50% { left: 160%; }
+}
+
+@keyframes flashBoom {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+@keyframes waveExplode {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%,-50%) scale(30); opacity: 0; }
+}
+
+@keyframes orbRotate {
+  from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+
+@keyframes labelPulse {
+  0%,100% { opacity: 0.4; }
+  50%     { opacity: 0.9; }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+@keyframes luFigFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%     { transform: translateY(-8px) scale(1.02); }
+}
+
+@keyframes cfFall {
+  0%   { transform: translateX(0) translateY(0) rotate(0deg); opacity:1; }
+  100% { transform: translateX(var(--dx)) translateY(110vh) rotate(540deg); opacity:0; }
+}
