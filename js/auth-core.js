@@ -299,7 +299,7 @@
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
         }
         if (window.applyDnaTheme) {
-          applyDnaTheme(profile.dna_type || localDna || 'S');
+          applyDnaTheme(revMap[profile.dna_type] || localDna || 'S');
         }
         if (!profile.quest_completed && !localStorage.getItem('quest_shown_permanent')) {
           localStorage.setItem('quest_shown_permanent', '1');
