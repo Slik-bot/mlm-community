@@ -104,6 +104,52 @@ const PATTERN_DRAWS = {
 let activeDNA = 'S';
 let cardSerial = 1;
 
+// ─── DNA EXTRA DATA ──────────────────
+
+const DNA_EXTRA = {
+  S: {
+    strengths: [
+      'Системное мышление', 'Долгосрочное планирование',
+      'Анализ рисков', 'Принятие решений', 'Управление ресурсами'
+    ],
+    quests: [
+      'Составь план на неделю', 'Проанализируй конкурента',
+      'Поставь 3 цели на месяц'
+    ]
+  },
+  C: {
+    strengths: [
+      'Навыки убеждения', 'Построение отношений',
+      'Активное слушание', 'Работа в команде', 'Эмоциональный интеллект'
+    ],
+    quests: [
+      'Познакомься с новым участником', 'Напиши пост в ленту',
+      'Оставь 3 комментария'
+    ]
+  },
+  K: {
+    strengths: [
+      'Нестандартное мышление', 'Генерация идей',
+      'Визуальное мышление', 'Адаптивность', 'Вдохновение других'
+    ],
+    quests: [
+      'Создай креативный пост', 'Предложи новую идею',
+      'Сними короткое видео'
+    ]
+  },
+  A: {
+    strengths: [
+      'Работа с данными', 'Критическое мышление',
+      'Точность и внимание', 'Структурирование информации',
+      'Поиск закономерностей'
+    ],
+    quests: [
+      'Разбери кейс участника', 'Составь аналитику недели',
+      'Найди 3 инсайта в ленте'
+    ]
+  }
+};
+
 // ─── APPLY DNA ─────────────────────────
 
 function applyDNA(type) {
@@ -223,6 +269,77 @@ function shareCard() {
   }
 }
 
+// ─── TABS ─────────────────────────────
+
+const TAB_PANELS = {
+  archetype: 'dnrPanelArchetype',
+  strengths: 'dnrPanelStrengths',
+  quests: 'dnrPanelQuests'
+};
+
+function initDnaTabs() {
+  const tabBar = document.getElementById('dnrTabs');
+  if (!tabBar) return;
+
+  tabBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.dnr-tab');
+    if (!btn) return;
+    const tab = btn.dataset.tab;
+
+    tabBar.querySelectorAll('.dnr-tab').forEach(t =>
+      t.classList.remove('dnr-tab--active'));
+    btn.classList.add('dnr-tab--active');
+
+    Object.values(TAB_PANELS).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('dnr-panel--active');
+    });
+    const panel = document.getElementById(TAB_PANELS[tab]);
+    if (panel) panel.classList.add('dnr-panel--active');
+
+    if (tab === 'strengths') renderStrengths(activeDNA);
+    if (tab === 'quests') renderQuests(activeDNA);
+  });
+}
+
+function renderStrengths(type) {
+  const list = document.getElementById('dnrStrengthsList');
+  if (!list || list.children.length > 0) return;
+  const data = DNA_EXTRA[type];
+  if (!data) return;
+
+  data.strengths.forEach(text => {
+    const li = document.createElement('li');
+    li.className = 'dnr-strength-item';
+    li.textContent = text;
+    list.appendChild(li);
+  });
+}
+
+function renderQuests(type) {
+  const container = document.getElementById('dnrQuestsList');
+  if (!container || container.children.length > 0) return;
+  const data = DNA_EXTRA[type];
+  if (!data) return;
+
+  data.quests.forEach(text => {
+    const card = document.createElement('div');
+    card.className = 'dnr-quest-card';
+
+    const txt = document.createElement('span');
+    txt.className = 'dnr-quest-text';
+    txt.textContent = text;
+
+    const btn = document.createElement('button');
+    btn.className = 'dnr-quest-btn';
+    btn.textContent = 'Взять';
+
+    card.appendChild(txt);
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
+
 // ─── INIT ──────────────────────────────
 
 function initDnaResult() {
@@ -246,6 +363,7 @@ function initDnaResult() {
   }, 900);
 
   initHolo();
+  initDnaTabs();
 
   document.getElementById('dnrBtnContinue')
     ?.addEventListener('click', () => {
