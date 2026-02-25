@@ -453,7 +453,13 @@ async function runNewReveal() {
   flash.style.opacity = '0';
 
   await dl(300);
-  wrap.classList.remove('active');
+  wrap.style.opacity = '0';
+  wrap.style.transition = 'opacity 0.5s ease';
+  setTimeout(() => {
+    wrap.classList.remove('active');
+    wrap.style.opacity = '';
+    wrap.style.transition = '';
+  }, 500);
   document.querySelectorAll('#scrDnaResult .hidden')
     .forEach(el => el.classList.remove('hidden'));
 }
