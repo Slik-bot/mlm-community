@@ -64,15 +64,10 @@ async function logXpChange(userId, amount) {
 
     const newXp = Math.max(0, (p.data.xp_total || 0) + amount);
 
-    // Определяем уровень
-    let level = 'pawn';
-    if (newXp >= 15000) level = 'queen';
-    else if (newXp >= 5000) level = 'rook';
-    else if (newXp >= 2000) level = 'bishop';
-    else if (newXp >= 500) level = 'knight';
+    const gLevel = window.Gamification.getUserLevel(newXp);
 
     // Обновляем профиль
-    await sb.from('users').update({ xp_total: newXp, level: level }).eq('id', userId);
+    await sb.from('users').update({ xp_total: newXp, level: gLevel.level }).eq('id', userId);
   } catch (err) {
     console.error('logXpChange error:', err);
     showToast('Ошибка коррекции XP', 'err');
