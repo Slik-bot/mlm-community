@@ -133,17 +133,98 @@
   <!-- XP Toast -->
   <div class="xp-toast" id="xpToast">+0 XP</div>
 
-  <!-- Reveal screen overlay -->
-  <div class="reveal-screen hidden" id="revealScreen">
-    <div class="reveal-flash" id="revFlash"></div>
-    <div class="reveal-wave" id="revWave"></div>
-    <div class="roulette" id="roulette">
-      <div class="orb-spin orb-s">S</div>
-      <div class="orb-spin orb-c">C</div>
-      <div class="orb-spin orb-k">K</div>
-      <div class="orb-spin orb-a">A</div>
+  <!-- New Reveal overlay -->
+  <div class="dnr-reveal" id="dnrReveal">
+
+    <!-- Phase 1: Scanner -->
+    <div class="dnrv-p1" id="dnrvP1">
+      <div class="dnrv-scanner">
+        <div class="dnrv-ring dnrv-ring1"></div>
+        <div class="dnrv-ring dnrv-ring2"></div>
+        <div class="dnrv-orb dnrv-orb1"></div>
+        <div class="dnrv-orb dnrv-orb2"></div>
+        <div class="dnrv-beam"></div>
+        <div class="dnrv-core">
+          <div class="dnrv-core-glow"></div>
+          <svg class="dnrv-hex" width="46" height="46" viewBox="0 0 46 46" fill="none">
+            <polygon points="23,2 42,12 42,34 23,44 4,34 4,12"
+              stroke="rgba(255,255,255,.15)" stroke-width="1"
+              fill="rgba(255,255,255,.015)"/>
+          </svg>
+          <svg class="dnrv-icon" width="18" height="18"
+            viewBox="0 0 24 24" fill="var(--dna-c)">
+            <path d="M12 3C9.2 3 7 5.2 7 8c0 1.8.9 3.4 2.3 4.4L7 19h10l-2.3-6.6C16.1 11.4 17 9.8 17 8c0-2.8-2.2-5-5-5z"/>
+            <rect x="8.5" y="19" width="7" height="1.5" rx=".75" opacity=".7"/>
+            <rect x="9.5" y="20.5" width="5" height="1" rx=".5" opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+      <div class="dnrv-data">
+        <div class="dnrv-eyebrow">TRAFIQO · IDENTITY PROTOCOL</div>
+        <div class="dnrv-row" id="dnrvR1">
+          <div class="dnrv-dot"></div>
+          <div class="dnrv-label">Поведенческий анализ</div>
+          <div class="dnrv-val" id="dnrvV1">847 паттернов</div>
+        </div>
+        <div class="dnrv-row" id="dnrvR2">
+          <div class="dnrv-dot"></div>
+          <div class="dnrv-label">Когнитивный профиль</div>
+          <div class="dnrv-val" id="dnrvV2">Загружен</div>
+        </div>
+        <div class="dnrv-row" id="dnrvR3">
+          <div class="dnrv-dot"></div>
+          <div class="dnrv-label">Архетип-матчинг</div>
+          <div class="dnrv-val" id="dnrvV3">98.4%</div>
+        </div>
+        <div class="dnrv-prog" id="dnrvProg">
+          <div class="dnrv-prog-track">
+            <div class="dnrv-prog-fill" id="dnrvFill"></div>
+          </div>
+          <div class="dnrv-prog-num" id="dnrvNum">0%</div>
+        </div>
+      </div>
     </div>
-    <div class="reveal-label" id="revLabel">Определяем тип...</div>
+
+    <!-- Phase 2: Archetypes -->
+    <div class="dnrv-p2" id="dnrvP2">
+      <div class="dnrv-arch-label" id="dnrvArchLabel">
+        СОПОСТАВЛЕНИЕ АРХЕТИПОВ
+      </div>
+      <div class="dnrv-arch-grid">
+        <div class="dnrv-acard" id="dnrvAS"
+          style="--ac:#3b82f6;--acr:59;--acg:130;--acb:246">
+          <div class="dnrv-acard-glow"></div>
+          <div class="dnrv-acard-fig">&#9823;</div>
+          <div class="dnrv-acard-name">Стратег</div>
+        </div>
+        <div class="dnrv-acard" id="dnrvAC"
+          style="--ac:#22c55e;--acr:34;--acg:197;--acb:94">
+          <div class="dnrv-acard-glow"></div>
+          <div class="dnrv-acard-fig">&#9822;</div>
+          <div class="dnrv-acard-name">Коммуникатор</div>
+        </div>
+        <div class="dnrv-acard" id="dnrvAK"
+          style="--ac:#f59e0b;--acr:245;--acg:158;--acb:11">
+          <div class="dnrv-acard-glow"></div>
+          <div class="dnrv-acard-fig">&#9821;</div>
+          <div class="dnrv-acard-name">Креатор</div>
+        </div>
+        <div class="dnrv-acard" id="dnrvAA"
+          style="--ac:#a78bfa;--acr:167;--acg:139;--acb:250">
+          <div class="dnrv-acard-glow"></div>
+          <div class="dnrv-acard-fig">&#9820;</div>
+          <div class="dnrv-acard-name">Аналитик</div>
+        </div>
+      </div>
+      <div class="dnrv-result" id="dnrvResult">
+        <div class="dnrv-result-label">ВАШ БИЗНЕС-АРХЕТИП</div>
+        <div class="dnrv-result-name" id="dnrvResultName"></div>
+      </div>
+    </div>
+
+    <!-- Flash -->
+    <div class="dnrv-flash" id="dnrvFlash"></div>
+
   </div>
 
 </div>

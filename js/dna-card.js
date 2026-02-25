@@ -103,7 +103,6 @@ const PATTERN_DRAWS = {
 
 let activeDNA = 'S';
 let cardSerial = 1;
-let revealRunning = false;
 
 // ─── APPLY DNA ─────────────────────────
 
@@ -199,85 +198,6 @@ function initHolo() {
 }
 
 // ─── REVEAL ANIMATION ──────────────────
-
-function runReveal() {
-  if (revealRunning) return;
-  revealRunning = true;
-
-  const d = window.DNA_TYPES[activeDNA];
-  const card = document.getElementById('mainCard');
-  card.classList.remove('revealed');
-  card.style.opacity = '0';
-
-  const screen = document.getElementById('revealScreen');
-  screen.classList.remove('hidden');
-
-  const roulette = document.getElementById('roulette');
-  const label = document.getElementById('revLabel');
-  const orbs = roulette.querySelectorAll('.orb-spin');
-
-  roulette.classList.add('spinning');
-  label.textContent = 'Кто ты?';
-
-  setTimeout(() => {
-    roulette.classList.remove('spinning');
-    label.textContent = 'Определяем...';
-    orbs.forEach((o, i) => {
-      const key = 'orb-' + activeDNA.toLowerCase();
-      if (o.className.indexOf(key) === -1) {
-        setTimeout(() => {
-          o.style.opacity = '0.15';
-          o.style.transform = 'scale(0.7)';
-        }, i * 150);
-      } else {
-        setTimeout(() => {
-          o.style.transform = 'scale(1.4)';
-          o.style.boxShadow = `0 0 40px ${d.color}`;
-        }, 200);
-      }
-    });
-    label.textContent = 'Найдено!';
-  }, 1500);
-
-  setTimeout(() => {
-    const wave = document.getElementById('revWave');
-    wave.style.background = d.color;
-    wave.classList.add('explode');
-  }, 2800);
-
-  setTimeout(() => {
-    const flash = document.getElementById('revFlash');
-    flash.style.background = d.color;
-    flash.classList.add('go');
-  }, 3100);
-
-  setTimeout(() => {
-    screen.classList.add('hidden');
-    document.getElementById('revWave').classList.remove('explode');
-    document.getElementById('revFlash').classList.remove('go');
-    orbs.forEach(o => {
-      o.style.opacity = '1';
-      o.style.transform = '';
-      o.style.boxShadow = '';
-    });
-
-    applyDNA(activeDNA);
-    card.style.opacity = '';
-    card.classList.add('revealed');
-
-    setTimeout(() => {
-      document.getElementById('xpFill').style.width = '4%';
-      document.getElementById('careerDone').style.width = '0%';
-    }, 800);
-
-    revealRunning = false;
-
-    setTimeout(() => {
-      const row = document.getElementById('starsRow');
-      if (row) renderStars(1);
-    }, 4000);
-  }, 3600);
-}
 
 // ─── XP TOAST ──────────────────────────
 
@@ -387,9 +307,149 @@ function initDnaResult() {
   document.getElementById('luBtnClose')
     ?.addEventListener('click', closeLevelUp);
 
-  setTimeout(() => runReveal(), 300);
+  setTimeout(() => runNewReveal(), 300);
 
   setTimeout(() => renderStars(1), 4500);
+}
+
+// ─── NEW REVEAL HELPERS ─────────────────
+
+function dnrvTone(f, dur, v) {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    const o = a.createOscillator(), g = a.createGain();
+    o.connect(g); g.connect(a.destination);
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, a.currentTime);
+    g.gain.linearRampToValueAtTime(v || .025, a.currentTime + .025);
+    g.gain.exponentialRampToValueAtTime(.001, a.currentTime + dur);
+    o.start(); o.stop(a.currentTime + dur);
+  } catch(e) {}
+}
+
+async function dnrvProg(to, dur) {
+  const fill = document.getElementById('dnrvFill');
+  const num = document.getElementById('dnrvNum');
+  if (!fill || !num) return;
+  const from = parseFloat(fill.style.width) || 0;
+  const t0 = Date.now();
+  return new Promise(r => {
+    (function tick() {
+      const t = Math.min((Date.now() - t0) / dur, 1);
+      const e = t < .5 ? 2*t*t : (4-2*t)*t-1;
+      const v = from + (to - from) * e;
+      fill.style.width = v + '%';
+      num.textContent = Math.round(v) + '%';
+      t < 1 ? requestAnimationFrame(tick) : r();
+    })();
+  });
+}
+
+// ─── NEW REVEAL MAIN ────────────────────
+
+async function runNewReveal() {
+  const wrap = document.getElementById('dnrReveal');
+  const p1 = document.getElementById('dnrvP1');
+  const p2 = document.getElementById('dnrvP2');
+  const flash = document.getElementById('dnrvFlash');
+  if (!wrap) { window.goTo('scrDnaResult'); return; }
+
+  const dnaType = localStorage.getItem('dnaType') || 'K';
+  const archMap = { S: 'dnrvAS', C: 'dnrvAC', K: 'dnrvAK', A: 'dnrvAA' };
+  const nameMap = { S:'СТРАТЕГ', C:'КОММУНИКАТОР', K:'КРЕАТОР', A:'АНАЛИТИК' };
+
+  wrap.classList.add('active');
+  p1.classList.add('on');
+  dnrvTone(160, 2.5, .02);
+
+  await new Promise(r => setTimeout(r, 600));
+
+  ['dnrv-ring1','dnrv-ring2'].forEach(c => {
+    const el = wrap.querySelector('.'+c); if(el) el.style.opacity='1';
+  });
+  document.getElementById('dnrvP1').querySelectorAll(
+    '.dnrv-orb,.dnrv-core-glow,.dnrv-hex,.dnrv-icon'
+  ).forEach(el => el.classList.add('on'));
+  const beam = wrap.querySelector('.dnrv-beam');
+  if (beam) beam.classList.add('on');
+
+  const dl = ms => new Promise(r => setTimeout(r, ms));
+
+  await dl(500);
+  document.getElementById('dnrvR1').classList.add('in');
+  dnrvTone(220, .35, .018);
+  await dl(650);
+  document.getElementById('dnrvV1').classList.add('in');
+
+  await dl(350);
+  document.getElementById('dnrvR2').classList.add('in');
+  dnrvTone(275, .35, .018);
+  await dl(550);
+  document.getElementById('dnrvV2').classList.add('in');
+  document.getElementById('dnrvProg').classList.add('in');
+  dnrvProg(44, 900);
+
+  await dl(400);
+  document.getElementById('dnrvR3').classList.add('in');
+  dnrvTone(330, .35, .018);
+  await dl(550);
+  document.getElementById('dnrvV3').classList.add('in');
+  dnrvProg(79, 700);
+
+  await dl(600);
+  await dnrvProg(100, 450);
+  dnrvTone(440, .6, .025);
+  await dl(350);
+
+  p1.classList.remove('on');
+  await dl(300);
+  p2.classList.add('on');
+  document.getElementById('dnrvArchLabel').classList.add('in');
+  dnrvTone(190, 2.2, .02);
+
+  await dl(900);
+  ['S','C','K','A'].forEach((t, i) => {
+    setTimeout(() => {
+      document.getElementById('dnrv' + 'A' + t).classList.add('lit');
+      dnrvTone(200 + i*80, .2, .012);
+    }, i * 130);
+  });
+
+  await dl(1000);
+  ['S','C','K','A'].forEach(t => {
+    const el = document.getElementById('dnrvA' + t);
+    if (t === dnaType) {
+      el.className = 'dnrv-acard lit';
+    } else {
+      setTimeout(() => {
+        el.classList.remove('lit');
+        el.classList.add('dim');
+      }, Math.random() * 200 + 50);
+    }
+  });
+  dnrvTone(440, .8, .03);
+
+  await dl(950);
+  document.getElementById('dnrvResultName').textContent =
+    nameMap[dnaType] || dnaType;
+  document.getElementById('dnrvResult').classList.add('in');
+  [440,550,660].forEach((n,i) =>
+    setTimeout(() => dnrvTone(n,.4,.02), i*110));
+
+  await dl(1400);
+
+  p2.classList.remove('on');
+  await dl(200);
+  flash.style.transition = 'opacity .09s';
+  flash.style.opacity = '.4';
+  dnrvTone(900, .55, .05);
+  await dl(90);
+  flash.style.transition = 'opacity .7s ease';
+  flash.style.opacity = '0';
+
+  await dl(300);
+  wrap.classList.remove('active');
+  window.goTo('scrDnaResult');
 }
 
 window.initDnaResult = initDnaResult;

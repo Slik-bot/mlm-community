@@ -43,25 +43,21 @@
   50% { left: 160%; }
 }
 
-@keyframes flashBoom {
-  0%   { opacity: 0; }
-  30%  { opacity: 0.7; }
-  100% { opacity: 0; }
-}
 
-@keyframes waveExplode {
-  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
-  100% { transform: translate(-50%,-50%) scale(30); opacity: 0; }
+@keyframes dnrvSpin { to { transform: rotate(360deg); } }
+@keyframes dnrvBeam {
+  0% { top: -24px; opacity: 0; }
+  6% { opacity: 1; }
+  94% { opacity: 1; }
+  100% { top: calc(100% + 24px); opacity: 0; }
 }
-
-@keyframes orbRotate {
-  from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
-  to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+@keyframes dnrvGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
 }
-
-@keyframes labelPulse {
-  0%,100% { opacity: 0.4; }
-  50%     { opacity: 0.9; }
+@keyframes dnrvDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .2; }
 }
 
 @keyframes fadeUp {
@@ -77,4 +73,271 @@
 @keyframes cfFall {
   0%   { transform: translateX(0) translateY(0) rotate(0deg); opacity:1; }
   100% { transform: translateX(var(--dx)) translateY(110vh) rotate(540deg); opacity:0; }
+}
+
+/* ── NEW REVEAL STYLES ── */
+.dnr-reveal {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease;
+  flex-direction: column;
+}
+.dnr-reveal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.dnrv-p1, .dnrv-p2 {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .5s ease;
+  padding: 0 32px;
+}
+.dnrv-p1.on, .dnrv-p2.on { opacity: 1; }
+
+/* Scanner */
+.dnrv-scanner {
+  position: relative;
+  width: 180px; height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 44px;
+}
+.dnrv-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+.dnrv-ring1 {
+  inset: 0;
+  border-top-color: rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .45);
+  border-right-color: rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .12);
+  animation: dnrvSpin 5s linear infinite;
+}
+.dnrv-ring2 {
+  inset: 22px;
+  border-bottom-color: rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .3);
+  animation: dnrvSpin 8s linear infinite reverse;
+}
+.dnrv-orb {
+  position: absolute;
+  border-radius: 50%;
+  animation: dnrvSpin var(--od, 5s) linear infinite;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.dnrv-orb::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--dna-c);
+  box-shadow: 0 0 10px var(--dna-c), 0 0 20px var(--dna-c);
+  top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.dnrv-orb1 { inset: 0; --od: 4.5s; }
+.dnrv-orb1::after { width: 5px; height: 5px; }
+.dnrv-orb2 { inset: 22px; --od: 7s; animation-direction: reverse; }
+.dnrv-orb2::after { width: 4px; height: 4px; opacity: .7; }
+.dnrv-orb.on { opacity: 1; }
+
+.dnrv-beam {
+  position: absolute;
+  left: -24px; right: -24px; height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .8) 40%,
+    rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), 1) 50%,
+    rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .8) 60%,
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .7),
+              0 0 20px rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .3);
+  opacity: 0;
+}
+.dnrv-beam.on {
+  animation: dnrvBeam 2.4s ease-in-out infinite;
+}
+
+.dnrv-core {
+  position: relative; z-index: 5;
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.dnrv-core-glow {
+  position: absolute; inset: -28px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(var(--dna-cr), var(--dna-cg), var(--dna-cb), .2) 0%,
+    transparent 70%
+  );
+  opacity: 0; transition: opacity 1s ease;
+  animation: dnrvGlow 3.5s ease-in-out infinite;
+}
+.dnrv-core-glow.on { opacity: 1; }
+.dnrv-hex {
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity 1s ease;
+  animation: dnrvSpin 25s linear infinite;
+}
+.dnrv-hex.on { opacity: 1; }
+.dnrv-icon {
+  position: relative; z-index: 3;
+  opacity: 0; transition: opacity .8s ease;
+}
+.dnrv-icon.on { opacity: 1; }
+
+/* Data table */
+.dnrv-data { width: 100%; max-width: 280px; }
+.dnrv-eyebrow {
+  font-size: 8px; letter-spacing: .5em;
+  color: rgba(255,255,255,.15);
+  text-transform: uppercase;
+  margin-bottom: 18px; text-align: center;
+}
+.dnrv-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  opacity: 0; transform: translateY(6px);
+  transition: all .5s ease;
+}
+.dnrv-row.in { opacity: 1; transform: translateY(0); }
+.dnrv-dot {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--dna-c); flex-shrink: 0;
+  box-shadow: 0 0 5px var(--dna-c);
+  animation: dnrvDot 2s ease-in-out infinite;
+}
+.dnrv-label {
+  font-size: 10px; font-weight: 400;
+  color: rgba(255,255,255,.28);
+  letter-spacing: .06em; flex: 1;
+}
+.dnrv-val {
+  font-size: 10px; font-weight: 600;
+  color: var(--dna-c); letter-spacing: .05em;
+  opacity: 0; transition: opacity .4s ease;
+}
+.dnrv-val.in { opacity: 1; }
+.dnrv-prog {
+  margin-top: 20px;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0; transition: opacity .5s ease;
+}
+.dnrv-prog.in { opacity: 1; }
+.dnrv-prog-track {
+  flex: 1; height: 1px;
+  background: rgba(255,255,255,.06);
+  position: relative;
+}
+.dnrv-prog-fill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--dna-c));
+  box-shadow: 2px 0 10px var(--dna-c);
+  width: 0%; transition: width .35s ease;
+}
+.dnrv-prog-fill::after {
+  content: ''; position: absolute;
+  right: -4px; top: -4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--dna-c);
+  box-shadow: 0 0 12px var(--dna-c), 0 0 24px var(--dna-c);
+}
+.dnrv-prog-num {
+  font-size: 11px; font-weight: 700;
+  color: var(--dna-c); min-width: 34px;
+  text-align: right;
+}
+
+/* Archetypes */
+.dnrv-arch-label {
+  font-size: 8px; letter-spacing: .55em;
+  color: rgba(255,255,255,.13);
+  text-transform: uppercase; margin-bottom: 32px;
+  opacity: 0; transform: translateY(5px);
+  transition: all .7s ease;
+}
+.dnrv-arch-label.in { opacity: 1; transform: translateY(0); }
+.dnrv-arch-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 32px;
+}
+.dnrv-acard {
+  width: 104px; padding: 18px 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.05);
+  background: rgba(255,255,255,.015);
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+  transition: all .9s cubic-bezier(.16,1,.3,1);
+  position: relative; overflow: hidden;
+}
+.dnrv-acard-glow {
+  position: absolute; inset: 0;
+  border-radius: 18px; opacity: 0;
+  transition: opacity .7s ease;
+  background: radial-gradient(ellipse at 50% 0%,
+    var(--ac) 0%, transparent 65%);
+}
+.dnrv-acard.lit .dnrv-acard-glow { opacity: .3; }
+.dnrv-acard.lit {
+  border-color: rgba(var(--acr),var(--acg),var(--acb),.3);
+  background: rgba(var(--acr),var(--acg),var(--acb),.04);
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(var(--acr),var(--acg),var(--acb),.12);
+}
+.dnrv-acard.dim {
+  opacity: .06; transform: scale(.9); filter: blur(1px);
+}
+.dnrv-acard-fig {
+  font-size: 28px; line-height: 1;
+  position: relative; z-index: 2;
+  transition: filter .6s ease;
+}
+.dnrv-acard.lit .dnrv-acard-fig {
+  filter: drop-shadow(0 0 6px var(--ac));
+}
+.dnrv-acard-name {
+  font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.2);
+  position: relative; z-index: 2;
+  transition: color .5s ease;
+}
+.dnrv-acard.lit .dnrv-acard-name { color: var(--ac); }
+
+.dnrv-result {
+  text-align: center;
+  opacity: 0; transform: translateY(10px);
+  transition: all .9s cubic-bezier(.16,1,.3,1);
+}
+.dnrv-result.in { opacity: 1; transform: translateY(0); }
+.dnrv-result-label {
+  font-size: 8px; letter-spacing: .5em;
+  color: rgba(255,255,255,.16);
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.dnrv-result-name {
+  font-size: 36px; font-weight: 800;
+  letter-spacing: .08em; color: var(--dna-c);
+  text-shadow: 0 0 40px var(--dna-c);
+}
+
+.dnrv-flash {
+  position: absolute; inset: 0;
+  opacity: 0; pointer-events: none; z-index: 60;
+  background: var(--dna-c);
 }
