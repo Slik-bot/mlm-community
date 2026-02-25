@@ -303,7 +303,8 @@
       }
 
       if (onboardingDone || (profile.dna_type && profile.level)
-        || (localDnaCheck && profile.name && profile.name !== 'Участник')) {
+        || (localDnaCheck && profile.name && profile.name !== 'Участник')
+        || (profile.level && profile.level !== 'pawn')) {
         if (!onboardingDone) {
           localStorage.setItem('onboardingDone', '1');
         }
