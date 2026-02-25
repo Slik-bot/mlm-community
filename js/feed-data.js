@@ -38,7 +38,7 @@
   async function loadStreakDisplay() {
     const _u = window.getCurrentUser ? window.getCurrentUser() : null;
     if (!_u) return;
-    const result = await window.sb.from('user_stats').select('streak_days').eq('user_id', _u.id).maybeSingle();
+    const result = await window.sb.from('users').select('streak_days').eq('id', _u.id).maybeSingle();
     if (!result.data) return;
     const streakEl = document.querySelector('.imp-streak-val');
     if (streakEl) {
@@ -66,7 +66,7 @@
     const questsResult = await window.sb
       .from('task_completions').select('*, tasks(*)')
       .eq('user_id', userId).order('taken_at', { ascending: false }).limit(5);
-    const streakRes = await window.sb.from('user_stats').select('streak_days').eq('user_id', userId).maybeSingle();
+    const streakRes = await window.sb.from('users').select('streak_days').eq('id', userId).maybeSingle();
     return { quests: questsResult.data || [], streak: streakRes.data };
   }
 
