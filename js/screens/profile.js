@@ -16,7 +16,8 @@ const LEVELS = {
   knight: { name: 'Конь', min: 500, max: 1999 },
   bishop: { name: 'Слон', min: 2000, max: 4999 },
   rook:   { name: 'Ладья', min: 5000, max: 14999 },
-  queen:  { name: 'Ферзь', min: 15000, max: 99999 }
+  queen:  { name: 'Ферзь', min: 15000, max: 26599999 },
+  king:   { name: 'Король', min: 26600000, max: Infinity }
 };
 
 function getChessIcon(level, color) {
@@ -26,7 +27,8 @@ function getChessIcon(level, color) {
     knight: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M8 16l-1 5h10l-1-5"/><path d="M7 16c0-4 2-6 3-8l-2-3c0 0 3-2 5-2s4 2 4 5c0 4-2 6-2 8"/><circle cx="14" cy="7" r="1" fill="' + c + '"/></svg>',
     bishop: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M8 21h8"/><path d="M9 21v-1a7 7 0 016 0v1"/><path d="M12 3a5 5 0 00-3 9l1 4h4l1-4a5 5 0 00-3-9z"/><circle cx="12" cy="3" r="1" fill="' + c + '"/></svg>',
     rook: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M7 21h10"/><path d="M8 21v-2h8v2"/><path d="M9 19V9h6v10"/><path d="M7 9h10"/><path d="M7 9V5h2v2h2V5h2v2h2V5h2v4"/></svg>',
-    queen: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M7 21h10"/><path d="M8 21l1-5h6l1 5"/><path d="M3 6l4 10h10l4-10"/><circle cx="3" cy="5" r="1" fill="' + c + '"/><circle cx="8" cy="3" r="1" fill="' + c + '"/><circle cx="12" cy="2" r="1" fill="' + c + '"/><circle cx="16" cy="3" r="1" fill="' + c + '"/><circle cx="21" cy="5" r="1" fill="' + c + '"/></svg>'
+    queen: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M7 21h10"/><path d="M8 21l1-5h6l1 5"/><path d="M3 6l4 10h10l4-10"/><circle cx="3" cy="5" r="1" fill="' + c + '"/><circle cx="8" cy="3" r="1" fill="' + c + '"/><circle cx="12" cy="2" r="1" fill="' + c + '"/><circle cx="16" cy="3" r="1" fill="' + c + '"/><circle cx="21" cy="5" r="1" fill="' + c + '"/></svg>',
+    king: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="1.5"><path d="M12 2v4"/><path d="M10 4h4"/><path d="M7 21h10"/><path d="M8 21l1-5h6l1 5"/><path d="M5 8l2 8h10l2-8"/><path d="M5 8l3-2 4 3 4-3 3 2"/></svg>'
   };
   return icons[level] || icons.pawn;
 }
