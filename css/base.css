@@ -102,7 +102,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 }
 @keyframes scrSlideOutLeft{
   0%{transform:translateX(0);opacity:1}
-  100%{transform:translateX(-35%);opacity:.5}
+  100%{transform:translateX(-35%);opacity:0}
 }
 @keyframes scrSlideOutRight{
   0%{transform:translateX(0);opacity:1}
