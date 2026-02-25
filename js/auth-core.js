@@ -378,13 +378,11 @@
 
       // ===== АВТОЛОГИН при загрузке =====
       if (!window._authRoutingDone) {
-        authCheckSession().then(async function(profile) {
-          await routeAfterAuth(profile);
-        }).catch(function(err) {
-          console.error('authCheckSession failed:', err);
-          showApp();
-          switchScreenInstant('scrLanding');
-        });
+        const hasToken = !!localStorage.getItem('sb-tydavmiamwdrfjbcgwny-auth-token');
+        if (!hasToken) {
+          routeAfterAuth(null); // Нет токена — сразу лендинг
+        }
+        // Токен есть → ждём INITIAL_SESSION от onAuthStateChange
       }
 
       // ===== ВОССТАНОВЛЕНИЕ СЕССИИ ЧЕРЕЗ SUPABASE =====
