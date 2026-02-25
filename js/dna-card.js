@@ -139,10 +139,6 @@ function applyDNA(type) {
   const ctx = canvas.getContext('2d');
   const patternFn = PATTERN_DRAWS[d.pattern];
   if (patternFn) patternFn(ctx, canvas.width, canvas.height, d.color);
-
-  if (document.getElementById('starsRow')) {
-    renderStars(1);
-  }
 }
 
 function renderStars(filled) {
@@ -276,27 +272,14 @@ function runReveal() {
     setTimeout(() => {
       document.getElementById('xpFill').style.width = '4%';
       document.getElementById('careerDone').style.width = '0%';
-      if (document.getElementById('starsRow')) {
-        renderStars(0);
-      }
-      setTimeout(() => {
-        const stars = document.querySelectorAll('.dnr-star');
-        stars.forEach((s, i) => {
-          setTimeout(() => {
-            s.style.opacity = '1';
-            s.style.transform = 'scale(1) rotate(0deg)';
-          }, i * 120);
-        });
-        if (stars[0]) {
-          stars[0].className = 'dnr-star lit';
-          stars[0].textContent = '\u2605';
-          stars[0].style.transition =
-            'all 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-        }
-      }, 400);
     }, 800);
 
     revealRunning = false;
+
+    setTimeout(() => {
+      const row = document.getElementById('starsRow');
+      if (row) renderStars(1);
+    }, 100);
   }, 3600);
 }
 
@@ -397,24 +380,6 @@ function initDnaResult() {
 
   setTimeout(() => {
     document.getElementById('xpFill').style.width = '4%';
-    if (document.getElementById('starsRow')) {
-      renderStars(0);
-    }
-    setTimeout(() => {
-      const stars = document.querySelectorAll('.dnr-star');
-      if (stars[0]) {
-        stars[0].className = 'dnr-star lit';
-        stars[0].textContent = '\u2605';
-        stars[0].style.transition =
-          'all 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-      }
-      stars.forEach((s, i) => {
-        if (i > 0) {
-          s.style.opacity = '1';
-          s.style.transform = 'scale(1) rotate(0)';
-        }
-      });
-    }, 300);
   }, 900);
 
   initHolo();
