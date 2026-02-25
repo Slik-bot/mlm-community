@@ -267,6 +267,7 @@ function runReveal() {
     });
 
     applyDNA(activeDNA);
+    card.style.opacity = '';
     card.classList.add('revealed');
 
     setTimeout(() => {
@@ -417,6 +418,8 @@ function initDnaResult() {
     ?.addEventListener('click', shareCard);
   document.getElementById('luBtnClose')
     ?.addEventListener('click', closeLevelUp);
+
+  setTimeout(() => runReveal(), 300);
 }
 
 window.initDnaResult = initDnaResult;
