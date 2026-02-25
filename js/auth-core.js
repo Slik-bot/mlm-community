@@ -306,7 +306,8 @@
           await switchScreenInstant('scrQuest');
           showApp();
         } else {
-          await switchScreenInstant('scrFeed');
+          const last = localStorage.getItem('lastScreen') || 'scrFeed';
+          await switchScreenInstant(last);
           showApp();
           if (window.initFeedFromDB) initFeedFromDB();
         }

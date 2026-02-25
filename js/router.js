@@ -171,6 +171,7 @@ function handleScreenTransition(currentEl, nextEl, direction) {
   const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (canAnimate && currentEl) {
     isTransitioning = true;
+    currentEl.style.pointerEvents = 'none';
     nextEl.scrollTop = 0;
     nextEl.classList.remove('hidden', 'back-hidden');
     const enterCls = direction === 'forward' ? 'scr-tr-enter-right' : 'scr-tr-enter-left';
@@ -182,6 +183,7 @@ function handleScreenTransition(currentEl, nextEl, direction) {
       nextEl.classList.remove('scr-tr-enter', enterCls);
       currentEl.classList.remove(exitCls);
       currentEl.classList.add(direction === 'forward' ? 'back-hidden' : 'hidden');
+      currentEl.style.pointerEvents = '';
       isTransitioning = false;
     }, 400);
   } else {
@@ -224,6 +226,7 @@ async function goTo(id) {
   }
 
   navHistory.push(id);
+  localStorage.setItem('lastScreen', id);
   updateChrome(id);
   handleScreenTransition(currentEl, nextEl, 'forward');
 
