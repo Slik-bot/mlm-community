@@ -69,10 +69,12 @@ async function loadXpRules() {
   const xpR = await sb.from('platform_settings').select('*').eq('key', 'xp_rules').single();
   const lvlR = await sb.from('platform_settings').select('*').eq('key', 'levels').single();
   const xp = (xpR.data && xpR.data.value) || { post: 15, like: 5, comment: 10, share: 25, friend: 10 };
-  const lvl = (lvlR.data && lvlR.data.value) || { pawn: 0, knight: 500, bishop: 1500, rook: 3000, queen: 5000, king: 10000 };
+  const G = window.Gamification.XP_TABLE;
+  const defaultLvl = {}; const lvlNames = {};
+  G.forEach(function(r) { if (!defaultLvl[r.level]) { defaultLvl[r.level] = r.xpMin; lvlNames[r.level] = r.label; } });
+  const lvl = (lvlR.data && lvlR.data.value) || defaultLvl;
   const actions = ['post', 'like', 'comment', 'share', 'friend'];
-  const levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
-  const lvlNames = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь', king: 'Король' };
+  const levels = Object.keys(defaultLvl);
   let h = '<div class="section-title">XP за действия</div>' +
     '<div class="table-wrap"><table class="data-table"><thead><tr><th>Действие</th><th>XP</th></tr></thead><tbody>';
   actions.forEach(function(a) {
@@ -92,9 +94,9 @@ async function saveXpRules() {
   const actions = ['post', 'like', 'comment', 'share', 'friend'];
   const xp = {};
   actions.forEach(function(a) { xp[a] = parseInt(document.getElementById('xr_' + a).value) || 0; });
-  const levels = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'];
   const lvl = {};
-  levels.forEach(function(l) { lvl[l] = parseInt(document.getElementById('lv_' + l).value) || 0; });
+  const saveLevels = []; window.Gamification.XP_TABLE.forEach(function(r) { if (!lvl[r.level]) { lvl[r.level] = 0; saveLevels.push(r.level); } });
+  saveLevels.forEach(function(l) { lvl[l] = parseInt(document.getElementById('lv_' + l).value) || 0; });
   const now = new Date().toISOString();
   await sb.from('platform_settings').upsert({ key: 'xp_rules', value: xp, updated_at: now });
   await sb.from('platform_settings').upsert({ key: 'levels', value: lvl, updated_at: now });
