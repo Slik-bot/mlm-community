@@ -23,10 +23,10 @@
     if (nameEl) nameEl.textContent = 'Привет, ' + (_profile.name || 'Участник') + '!';
 
     const dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-    const lvlMap = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
+    const hdrLevel = window.Gamification.getUserLevel(_profile.xp_total || 0);
     const dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
     if (dnaBadge && _profile.dna_type) {
-      dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[_profile.dna_type] || '') + ' · ♟ ' + (lvlMap[_profile.level] || 'Пешка');
+      dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[_profile.dna_type] || '') + ' · ♟ ' + hdrLevel.label;
     }
 
     const xpEl = document.querySelector('.imp-xp-val');
@@ -84,18 +84,13 @@
         const xpMaxEl = document.querySelector('.imp-xp-max');
         const lvlEl = document.querySelector('.imp-lvl');
         if (xpEl) xpEl.textContent = _profile.xp_total || 0;
-        const levels = { pawn: 0, knight: 500, bishop: 2000, rook: 5000, queen: 15000 };
-        const levelLabels = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
-        const curLvl = _profile.level || 'pawn';
-        const lvlNames = Object.keys(levels);
-        const nextXP = levels[lvlNames[lvlNames.indexOf(curLvl) + 1]] || 20000;
-        if (xpMaxEl) xpMaxEl.textContent = nextXP;
-        if (lvlEl) lvlEl.textContent = levelLabels[curLvl] || 'Пешка';
+        const gLevel = window.Gamification.getUserLevel(_profile.xp_total || 0);
+        const gProgress = window.Gamification.getLevelProgress(_profile.xp_total || 0);
+        if (xpMaxEl) xpMaxEl.textContent = gLevel.xpNext || '∞';
+        if (lvlEl) lvlEl.textContent = gLevel.label;
         const progressBar = document.querySelector('.imp-bar-fill');
         if (progressBar) {
-          const prevXP = levels[curLvl] || 0;
-          const progress = ((_profile.xp_total || 0) - prevXP) / (nextXP - prevXP) * 100;
-          progressBar.style.width = Math.min(progress, 100) + '%';
+          progressBar.style.width = gProgress.percent + '%';
         }
       }
 
