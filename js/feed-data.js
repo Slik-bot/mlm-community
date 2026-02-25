@@ -30,7 +30,7 @@
     }
 
     const xpEl = document.querySelector('.imp-xp-val');
-    if (xpEl) xpEl.textContent = (_profile.xp || 0) + ' XP';
+    if (xpEl) xpEl.textContent = (_profile.xp_total || 0) + ' XP';
 
     loadStreakDisplay();
   }
@@ -85,7 +85,7 @@
         const xpEl = document.querySelector('.imp-xp-val');
         const xpMaxEl = document.querySelector('.imp-xp-max');
         const lvlEl = document.querySelector('.imp-lvl');
-        if (xpEl) xpEl.textContent = _profile.xp || 0;
+        if (xpEl) xpEl.textContent = _profile.xp_total || 0;
         const levels = { pawn: 0, knight: 500, bishop: 2000, rook: 5000, queen: 15000 };
         const levelLabels = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
         const curLvl = _profile.level || 'pawn';
@@ -96,7 +96,7 @@
         const progressBar = document.querySelector('.imp-bar-fill');
         if (progressBar) {
           const prevXP = levels[curLvl] || 0;
-          const progress = ((_profile.xp || 0) - prevXP) / (nextXP - prevXP) * 100;
+          const progress = ((_profile.xp_total || 0) - prevXP) / (nextXP - prevXP) * 100;
           progressBar.style.width = Math.min(progress, 100) + '%';
         }
       }
