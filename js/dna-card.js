@@ -291,6 +291,9 @@ function initDnaResult() {
 
   applyDNA(activeDNA);
 
+  const dnrCard = document.getElementById('dnrCard');
+  if (dnrCard) dnrCard.classList.add('hidden');
+
   const card = document.getElementById('mainCard');
   card.classList.add('revealed');
 
