@@ -388,6 +388,8 @@ function initDnaResult() {
     ?.addEventListener('click', closeLevelUp);
 
   setTimeout(() => runReveal(), 300);
+
+  setTimeout(() => renderStars(1), 4500);
 }
 
 window.initDnaResult = initDnaResult;
