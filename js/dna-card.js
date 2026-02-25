@@ -277,7 +277,7 @@ function runReveal() {
     setTimeout(() => {
       const row = document.getElementById('starsRow');
       if (row) renderStars(1);
-    }, 100);
+    }, 4000);
   }, 3600);
 }
 
