@@ -27,12 +27,7 @@ async function dnaFromOnboarding(){
   } else {
     // No test yet — run full test
     dnaSource = 'onboarding';
-    await new Promise(function(r){setTimeout(r, 80)});
     await goTo('scrDnaTest');
-    if(!document.getElementById('dnaQIcon')){
-      await new Promise(function(r){setTimeout(r,500)});
-      await goTo('scrDnaTest');
-    }
     dnaReset();
   }
 }
