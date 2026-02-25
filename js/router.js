@@ -181,8 +181,11 @@ function handleScreenTransition(currentEl, nextEl, direction) {
     currentEl.classList.add(exitCls);
     setTimeout(function() {
       nextEl.classList.remove('scr-tr-enter', enterCls);
+      currentEl.style.transition = 'none';
       currentEl.classList.remove(exitCls);
       currentEl.classList.add(direction === 'forward' ? 'back-hidden' : 'hidden');
+      currentEl.offsetHeight;
+      currentEl.style.transition = '';
       currentEl.style.pointerEvents = '';
       isTransitioning = false;
     }, 400);
