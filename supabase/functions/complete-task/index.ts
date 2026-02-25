@@ -2,7 +2,74 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
+// ═══ XP ТАБЛИЦА (серверная копия gamification.js v1.0) ═══
+const XP_TABLE = [
+  { level: "pawn",   stars: 1, xpMin: 0 },
+  { level: "pawn",   stars: 2, xpMin: 1000 },
+  { level: "pawn",   stars: 3, xpMin: 3000 },
+  { level: "pawn",   stars: 4, xpMin: 7000 },
+  { level: "pawn",   stars: 5, xpMin: 15000 },
+  { level: "knight", stars: 1, xpMin: 25000 },
+  { level: "knight", stars: 2, xpMin: 60000 },
+  { level: "knight", stars: 3, xpMin: 110000 },
+  { level: "knight", stars: 4, xpMin: 180000 },
+  { level: "knight", stars: 5, xpMin: 280000 },
+  { level: "bishop", stars: 1, xpMin: 430000 },
+  { level: "bishop", stars: 2, xpMin: 630000 },
+  { level: "bishop", stars: 3, xpMin: 900000 },
+  { level: "bishop", stars: 4, xpMin: 1250000 },
+  { level: "bishop", stars: 5, xpMin: 1700000 },
+  { level: "rook",   stars: 1, xpMin: 2300000 },
+  { level: "rook",   stars: 2, xpMin: 3100000 },
+  { level: "rook",   stars: 3, xpMin: 4000000 },
+  { level: "rook",   stars: 4, xpMin: 5000000 },
+  { level: "rook",   stars: 5, xpMin: 6000000 },
+  { level: "queen",  stars: 1, xpMin: 7500000 },
+  { level: "queen",  stars: 2, xpMin: 9000000 },
+  { level: "queen",  stars: 3, xpMin: 11000000 },
+  { level: "queen",  stars: 4, xpMin: 13000000 },
+  { level: "queen",  stars: 5, xpMin: 15000000 },
+  { level: "king",   stars: 1, xpMin: 25000000 },
+];
+
+const LEVEL_MULTS: Record<string, number> = {
+  pawn: 1.0, knight: 1.0, bishop: 1.3,
+  rook: 1.6, queen: 2.0, king: 2.5,
+};
+
+const STREAK_THRESHOLDS = [
+  { days: 365, mult: 2.50 },
+  { days: 270, mult: 2.00 },
+  { days: 180, mult: 1.70 },
+  { days: 150, mult: 1.50 },
+  { days: 120, mult: 1.30 },
+  { days: 90,  mult: 1.20 },
+  { days: 45,  mult: 1.15 },
+  { days: 21,  mult: 1.10 },
+  { days: 7,   mult: 1.05 },
+];
+
 const LEVELS = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+
+function getLevelMultiplier(level: string): number {
+  return LEVEL_MULTS[level] || 1.0;
+}
+
+function getStreakMultiplier(streakDays: number): number {
+  for (const t of STREAK_THRESHOLDS) {
+    if (streakDays >= t.days) return t.mult;
+  }
+  return 1.0;
+}
+
+function calculateLevel(xpTotal: number): { level: string; stars: number } {
+  let found = XP_TABLE[0];
+  for (const row of XP_TABLE) {
+    if (xpTotal >= row.xpMin) found = row;
+    else break;
+  }
+  return { level: found.level, stars: found.stars };
+}
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -71,7 +138,7 @@ serve(async (req) => {
     // 4. Проверить уровень пользователя
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, level, xp_total, xp_balance, balance")
+      .select("id, level, level_stars, xp_total, xp_balance, balance, streak_days")
       .eq("id", userId)
       .single();
     if (userError || !user) {
@@ -104,21 +171,38 @@ serve(async (req) => {
 
     let xpAwarded = 0;
 
-    // 7. Если approved — начислить награды
+    // 7. Если approved — начислить награды с множителями
+    let baseXp = 0;
+    let levelMult = 1;
+    let streakMult = 1;
+    let newXpTotal = user.xp_total || 0;
+    let newLevel = user.level || "pawn";
+    let newStars = user.level_stars || 1;
+    const oldLevel = user.level || "pawn";
+    const oldStars = user.level_stars || 1;
+
     if (status === "approved") {
-      xpAwarded = Number(task.reward_xp) || 0;
+      baseXp = Number(task.reward_xp) || 0;
+      levelMult = getLevelMultiplier(user.level);
+      streakMult = getStreakMultiplier(user.streak_days || 0);
+      xpAwarded = Math.round(baseXp * levelMult * streakMult);
       const moneyReward = task.reward_money || 0;
-      const newXpTotal = (user.xp_total || 0) + xpAwarded;
+      newXpTotal = (user.xp_total || 0) + xpAwarded;
       const newXpBalance = (user.xp_balance || 0) + xpAwarded;
       const newBalance = (user.balance || 0) + moneyReward;
+      const calc = calculateLevel(newXpTotal);
+      newLevel = calc.level;
+      newStars = calc.stars;
 
-      // Обновить XP и баланс пользователя
+      // Обновить XP, баланс, уровень и звёзды
       await supabase
         .from("users")
         .update({
           xp_total: newXpTotal,
           xp_balance: newXpBalance,
           balance: newBalance,
+          level: newLevel,
+          level_stars: newStars,
         })
         .eq("id", userId);
 
@@ -155,7 +239,7 @@ serve(async (req) => {
         user_id: userId,
         type: "progress",
         title: "Задание выполнено!",
-        body: `+${xpAwarded} XP за «${task.title}»`,
+        body: `+${xpAwarded} XP за «${task.title}»` + (levelMult * streakMult > 1 ? ` (x${(levelMult * streakMult).toFixed(2)})` : ""),
         action_type: "open_screen",
         action_data: { screen: "scrTasks" },
       });
@@ -165,6 +249,11 @@ serve(async (req) => {
     return json({
       success: true,
       xp_awarded: xpAwarded,
+      xp_total: newXpTotal,
+      level: newLevel,
+      level_stars: newStars,
+      level_up: newLevel !== oldLevel,
+      stars_up: newStars !== oldStars || newLevel !== oldLevel,
       status,
       completion_id: completion.id,
     });
