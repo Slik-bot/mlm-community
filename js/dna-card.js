@@ -307,7 +307,13 @@ function initDnaResult() {
   initHolo();
 
   document.getElementById('dnrBtnContinue')
-    ?.addEventListener('click', () => window.goTo('scrFeed'));
+    ?.addEventListener('click', () => {
+      if (typeof dnaResultAction === 'function') {
+        dnaResultAction();
+      } else {
+        window.goTo('scrFeed');
+      }
+    });
   document.getElementById('dnrBtnShare')
     ?.addEventListener('click', shareCard);
   document.getElementById('luBtnClose')
