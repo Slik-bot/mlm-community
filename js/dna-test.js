@@ -17,6 +17,11 @@ async function dnaFromOnboarding(){
   if(existingType){
     // Test already passed on landing — skip test AND card, go straight to profile setup
     dnaSource = 'onboarding';
+    // Сохраняем в Supabase после регистрации с лендинга
+    const scores = JSON.parse(localStorage.getItem('dnaScores') || 'null');
+    if(scores && window.saveDnaResult){
+      window.saveDnaResult(existingType, scores).catch(console.error);
+    }
     await goTo('scrSetup1');
     setupInit();
   } else {
