@@ -140,11 +140,14 @@ function applyDNA(type) {
   const patternFn = PATTERN_DRAWS[d.pattern];
   if (patternFn) patternFn(ctx, canvas.width, canvas.height, d.color);
 
-  renderStars(1);
+  if (document.getElementById('starsRow')) {
+    renderStars(1);
+  }
 }
 
 function renderStars(filled) {
   const row = document.getElementById('starsRow');
+  if (!row) return;
   row.innerHTML = '';
   for (let i = 0; i < 5; i++) {
     const s = document.createElement('span');
@@ -273,7 +276,9 @@ function runReveal() {
     setTimeout(() => {
       document.getElementById('xpFill').style.width = '4%';
       document.getElementById('careerDone').style.width = '0%';
-      renderStars(0);
+      if (document.getElementById('starsRow')) {
+        renderStars(0);
+      }
       setTimeout(() => {
         const stars = document.querySelectorAll('.dnr-star');
         stars.forEach((s, i) => {
@@ -392,7 +397,9 @@ function initDnaResult() {
 
   setTimeout(() => {
     document.getElementById('xpFill').style.width = '4%';
-    renderStars(0);
+    if (document.getElementById('starsRow')) {
+      renderStars(0);
+    }
     setTimeout(() => {
       const stars = document.querySelectorAll('.dnr-star');
       if (stars[0]) {
