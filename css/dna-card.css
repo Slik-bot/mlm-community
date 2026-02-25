@@ -230,34 +230,22 @@
 
 /* Stars */
 .dnr-stars {
-  position: relative;
-  z-index: 5;
   display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-  padding-bottom: 4px;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0 2px;
 }
 .dnr-star {
-  font-size: 14px;
-  transition: all 0.3s;
-  opacity: 0;
-  transform: scale(0) rotate(-30deg);
+  font-size: 16px;
+  opacity: 0.2;
+  color: rgba(255,255,255,0.4);
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 .dnr-star.lit {
+  opacity: 1;
   color: var(--dna-c);
-  filter: drop-shadow(0 0 5px var(--dna-c)) drop-shadow(0 0 10px var(--dna-c));
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
-}
-.dnr-star.lit:hover {
-  transform: scale(1.25) rotate(0deg);
-  filter: drop-shadow(0 0 8px var(--dna-c)) drop-shadow(0 0 16px var(--dna-c));
-}
-.dnr-star.dim {
-  color: rgba(255,255,255,0.12);
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
+  filter: drop-shadow(0 0 6px var(--dna-c));
+  transform: scale(1.15);
 }
 
 /* ═══ BODY ═══ */
