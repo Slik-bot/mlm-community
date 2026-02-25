@@ -17,7 +17,7 @@
     if (ph) ph.remove();
   }
 
-  // Страховка: 16 секунд максимум (splash = 14с + запас 2с)
+  // Страховка: 25 секунд максимум (запас для медленной сети и retry)
   const _fallbackTimer = setTimeout(async function() {
     const ph = document.getElementById('preload-hide');
     if (ph) {
@@ -26,7 +26,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 16000);
+  }, 25000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {
@@ -380,6 +380,9 @@
       if (!window._authRoutingDone) {
         authCheckSession().then(async function(profile) {
           await routeAfterAuth(profile);
+        }).catch(function(err) {
+          console.error('authCheckSession failed:', err);
+          switchScreenInstant('scrLanding');
         });
       }
 
