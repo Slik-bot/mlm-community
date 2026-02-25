@@ -321,9 +321,9 @@
           navHistory.unshift('scrFeed');
           showApp();
         } else {
-          const dangerScreens = ['scrWelcome', 'scrDnaTest', 'scrDnaResult', 'scrSetup1', 'scrSetup2', 'scrSetup3'];
+          const safeScreens = ['scrFeed','scrCompanies','scrSearch','scrProfile','scrChatList','scrShop','scrMore'];
           const last = localStorage.getItem('lastScreen') || 'scrFeed';
-          const safeScreen = dangerScreens.includes(last) ? 'scrFeed' : last;
+          const safeScreen = safeScreens.includes(last) ? last : 'scrFeed';
           await switchScreenInstant(safeScreen);
           showApp();
           if (window.initFeedFromDB) initFeedFromDB();
