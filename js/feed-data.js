@@ -48,11 +48,9 @@
 
   async function loadWisdomCard() {
     const result = await window.sb
-      .from('posts')
-      .select('*')
-      .eq('is_pinned', true)
-      .eq('is_published', true)
-      .order('created_at', { ascending: false })
+      .from('wisdom_cards')
+      .select('text, author')
+      .eq('is_active', true)
       .limit(1)
       .maybeSingle();
 
@@ -60,7 +58,7 @@
 
     const textEl = document.querySelector('.wis-text');
     const authorEl = document.querySelector('.wis-author');
-    if (textEl) textEl.textContent = '«' + result.data.content + '»';
+    if (textEl) textEl.textContent = '«' + result.data.text + '»';
     if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
   }
 
