@@ -317,6 +317,7 @@
         if (!profile.quest_completed && !localStorage.getItem('quest_shown_permanent')) {
           localStorage.setItem('quest_shown_permanent', '1');
           await switchScreenInstant('scrQuest');
+          navHistory.unshift('scrFeed');
           showApp();
         } else {
           const dangerScreens = ['scrWelcome', 'scrDnaTest', 'scrDnaResult', 'scrSetup1', 'scrSetup2', 'scrSetup3'];
