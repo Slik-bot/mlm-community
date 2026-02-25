@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════
-   DNA CARD — Premium v4
-   Источник: trafiqo-card-premium (fixed)
+   DNA CARD — Clean rewrite from reference
+   Замена: весь файл написан с нуля по эталону
    ═══════════════════════════════════════ */
 
-/* ── Шрифты ── */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap');
 
 :root {
@@ -25,6 +24,7 @@
   perspective: 1200px;
   width: 100%;
   max-width: 360px;
+  position: relative;
 }
 .card-wrap {
   transform-style: preserve-3d;
@@ -44,13 +44,23 @@
   border: 1px solid rgba(255,255,255,0.07);
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.04),
-    0 40px 100px rgba(0,0,0,0.95),
+    0 40px 80px rgba(0,0,0,0.65),
     0 0 80px var(--dna-cg),
     inset 0 1px 0 rgba(255,255,255,0.06);
   will-change: transform, opacity;
 }
 
-/* Только карточка результата скрыта до анимации */
+@media (hover: none) {
+  .dna-card {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 20px 60px rgba(0,0,0,0.70),
+      0 0 60px var(--dna-cg),
+      0 0 120px var(--dna-cg),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+}
+
 #mainCard.dna-card {
   opacity: 0;
   transform: scale(0.5) translateY(80px);
@@ -58,19 +68,16 @@
 }
 #mainCard.dna-card.revealed {
   animation: dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
-  opacity: 1;
-  transform: none;
-  filter: none;
 }
 .dna-card.revealed {
   animation: dcMaterialize 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 @keyframes dcMaterialize {
-  0%   { opacity:0; transform:scale(0.5) translateY(80px); filter:blur(30px); }
-  55%  { opacity:1; filter:blur(0); }
-  70%  { transform:scale(1.035) translateY(-6px); }
-  85%  { transform:scale(0.985) translateY(2px); }
-  100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
+  0%   { opacity: 0; transform: scale(0.5) translateY(80px); filter: blur(30px); }
+  55%  { opacity: 1; filter: blur(0); }
+  70%  { transform: scale(1.035) translateY(-6px); }
+  85%  { transform: scale(0.985) translateY(2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
 /* ── Голограмма ── */
@@ -104,7 +111,7 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 2;
-  opacity: 0.15;
+  opacity: 0.4;
 }
 
 /* ── Блик ── */
@@ -138,7 +145,7 @@
     rgba(0,0,0,0.07) 3px,
     rgba(0,0,0,0.07) 4px
   );
-  opacity: 0.15;
+  opacity: 0.6;
 }
 
 /* ══════════════════════════════
@@ -162,7 +169,7 @@
     color-mix(in srgb, var(--dna-c) 40%, #000) 40%,
     transparent 100%
   );
-  opacity: 0.22;
+  opacity: 0.45;
 }
 canvas.pattern-canvas {
   position: absolute;
@@ -229,7 +236,7 @@ canvas.pattern-canvas {
   height: 30px;
   background: radial-gradient(ellipse, var(--dna-c) 0%, transparent 70%);
   opacity: 0.5;
-  filter: blur(6px);
+  filter: blur(8px);
   animation: dcGlowPulse 3s ease-in-out infinite;
   transition: background 0.6s ease;
 }
@@ -331,7 +338,7 @@ canvas.pattern-canvas {
   font-weight: 900;
   letter-spacing: 6px;
   text-transform: uppercase;
-  background: linear-gradient(135deg, #fff 30%, var(--dna-cl) 100%);
+  background: linear-gradient(135deg, var(--dna-c) 0%, var(--dna-cl) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -339,22 +346,25 @@ canvas.pattern-canvas {
   opacity: 0;
   animation: dcTypeReveal 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-play-state: paused;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .dnr-type-name.long {
   font-size: 20px;
   letter-spacing: 4px;
 }
 @keyframes dcTypeReveal {
-  from { opacity:0; filter:blur(12px); letter-spacing:12px; }
-  to   { opacity:1; filter:blur(0); letter-spacing:6px; }
+  from { opacity: 0; filter: blur(12px); letter-spacing: 12px; }
+  to   { opacity: 1; filter: blur(0); letter-spacing: 6px; }
 }
 .dnr-type-name.long.go,
 .go .dnr-type-name.long {
   animation-name: dcTypeRevealLong;
 }
 @keyframes dcTypeRevealLong {
-  from { opacity:0; filter:blur(12px); letter-spacing:8px; }
-  to   { opacity:1; filter:blur(0); letter-spacing:4px; }
+  from { opacity: 0; filter: blur(12px); letter-spacing: 8px; }
+  to   { opacity: 1; filter: blur(0); letter-spacing: 4px; }
 }
 .dna-accent-line {
   height: 1px;
@@ -392,6 +402,7 @@ canvas.pattern-canvas {
   color: var(--dna-c);
   background: rgba(var(--dna-cr),var(--dna-cg-val),var(--dna-cb),0.06);
   font-weight: 500;
+  letter-spacing: 0.3px;
   transition: all 0.6s ease;
 }
 .dnr-divider {
@@ -561,16 +572,16 @@ canvas.pattern-canvas {
    АНИМАЦИИ ПОЯВЛЕНИЯ
 ══════════════════════════════ */
 @keyframes dcFadeUp {
-  from { opacity:0; transform:translateY(14px); }
-  to   { opacity:1; transform:translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.go .dnr-exclusive  { animation-play-state:running; animation-delay:0.1s; }
-.go .dnr-label      { animation-play-state:running; animation-delay:0.2s; }
-.go .dnr-type-name  { animation-play-state:running; animation-delay:0.35s; }
-.go .dna-accent-line{ animation-play-state:running; animation-delay:0.55s; }
-.go .dnr-desc       { animation-play-state:running; animation-delay:0.7s; }
-.go .dnr-tags       { animation-play-state:running; animation-delay:0.9s; }
-.go .dnr-career     { animation-play-state:running; animation-delay:1.1s; }
+.go .dnr-exclusive  { animation-play-state: running; animation-delay: 0.1s; }
+.go .dnr-label      { animation-play-state: running; animation-delay: 0.2s; }
+.go .dnr-type-name  { animation-play-state: running; animation-delay: 0.35s; }
+.go .dna-accent-line{ animation-play-state: running; animation-delay: 0.55s; }
+.go .dnr-desc       { animation-play-state: running; animation-delay: 0.7s; }
+.go .dnr-tags       { animation-play-state: running; animation-delay: 0.9s; }
+.go .dnr-career     { animation-play-state: running; animation-delay: 1.1s; }
 
 /* ══════════════════════════════
    КНОПКИ ДЕЙСТВИЙ
@@ -657,7 +668,7 @@ canvas.pattern-canvas {
   transform: scale(0.8);
   transition: all 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s;
 }
-.levelup-overlay.active .levelup-box { opacity:1; transform:scale(1); }
+.levelup-overlay.active .levelup-box { opacity: 1; transform: scale(1); }
 .lu-fig {
   font-size: 72px;
   display: block;
@@ -669,23 +680,23 @@ canvas.pattern-canvas {
   0%,100% { transform: translateY(0) scale(1); }
   50%     { transform: translateY(-8px) scale(1.02); }
 }
-.lu-eyebrow { font-size:10px; letter-spacing:4px; color:rgba(255,255,255,0.3); text-transform:uppercase; margin-bottom:6px; font-family:var(--font-display); }
-.lu-title { font-family:var(--font-display); font-size:32px; font-weight:900; color:var(--dna-c); letter-spacing:4px; text-transform:uppercase; margin-bottom:6px; }
-.lu-sub { font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:20px; }
-.lu-sub strong { color:#fbbf24; }
-.lu-unlocks { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:14px 16px; margin-bottom:24px; text-align:left; }
-.lu-unlock { font-size:13px; padding:5px 0; color:rgba(255,255,255,0.8); display:flex; align-items:center; gap:8px; }
-.lu-unlock::before { content:'✦'; color:var(--dna-c); font-size:9px; }
-.lu-btn { width:100%; padding:14px; background:var(--dna-c); color:#000; border:none; border-radius:12px; font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; }
+.lu-eyebrow { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 6px; font-family: var(--font-display); }
+.lu-title { font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--dna-c); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; }
+.lu-sub { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+.lu-sub strong { color: #fbbf24; }
+.lu-unlocks { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px 16px; margin-bottom: 24px; text-align: left; }
+.lu-unlock { font-size: 13px; padding: 5px 0; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px; }
+.lu-unlock::before { content: '✦'; color: var(--dna-c); font-size: 9px; }
+.lu-btn { width: 100%; padding: 14px; background: var(--dna-c); color: #000; border: none; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
 
 /* ── Конфетти ── */
-.confetti { position:fixed; width:7px; height:7px; border-radius:1px; pointer-events:none; z-index:201; animation:dcCfFall var(--d) ease-in var(--delay) forwards; }
+.confetti { position: fixed; width: 7px; height: 7px; border-radius: 1px; pointer-events: none; z-index: 201; animation: dcCfFall var(--d) ease-in var(--delay) forwards; }
 @keyframes dcCfFall {
-  0%   { transform:translateX(0) translateY(0) rotate(0deg); opacity:1; }
-  100% { transform:translateX(var(--dx)) translateY(110vh) rotate(540deg); opacity:0; }
+  0%   { transform: translateX(0) translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateX(var(--dx)) translateY(110vh) rotate(540deg); opacity: 0; }
 }
 
-/* ══ Reveal screen ══ */
+/* ── Reveal screen ── */
 .reveal-screen {
   position: fixed; inset: 0;
   display: flex; align-items: center;
@@ -699,9 +710,7 @@ canvas.pattern-canvas {
   background: var(--dna-c);
   opacity: 0; pointer-events: none; z-index: 10;
 }
-.reveal-flash.go {
-  animation: dcFlashBoom 0.6s ease forwards;
-}
+.reveal-flash.go { animation: dcFlashBoom 0.6s ease forwards; }
 @keyframes dcFlashBoom {
   0%   { opacity: 0; }
   30%  { opacity: 0.7; }
@@ -714,9 +723,7 @@ canvas.pattern-canvas {
   border-radius: 50%; background: var(--dna-c);
   opacity: 0; pointer-events: none; z-index: 5;
 }
-.reveal-wave.explode {
-  animation: dcWaveExplode 1s cubic-bezier(0.2,0,0.4,1) forwards;
-}
+.reveal-wave.explode { animation: dcWaveExplode 1s cubic-bezier(0.2,0,0.4,1) forwards; }
 @keyframes dcWaveExplode {
   0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
   100% { transform: translate(-50%,-50%) scale(30); opacity: 0; }
@@ -736,9 +743,7 @@ canvas.pattern-canvas {
 .orb-c { background: radial-gradient(circle, #22c55e20, #22c55e08); border: 1px solid #22c55e40; color: #22c55e; bottom: 0; left: 50%; transform: translateX(-50%); }
 .orb-k { background: radial-gradient(circle, #f59e0b20, #f59e0b08); border: 1px solid #f59e0b40; color: #f59e0b; left: 0; top: 50%; transform: translateY(-50%); }
 .orb-a { background: radial-gradient(circle, #a78bfa20, #a78bfa08); border: 1px solid #a78bfa40; color: #a78bfa; right: 0; top: 50%; transform: translateY(-50%); }
-.roulette.spinning .orb-spin {
-  animation: dcOrbRotate 1s linear infinite;
-}
+.roulette.spinning .orb-spin { animation: dcOrbRotate 1s linear infinite; }
 @keyframes dcOrbRotate {
   from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
   to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
