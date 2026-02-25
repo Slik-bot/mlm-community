@@ -50,8 +50,8 @@
     const result = await window.sb
       .from('posts')
       .select('*')
-      .eq('type', 'wisdom')
-      .eq('is_active', true)
+      .eq('is_pinned', true)
+      .eq('is_published', true)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -60,14 +60,14 @@
 
     const textEl = document.querySelector('.wis-text');
     const authorEl = document.querySelector('.wis-author');
-    if (textEl) textEl.textContent = '«' + result.data.text + '»';
+    if (textEl) textEl.textContent = '«' + result.data.content + '»';
     if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
   }
 
   async function fetchQuestsData(userId) {
     const questsResult = await window.sb
       .from('task_completions').select('*, tasks(*)')
-      .eq('user_id', userId).order('created_at', { ascending: false }).limit(5);
+      .eq('user_id', userId).order('taken_at', { ascending: false }).limit(5);
     const streakRes = await window.sb.from('user_stats').select('streak_days').eq('user_id', userId).maybeSingle();
     return { quests: questsResult.data || [], streak: streakRes.data };
   }
