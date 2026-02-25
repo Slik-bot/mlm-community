@@ -143,18 +143,16 @@ function applyDNA(type) {
 
 function renderStars(filled) {
   const row = document.getElementById('starsRow');
-  if (!row) return;
-  row.innerHTML = '';
+  if (!row) return '';
+  let html = '';
   for (let i = 0; i < 5; i++) {
-    const s = document.createElement('span');
-    s.className = 'dnr-star ' + (i < filled ? 'lit' : 'dim');
-    s.textContent = i < filled ? '\u2605' : '\u2606';
-    if (i < filled) {
-      s.style.transition =
-        `all 0.4s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.12}s`;
-    }
-    row.appendChild(s);
+    const opacity = i < filled ? '1' : '0.2';
+    html += `<svg viewBox="0 0 24 24" fill="var(--dna-c)" width="14" height="14" style="opacity:${opacity}">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>`;
   }
+  row.innerHTML = html;
+  return html;
 }
 
 // ─── HOLOGRAPHIC EFFECT ────────────────
