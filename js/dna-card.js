@@ -285,6 +285,12 @@ function shareCard() {
 // ─── INIT ──────────────────────────────
 
 function initDnaResult() {
+  const wrap = document.getElementById('dnrReveal');
+  if (wrap) {
+    wrap.classList.add('active');
+    wrap.style.opacity = '1';
+  }
+
   const raw = localStorage.getItem('dnaType') || 'S';
   const safe = ['S', 'C', 'K', 'A'].includes(raw) ? raw : 'S';
   activeDNA = safe;
@@ -361,7 +367,6 @@ async function runNewReveal() {
   const archMap = { S: 'dnrvAS', C: 'dnrvAC', K: 'dnrvAK', A: 'dnrvAA' };
   const nameMap = { S:'СТРАТЕГ', C:'КОММУНИКАТОР', K:'КРЕАТОР', A:'АНАЛИТИК' };
 
-  wrap.classList.add('active');
   p1.classList.add('on');
   dnrvTone(160, 2.5, .02);
 
