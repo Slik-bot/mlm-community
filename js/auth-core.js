@@ -404,7 +404,12 @@
           });
         }
         if (event === 'SIGNED_OUT') {
-          switchScreenInstant('scrLanding');
+          if (sessionStorage.getItem('manually_logged_out')) {
+            sessionStorage.removeItem('manually_logged_out');
+            switchScreenInstant('scrLanding');
+            if (window.initLandingModals) window.initLandingModals();
+          }
+          // Побочный SIGNED_OUT от refresh — игнорируем
         }
       });
 
@@ -449,13 +454,13 @@
   window.doAppLogout = async function() {
     const savedEmail = localStorage.getItem('trafiqo_saved_email');
     const questShown = localStorage.getItem('quest_shown_permanent');
+    sessionStorage.setItem('manually_logged_out', '1');
     try {
       await authLogout();
     } catch (e) {}
     localStorage.clear();
     if (savedEmail) localStorage.setItem('trafiqo_saved_email', savedEmail);
     if (questShown) localStorage.setItem('quest_shown_permanent', questShown);
-    sessionStorage.setItem('manually_logged_out', '1');
     location.reload();
   };
 
