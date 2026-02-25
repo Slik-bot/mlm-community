@@ -382,9 +382,22 @@
           await routeAfterAuth(profile);
         }).catch(function(err) {
           console.error('authCheckSession failed:', err);
+          showApp();
           switchScreenInstant('scrLanding');
         });
       }
+
+      // ===== ВОССТАНОВЛЕНИЕ СЕССИИ ЧЕРЕЗ SUPABASE =====
+      window.sb.auth.onAuthStateChange(function(event, session) {
+        if (event === 'SIGNED_IN' && session && !window._authRoutingDone) {
+          authCheckSession().then(function(profile) {
+            routeAfterAuth(profile);
+          });
+        }
+        if (event === 'SIGNED_OUT') {
+          switchScreenInstant('scrLanding');
+        }
+      });
 
       // ===== АВАТАРКА → МЕНЮ ПРОФИЛЯ =====
       const hdrAvatar = document.querySelector('#scrFeed .hdr-avatar');
