@@ -9,16 +9,7 @@ const DNA_NAMES = {
   analyst: 'Аналитик'
 };
 
-// ===== Уровни =====
-
-const LEVELS = {
-  pawn:   { name: 'Пешка', min: 0, max: 499 },
-  knight: { name: 'Конь', min: 500, max: 1999 },
-  bishop: { name: 'Слон', min: 2000, max: 4999 },
-  rook:   { name: 'Ладья', min: 5000, max: 14999 },
-  queen:  { name: 'Ферзь', min: 15000, max: 26599999 },
-  king:   { name: 'Король', min: 26600000, max: Infinity }
-};
+// ===== Уровни — см. js/utils/gamification.js =====
 
 function getChessIcon(level, color) {
   const c = color || '#8b5cf6';
@@ -50,15 +41,18 @@ function initProfile() {
 
 // ===== renderProfile =====
 
-function renderProfileHeader(user, dnaColor, level, lvl) {
+function renderProfileHeader(user, dnaColor, lvl) {
   const avatar = document.getElementById('profileAvatar');
   if (avatar) { avatar.src = user.avatar_url || ''; avatar.style.display = user.avatar_url ? '' : 'none'; }
   const ring = document.getElementById('profileDnaRing');
   if (ring) ring.style.borderColor = dnaColor;
   const chessEl = document.getElementById('profileChessIcon');
-  if (chessEl) chessEl.innerHTML = getChessIcon(level, dnaColor);
+  if (chessEl) chessEl.innerHTML = getChessIcon(lvl.level, dnaColor);
   const levelEl = document.getElementById('profileLevel');
-  if (levelEl) levelEl.textContent = lvl.name;
+  if (levelEl) {
+    const stars = '★'.repeat(lvl.stars) + '☆'.repeat(5 - lvl.stars);
+    levelEl.textContent = lvl.label + ' ' + stars;
+  }
   const nameEl = document.getElementById('profileName');
   if (nameEl) nameEl.textContent = user.name || 'Участник';
   const badge = document.getElementById('profileDnaBadge');
@@ -71,13 +65,19 @@ function renderProfileHeader(user, dnaColor, level, lvl) {
   }
 }
 
-function renderProfileStats(user, xp, xpProgress, lvl) {
+function renderProfileStats(user, xp, progress) {
   const balanceEl = document.getElementById('profileBalance');
   if (balanceEl) { const bal = (user.balance || 0) / 100; balanceEl.textContent = bal.toFixed(2) + ' руб.'; }
   const xpFill = document.getElementById('profileXpFill');
-  if (xpFill) xpFill.style.width = xpProgress + '%';
+  if (xpFill) xpFill.style.width = progress.percent + '%';
   const xpLabel = document.getElementById('profileXpLabel');
-  if (xpLabel) xpLabel.textContent = xp + ' / ' + (lvl.max + 1) + ' XP';
+  if (xpLabel) {
+    if (progress.needed > 0) {
+      xpLabel.textContent = progress.current + ' / ' + progress.needed + ' XP';
+    } else {
+      xpLabel.textContent = xp + ' XP (MAX)';
+    }
+  }
   const stats = (user.user_stats && user.user_stats[0]) || user.user_stats || {};
   let el;
   el = document.getElementById('statTasks'); if (el) el.textContent = stats.tasks_completed || 0;
@@ -100,17 +100,16 @@ function renderProfileActions(user) {
   const streakFire = document.getElementById('streakFire');
   if (streakFire) streakFire.classList.toggle('active', streak > 0);
   const mult = document.getElementById('streakMultiplier');
-  if (mult) mult.textContent = 'x' + getStreakMultiplier(streak);
+  if (mult) mult.textContent = 'x' + window.Gamification.getStreakMultiplier(streak);
 }
 
 function renderProfile(user) {
   const dnaColor = getDnaColor(user.dna_type);
-  const level = user.level || 'pawn';
-  const lvl = LEVELS[level] || LEVELS.pawn;
   const xp = user.xp_total || 0;
-  const xpProgress = lvl.max > 0 ? Math.min(100, Math.round((xp - lvl.min) / (lvl.max - lvl.min + 1) * 100)) : 0;
-  renderProfileHeader(user, dnaColor, level, lvl);
-  renderProfileStats(user, xp, xpProgress, lvl);
+  const lvl = window.Gamification.getUserLevel(xp);
+  const progress = window.Gamification.getLevelProgress(xp);
+  renderProfileHeader(user, dnaColor, lvl);
+  renderProfileStats(user, xp, progress);
   renderProfileActions(user);
 }
 
@@ -121,15 +120,6 @@ function getDaysWord(n) {
   if (last > 1 && last < 5) return 'дня';
   if (last === 1) return 'день';
   return 'дней';
-}
-
-function getStreakMultiplier(days) {
-  if (days >= 90) return '3.0';
-  if (days >= 30) return '2.0';
-  if (days >= 14) return '1.5';
-  if (days >= 7) return '1.3';
-  if (days >= 3) return '1.1';
-  return '1.0';
 }
 
 // ===== initProfileEdit =====
