@@ -297,9 +297,6 @@ function initDnaResult() {
 
   applyDNA(activeDNA);
 
-  const dnrCard = document.getElementById('dnrCard');
-  if (dnrCard) dnrCard.classList.add('hidden');
-
   const card = document.getElementById('mainCard');
   card.classList.add('revealed');
 
@@ -457,8 +454,8 @@ async function runNewReveal() {
 
   await dl(300);
   wrap.classList.remove('active');
-  const card = document.getElementById('dnrCard');
-  if (card) card.classList.remove('hidden');
+  document.querySelectorAll('#scrDnaResult .hidden')
+    .forEach(el => el.classList.remove('hidden'));
 }
 
 window.initDnaResult = initDnaResult;
