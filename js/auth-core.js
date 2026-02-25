@@ -297,11 +297,16 @@
       const hasName = profile.name && profile.name !== 'Участник';
 
       // Серверный фоллбэк: профиль с dna_type+level = онбординг завершён
+      const localDnaCheck = localStorage.getItem('dnaType');
       if (!onboardingDone && profile.dna_type && profile.level) {
         localStorage.setItem('onboardingDone', '1');
       }
 
-      if (onboardingDone || (profile.dna_type && profile.level)) {
+      if (onboardingDone || (profile.dna_type && profile.level)
+        || (localDnaCheck && profile.name && profile.name !== 'Участник')) {
+        if (!onboardingDone) {
+          localStorage.setItem('onboardingDone', '1');
+        }
         const revMap = { strategist:'S', communicator:'C', creator:'K', analyst:'A' };
         if (profile.dna_type) {
           localStorage.setItem('dnaType', revMap[profile.dna_type] || localDna || 'S');
