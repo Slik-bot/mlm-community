@@ -281,7 +281,10 @@
   // ===== Routing после успешной авторизации =====
   async function routeAfterAuth(profile) {
     clearTimeout(_fallbackTimer);
-    if (window._authRoutingDone) return;
+    if (window._authRoutingDone) {
+      console.error('routeAfterAuth: повторный вызов заблокирован');
+      return;
+    }
     window._authRoutingDone = true;
 
     if (profile) {
@@ -311,8 +314,10 @@
           await switchScreenInstant('scrQuest');
           showApp();
         } else {
+          const dangerScreens = ['scrWelcome', 'scrDnaTest', 'scrDnaResult', 'scrSetup1', 'scrSetup2', 'scrSetup3'];
           const last = localStorage.getItem('lastScreen') || 'scrFeed';
-          await switchScreenInstant(last);
+          const safeScreen = dangerScreens.includes(last) ? 'scrFeed' : last;
+          await switchScreenInstant(safeScreen);
           showApp();
           if (window.initFeedFromDB) initFeedFromDB();
         }
