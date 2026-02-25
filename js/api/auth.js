@@ -173,8 +173,13 @@ async function authLogout() {
 
 async function authCheckSession() {
   try {
-    const result = await window.sb.auth.getSession();
-    const session = result.data && result.data.session;
+    let result = await window.sb.auth.getSession();
+    let session = result.data && result.data.session;
+    if (!session) {
+      await new Promise(function(r) { setTimeout(r, 800); });
+      result = await window.sb.auth.getSession();
+      session = result.data && result.data.session;
+    }
     if (!session) return null;
 
     const { data: user, error } = await window.sb
