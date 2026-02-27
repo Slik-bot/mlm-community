@@ -23,6 +23,7 @@ function getChessIcon(level, color) {
   };
   return icons[level] || icons.pawn;
 }
+window.getChessIcon = getChessIcon;
 
 // getDnaColor — см. js/utils/dna.js
 
