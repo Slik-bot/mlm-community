@@ -1,0 +1,84 @@
+<!-- =============== SCREEN: REFERRALS =============== -->
+<div class="scr hidden" id="scrReferrals">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Рефералы</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Referral link -->
+  <div class="referrals__link-card glass-card">
+    <div class="referrals__link-label">Моя ссылка</div>
+    <div class="referrals__link-row">
+      <span class="referrals__link-url" id="referralLinkText">mlm.community/ref/...</span>
+      <button class="referrals__copy-btn" id="referralCopyBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+    <div class="referrals__share-row">
+      <button class="referrals__share-btn referrals__share-btn--tg" id="referralShareTg">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M11.944 0A12 12 0 100 12a12 12 0 0011.944-12zm5.091 8.13l-1.645 7.76c-.124.56-.448.698-.908.434l-2.51-1.85-1.212 1.166c-.134.134-.246.246-.504.246l.18-2.558 4.66-4.21c.2-.18-.044-.28-.312-.1l-5.76 3.626-2.48-.774c-.54-.168-.55-.54.112-.8l9.694-3.738c.45-.162.842.11.696.798z"/></svg>
+        Telegram
+      </button>
+      <button class="referrals__share-btn referrals__share-btn--wa" id="referralShareWa">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zm-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button class="referrals__share-btn referrals__share-btn--more" id="referralShareMore">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        Ещё
+      </button>
+    </div>
+  </div>
+
+  <!-- Funnel stats -->
+  <div class="referrals__funnel glass-card" id="referralFunnel">
+    <div class="referrals__funnel-item">
+      <div class="referrals__funnel-value" id="referralClicks">0</div>
+      <div class="referrals__funnel-label">Перешли</div>
+    </div>
+    <div class="referrals__funnel-item">
+      <div class="referrals__funnel-value" id="referralSignups">0</div>
+      <div class="referrals__funnel-label">Зарегались</div>
+    </div>
+    <div class="referrals__funnel-item">
+      <div class="referrals__funnel-value" id="referralVerified">0</div>
+      <div class="referrals__funnel-label">Верифицированы</div>
+    </div>
+    <div class="referrals__funnel-item">
+      <div class="referrals__funnel-value" id="referralSubs">0</div>
+      <div class="referrals__funnel-label">Подписки</div>
+    </div>
+  </div>
+
+  <!-- Income -->
+  <div class="referrals__income glass-card" id="referralIncome">
+    <div class="referrals__income-row">
+      <div class="referrals__income-item">
+        <div class="referrals__income-label">Общий доход</div>
+        <div class="referrals__income-value" id="referralIncomeTotal">0 руб.</div>
+      </div>
+      <div class="referrals__income-item">
+        <div class="referrals__income-label">В этом месяце</div>
+        <div class="referrals__income-value" id="referralIncomeMonth">0 руб.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referral list -->
+  <div class="referrals__section">
+    <div class="referrals__section-title">Мои рефералы</div>
+    <div class="referrals__list" id="referralList"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="referrals__empty hidden" id="referralEmpty">
+    <div class="referrals__empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    </div>
+    <div class="referrals__empty-title">Пока нет рефералов</div>
+    <div class="referrals__empty-desc">Поделитесь ссылкой с друзьями и коллегами, чтобы получать бонусы</div>
+  </div>
+</div>
