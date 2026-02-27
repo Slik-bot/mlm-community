@@ -83,18 +83,12 @@ serve(async (req) => {
       // 5. INSERT в user_stats (нули)
       await supabase.from("user_stats").insert({ user_id: userId });
 
-      // 6. Авторизовать для получения session
-      const { data: signIn, error: signInError } =
-        await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) return json({ error: signInError.message }, 500);
-
-      const { data: user } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      return json({ user, session: signIn.session });
+      // 6. Вернуть user_id для верификации (без auto-login)
+      return json({
+        needs_verification: true,
+        user_id: userId,
+        email,
+      });
     }
 
     // ═══ LOGIN ═══
