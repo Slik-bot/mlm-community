@@ -1,0 +1,224 @@
+/* ===== SUBSCRIPTION STYLES ===== */
+
+/* --- Skeleton --- */
+.subscription__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.subscription__skel-block {
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  animation: subShimmer 1.5s ease-in-out infinite;
+}
+
+.subscription__skel-current {
+  height: 72px;
+}
+
+.subscription__skel-card {
+  height: 200px;
+}
+
+.subscription__skel-block:nth-child(2) { animation-delay: 0.15s; }
+.subscription__skel-block:nth-child(3) { animation-delay: 0.3s; }
+.subscription__skel-block:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes subShimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* --- Content --- */
+.subscription__content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 100px;
+}
+
+/* --- Current plan --- */
+.subscription__current {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px;
+  padding: 16px;
+}
+
+.subscription__current-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(139,92,246,0.12);
+  border: 1px solid rgba(139,92,246,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.subscription__current-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.subscription__current-label {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.subscription__current-name {
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.subscription__current-expires {
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* --- Plans container --- */
+.subscription__plans {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+/* --- Plan card --- */
+.subscription__card {
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.subscription__card-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(139,92,246,0.15);
+  color: var(--primary-light);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.subscription__card-head {
+  margin-bottom: 16px;
+}
+
+.subscription__card-name {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.subscription__card-price {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 4px;
+}
+
+.subscription__card-period {
+  font-size: var(--fs-small);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* --- Features --- */
+.subscription__card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.subscription__feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.subscription__feature svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* --- Buy button --- */
+.subscription__buy-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.subscription__buy-btn:active {
+  transform: scale(0.97);
+}
+
+.subscription__buy-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Active plan card --- */
+.subscription__card--active {
+  border-color: rgba(139,92,246,0.4);
+}
+
+.subscription__card--active .subscription__buy-btn {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.subscription__card--active .subscription__buy-btn:active {
+  transform: none;
+}
+
+/* --- Balance --- */
+.subscription__balance {
+  margin: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.subscription__balance-label {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.subscription__balance-amount {
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  color: var(--green);
+}
