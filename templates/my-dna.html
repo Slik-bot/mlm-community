@@ -1,0 +1,45 @@
+<!-- =============== SCREEN: MY DNA =============== -->
+<div class="scr hidden" id="scrMyDna">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round"
+           width="20" height="20">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <span class="scr-head-title">Моё ДНК</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="scr-content"
+       style="overflow-y:auto;flex:1;padding:16px">
+
+    <div class="my-dna-card-wrap" id="myDnaCardWrap">
+    </div>
+
+    <div class="dna-tabs-section" id="myDnaTabsSection">
+      <div class="dnr-tabs">
+        <button class="dnr-tab dnr-tab--active"
+                data-tab="archetype">Архетип</button>
+        <button class="dnr-tab"
+                data-tab="strengths">Сильные стороны
+        </button>
+        <button class="dnr-tab"
+                data-tab="quests">Задания</button>
+      </div>
+      <div class="dnr-panel dnr-panel--active"
+           id="myDnaPanelArchetype"></div>
+      <div class="dnr-panel" id="myDnaPanelStrengths">
+        <ul class="dnr-strengths-list"
+            id="myDnaStrengthsList"></ul>
+      </div>
+      <div class="dnr-panel" id="myDnaPanelQuests">
+        <div class="dnr-quests-list"
+             id="myDnaQuestsList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
