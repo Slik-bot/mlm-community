@@ -1,0 +1,275 @@
+/* ===== LEADERBOARD STYLES ===== */
+
+/* --- Tabs --- */
+.leaderboard__tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.leaderboard__tab {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.leaderboard__tab.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+/* --- My Position (sticky) --- */
+.leaderboard__my-position {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(6,6,11,0.9);
+  border: 1px solid rgba(139,92,246,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.leaderboard__my-rank {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8b5cf6;
+  min-width: 32px;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+}
+
+.leaderboard__my-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.leaderboard__avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255,255,255,0.06);
+}
+
+.leaderboard__my-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderboard__my-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboard__my-level {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.leaderboard__chess-icon {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+}
+
+.leaderboard__stars {
+  font-size: 12px;
+  color: #FBBF24;
+  letter-spacing: 1px;
+}
+
+.leaderboard__my-xp {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a78bfa;
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- List --- */
+.leaderboard__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 16px;
+}
+
+.leaderboard__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.leaderboard__item:active {
+  background: rgba(255,255,255,0.06);
+}
+
+/* --- Rank --- */
+.leaderboard__rank {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  min-width: 32px;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Avatar in list --- */
+.leaderboard__avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.leaderboard__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255,255,255,0.06);
+}
+
+/* --- User info --- */
+.leaderboard__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderboard__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboard__level {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+/* --- XP --- */
+.leaderboard__xp {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Top-3 Medals --- */
+.leaderboard__item--gold {
+  border-color: rgba(255,215,0,0.3);
+  background: rgba(255,215,0,0.05);
+}
+
+.leaderboard__item--gold .leaderboard__rank {
+  color: #FFD700;
+}
+
+.leaderboard__item--silver {
+  border-color: rgba(192,192,192,0.3);
+  background: rgba(192,192,192,0.05);
+}
+
+.leaderboard__item--silver .leaderboard__rank {
+  color: #C0C0C0;
+}
+
+.leaderboard__item--bronze {
+  border-color: rgba(205,127,50,0.3);
+  background: rgba(205,127,50,0.05);
+}
+
+.leaderboard__item--bronze .leaderboard__rank {
+  color: #CD7F32;
+}
+
+/* --- Skeleton Loading --- */
+.leaderboard__loading {
+  padding: 0 16px;
+}
+
+.leaderboard__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboard__skeleton-row {
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  animation: leaderboardShimmer 1.5s ease-in-out infinite;
+}
+
+.leaderboard__skeleton-row:nth-child(2) { animation-delay: 0.15s; }
+.leaderboard__skeleton-row:nth-child(3) { animation-delay: 0.3s; }
+.leaderboard__skeleton-row:nth-child(4) { animation-delay: 0.45s; }
+.leaderboard__skeleton-row:nth-child(5) { animation-delay: 0.6s; }
+
+@keyframes leaderboardShimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* --- Empty State --- */
+.leaderboard__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.leaderboard__empty .empty-icon {
+  color: rgba(255,255,255,0.15);
+  margin-bottom: 16px;
+}
+
+.leaderboard__empty .empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+
+.leaderboard__empty .empty-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
