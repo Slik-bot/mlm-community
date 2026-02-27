@@ -1,0 +1,128 @@
+<!-- =============== SCREEN: SUBSCRIPTION =============== -->
+<div class="scr hidden" id="scrSubscription">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Подписка</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Skeleton loader -->
+  <div class="subscription__skeleton" id="subSkeleton">
+    <div class="subscription__skel-block subscription__skel-current"></div>
+    <div class="subscription__skel-block subscription__skel-card"></div>
+    <div class="subscription__skel-block subscription__skel-card"></div>
+    <div class="subscription__skel-block subscription__skel-card"></div>
+  </div>
+
+  <!-- Content (hidden until loaded) -->
+  <div class="subscription__content hidden" id="subContent">
+
+    <!-- Current plan -->
+    <div class="subscription__current glass-card" id="subCurrent">
+      <div class="subscription__current-icon" id="subCurrentIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="subscription__current-info">
+        <div class="subscription__current-label">Текущий тариф</div>
+        <div class="subscription__current-name" id="subCurrentName">FREE</div>
+        <div class="subscription__current-expires hidden" id="subCurrentExpires"></div>
+      </div>
+    </div>
+
+    <!-- Plan cards -->
+    <div class="subscription__plans">
+
+      <!-- PRO -->
+      <div class="subscription__card glass-card" id="subCardBasic" data-plan="basic">
+        <div class="subscription__card-head">
+          <div class="subscription__card-name">PRO</div>
+          <div class="subscription__card-price">599₽<span class="subscription__card-period">/мес</span></div>
+        </div>
+        <div class="subscription__card-features">
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Расширенные контакты</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Приоритет в матчинге</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Фиолетовая рамка аватара</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Доступ к форуму PRO</span>
+          </div>
+        </div>
+        <button class="subscription__buy-btn" data-plan="basic" onclick="purchaseSubscription('basic')">Купить PRO</button>
+      </div>
+
+      <!-- BUSINESS -->
+      <div class="subscription__card glass-card" id="subCardPro" data-plan="pro">
+        <div class="subscription__card-badge">Популярный</div>
+        <div class="subscription__card-head">
+          <div class="subscription__card-name">BUSINESS</div>
+          <div class="subscription__card-price">1 490₽<span class="subscription__card-period">/мес</span></div>
+        </div>
+        <div class="subscription__card-features">
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Всё из PRO</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Карточка компании</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Аналитика профиля</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Приоритетная поддержка</span>
+          </div>
+        </div>
+        <button class="subscription__buy-btn" data-plan="pro" onclick="purchaseSubscription('pro')">Купить BUSINESS</button>
+      </div>
+
+      <!-- ACADEMY -->
+      <div class="subscription__card glass-card" id="subCardVip" data-plan="vip">
+        <div class="subscription__card-head">
+          <div class="subscription__card-name">ACADEMY</div>
+          <div class="subscription__card-price">2 990₽<span class="subscription__card-period">/мес</span></div>
+        </div>
+        <div class="subscription__card-features">
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Всё из BUSINESS</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Доступ к Академии</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Персональный наставник</span>
+          </div>
+          <div class="subscription__feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Эксклюзивные вебинары</span>
+          </div>
+        </div>
+        <button class="subscription__buy-btn" data-plan="vip" onclick="purchaseSubscription('vip')">Купить ACADEMY</button>
+      </div>
+
+    </div>
+
+    <!-- Balance -->
+    <div class="subscription__balance glass-card">
+      <div class="subscription__balance-label">Ваш баланс</div>
+      <div class="subscription__balance-amount" id="subBalance">0.00 руб.</div>
+    </div>
+
+  </div>
+</div>
