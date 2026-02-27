@@ -275,7 +275,23 @@ async function taskComplete() {
     const data = await resp.json();
 
     if (resp.ok && data.success) {
-      if (window.showToast) showToast('+' + (data.xp_awarded || currentTask.reward_xp || 0) + ' XP!');
+      const dnaColor = (window.getDnaColor && window.currentUser?.dna_type)
+        ? getDnaColor(window.currentUser.dna_type)
+        : '#8b5cf6';
+
+      if (window.showXpToast) {
+        showXpToast(data.xp_awarded || currentTask.reward_xp || 0);
+      }
+
+      if (data.level_up && window.showLevelUp) {
+        showLevelUp(
+          { level: data.level, stars: data.level_stars, label: data.level, mult: null },
+          dnaColor
+        );
+      } else if (data.stars_up && window.showStarUnlock) {
+        showStarUnlock(data.level_stars, dnaColor);
+      }
+
       goBack();
     } else {
       if (window.showToast) showToast(data.error || 'Ошибка выполнения');
