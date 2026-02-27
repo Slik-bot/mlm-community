@@ -43,6 +43,18 @@
   </div>
 
   <div class="settings-section">
+    <div class="settings-title">Подписка</div>
+    <div class="settings-row">
+      <span class="settings-label">Текущий тариф</span>
+      <span class="settings-value" id="settingsTariff">FREE</span>
+    </div>
+    <button class="btn-primary" onclick="goTo('scrSubscription')" style="margin-top:8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Управление подпиской
+    </button>
+  </div>
+
+  <div class="settings-section">
     <div class="settings-title">Аккаунт</div>
     <button class="btn-danger" onclick="authLogout()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
