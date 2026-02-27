@@ -69,11 +69,11 @@ function buildChatItem(conv, myId) {
   item.onclick = function() { openChat(conv.id, other); };
   const avaHtml = other.avatar_url
     ? '<img class="chat-item-avatar" src="' + other.avatar_url + '" alt="">'
-    : '<div class="chat-item-avatar chat-item-avatar-placeholder">' + (other.name || 'U').charAt(0).toUpperCase() + '</div>';
+    : '<div class="chat-item-avatar chat-item-avatar-placeholder">' + escHtml((other.name || 'U').charAt(0).toUpperCase()) + '</div>';
   const unreadHtml = conv.unread_count > 0 ? '<div class="chat-unread">' + conv.unread_count + '</div>' : '';
   item.innerHTML = avaHtml +
-    '<div class="chat-item-body"><div class="chat-item-name">' + (other.name || 'Пользователь') + '</div>' +
-    '<div class="chat-item-last">' + preview + '</div></div>' +
+    '<div class="chat-item-body"><div class="chat-item-name">' + escHtml(other.name || 'Пользователь') + '</div>' +
+    '<div class="chat-item-last">' + escHtml(preview) + '</div></div>' +
     '<div class="chat-item-meta"><div class="chat-item-time">' + timeStr + '</div>' + unreadHtml + '</div>';
   return item;
 }
@@ -200,9 +200,10 @@ function createBubble(msg, myId) {
   const bubbleContent = document.createElement('div');
   bubbleContent.className = 'chat-bubble-content';
   if (msg.type === 'file' && msg.file_url) {
-    bubbleContent.innerHTML = '<a class="chat-file-link" href="' + msg.file_url + '" target="_blank">' +
+    const safeFileUrl = (msg.file_url && msg.file_url.startsWith('https://')) ? escHtml(msg.file_url) : '#';
+    bubbleContent.innerHTML = '<a class="chat-file-link" href="' + safeFileUrl + '" target="_blank">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> ' +
-      (msg.file_name || 'Файл') + '</a>';
+      escHtml(msg.file_name || 'Файл') + '</a>';
   } else {
     bubbleContent.textContent = msg.content || '';
   }
