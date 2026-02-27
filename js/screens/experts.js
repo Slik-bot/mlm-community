@@ -20,7 +20,7 @@ function getSpecLabel(spec) {
   return EXPERT_SPECS[spec] || spec;
 }
 
-function renderStars(rating) {
+function renderExpertStars(rating) {
   const full = Math.round(rating || 0);
   let html = '';
   for (let i = 1; i <= 5; i++) {
@@ -108,7 +108,7 @@ function renderExpertsList(experts) {
         '<div class="expert-name">' + escHtml(user.name || 'Эксперт') + '</div>' +
         '<div class="expert-spec">' + getSpecLabel(e.title) + '</div>' +
         '<div class="expert-rating">' +
-          '<span class="expert-stars">' + renderStars(e.rating) + '</span>' +
+          '<span class="expert-stars">' + renderExpertStars(e.rating) + '</span>' +
           '<span>' + (e.rating || 0).toFixed(1) + '</span>' +
           '<span class="expert-sessions-count">' + (e.orders_completed || 0) + ' сессий</span>' +
         '</div>' +
@@ -163,7 +163,7 @@ function initExpertDetail() {
   if (specEl) specEl.textContent = getSpecLabel(currentExpert.title);
 
   const starsEl = document.getElementById('edStars');
-  if (starsEl) starsEl.innerHTML = renderStars(currentExpert.rating);
+  if (starsEl) starsEl.innerHTML = renderExpertStars(currentExpert.rating);
 
   const ratingEl = document.getElementById('edRating');
   if (ratingEl) ratingEl.textContent = (currentExpert.rating || 0).toFixed(1);
@@ -217,7 +217,7 @@ function renderExpertReviews(reviews) {
         '<span class="review-name">' + escHtml(author.name || 'Участник') + '</span>' +
         '<span class="review-date">' + date + '</span>' +
       '</div>' +
-      '<div class="review-stars">' + renderStars(r.rating) + '</div>' +
+      '<div class="review-stars">' + renderExpertStars(r.rating) + '</div>' +
       '<div class="review-text">' + escHtml(r.text) + '</div>' +
     '</div>';
   }).join('');
