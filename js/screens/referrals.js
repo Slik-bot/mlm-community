@@ -204,7 +204,7 @@ function renderReferralList(referrals) {
 
   listEl.innerHTML = referrals.map(function(ref) {
     const p = ref.profile || {};
-    const name = refEsc(p.name || 'Участник');
+    const name = escHtml(p.name || 'Участник');
     const dnaColor = getDnaColor(p.dna_type);
     const lvl = window.Gamification
       ? window.Gamification.getUserLevel(0)
@@ -224,8 +224,8 @@ function renderReferralList(referrals) {
     const date = refFormatDate(ref.created_at);
 
     const avatarHtml = p.avatar_url
-      ? '<img class="referrals__item-avatar-img" src="' + refEsc(p.avatar_url) + '" alt="">'
-      : '<div class="referrals__item-avatar-placeholder">' + (p.name || '?')[0] + '</div>';
+      ? '<img class="referrals__item-avatar-img" src="' + escHtml(p.avatar_url) + '" alt="">'
+      : '<div class="referrals__item-avatar-placeholder">' + escHtml((p.name || '?')[0]) + '</div>';
 
     return '<div class="referrals__item glass-card' + frozen + '">' +
       '<div class="referrals__item-left">' +
@@ -248,13 +248,6 @@ function renderReferralList(referrals) {
 }
 
 // ===== HELPERS =====
-
-function refEsc(s) {
-  if (!s) return '';
-  const div = document.createElement('div');
-  div.textContent = s;
-  return div.innerHTML;
-}
 
 function refFormatDate(isoStr) {
   if (!isoStr) return '';
