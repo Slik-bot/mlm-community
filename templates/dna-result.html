@@ -43,80 +43,54 @@
 
         <!-- BODY -->
         <div class="dnr-body go" id="cardBody">
+          <div class="dnr-exclusive">Один из 4 уникальных типов</div>
+          <div class="dnr-label" id="dnaLabel">ТВОЙ БИЗНЕС-ДНК</div>
+          <div class="dnr-type-name" id="typeName">СТРАТЕГ</div>
+          <div class="dnr-accent"></div>
+          <div class="dnr-desc" id="typeDesc"></div>
+          <div class="dnr-tags" id="typeTags"></div>
+          <div class="dnr-divider"></div>
 
-          <!-- TAB BAR -->
-          <div class="dnr-tabs" id="dnrTabs">
-            <button class="dnr-tab dnr-tab--active" data-tab="archetype">Архетип</button>
-            <button class="dnr-tab" data-tab="strengths">Сильные стороны</button>
-            <button class="dnr-tab" data-tab="quests">Задания</button>
-          </div>
-
-          <!-- PANEL 1: ARCHETYPE -->
-          <div class="dnr-panel dnr-panel--active" id="dnrPanelArchetype">
-            <div class="dnr-exclusive">Один из 4 уникальных типов</div>
-            <div class="dnr-label" id="dnaLabel">ТВОЙ БИЗНЕС-ДНК</div>
-            <div class="dnr-type-name" id="typeName">СТРАТЕГ</div>
-            <div class="dnr-accent"></div>
-            <div class="dnr-desc" id="typeDesc"></div>
-            <div class="dnr-tags" id="typeTags"></div>
-            <div class="dnr-divider"></div>
-
-            <!-- Career -->
-            <div class="dnr-career" id="careerSection">
-              <div class="career-title">ПУТЬ К ВЕРШИНЕ</div>
-              <div class="career-path" id="careerPath">
-                <div class="career-track"><div class="career-track-done" id="careerDone"></div></div>
-                <div class="career-item">
-                  <div class="career-node done">&#9823;</div>
-                  <div class="career-label">Пешка</div>
-                </div>
-                <div class="career-item">
-                  <div class="career-node current" id="currentNode">&#9822;</div>
-                  <div class="career-label current-l" id="currentLabel">Конь</div>
-                </div>
-                <div class="career-item">
-                  <div class="career-node future">&#9821;</div>
-                  <div class="career-label">Слон</div>
-                </div>
-                <div class="career-item">
-                  <div class="career-node future">&#9820;</div>
-                  <div class="career-label">Ладья</div>
-                </div>
-                <div class="career-item">
-                  <div class="career-node future">&#9819;</div>
-                  <div class="career-label">Ферзь</div>
-                </div>
-                <div class="career-item">
-                  <div class="career-node future">&#9818;</div>
-                  <div class="career-label">Король</div>
-                </div>
+          <!-- Career -->
+          <div class="dnr-career" id="careerSection">
+            <div class="career-title">ПУТЬ К ВЕРШИНЕ</div>
+            <div class="career-path" id="careerPath">
+              <div class="career-track"><div class="career-track-done" id="careerDone"></div></div>
+              <div class="career-item">
+                <div class="career-node done">&#9823;</div>
+                <div class="career-label">Пешка</div>
               </div>
-
-              <div class="dnr-xp">
-                <div class="xp-header">
-                  <span>XP прогресс</span>
-                  <strong id="xpText">0 / 25 000</strong>
-                </div>
-                <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
-                <div class="xp-hint"><span id="xpHint">5%</span> до ★★</div>
+              <div class="career-item">
+                <div class="career-node current" id="currentNode">&#9822;</div>
+                <div class="career-label current-l" id="currentLabel">Конь</div>
+              </div>
+              <div class="career-item">
+                <div class="career-node future">&#9821;</div>
+                <div class="career-label">Слон</div>
+              </div>
+              <div class="career-item">
+                <div class="career-node future">&#9820;</div>
+                <div class="career-label">Ладья</div>
+              </div>
+              <div class="career-item">
+                <div class="career-node future">&#9819;</div>
+                <div class="career-label">Ферзь</div>
+              </div>
+              <div class="career-item">
+                <div class="career-node future">&#9818;</div>
+                <div class="career-label">Король</div>
               </div>
             </div>
-          </div>
 
-          <!-- PANEL 2: STRENGTHS -->
-          <div class="dnr-panel" id="dnrPanelStrengths">
-            <ul class="dnr-strengths-list" id="dnrStrengthsList">
-              <!-- filled by JS via DNA_TYPES[type].strengths -->
-            </ul>
-          </div>
-
-          <!-- PANEL 3: QUESTS -->
-          <div class="dnr-panel" id="dnrPanelQuests">
-            <div class="dnr-quests-list" id="dnrQuestsList">
-              <!-- filled by JS -->
+            <div class="dnr-xp">
+              <div class="xp-header">
+                <span>XP прогресс</span>
+                <strong id="xpText">0 / 25 000</strong>
+              </div>
+              <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+              <div class="xp-hint"><span id="xpHint">5%</span> до ★★</div>
             </div>
           </div>
-
         </div>
 
         <!-- FOOTER -->
@@ -134,6 +108,24 @@
       </div><!-- /dnr-card -->
     </div><!-- /card-wrap -->
   </div><!-- /scene -->
+
+  <!-- TABS — отдельный блок под карточкой -->
+  <div class="dna-tabs-section">
+    <div class="dnr-tabs" id="dnrTabs">
+      <button class="dnr-tab dnr-tab--active" data-tab="archetype">Архетип</button>
+      <button class="dnr-tab" data-tab="strengths">Сильные стороны</button>
+      <button class="dnr-tab" data-tab="quests">Задания</button>
+    </div>
+    <div class="dnr-panel dnr-panel--active" id="dnrPanelArchetype">
+      <!-- JS заполнит кратким описанием типа -->
+    </div>
+    <div class="dnr-panel" id="dnrPanelStrengths">
+      <ul class="dnr-strengths-list" id="dnrStrengthsList"></ul>
+    </div>
+    <div class="dnr-panel" id="dnrPanelQuests">
+      <div class="dnr-quests-list" id="dnrQuestsList"></div>
+    </div>
+  </div>
 
   <!-- Continue button -->
   <div class="dnr-continue-wrap">
