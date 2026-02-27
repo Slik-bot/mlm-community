@@ -22,7 +22,7 @@ function switchLeaderboardTab(period) {
 }
 
 function updateLeaderboardTabUI() {
-  var btns = document.querySelectorAll('#leaderboardTabs .leaderboard__tab');
+  const btns = document.querySelectorAll('#leaderboardTabs .leaderboard__tab');
   btns.forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-period') === lbPeriod);
   });
@@ -31,17 +31,17 @@ function updateLeaderboardTabUI() {
 // ===== DATA LOADING =====
 
 async function loadLeaderboard() {
-  var listEl = document.getElementById('leaderboardList');
-  var loadingEl = document.getElementById('leaderboardLoading');
-  var emptyEl = document.getElementById('leaderboardEmpty');
-  var myPosEl = document.getElementById('leaderboardMyPosition');
+  const listEl = document.getElementById('leaderboardList');
+  const loadingEl = document.getElementById('leaderboardLoading');
+  const emptyEl = document.getElementById('leaderboardEmpty');
+  const myPosEl = document.getElementById('leaderboardMyPosition');
 
   if (loadingEl) loadingEl.classList.remove('hidden');
   if (listEl) listEl.innerHTML = '';
   if (emptyEl) emptyEl.classList.add('hidden');
   if (myPosEl) myPosEl.classList.add('hidden');
 
-  var users = await fetchLeaderboardData(lbPeriod);
+  const users = await fetchLeaderboardData(lbPeriod);
 
   if (loadingEl) loadingEl.classList.add('hidden');
 
@@ -57,37 +57,37 @@ async function loadLeaderboard() {
 }
 
 async function fetchLeaderboardData(period) {
-  var query = window.sb.from('users')
+  let query = window.sb.from('users')
     .select('id, name, avatar_url, xp_total, dna_type, level, level_stars, streak_days')
     .eq('is_active', true);
 
   if (period === 'week') {
-    var weekStart = getWeekStart();
+    const weekStart = getWeekStart();
     query = query.gte('last_active_at', weekStart.toISOString());
   } else if (period === 'month') {
-    var monthStart = getMonthStart();
+    const monthStart = getMonthStart();
     query = query.gte('last_active_at', monthStart.toISOString());
   }
 
   query = query.order('xp_total', { ascending: false }).limit(100);
 
-  var result = await query;
+  const result = await query;
   return result.data || [];
 }
 
 // ===== DATE HELPERS =====
 
 function getWeekStart() {
-  var d = new Date();
-  var day = d.getDay();
-  var diff = day === 0 ? 6 : day - 1;
+  const d = new Date();
+  const day = d.getDay();
+  const diff = day === 0 ? 6 : day - 1;
   d.setDate(d.getDate() - diff);
   d.setHours(0, 0, 0, 0);
   return d;
 }
 
 function getMonthStart() {
-  var d = new Date();
+  const d = new Date();
   d.setDate(1);
   d.setHours(0, 0, 0, 0);
   return d;
@@ -97,10 +97,10 @@ function getMonthStart() {
 
 function findMyRank() {
   lbMyRank = null;
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) return;
 
-  for (var i = 0; i < lbData.length; i++) {
+  for (let i = 0; i < lbData.length; i++) {
     if (lbData[i].id === user.id) {
       lbMyRank = i + 1;
       return;
@@ -109,58 +109,58 @@ function findMyRank() {
 }
 
 function renderMyPosition() {
-  var el = document.getElementById('leaderboardMyPosition');
+  const el = document.getElementById('leaderboardMyPosition');
   if (!el) return;
 
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { el.classList.add('hidden'); return; }
 
   el.classList.remove('hidden');
 
-  var rankEl = document.getElementById('leaderboardMyRank');
+  const rankEl = document.getElementById('leaderboardMyRank');
   if (rankEl) rankEl.textContent = lbMyRank ? '#' + lbMyRank : '#—';
 
-  var avatarEl = document.getElementById('leaderboardMyAvatar');
+  const avatarEl = document.getElementById('leaderboardMyAvatar');
   if (avatarEl) {
     avatarEl.src = user.avatar_url || '';
     avatarEl.style.display = user.avatar_url ? '' : 'none';
   }
 
-  var nameEl = document.getElementById('leaderboardMyName');
+  const nameEl = document.getElementById('leaderboardMyName');
   if (nameEl) nameEl.textContent = user.name || 'Участник';
 
-  var lvl = window.Gamification.getUserLevel(user.xp_total || 0);
-  var dnaColor = getDnaColor(user.dna_type);
+  const lvl = window.Gamification.getUserLevel(user.xp_total || 0);
+  const dnaColor = getDnaColor(user.dna_type);
 
-  var chessEl = document.getElementById('leaderboardMyChess');
+  const chessEl = document.getElementById('leaderboardMyChess');
   if (chessEl) chessEl.innerHTML = getChessIcon(lvl.level, dnaColor);
 
-  var starsEl = document.getElementById('leaderboardMyStars');
+  const starsEl = document.getElementById('leaderboardMyStars');
   if (starsEl) starsEl.textContent = '★'.repeat(lvl.stars) + '☆'.repeat(5 - lvl.stars);
 
-  var xpEl = document.getElementById('leaderboardMyXp');
+  const xpEl = document.getElementById('leaderboardMyXp');
   if (xpEl) xpEl.textContent = fmtXp(user.xp_total || 0) + ' XP';
 }
 
 // ===== RENDER LIST =====
 
 function renderLeaderboardList() {
-  var listEl = document.getElementById('leaderboardList');
+  const listEl = document.getElementById('leaderboardList');
   if (!listEl) return;
 
-  var me = getCurrentUser();
-  var myId = me ? me.id : null;
+  const me = getCurrentUser();
+  const myId = me ? me.id : null;
 
   listEl.innerHTML = lbData.map(function(u, i) {
-    var rank = i + 1;
-    var lvl = window.Gamification.getUserLevel(u.xp_total || 0);
-    var dnaColor = getDnaColor(u.dna_type);
-    var stars = '★'.repeat(lvl.stars) + '☆'.repeat(5 - lvl.stars);
-    var isMe = u.id === myId;
-    var meClass = isMe ? ' leaderboard__row--me' : '';
-    var medalHtml = getMedalHtml(rank);
+    const rank = i + 1;
+    const lvl = window.Gamification.getUserLevel(u.xp_total || 0);
+    const dnaColor = getDnaColor(u.dna_type);
+    const stars = '★'.repeat(lvl.stars) + '☆'.repeat(5 - lvl.stars);
+    const isMe = u.id === myId;
+    const meClass = isMe ? ' leaderboard__row--me' : '';
+    const medalHtml = getMedalHtml(rank);
 
-    var avatarHtml = u.avatar_url
+    const avatarHtml = u.avatar_url
       ? '<img class="leaderboard__row-avatar-img" src="' + lbEsc(u.avatar_url) + '" alt="">'
       : '<div class="leaderboard__row-avatar-placeholder">' + (u.name || '?')[0] + '</div>';
 
@@ -189,7 +189,7 @@ function getMedalHtml(rank) {
 // ===== USER TAP =====
 
 function openLeaderboardUser(userId) {
-  var me = getCurrentUser();
+  const me = getCurrentUser();
   if (me && userId === me.id) {
     goTo('scrProfile');
   }
