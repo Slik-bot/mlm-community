@@ -1,0 +1,56 @@
+<!-- =============== SCREEN: LEADERBOARD =============== -->
+<div class="scr hidden" id="scrLeaderboard">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Лидерборд</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Period tabs -->
+  <div class="leaderboard__tabs" id="leaderboardTabs">
+    <button class="leaderboard__tab active" data-period="week" onclick="switchLeaderboardTab('week')">Неделя</button>
+    <button class="leaderboard__tab" data-period="month" onclick="switchLeaderboardTab('month')">Месяц</button>
+    <button class="leaderboard__tab" data-period="all" onclick="switchLeaderboardTab('all')">Всё время</button>
+  </div>
+
+  <!-- My position -->
+  <div class="leaderboard__my-position glass-card" id="leaderboardMyPosition">
+    <div class="leaderboard__my-rank" id="leaderboardMyRank">#—</div>
+    <div class="leaderboard__my-avatar">
+      <img class="leaderboard__avatar-img" id="leaderboardMyAvatar" src="" alt="">
+    </div>
+    <div class="leaderboard__my-info">
+      <div class="leaderboard__my-name" id="leaderboardMyName">—</div>
+      <div class="leaderboard__my-level">
+        <span class="leaderboard__chess-icon" id="leaderboardMyChess"></span>
+        <span class="leaderboard__stars" id="leaderboardMyStars"></span>
+      </div>
+    </div>
+    <div class="leaderboard__my-xp" id="leaderboardMyXp">0 XP</div>
+  </div>
+
+  <!-- Top list -->
+  <div class="leaderboard__list" id="leaderboardList"></div>
+
+  <!-- Loading state -->
+  <div class="leaderboard__loading" id="leaderboardLoading">
+    <div class="leaderboard__skeleton">
+      <div class="leaderboard__skeleton-row"></div>
+      <div class="leaderboard__skeleton-row"></div>
+      <div class="leaderboard__skeleton-row"></div>
+      <div class="leaderboard__skeleton-row"></div>
+      <div class="leaderboard__skeleton-row"></div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="leaderboard__empty hidden" id="leaderboardEmpty">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M12 15l-3-3h6l-3 3z"/><path d="M5 21h14"/><path d="M5 21V7l7-4 7 4v14"/><circle cx="12" cy="10" r="2"/></svg>
+    </div>
+    <div class="empty-title">Пока нет данных</div>
+    <div class="empty-desc">Выполняйте задания, чтобы попасть в топ!</div>
+  </div>
+</div>
