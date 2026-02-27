@@ -149,6 +149,7 @@ const DNA_EXTRA = {
     ]
   }
 };
+window.DNA_EXTRA = DNA_EXTRA;
 
 // ─── APPLY DNA ─────────────────────────
 
