@@ -55,7 +55,8 @@ const TEMPLATES = {
   scrMyDna: '/templates/my-dna.html',
   scrLeaderboard: '/templates/leaderboard.html',
   scrReferrals: '/templates/referrals.html',
-  scrSubscription: '/templates/subscription.html'
+  scrSubscription: '/templates/subscription.html',
+  scrVerifyEmail: '/templates/verify-email.html'
 };
 const loadedTemplates = {};
 
@@ -101,7 +102,8 @@ const SCREEN_INITS = {
   scrMyDna: ['initMyDna'],
   scrLeaderboard: ['initLeaderboard'],
   scrReferrals: ['initReferrals'],
-  scrSubscription: ['initSubscription']
+  scrSubscription: ['initSubscription'],
+  scrVerifyEmail: ['initVerifyEmail']
 };
 
 async function loadTemplate(id) {
