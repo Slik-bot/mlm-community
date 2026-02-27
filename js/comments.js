@@ -1,6 +1,7 @@
 /* comments.js — комментарии TRAFIQO (premium) */
 (function(){
 'use strict';
+const escHtml = window.escHtml;
 
 let _postId = null;
 let _postAuthorId = null;
@@ -52,7 +53,7 @@ function renderPostHeader(post) {
   const authorAva = p.avatar_url || '';
   const letter = authorName.charAt(0).toUpperCase();
   const avaHtml = authorAva
-    ? '<img src="' + escHtml(authorAva) + '" alt="">' : '<span>' + letter + '</span>';
+    ? '<img src="' + escHtml(authorAva) + '" alt="">' : '<span>' + escHtml(letter) + '</span>';
   const shortText = escHtml(post.content || '');
   const displayText = shortText.length > 150 ? shortText.substring(0, 150) + '...' : shortText;
   return '<div class="dt-post"><div class="dt-ava">' + avaHtml + '</div>' +
@@ -118,7 +119,7 @@ function renderComment(c, isReply) {
   const safeId = String(c.id || '');
 
   return '<div class="' + cls + '" data-id="' + safeId + '" data-user="' + (c.author_id || '') + '">' +
-    '<div class="cmt-ava" style="background:' + avaColor + '">' + (ava ? '<img src="' + escHtml(ava) + '" alt="">' : letter) + '</div>' +
+    '<div class="cmt-ava" style="background:' + avaColor + '">' + (ava ? '<img src="' + escHtml(ava) + '" alt="">' : escHtml(letter)) + '</div>' +
     '<div class="cmt-body">' +
       '<div class="cmt-top">' +
         '<span class="cmt-name">' + escHtml(name) + '</span>' +
