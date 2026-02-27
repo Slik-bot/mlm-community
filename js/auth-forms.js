@@ -70,9 +70,22 @@ function handleRegister() {
     reg.submit.textContent = 'Создание...';
     reg.submit.disabled = true;
     try {
-      await authRegister(email, password, name);
+      const result = await authRegister(email, password, name);
       if (window.haptic) haptic('success');
       if (name) localStorage.setItem('userName', name);
+      // Email требует верификации
+      if (result && result.needs_verification) {
+        window._verifyData = {
+          user_id: result.user_id,
+          email: result.email,
+          password: password,
+        };
+        closeLndModals();
+        showApp();
+        goTo('scrVerifyEmail');
+        return;
+      }
+      // Fallback: прямая сессия (Telegram OAuth и т.д.)
       freshRegistration();
       closeLndModals();
       showApp();
