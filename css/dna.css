@@ -505,3 +505,12 @@
 .dnr-quest-btn:active {
   background: rgba(139,92,246,0.25);
 }
+
+.dna-tabs-section {
+  margin-top: 16px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  padding-bottom: 8px;
+}
