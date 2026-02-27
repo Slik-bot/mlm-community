@@ -1,6 +1,7 @@
 // ===== FEED DATA — ЗАГРУЗКА ЛЕНТЫ ИЗ БД, ПОСТЫ =====
 
 (function() {
+  const escHtml = window.escHtml;
 
   // ===== ЗАГРУЗКА РЕАЛЬНОЙ ЛЕНТЫ =====
 
@@ -356,8 +357,7 @@
   };
   window.closePostModal = function() { const m = document.getElementById('postModal'); if (m) { m.classList.remove('show'); setTimeout(function() { m.remove(); }, 300); } };
   function fmtViews(n) { n = n || 0; if (n < 1000) return String(n); return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K'; }
-  function escHtml(s) { return s ? String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/\n/g, '<br>') : ''; }
-  window.escHtml = escHtml;
+  // escHtml — см. utils/format.js (window.escHtml)
 
   // ===== POLL VOTING =====
   document.addEventListener('click', function(e) {
