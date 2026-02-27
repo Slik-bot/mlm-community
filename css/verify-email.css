@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════
+   VERIFY EMAIL — Экран ввода кода
+   ═══════════════════════════════════════ */
+
+@keyframes ve-fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ve-screen {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: ve-fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ve-container {
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.ve-icon {
+  margin-bottom: 24px;
+}
+
+.ve-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.ve-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 32px;
+  line-height: 1.5;
+}
+
+.ve-email {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ═══ Инпуты кода ═══ */
+
+.ve-code-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.ve-code-digit {
+  width: 48px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  caret-color: #8b5cf6;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ve-code-digit:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  outline: none;
+}
+
+.ve-code-digit.ve-filled {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* ═══ Ошибка ═══ */
+
+.ve-error {
+  display: none;
+  color: #ef4444;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.ve-error.ve-visible {
+  display: block;
+}
+
+/* ═══ Кнопка ═══ */
+
+.ve-submit-btn {
+  width: 100%;
+  height: 48px;
+  background: #8b5cf6;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.ve-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.ve-submit-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ve-submit-btn.ve-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.ve-submit-btn.ve-loading::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ve-spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes ve-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══ Повторная отправка ═══ */
+
+.ve-resend {
+  margin-top: 24px;
+  font-size: 13px;
+}
+
+.ve-resend-timer {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.ve-resend-timer.ve-hidden {
+  display: none;
+}
+
+.ve-resend-btn {
+  display: none;
+  color: #8b5cf6;
+  cursor: pointer;
+}
+
+.ve-resend-btn.ve-visible {
+  display: inline;
+}
+
+/* ═══ Сменить email ═══ */
+
+.ve-change-email {
+  display: block;
+  margin-top: 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ve-change-email:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
