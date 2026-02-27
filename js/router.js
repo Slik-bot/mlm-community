@@ -54,7 +54,8 @@ const TEMPLATES = {
   scrQuest: '/templates/quest.html',
   scrMyDna: '/templates/my-dna.html',
   scrLeaderboard: '/templates/leaderboard.html',
-  scrReferrals: '/templates/referrals.html'
+  scrReferrals: '/templates/referrals.html',
+  scrSubscription: '/templates/subscription.html'
 };
 const loadedTemplates = {};
 
@@ -99,7 +100,8 @@ const SCREEN_INITS = {
   scrDnaResult: ['initDnaResult'],
   scrMyDna: ['initMyDna'],
   scrLeaderboard: ['initLeaderboard'],
-  scrReferrals: ['initReferrals']
+  scrReferrals: ['initReferrals'],
+  scrSubscription: ['initSubscription']
 };
 
 async function loadTemplate(id) {
