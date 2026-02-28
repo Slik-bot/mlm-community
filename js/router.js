@@ -59,7 +59,8 @@ const TEMPLATES = {
   scrVerifyEmail: '/templates/verify-email.html',
   scrAchievements: '/templates/achievements.html',
   scrRoadmap: '/templates/roadmap.html',
-  scrFriends: '/templates/friends.html'
+  scrFriends: '/templates/friends.html',
+  scrProfileStats: '/templates/profile-stats.html'
 };
 const loadedTemplates = {};
 
@@ -109,7 +110,8 @@ const SCREEN_INITS = {
   scrVerifyEmail: ['initVerifyEmail'],
   scrAchievements: ['initAchievements'],
   scrRoadmap: ['initRoadmap'],
-  scrFriends: ['initFriends']
+  scrFriends: ['initFriends'],
+  scrProfileStats: ['initProfileStats']
 };
 
 async function loadTemplate(id) {

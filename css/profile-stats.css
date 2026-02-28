@@ -1,0 +1,256 @@
+/* ═══════════════════════════════════════
+   PROFILE STATS — Моя статистика
+   ═══════════════════════════════════════ */
+
+/* ═══ Head Spacer ═══ */
+
+.ps-head-spacer {
+  width: 40px;
+}
+
+/* ═══ Section Label ═══ */
+
+.ps-section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 16px 16px 12px;
+}
+
+/* ═══ Overview Card ═══ */
+
+.ps-overview {
+  margin: 0 16px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ═══ Donut Chart ═══ */
+
+.ps-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.ps-chart svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ps-chart-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.ps-chart-total {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.ps-chart-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+}
+
+/* ═══ Legend ═══ */
+
+.ps-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+.ps-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ps-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ps-legend-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ps-legend-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ═══ Metrics List ═══ */
+
+.ps-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 16px;
+}
+
+/* ═══ Metric Card ═══ */
+
+.ps-metric {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
+  animation: ps-fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ps-metric-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ps-metric-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ps-metric-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ps-metric-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 4px;
+}
+
+.ps-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.ps-metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ps-metric-goal {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.ps-metric-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.ps-metric-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══ Level Card ═══ */
+
+.ps-level {
+  margin: 0 16px 24px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ps-level-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ps-level-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ps-level-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.ps-level-xp {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+.ps-level-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.ps-level-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #8b5cf6;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ps-streak {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+  margin-top: 6px;
+}
+
+.ps-streak svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ═══ Animation ═══ */
+
+@keyframes ps-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
