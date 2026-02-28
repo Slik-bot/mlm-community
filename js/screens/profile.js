@@ -275,6 +275,9 @@ function initProfileSettings() {
     setToggleState('toggleDeals', settings.push_deals !== false);
     setToggleState('toggleProgress', settings.push_progress !== false);
     setToggleState('toggleSocial', settings.push_social !== false);
+    var lang = settings.language || 'ru';
+    var btns = document.querySelectorAll('#langSwitcher .lang-btn');
+    btns.forEach(function(b) { b.classList.toggle('active', b.dataset.lang === lang); });
   });
 }
 
@@ -392,6 +395,16 @@ async function profileAcceptFriend(rowId) {
   }
 }
 
+// ===== Язык интерфейса =====
+
+async function profileSetLanguage(lang, el) {
+  var btns = document.querySelectorAll('#langSwitcher .lang-btn');
+  btns.forEach(function(b) { b.classList.remove('active'); });
+  el.classList.add('active');
+  var user = getCurrentUser();
+  if (user) await window.sb.from('user_settings').update({ language: lang }).eq('user_id', user.id);
+}
+
 // ===== Соцсети — загрузка / сохранение =====
 
 var SOCIAL_MAP = [
@@ -434,5 +447,6 @@ window.profileSaveEdit = profileSaveEdit;
 window.profilePickAvatar = profilePickAvatar;
 window.profileToggleSetting = profileToggleSetting;
 window.togglePushNotifications = togglePushNotifications;
+window.profileSetLanguage = profileSetLanguage;
 window.profileSendFriend = profileSendFriend;
 window.profileAcceptFriend = profileAcceptFriend;
