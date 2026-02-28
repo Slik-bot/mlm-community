@@ -177,6 +177,47 @@ async function searchExperts(query, limit = 20) {
   }
 }
 
+// ═══ sbCreatePost ═══
+
+async function sbCreatePost(content, postType, imageUrl, pollData, imageUrls) {
+  try {
+    const user = window.getCurrentUser();
+    if (!user) return null;
+    const postData = {
+      author_id: user.id,
+      content: content,
+      type: postType || 'post',
+      images: imageUrls || [],
+      moderation_status: 'approved'
+    };
+    if (pollData) postData.poll_data = pollData;
+    const { data, error } = await window.sb.from('posts')
+      .insert(postData).select().single();
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error('sbCreatePost error:', err);
+    return null;
+  }
+}
+
+// ═══ sbUploadImage ═══
+
+async function sbUploadImage(file, bucket) {
+  bucket = bucket || 'posts';
+  try {
+    const ext = file.type ? file.type.split('/')[1] : 'jpg';
+    const fileName = Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+    const { data, error } = await window.sb.storage.from(bucket).upload(fileName, file);
+    if (error) throw error;
+    const { data: urlData } = window.sb.storage.from(bucket).getPublicUrl(data.path);
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error('sbUploadImage error:', err);
+    return null;
+  }
+}
+
 // ═══ Экспорт ═══
 
 window.loadPosts = loadPosts;
@@ -188,3 +229,5 @@ window.toggleBookmark = toggleBookmark;
 window.searchPosts = searchPosts;
 window.searchForum = searchForum;
 window.searchExperts = searchExperts;
+window.sbCreatePost = sbCreatePost;
+window.sbUploadImage = sbUploadImage;
