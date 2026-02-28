@@ -92,6 +92,7 @@ async function approveVerification(id, userId) {
     }).eq('id', id);
     if (r.error) throw r.error;
     await sb.from('users').update({ is_verified: true }).eq('id', userId);
+    await logAdminAction('verify_user', 'user', userId);
     showToast('Верификация одобрена', 'ok');
     loadVerification();
   } catch (err) {
@@ -288,6 +289,7 @@ async function payWithdrawal(id) {
       status: 'paid', paid_at: new Date().toISOString(), reviewed_by: adminProfile.id
     }).eq('id', id);
     if (r.error) throw r.error;
+    await logAdminAction('approve_withdrawal', 'withdrawal', id);
     showToast('Вывод оплачен', 'ok');
     loadWithdrawals();
   } catch (err) {
@@ -306,6 +308,7 @@ async function rejectWithdrawal(id, userId, amount) {
     if (u.data) {
       await sb.from('users').update({ balance: (u.data.balance || 0) + amount }).eq('id', userId);
     }
+    await logAdminAction('reject_withdrawal', 'withdrawal', id, { amount: amount });
     showToast('Вывод отклонён, баланс возвращён', 'ok');
     loadWithdrawals();
   } catch (err) {

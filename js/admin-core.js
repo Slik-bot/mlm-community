@@ -14,6 +14,13 @@ const LN = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: '
 
 const TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', finance:'Финансы', settings:'Настройки' };
 
+const ROLE_ACCESS = {
+  super_admin: ['dashboard','users','content','companies','shop','gamification','finance','settings'],
+  admin: ['dashboard','users','content','companies','shop','gamification','finance'],
+  moderator: ['dashboard','content'],
+  analyst: ['dashboard']
+};
+
 // ===== AUTH =====
 function validateAdminCreds() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -89,11 +96,26 @@ function initApp() {
   document.getElementById('adminPanel').style.display = 'flex';
   document.getElementById('sbEmail').textContent = adminProfile.email || '';
   document.getElementById('adminName').textContent = adminProfile.name || adminProfile.email || '';
+  applyRoleAccess(adminProfile.role);
   showPage('dashboard');
 }
 
 // ===== NAVIGATION =====
+function applyRoleAccess(role) {
+  const allowed = ROLE_ACCESS[role] || [];
+  document.querySelectorAll('.sb-item[data-page]').forEach(function(el) {
+    el.style.display = allowed.includes(el.dataset.page) ? '' : 'none';
+  });
+}
+
+function checkAccess(section) {
+  const role = adminProfile ? adminProfile.role : null;
+  if (!role) return false;
+  return (ROLE_ACCESS[role] || []).includes(section);
+}
+
 function showPage(page) {
+  if (!checkAccess(page)) { showToast('Нет доступа', 'err'); return; }
   currentPage = page;
   document.getElementById('pageTitle').textContent = TITLES[page] || page;
 
@@ -337,6 +359,7 @@ function viewUser(id) {
 async function toggleBan(id, ban) {
   try {
     await updateProfile(id, { is_banned: ban });
+    await logAdminAction(ban ? 'ban_user' : 'unban_user', 'user', id);
     showToast(ban ? 'Забанен' : 'Разбанен', ban ? 'warn' : 'ok');
     closeModal(); loadUsersTable();
   } catch (err) {
@@ -347,6 +370,7 @@ async function toggleBan(id, ban) {
 async function toggleVerify(id, verify) {
   try {
     await updateProfile(id, { is_verified: verify });
+    await logAdminAction('verify_user', 'user', id, { verified: verify });
     showToast(verify ? 'Верифицирован' : 'Верификация снята', 'ok');
     closeModal(); loadUsersTable();
   } catch (err) {
@@ -359,6 +383,7 @@ async function doAdjustXp(id) {
     const amount = parseInt(document.getElementById('xpAmount').value);
     if (!amount || isNaN(amount)) { showToast('Введите число', 'err'); return; }
     await logXpChange(id, amount);
+    await logAdminAction('change_xp', 'user', id, { amount: amount });
     showToast('XP ' + (amount > 0 ? '+' : '') + amount, 'ok');
     closeModal(); loadUsersTable();
   } catch (err) {

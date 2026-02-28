@@ -131,6 +131,7 @@ async function deletePost(id) {
     if (!confirm('Удалить пост?')) return;
     const r = await sb.from('posts').delete().eq('id', id);
     if (r.error) throw r.error;
+    await logAdminAction('delete_post', 'post', id);
     showToast('Пост удалён', 'ok');
     loadPosts(_postsPage);
   } catch (err) {
@@ -378,6 +379,7 @@ async function approveModItem(id) {
   try {
     const r = await sb.from('moderation_queue').update({ status: 'approved' }).eq('id', id);
     if (r.error) throw r.error;
+    await logAdminAction('approve_content', 'moderation', id);
     showToast('Контент одобрен', 'ok');
     loadModeration(_modFilter);
   } catch (err) {
@@ -390,6 +392,7 @@ async function rejectModItem(id) {
   try {
     const r = await sb.from('moderation_queue').update({ status: 'rejected' }).eq('id', id);
     if (r.error) throw r.error;
+    await logAdminAction('reject_content', 'moderation', id);
     showToast('Контент отклонён', 'ok');
     loadModeration(_modFilter);
   } catch (err) {
@@ -397,3 +400,23 @@ async function rejectModItem(id) {
     showToast('Ошибка', 'err');
   }
 }
+
+
+// ===== AUDIT LOG =====
+
+async function logAdminAction(action, targetType, targetId, details) {
+  try {
+    const adminId = adminProfile ? adminProfile.id : null;
+    if (!adminId) return;
+    await sb.from('admin_audit_log').insert({
+      admin_id: adminId,
+      action: action,
+      target_type: targetType,
+      target_id: targetId,
+      details: typeof details === 'string' ? details : JSON.stringify(details)
+    });
+  } catch (err) {
+    // Не ломаем основное действие если лог не записался
+  }
+}
+window.logAdminAction = logAdminAction;
