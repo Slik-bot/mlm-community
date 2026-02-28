@@ -54,38 +54,38 @@ const NOTIF_ICONS = {
 // ===== INIT =====
 
 async function initNotifications() {
-  constuser = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
   showNotifSkeleton();
   updateNotifBadge();
 
-  constresult = await window.loadNotifications(50);
-  constnotifs = (result && result.data) ? result.data : [];
+  const result = await window.loadNotifications(50);
+  const notifs = (result && result.data) ? result.data : [];
 
   hideNotifSkeleton();
   renderNotifications(notifs);
 }
 
 function showNotifSkeleton() {
-  constskel = document.getElementById('notifSkeleton');
-  constlist = document.getElementById('notifList');
-  constempty = document.getElementById('notifEmpty');
+  const skel = document.getElementById('notifSkeleton');
+  const list = document.getElementById('notifList');
+  const empty = document.getElementById('notifEmpty');
   if (skel) skel.classList.remove('hidden');
   if (list) list.classList.add('hidden');
   if (empty) empty.classList.add('hidden');
 }
 
 function hideNotifSkeleton() {
-  constskel = document.getElementById('notifSkeleton');
-  constlist = document.getElementById('notifList');
+  const skel = document.getElementById('notifSkeleton');
+  const list = document.getElementById('notifList');
   if (skel) skel.classList.add('hidden');
   if (list) list.classList.remove('hidden');
 }
 
 function renderNotifications(notifs) {
-  constlistEl = document.getElementById('notifList');
-  constemptyEl = document.getElementById('notifEmpty');
+  const listEl = document.getElementById('notifList');
+  const emptyEl = document.getElementById('notifEmpty');
   if (!listEl) return;
 
   if (!notifs.length) {
@@ -96,12 +96,12 @@ function renderNotifications(notifs) {
   if (emptyEl) emptyEl.classList.add('hidden');
 
   listEl.innerHTML = notifs.map(function(n, i) {
-    consticonData = NOTIF_ICONS[n.type] || NOTIF_ICONS.system;
-    constunreadClass = n.is_read ? '' : ' notif-item--unread';
-    consttypeClass = ' notif-type--' + (n.type || 'system');
-    consttimeStr = n.created_at ? formatNotifTime(n.created_at) : '';
-    consttitle = notifEsc(n.title || '');
-    constbody = notifEsc(n.body || n.message || '');
+    const iconData = NOTIF_ICONS[n.type] || NOTIF_ICONS.system;
+    const unreadClass = n.is_read ? '' : ' notif-item--unread';
+    const typeClass = ' notif-type--' + (n.type || 'system');
+    const timeStr = n.created_at ? formatNotifTime(n.created_at) : '';
+    const title = notifEsc(n.title || '');
+    const body = notifEsc(n.body || n.message || '');
 
     return '<div class="notif-item glass-card' + unreadClass + typeClass + '" style="animation-delay:' + (i * 40) + 'ms" onclick="markOneRead(\'' + n.id + '\', this)">' +
       '<div class="notif-item-icon" style="color:' + iconData.color + ';background:' + iconData.color + '14">' + iconData.svg + '</div>' +
@@ -115,20 +115,20 @@ function renderNotifications(notifs) {
 }
 
 function formatNotifTime(isoStr) {
-  constd = new Date(isoStr);
-  constnow = new Date();
-  constdiff = now - d;
-  constmins = Math.floor(diff / 60000);
+  const d = new Date(isoStr);
+  const now = new Date();
+  const diff = now - d;
+  const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'только что';
   if (mins < 60) return mins + ' мин. назад';
-  consthours = Math.floor(mins / 60);
+  const hours = Math.floor(mins / 60);
   if (hours < 24) return hours + ' ч. назад';
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
 function notifEsc(str) {
   if (!str) return '';
-  constdiv = document.createElement('div');
+  const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
 }
@@ -150,7 +150,7 @@ async function markAllRead() {
     await window.markNotificationsRead();
   }
 
-  constitems = document.querySelectorAll('.notif-item--unread');
+  const items = document.querySelectorAll('.notif-item--unread');
   items.forEach(function(el) { el.classList.remove('notif-item--unread'); });
 
   updateNotifBadge();
@@ -158,17 +158,17 @@ async function markAllRead() {
 }
 
 async function updateNotifBadge() {
-  constuser = getCurrentUser();
+  const user = getCurrentUser();
   if (!user) return;
 
-  constresult = await window.sb.from('notifications')
+  const result = await window.sb.from('notifications')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
     .eq('is_read', false);
 
-  constcount = result.count || 0;
+  const count = result.count || 0;
 
-  constbadges = document.querySelectorAll('.notif-badge');
+  const badges = document.querySelectorAll('.notif-badge');
   badges.forEach(function(badge) {
     badge.textContent = count > 99 ? '99+' : count;
     if (count > 0) {
@@ -179,7 +179,7 @@ async function updateNotifBadge() {
   });
 
   // Legacy support for #notifBadge
-  constlegacyBadge = document.getElementById('notifBadge');
+  const legacyBadge = document.getElementById('notifBadge');
   if (legacyBadge) {
     legacyBadge.textContent = count > 99 ? '99+' : count;
     if (count > 0) {
