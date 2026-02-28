@@ -43,6 +43,20 @@ async function loadProfile(userId) {
   return { data: result.data, error: result.error };
 }
 
+// ═══ loadProfileLight (без JOIN — для фида и хедера) ═══
+
+async function loadProfileLight(userId) {
+  var id = userId || (window.getCurrentUser() && window.getCurrentUser().id);
+  if (!id) return { data: null, error: { message: 'Не авторизован' } };
+
+  var result = await window.sb.from('users')
+    .select('id, name, avatar_url, dna_type, xp_total, level, streak_days, subscription_type, is_verified, bio, specialization, city')
+    .eq('id', id)
+    .single();
+
+  return { data: result.data, error: result.error };
+}
+
 // ═══ updateProfile ═══
 
 async function updateProfile(fields) {
@@ -184,6 +198,7 @@ async function markNotificationsRead() {
 // ═══ Экспорт ═══
 
 window.loadProfile = loadProfile;
+window.loadProfileLight = loadProfileLight;
 window.updateProfile = updateProfile;
 window.saveDnaResult = saveDnaResult;
 window.saveOnboardingStep = saveOnboardingStep;
