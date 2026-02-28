@@ -1,5 +1,37 @@
 /* ===== FORUM STYLES ===== */
 
+/* --- Search --- */
+.forum-search-wrap {
+  position: relative;
+  padding: 0 16px 8px;
+}
+.forum-search-icon {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: -4px;
+  color: rgba(255,255,255,0.3);
+  pointer-events: none;
+}
+.forum-search {
+  width: 100%;
+  padding-left: 38px;
+  font-size: 14px;
+}
+
+/* --- DNA Badge Mini --- */
+.dna-badge-mini {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+}
+
 /* --- Categories --- */
 .forum-cats {
   display: flex;
@@ -80,6 +112,16 @@
   font-weight: 600;
   color: #fff;
   line-height: 1.4;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ftc-preview {
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.5);
   margin-bottom: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -221,6 +263,34 @@
 .topic-stat svg {
   opacity: 0.5;
 }
+.topic-author-level {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+.topic-author-dna {
+  display: flex;
+  align-items: center;
+}
+.topic-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Outfit', sans-serif;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  transition: color 200ms;
+}
+.topic-like-btn:active {
+  color: #ef4444;
+}
+.topic-like-btn svg {
+  opacity: 0.5;
+}
 
 /* --- Replies --- */
 .topic-replies {
@@ -310,6 +380,28 @@
 }
 .reply-mark-best:active {
   background: rgba(34,197,94,0.2);
+}
+.reply-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Outfit', sans-serif;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 200ms;
+}
+.reply-like-btn:active {
+  color: #ef4444;
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.2);
+}
+.reply-like-btn svg {
+  opacity: 0.6;
 }
 
 /* --- Reply Form --- */
