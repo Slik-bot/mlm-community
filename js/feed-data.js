@@ -50,8 +50,8 @@
 
     if (!result.data) return;
 
-    const textEl = document.querySelector('.wis-text');
-    const authorEl = document.querySelector('.wis-author');
+    const textEl = document.querySelector('.wisdom-text');
+    const authorEl = document.querySelector('.wisdom-author');
     if (textEl) textEl.textContent = '«' + result.data.text + '»';
     if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
   }
