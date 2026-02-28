@@ -31,12 +31,12 @@ window.getChessIcon = getChessIcon;
 
 function pfShow(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('hidden');
+  if (el) el.style.display = '';
 }
 
 function pfHide(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.add('hidden');
+  if (el) el.style.display = 'none';
 }
 
 async function initProfile() {
