@@ -180,7 +180,7 @@ function initProfileEdit() {
   const editRing = document.getElementById('editAvatarRing');
   if (editRing) editRing.style.borderColor = getDnaColor(user.dna_type);
 
-  var cityInp = document.getElementById('editCity');
+  const cityInp = document.getElementById('editCity');
   if (cityInp) cityInp.value = user.city || '';
   loadSocials(user.id);
 }
@@ -198,8 +198,8 @@ async function profileSaveEdit() {
     return;
   }
 
-  var cityInp = document.getElementById('editCity');
-  var city = cityInp ? cityInp.value.trim() : '';
+  const cityInp = document.getElementById('editCity');
+  const city = cityInp ? cityInp.value.trim() : '';
   const result = await updateProfile({ name: name, bio: bio, city: city });
   if (result.error) {
     showToast('Ошибка сохранения');
@@ -275,8 +275,8 @@ function initProfileSettings() {
     setToggleState('toggleDeals', settings.push_deals !== false);
     setToggleState('toggleProgress', settings.push_progress !== false);
     setToggleState('toggleSocial', settings.push_social !== false);
-    var lang = settings.language || 'ru';
-    var btns = document.querySelectorAll('#langSwitcher .lang-btn');
+    const lang = settings.language || 'ru';
+    const btns = document.querySelectorAll('#langSwitcher .lang-btn');
     btns.forEach(function(b) { b.classList.toggle('active', b.dataset.lang === lang); });
   });
 }
@@ -398,35 +398,35 @@ async function profileAcceptFriend(rowId) {
 // ===== Язык интерфейса =====
 
 async function profileSetLanguage(lang, el) {
-  var btns = document.querySelectorAll('#langSwitcher .lang-btn');
+  const btns = document.querySelectorAll('#langSwitcher .lang-btn');
   btns.forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
-  var user = getCurrentUser();
+  const user = getCurrentUser();
   if (user) await window.sb.from('user_settings').update({ language: lang }).eq('user_id', user.id);
 }
 
 // ===== Соцсети — загрузка / сохранение =====
 
-var SOCIAL_MAP = [
+const SOCIAL_MAP = [
   { key: 'telegram', id: 'socialTelegram' }, { key: 'instagram', id: 'socialInstagram' },
   { key: 'youtube', id: 'socialYoutube' }, { key: 'tiktok', id: 'socialTiktok' },
   { key: 'vk', id: 'socialVk' }
 ];
 
 async function loadSocials(userId) {
-  var res = await window.sb.from('social_links').select('platform, url').eq('user_id', userId);
+  const res = await window.sb.from('social_links').select('platform, url').eq('user_id', userId);
   if (!res.data) return;
   res.data.forEach(function(s) {
-    var m = SOCIAL_MAP.find(function(x) { return x.key === s.platform; });
-    if (m) { var inp = document.getElementById(m.id); if (inp) inp.value = s.url || ''; }
+    const m = SOCIAL_MAP.find(function(x) { return x.key === s.platform; });
+    if (m) { const inp = document.getElementById(m.id); if (inp) inp.value = s.url || ''; }
   });
 }
 
 async function saveSocials(userId) {
-  for (var i = 0; i < SOCIAL_MAP.length; i++) {
-    var p = SOCIAL_MAP[i];
-    var inp = document.getElementById(p.id);
-    var val = inp ? inp.value.trim() : '';
+  for (let i = 0; i < SOCIAL_MAP.length; i++) {
+    const p = SOCIAL_MAP[i];
+    const inp = document.getElementById(p.id);
+    const val = inp ? inp.value.trim() : '';
     if (val) {
       await window.sb.from('social_links').upsert(
         { user_id: userId, platform: p.key, url: val, is_verified: false },
