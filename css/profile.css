@@ -516,3 +516,58 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
+
+/* ===== SOCIAL FIELDS ===== */
+
+.social-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-field-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.social-field .glass-input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+/* ===== LANGUAGE SWITCHER ===== */
+
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lang-btn.active {
+  background: #8b5cf6;
+  color: #fff;
+}
