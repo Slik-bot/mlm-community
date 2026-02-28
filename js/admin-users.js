@@ -135,7 +135,7 @@ function renderUsersRows() {
       '<td>' + dna + '</td><td>' + (LN[u.level] || '—') + '</td><td>' + (u.xp_total || 0) + '</td>' +
       '<td><span class="badge ' + planBdg + '">' + (u.tariff || 'free').toUpperCase() + '</span></td>' +
       '<td>' + st + '</td>' +
-      '<td class="actions"><button class="btn btn-ghost btn-sm" onclick="viewUser(\'' + u.id + '\')">Подробнее</button></td></tr>';
+      '<td class="actions"><button class="btn btn-ghost btn-sm" onclick="openUserCard(\'' + u.id + '\')">Подробнее</button></td></tr>';
   });
   h += '</tbody></table></div>';
   document.getElementById('usersTableWrap').innerHTML = h;
@@ -175,33 +175,9 @@ async function loadUsersTable() {
   }
 }
 
-// ===== ПРОСМОТР ЮЗЕРА (простая модалка) =====
-function viewUser(id) {
-  const u = _usersCache.find(function(x) { return x.id === id; });
-  if (!u) return;
-  const body =
-    '<div class="info-row"><div class="info-label">Email</div><div>' + esc(u.email || '—') + '</div></div>' +
-    '<div class="info-row"><div class="info-label">ДНК</div><div>' + (DN[u.dna_type] || '—') + '</div></div>' +
-    '<div class="info-row"><div class="info-label">Уровень</div><div>' + (LN[u.level] || '—') + ' (' + (u.xp_total || 0) + ' XP)</div></div>' +
-    '<div class="info-row"><div class="info-label">Тариф</div><div>' + (u.tariff || 'free').toUpperCase() + '</div></div>' +
-    '<div class="info-row"><div class="info-label">Город</div><div>' + esc(u.city || '—') + '</div></div>' +
-    '<div class="info-row"><div class="info-label">Стрик</div><div>' + (u.streak_days || 0) + ' дн.</div></div>' +
-    '<div class="info-row"><div class="info-label">Регистрация</div><div>' + fmtDate(u.created_at) + '</div></div>' +
-    '<div class="modal-actions">' +
-      '<button class="btn ' + (u.is_verified ? 'btn-ghost' : 'btn-success') +
-        '" onclick="toggleVerify(\'' + u.id + '\',' + !u.is_verified + ')">' +
-        (u.is_verified ? 'Снять верификацию' : 'Верифицировать') + '</button>' +
-      '<button class="btn ' + (u.is_banned ? 'btn-success' : 'btn-danger') +
-        '" onclick="toggleBan(\'' + u.id + '\',' + !u.is_banned + ')">' +
-        (u.is_banned ? 'Разбанить' : 'Забанить') + '</button>' +
-    '</div>' +
-    '<div style="margin-top:16px"><div class="fl">Коррекция XP</div>' +
-      '<div style="display:flex;gap:8px">' +
-        '<input type="number" class="field" id="xpAmount" placeholder="±XP" style="margin:0;flex:1">' +
-        '<button class="btn btn-primary" onclick="doAdjustXp(\'' + u.id + '\')">Применить</button>' +
-      '</div></div>';
-  openModal(u.name || u.email || 'Пользователь', body);
-}
+// ═══════════════════════════════════════
+// КАРТОЧКА ЮЗЕРА — см. admin-user-card.js
+// ═══════════════════════════════════════
 
 // ===== ЭКШЕНЫ =====
 async function toggleBan(id, ban) {
@@ -315,7 +291,7 @@ function exportUsersCSV() {
 // ЭКСПОРТЫ
 // ═══════════════════════════════════════
 window.renderUsers = renderUsers; window.switchUsersTab = switchUsersTab;
-window.viewUser = viewUser; window.toggleBan = toggleBan;
+window.toggleBan = toggleBan;
 window.toggleVerify = toggleVerify; window.doAdjustXp = doAdjustXp;
 window.toggleUserCheckbox = toggleUserCheckbox; window.selectAllUsers = selectAllUsers;
 window.bulkAction = bulkAction; window.exportUsersCSV = exportUsersCSV;
