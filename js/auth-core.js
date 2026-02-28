@@ -18,7 +18,7 @@
   }
   window.showApp = showApp;
 
-  // Страховка: 25 секунд максимум (запас для медленной сети и retry)
+  // Страховка: 8 секунд максимум
   const _fallbackTimer = setTimeout(async function() {
     const ph = document.getElementById('preload-hide');
     if (ph) {
@@ -27,7 +27,7 @@
       if (window.initLandingModals) window.initLandingModals();
       ph.remove();
     }
-  }, 25000);
+  }, 8000);
 
   // ===== МГНОВЕННОЕ ПЕРЕКЛЮЧЕНИЕ ЭКРАНА (без анимации) =====
   async function switchScreenInstant(screenId) {

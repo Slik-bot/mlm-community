@@ -2,145 +2,81 @@
   <div class="detail-hdr">
     <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="detail-title">Компании</div>
-    <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    <button class="icon-btn" id="compSearchBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
   </div>
 
-  <div class="comp-scroll">
+  <!-- Search -->
+  <div class="comp-search hidden" id="compSearchBar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-inp" id="compSearchInp" type="text" placeholder="Найти компанию..." autocomplete="off" />
+    </div>
+  </div>
+
+  <div class="comp-scroll" id="compScroll">
     <!-- Filters -->
-    <div class="comp-filters">
-      <div class="flt comp-flt on" onclick="filterCompanies(this)">Все</div>
-      <div class="flt comp-flt" onclick="filterCompanies(this)">Здоровье</div>
-      <div class="flt comp-flt" onclick="filterCompanies(this)">Красота</div>
-      <div class="flt comp-flt" onclick="filterCompanies(this)">Финансы</div>
-      <div class="flt comp-flt" onclick="filterCompanies(this)">Экология</div>
-      <div class="flt comp-flt" onclick="filterCompanies(this)">Технологии</div>
+    <div class="comp-filters" id="compFilters">
+      <div class="flt comp-flt on" data-category="">Все</div>
+      <div class="flt comp-flt" data-category="health">Здоровье</div>
+      <div class="flt comp-flt" data-category="beauty">Красота</div>
+      <div class="flt comp-flt" data-category="finance">Финансы</div>
+      <div class="flt comp-flt" data-category="ecology">Экология</div>
+      <div class="flt comp-flt" data-category="tech">Технологии</div>
     </div>
 
-    <!-- Sort bar -->
+    <!-- Sort -->
     <div class="comp-sort">
-      <span class="comp-count">24 компании</span>
+      <span class="comp-count" id="compCount"></span>
       <div class="comp-sort-btn" onclick="toggleSortMenu(this)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>
-        По рейтингу
+        <span id="compSortLabel">По популярности</span>
         <div class="popover" onclick="event.stopPropagation()">
-          <div class="pop-item" onclick="closePopovers()">По рейтингу</div>
-          <div class="pop-item" onclick="closePopovers()">По популярности</div>
-          <div class="pop-item" onclick="closePopovers()">По новизне</div>
-          <div class="pop-item" onclick="closePopovers()">По названию</div>
+          <div class="pop-item" data-sort="popular" onclick="closePopovers()">По популярности</div>
+          <div class="pop-item" data-sort="rating" onclick="closePopovers()">По рейтингу</div>
+          <div class="pop-item" data-sort="newest" onclick="closePopovers()">По новизне</div>
+          <div class="pop-item" data-sort="name" onclick="closePopovers()">По названию</div>
         </div>
       </div>
     </div>
 
-    <!-- Company cards -->
-    <div class="comp-list">
+    <!-- Company list -->
+    <div class="comp-list" id="compList"></div>
 
-      <div class="comp-card" onclick="alert('→ Детали NL International')">
-        <div class="comp-card-top">
-          <div class="comp-logo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <!-- Loading skeletons -->
+    <div id="compLoading">
+      <div class="comp-list">
+        <div class="comp-card skeleton-card">
+          <div class="sk-top" style="padding:0;margin-bottom:8px">
+            <div class="sk-ava" style="width:50px;height:50px;border-radius:12px"></div>
+            <div class="sk-info"><div class="sk-line w60"></div><div class="sk-line w40"></div></div>
           </div>
-          <div class="comp-card-info">
-            <div class="comp-name">NL International <span class="comp-verified"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span></div>
-            <div class="comp-cat">Здоровье · Питание</div>
-          </div>
-          <div class="comp-rating">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>4.7</span>
-          </div>
+          <div class="sk-line w100" style="margin-bottom:6px"></div>
+          <div class="sk-line w80"></div>
         </div>
-        <div class="comp-desc">Функциональное питание, косметика, товары для дома. Более 20 лет на рынке.</div>
-        <div class="comp-stats">
-          <div class="comp-stat"><span class="comp-stat-num">3.2K</span><span class="comp-stat-label">партнёров</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">156</span><span class="comp-stat-label">отзывов</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">2018</span><span class="comp-stat-label">на платформе</span></div>
+        <div class="comp-card skeleton-card">
+          <div class="sk-top" style="padding:0;margin-bottom:8px">
+            <div class="sk-ava" style="width:50px;height:50px;border-radius:12px"></div>
+            <div class="sk-info"><div class="sk-line w60"></div><div class="sk-line w40"></div></div>
+          </div>
+          <div class="sk-line w100" style="margin-bottom:6px"></div>
+          <div class="sk-line w80"></div>
         </div>
-        <div class="comp-tags">
-          <span class="comp-tag">Быстрый старт</span>
-          <span class="comp-tag">Обучение</span>
-          <span class="comp-tag">Бонусы</span>
+        <div class="comp-card skeleton-card">
+          <div class="sk-top" style="padding:0;margin-bottom:8px">
+            <div class="sk-ava" style="width:50px;height:50px;border-radius:12px"></div>
+            <div class="sk-info"><div class="sk-line w60"></div><div class="sk-line w40"></div></div>
+          </div>
+          <div class="sk-line w100" style="margin-bottom:6px"></div>
+          <div class="sk-line w80"></div>
         </div>
       </div>
+    </div>
 
-      <div class="comp-card" onclick="alert('→ Детали Greenway')">
-        <div class="comp-card-top">
-          <div class="comp-logo" style="border-color:rgba(34,197,94,.25)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="comp-card-info">
-            <div class="comp-name">Greenway</div>
-            <div class="comp-cat">Экология · Бытовая химия</div>
-          </div>
-          <div class="comp-rating">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>4.5</span>
-          </div>
-        </div>
-        <div class="comp-desc">Экологичная продукция для дома и здоровья. Концепция осознанного потребления.</div>
-        <div class="comp-stats">
-          <div class="comp-stat"><span class="comp-stat-num">1.8K</span><span class="comp-stat-label">партнёров</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">89</span><span class="comp-stat-label">отзывов</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">2020</span><span class="comp-stat-label">на платформе</span></div>
-        </div>
-        <div class="comp-tags">
-          <span class="comp-tag">Экология</span>
-          <span class="comp-tag">Низкий порог</span>
-        </div>
-      </div>
-
-      <div class="comp-card" onclick="alert('→ Детали Oriflame')">
-        <div class="comp-card-top">
-          <div class="comp-logo" style="border-color:rgba(245,158,11,.25)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          </div>
-          <div class="comp-card-info">
-            <div class="comp-name">Oriflame</div>
-            <div class="comp-cat">Красота · Косметика</div>
-          </div>
-          <div class="comp-rating">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>4.3</span>
-          </div>
-        </div>
-        <div class="comp-desc">Шведская косметика с 50-летней историей. Широкая линейка уходовой и декоративной косметики.</div>
-        <div class="comp-stats">
-          <div class="comp-stat"><span class="comp-stat-num">2.1K</span><span class="comp-stat-label">партнёров</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">134</span><span class="comp-stat-label">отзывов</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">2019</span><span class="comp-stat-label">на платформе</span></div>
-        </div>
-        <div class="comp-tags">
-          <span class="comp-tag">Международная</span>
-          <span class="comp-tag">Обучение</span>
-          <span class="comp-tag">Акции</span>
-        </div>
-      </div>
-
-      <div class="comp-card" onclick="alert('→ Детали Siberian Wellness')">
-        <div class="comp-card-top">
-          <div class="comp-logo" style="border-color:rgba(59,130,246,.25)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <div class="comp-card-info">
-            <div class="comp-name">Siberian Wellness</div>
-            <div class="comp-cat">Здоровье · БАДы</div>
-          </div>
-          <div class="comp-rating">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>4.6</span>
-          </div>
-        </div>
-        <div class="comp-desc">Натуральные витамины и БАДы, спортивное питание. Собственные лаборатории и производство.</div>
-        <div class="comp-stats">
-          <div class="comp-stat"><span class="comp-stat-num">2.8K</span><span class="comp-stat-label">партнёров</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">201</span><span class="comp-stat-label">отзывов</span></div>
-          <div class="comp-stat"><span class="comp-stat-num">2019</span><span class="comp-stat-label">на платформе</span></div>
-        </div>
-        <div class="comp-tags">
-          <span class="comp-tag">Производитель</span>
-          <span class="comp-tag">Наука</span>
-          <span class="comp-tag">Бонусы</span>
-        </div>
-      </div>
-
+    <!-- Empty state -->
+    <div class="comp-empty hidden" id="compEmpty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+      <div class="comp-empty-title">Компании не найдены</div>
+      <div class="comp-empty-text">Попробуйте изменить фильтры или поисковый запрос</div>
     </div>
   </div>
 </div>
