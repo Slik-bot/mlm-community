@@ -457,3 +457,32 @@
   color: rgba(255, 255, 255, 0.3);
   padding: 16px 0;
 }
+
+/* Date divider */
+.chat-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  position: relative;
+}
+
+.chat-date-divider::before,
+.chat-date-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.chat-date-divider::before { margin-right: 12px; }
+.chat-date-divider::after { margin-left: 12px; }
+
+/* Spacer for header alignment */
+.scr-head-spacer {
+  width: 36px;
+  flex-shrink: 0;
+}
