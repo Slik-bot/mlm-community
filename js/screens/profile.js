@@ -29,15 +29,44 @@ window.getChessIcon = getChessIcon;
 
 // ===== initProfile =====
 
-function initProfile() {
+function pfShow(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+}
+
+function pfHide(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('hidden');
+}
+
+async function initProfile() {
   const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
 
-  loadProfile(user.id).then(function(result) {
-    if (result.data) {
-      renderProfile(result.data);
-    }
-  });
+  const viewId = window._viewProfileId;
+  const myId = user.id;
+  const isOwn = !viewId || viewId === myId;
+  const profileUserId = isOwn ? myId : viewId;
+
+  const result = await loadProfile(profileUserId);
+  if (!result.data) return;
+  renderProfile(result.data);
+
+  if (isOwn) {
+    pfShow('profileEditBlock');
+    pfShow('profileSettingsBtn');
+    pfShow('profileBalanceBlock');
+    pfShow('profileVerifyBlock');
+    pfHide('profileForeignActions');
+  } else {
+    pfHide('profileEditBlock');
+    pfHide('profileSettingsBtn');
+    pfHide('profileBalanceBlock');
+    pfHide('profileVerifyBlock');
+    pfShow('profileForeignActions');
+    await checkFriendStatus(myId, profileUserId);
+    window._viewProfileId = null;
+  }
 }
 
 // ===== renderProfile =====
@@ -278,6 +307,84 @@ async function togglePushNotifications(el) {
   }
 }
 
+// ===== Чужой профиль — друзья =====
+
+async function checkFriendStatus(myId, targetId) {
+  try {
+    const { data: sent } = await window.sb.from('friends')
+      .select('id, status')
+      .eq('user_a_id', myId).eq('user_b_id', targetId)
+      .maybeSingle();
+    const { data: received } = await window.sb.from('friends')
+      .select('id, status')
+      .eq('user_a_id', targetId).eq('user_b_id', myId)
+      .maybeSingle();
+
+    if (sent?.status === 'accepted' || received?.status === 'accepted') {
+      renderFriendButton('accepted', sent?.id || received?.id);
+    } else if (sent?.status === 'pending') {
+      renderFriendButton('pending_sent', sent.id);
+    } else if (received?.status === 'pending') {
+      renderFriendButton('pending_received', received.id, targetId);
+    } else {
+      renderFriendButton('none', null, targetId);
+    }
+  } catch (err) {
+    console.error('checkFriendStatus error:', err);
+  }
+}
+
+function renderFriendButton(status, rowId, targetId) {
+  const btn = document.getElementById('profileFriendBtn');
+  if (!btn) return;
+  btn.className = 'prof-friend-btn';
+  btn.disabled = false;
+  btn.onclick = null;
+
+  if (status === 'none') {
+    btn.textContent = 'Добавить в друзья';
+    btn.classList.add('prof-friend-add');
+    btn.onclick = function() { profileSendFriend(targetId); };
+  } else if (status === 'pending_sent') {
+    btn.textContent = 'Запрос отправлен';
+    btn.classList.add('prof-friend-pending');
+    btn.disabled = true;
+  } else if (status === 'pending_received') {
+    btn.textContent = 'Принять запрос';
+    btn.classList.add('prof-friend-accept');
+    btn.onclick = function() { profileAcceptFriend(rowId); };
+  } else if (status === 'accepted') {
+    btn.textContent = 'В друзьях';
+    btn.classList.add('prof-friend-accepted');
+    btn.disabled = true;
+  }
+}
+
+async function profileSendFriend(targetId) {
+  try {
+    const myId = getCurrentUser().id;
+    await window.sb.from('friends').insert({
+      user_a_id: myId, user_b_id: targetId
+    });
+    renderFriendButton('pending_sent', null);
+    if (window.showToast) showToast('Запрос отправлен');
+  } catch (err) {
+    console.error('profileSendFriend error:', err);
+  }
+}
+
+async function profileAcceptFriend(rowId) {
+  try {
+    await window.sb.from('friends')
+      .update({ status: 'accepted', updated_at: new Date().toISOString() })
+      .eq('id', rowId);
+    renderFriendButton('accepted', rowId);
+    if (window.showToast) showToast('Вы теперь друзья!');
+  } catch (err) {
+    console.error('profileAcceptFriend error:', err);
+  }
+}
+
 // ===== Экспорт =====
 
 window.initProfile = initProfile;
@@ -287,3 +394,5 @@ window.profileSaveEdit = profileSaveEdit;
 window.profilePickAvatar = profilePickAvatar;
 window.profileToggleSetting = profileToggleSetting;
 window.togglePushNotifications = togglePushNotifications;
+window.profileSendFriend = profileSendFriend;
+window.profileAcceptFriend = profileAcceptFriend;
