@@ -178,11 +178,11 @@ async function authLogout() {
 
 async function authCheckSession() {
   try {
-    var result = await window.sb.auth.getSession();
-    var session = result.data && result.data.session;
+    const result = await window.sb.auth.getSession();
+    const session = result.data && result.data.session;
     if (!session) return null;
 
-    var resp = await window.sb
+    const resp = await window.sb
       .from('users')
       .select('*')
       .eq('supabase_auth_id', session.user.id)
@@ -200,7 +200,7 @@ async function authCheckSession() {
       };
     }
 
-    var user = resp.data;
+    const user = resp.data;
     if (window.setState) {
       window.setState('currentUser', user);
       window.setState('session', session);
