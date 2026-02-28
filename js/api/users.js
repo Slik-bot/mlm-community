@@ -46,10 +46,10 @@ async function loadProfile(userId) {
 // ═══ loadProfileLight (без JOIN — для фида и хедера) ═══
 
 async function loadProfileLight(userId) {
-  var id = userId || (window.getCurrentUser() && window.getCurrentUser().id);
+  const id = userId || (window.getCurrentUser() && window.getCurrentUser().id);
   if (!id) return { data: null, error: { message: 'Не авторизован' } };
 
-  var result = await window.sb.from('users')
+  const result = await window.sb.from('users')
     .select('id, name, avatar_url, dna_type, xp_total, level, streak_days, subscription_type, is_verified, bio, specialization, city')
     .eq('id', id)
     .single();
