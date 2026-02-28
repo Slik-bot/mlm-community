@@ -12,11 +12,11 @@ const DN = { strategist: 'Стратег', communicator: 'Коммуникато
 const DC = { strategist: 'blue', communicator: 'green', creator: 'gold', analyst: 'purple' };
 const LN = { pawn: 'Пешка', knight: 'Конь', bishop: 'Слон', rook: 'Ладья', queen: 'Ферзь' };
 
-const TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', finance:'Финансы', settings:'Настройки' };
+const TITLES = { dashboard:'Дашборд', users:'Пользователи', content:'Контент', companies:'Компании', shop:'Магазин', gamification:'Геймификация', tasks:'Задания', finance:'Финансы', settings:'Настройки' };
 
 const ROLE_ACCESS = {
-  super_admin: ['dashboard','users','content','companies','shop','gamification','finance','settings'],
-  admin: ['dashboard','users','content','companies','shop','gamification','finance'],
+  super_admin: ['dashboard','users','content','companies','shop','gamification','tasks','finance','settings'],
+  admin: ['dashboard','users','content','companies','shop','gamification','tasks','finance'],
   moderator: ['dashboard','content'],
   analyst: ['dashboard']
 };
@@ -137,6 +137,7 @@ function renderPage(page) {
     case 'companies': renderCompanies(); break;
     case 'shop': renderShop(); break;
     case 'gamification': renderGamification(); break;
+    case 'tasks': renderTasks(); break;
     case 'finance': renderFinance(); break;
     case 'settings': renderSettings(); break;
   }
