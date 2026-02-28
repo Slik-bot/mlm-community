@@ -103,6 +103,7 @@ const SCREEN_INITS = {
   scrWallet: ['initWallet'],
   scrVerification: ['initVerification'],
   scrNotifications: ['initNotifications'],
+  scrSearch: ['initSearch'],
   scrCompanies: ['initCompanies'],
   scrCompanyCard: ['initCompanyCard'],
   scrMore: ['initMore'],
@@ -192,6 +193,29 @@ function updateChrome(id){
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
 
+const NAV_TAB_MAP = {
+  scrFeed: 0, scrSearch: 0, scrCreate: 0,
+  scrCompanies: 1, scrCompanyCard: 1, scrDetail: 1,
+  scrShop: 2, scrProductDetail: 2, scrProductCreate: 2,
+  scrDealList: 2, scrDealCreate: 2, scrDealDetail: 2,
+  scrChatList: 3, scrChat: 3, scrChatInfo: 3,
+  scrForum: 3, scrForumTopic: 3, scrForumCreate: 3,
+  scrProfile: 4, scrProfileEdit: 4, scrProfileSettings: 4,
+  scrMore: 5, scrQuest: 5, scrMyDna: 5, scrLeaderboard: 5,
+  scrReferrals: 5, scrWallet: 5, scrNotifications: 5,
+  scrVerification: 5, scrAlliances: 5, scrSubscription: 5,
+  scrAchievements: 5, scrRoadmap: 5, scrFriends: 5,
+  scrProfileStats: 5, scrBizcard: 5, scrWeeklyReport: 5
+};
+
+function updateNavActive(id) {
+  const idx = NAV_TAB_MAP[id];
+  if (idx === undefined) return;
+  const tabs = document.querySelectorAll('.nav-i');
+  tabs.forEach(function(tab) { tab.classList.remove('on'); });
+  if (tabs[idx]) tabs[idx].classList.add('on');
+}
+
 function handleScreenTransition(currentEl, nextEl, direction) {
   const canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (canAnimate && currentEl) {
@@ -256,6 +280,7 @@ async function goTo(id) {
   navHistory.push(id);
   localStorage.setItem('lastScreen', id);
   updateChrome(id);
+  updateNavActive(id);
   handleScreenTransition(currentEl, nextEl, 'forward');
 
   if(id==='scrSearch') setTimeout(function(){document.getElementById('searchInp').focus()},450);
@@ -276,6 +301,7 @@ async function goBack() {
   const prevEl = document.getElementById(prev);
   if(!prevEl) return;
   updateChrome(prev);
+  updateNavActive(prev);
   handleScreenTransition(currentEl, prevEl, 'back');
 }
 
