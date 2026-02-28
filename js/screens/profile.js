@@ -179,6 +179,10 @@ function initProfileEdit() {
 
   const editRing = document.getElementById('editAvatarRing');
   if (editRing) editRing.style.borderColor = getDnaColor(user.dna_type);
+
+  var cityInp = document.getElementById('editCity');
+  if (cityInp) cityInp.value = user.city || '';
+  loadSocials(user.id);
 }
 
 // ===== profileSaveEdit =====
@@ -194,11 +198,14 @@ async function profileSaveEdit() {
     return;
   }
 
-  const result = await updateProfile({ name: name, bio: bio });
+  var cityInp = document.getElementById('editCity');
+  var city = cityInp ? cityInp.value.trim() : '';
+  const result = await updateProfile({ name: name, bio: bio, city: city });
   if (result.error) {
     showToast('Ошибка сохранения');
     return;
   }
+  await saveSocials(getCurrentUser().id);
   showToast('Профиль сохранён');
   goBack();
 }
@@ -382,6 +389,39 @@ async function profileAcceptFriend(rowId) {
     if (window.showToast) showToast('Вы теперь друзья!');
   } catch (err) {
     console.error('profileAcceptFriend error:', err);
+  }
+}
+
+// ===== Соцсети — загрузка / сохранение =====
+
+var SOCIAL_MAP = [
+  { key: 'telegram', id: 'socialTelegram' }, { key: 'instagram', id: 'socialInstagram' },
+  { key: 'youtube', id: 'socialYoutube' }, { key: 'tiktok', id: 'socialTiktok' },
+  { key: 'vk', id: 'socialVk' }
+];
+
+async function loadSocials(userId) {
+  var res = await window.sb.from('social_links').select('platform, url').eq('user_id', userId);
+  if (!res.data) return;
+  res.data.forEach(function(s) {
+    var m = SOCIAL_MAP.find(function(x) { return x.key === s.platform; });
+    if (m) { var inp = document.getElementById(m.id); if (inp) inp.value = s.url || ''; }
+  });
+}
+
+async function saveSocials(userId) {
+  for (var i = 0; i < SOCIAL_MAP.length; i++) {
+    var p = SOCIAL_MAP[i];
+    var inp = document.getElementById(p.id);
+    var val = inp ? inp.value.trim() : '';
+    if (val) {
+      await window.sb.from('social_links').upsert(
+        { user_id: userId, platform: p.key, url: val, is_verified: false },
+        { onConflict: 'user_id, platform' }
+      );
+    } else {
+      await window.sb.from('social_links').delete().eq('user_id', userId).eq('platform', p.key);
+    }
   }
 }
 
