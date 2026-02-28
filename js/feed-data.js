@@ -31,6 +31,10 @@
       dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[profile.dna_type] || '') + ' · ♟ ' + hdrLevel.label;
     }
 
+    const bal = profile.balance || 0;
+    const balEl = document.getElementById('feedBalance');
+    if (balEl) balEl.textContent = (bal / 100).toLocaleString('ru-RU') + ' ₽';
+
     const xpEl = document.querySelector('.imp-xp-val');
     if (xpEl) xpEl.textContent = (profile.xp_total || 0) + ' XP';
 
