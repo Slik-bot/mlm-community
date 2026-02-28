@@ -178,26 +178,19 @@ async function authLogout() {
 
 async function authCheckSession() {
   try {
-    let result = await window.sb.auth.getSession();
-    let session = result.data && result.data.session;
-    if (!session) {
-      await new Promise(function(r) { setTimeout(r, 800); });
-      result = await window.sb.auth.getSession();
-      session = result.data && result.data.session;
-    }
+    var result = await window.sb.auth.getSession();
+    var session = result.data && result.data.session;
     if (!session) return null;
 
-    const { data: user, error } = await window.sb
+    var resp = await window.sb
       .from('users')
       .select('*')
       .eq('supabase_auth_id', session.user.id)
       .maybeSingle();
 
-    if (error) return null;
+    if (resp.error) return null;
 
-    // Профиль не найден — возвращаем базовый объект из сессии
-    // чтобы не выкидывать на лендинг если таблица недоступна
-    if (!user) {
+    if (!resp.data) {
       return {
         id: session.user.id,
         supabase_auth_id: session.user.id,
@@ -207,11 +200,13 @@ async function authCheckSession() {
       };
     }
 
+    var user = resp.data;
     if (window.setState) {
       window.setState('currentUser', user);
       window.setState('session', session);
     }
     window.currentUser = user;
+    window._cachedProfile = user;
 
     window.sb.from('users')
       .update({ last_active_at: new Date().toISOString() })
