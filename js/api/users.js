@@ -195,6 +195,23 @@ async function markNotificationsRead() {
   window.setState('notifications', { unread: 0 });
 }
 
+// ═══ searchUsers ═══
+
+async function searchUsers(query, limit = 20) {
+  try {
+    const { data, error } = await window.sb
+      .from('vw_public_profiles')
+      .select('id, name, avatar_url, dna_type, level, city')
+      .or(`name.ilike.%${query}%,city.ilike.%${query}%`)
+      .limit(limit);
+    if (error) throw error;
+    return { data: data || [], error: null };
+  } catch (err) {
+    console.error('searchUsers error:', err);
+    return { data: [], error: err };
+  }
+}
+
 // ═══ Экспорт ═══
 
 window.loadProfile = loadProfile;
@@ -204,3 +221,4 @@ window.saveDnaResult = saveDnaResult;
 window.saveOnboardingStep = saveOnboardingStep;
 window.loadNotifications = loadNotifications;
 window.markNotificationsRead = markNotificationsRead;
+window.searchUsers = searchUsers;
