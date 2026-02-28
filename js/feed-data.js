@@ -6,49 +6,42 @@
   // ===== ЗАГРУЗКА РЕАЛЬНОЙ ЛЕНТЫ =====
 
   window.initFeedFromDB = async function() {
-    const _u = window.getCurrentUser ? window.getCurrentUser() : null;
-    if (!_u) return;
+    var user = window.getCurrentUser ? window.getCurrentUser() : null;
+    if (!user) return;
 
-    await loadProfile();
-    updateFeedHeader();
-    loadWisdomCard();
-    loadQuestsBar();
-    loadFeedPosts();
+    var profile = window._cachedProfile || user;
+    updateFeedHeader(profile);
+    Promise.all([
+      loadWisdomCard(),
+      loadQuestsBar(profile),
+      loadFeedPosts()
+    ]);
   };
 
-  function updateFeedHeader() {
-    const _profile = window.getCurrentUser ? window.getCurrentUser() : null;
-    if (!_profile) return;
+  function updateFeedHeader(profile) {
+    if (!profile) return;
 
-    const nameEl = document.querySelector('.fd-name, .hdr-name, #feedUserName');
-    if (nameEl) nameEl.textContent = 'Привет, ' + (_profile.name || 'Участник') + '!';
+    var nameEl = document.querySelector('.fd-name, .hdr-name, #feedUserName');
+    if (nameEl) nameEl.textContent = 'Привет, ' + (profile.name || 'Участник') + '!';
 
-    const dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-    const hdrLevel = window.Gamification.getUserLevel(_profile.xp_total || 0);
-    const dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
-    if (dnaBadge && _profile.dna_type) {
-      dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[_profile.dna_type] || '') + ' · ♟ ' + hdrLevel.label;
+    var dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
+    var hdrLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
+    var dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
+    if (dnaBadge && profile.dna_type) {
+      dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[profile.dna_type] || '') + ' · ♟ ' + hdrLevel.label;
     }
 
-    const xpEl = document.querySelector('.imp-xp-val');
-    if (xpEl) xpEl.textContent = (_profile.xp_total || 0) + ' XP';
+    var xpEl = document.querySelector('.imp-xp-val');
+    if (xpEl) xpEl.textContent = (profile.xp_total || 0) + ' XP';
 
-    loadStreakDisplay();
-  }
-
-  async function loadStreakDisplay() {
-    const _u = window.getCurrentUser ? window.getCurrentUser() : null;
-    if (!_u) return;
-    const result = await window.sb.from('users').select('streak_days').eq('id', _u.id).maybeSingle();
-    if (!result.data) return;
-    const streakEl = document.querySelector('.imp-streak-val');
+    var streakEl = document.querySelector('.imp-streak-val');
     if (streakEl) {
-      streakEl.innerHTML = result.data.streak_days + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
+      streakEl.innerHTML = (profile.streak_days || 0) + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
     }
   }
 
   async function loadWisdomCard() {
-    const result = await window.sb
+    var result = await window.sb
       .from('wisdom_cards')
       .select('text, author')
       .eq('is_active', true)
@@ -57,47 +50,36 @@
 
     if (!result.data) return;
 
-    const textEl = document.querySelector('.wis-text');
-    const authorEl = document.querySelector('.wis-author');
+    var textEl = document.querySelector('.wis-text');
+    var authorEl = document.querySelector('.wis-author');
     if (textEl) textEl.textContent = '«' + result.data.text + '»';
     if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
   }
 
-  async function fetchQuestsData(userId) {
-    const questsResult = await window.sb
-      .from('task_completions').select('*, tasks(*)')
-      .eq('user_id', userId).order('taken_at', { ascending: false }).limit(5);
-    const streakRes = await window.sb.from('users').select('streak_days').eq('id', userId).maybeSingle();
-    return { quests: questsResult.data || [], streak: streakRes.data };
-  }
-
-  async function loadQuestsBar() {
-    const _u = window.getCurrentUser ? window.getCurrentUser() : null;
-    if (!_u) return;
+  async function loadQuestsBar(profile) {
+    if (!profile) return;
     try {
-      const data = await fetchQuestsData(_u.id);
-      const streakEl = document.querySelector('.imp-streak-val');
-      if (streakEl && data.streak) streakEl.textContent = data.streak.streak_days || 0;
+      var questsResult = await window.sb
+        .from('task_completions').select('*, tasks(*)')
+        .eq('user_id', profile.id).order('taken_at', { ascending: false }).limit(5);
+      var quests = questsResult.data || [];
 
-      const _profile = window.getCurrentUser ? window.getCurrentUser() : null;
-      if (_profile) {
-        const xpEl = document.querySelector('.imp-xp-val');
-        const xpMaxEl = document.querySelector('.imp-xp-max');
-        const lvlEl = document.querySelector('.imp-lvl');
-        if (xpEl) xpEl.textContent = _profile.xp_total || 0;
-        const gLevel = window.Gamification.getUserLevel(_profile.xp_total || 0);
-        const gProgress = window.Gamification.getLevelProgress(_profile.xp_total || 0);
-        if (xpMaxEl) xpMaxEl.textContent = gLevel.xpNext || '∞';
-        if (lvlEl) lvlEl.textContent = gLevel.label;
-        const progressBar = document.querySelector('.imp-bar-fill');
-        if (progressBar) {
-          progressBar.style.width = gProgress.percent + '%';
-        }
+      var xpEl = document.querySelector('.imp-xp-val');
+      var xpMaxEl = document.querySelector('.imp-xp-max');
+      var lvlEl = document.querySelector('.imp-lvl');
+      if (xpEl) xpEl.textContent = profile.xp_total || 0;
+      var gLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
+      var gProgress = window.Gamification.getLevelProgress(profile.xp_total || 0);
+      if (xpMaxEl) xpMaxEl.textContent = gLevel.xpNext || '∞';
+      if (lvlEl) lvlEl.textContent = gLevel.label;
+      var progressBar = document.querySelector('.imp-bar-fill');
+      if (progressBar) {
+        progressBar.style.width = gProgress.percent + '%';
       }
 
-      const questsBox = document.querySelector('.imp-quests');
-      if (questsBox && data.quests.length) {
-        questsBox.innerHTML = data.quests.map(function(q) {
+      var questsBox = document.querySelector('.imp-quests');
+      if (questsBox && quests.length) {
+        questsBox.innerHTML = quests.map(function(q) {
           return '<div class="q-item imp-quest' + (q.is_completed ? ' done' : '') + '"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">' + (q.tasks ? q.tasks.title : '') + '</div><div class="q-xp">' + (q.is_completed ? '✓ ' : '') + '+' + (q.tasks ? q.tasks.xp_reward : 0) + '</div></div>';
         }).join('');
       }
