@@ -35,6 +35,11 @@ async function authRegister(email, password, name) {
     console.error('AUTH REGISTER ERROR:', res.status, data);
     throw new Error(data.error || 'Ошибка регистрации');
   }
+  // needs_verification — сессии нет, возвращаем как есть
+  if (data.needs_verification) {
+    return data;
+  }
+  // Прямая сессия (fallback)
   await window.sb.auth.setSession({
     access_token: data.session.access_token,
     refresh_token: data.session.refresh_token
