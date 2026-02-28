@@ -7,7 +7,6 @@ let allConversations = [];
 let chatDebounceTimer = null;
 
 // ===== initChatList =====
-
 function initChatList() {
   const user = getCurrentUser();
   if (!user) { goTo('scrLanding'); return; }
@@ -27,7 +26,6 @@ function initChatList() {
 }
 
 // ===== loadConversations =====
-
 async function loadConversations() {
   const user = getCurrentUser();
   if (!user) return;
@@ -51,7 +49,6 @@ async function loadConversations() {
 }
 
 // ===== renderChatList =====
-
 function buildChatItem(conv, myId) {
   const members = conv.conversation_members || [];
   let other = null;
@@ -90,7 +87,6 @@ function renderChatList(conversations) {
 }
 
 // ===== filterConversations =====
-
 function filterConversations(query) {
   if (!query) { renderChatList(allConversations); return; }
   const myId = getCurrentUser().id;
@@ -107,7 +103,6 @@ function filterConversations(query) {
 }
 
 // ===== switchChatTab =====
-
 function switchChatTab(tab, el) {
   currentChatTab = tab;
   document.querySelectorAll('.chat-tab').forEach(function(t) { t.classList.remove('active'); });
@@ -116,7 +111,6 @@ function switchChatTab(tab, el) {
 }
 
 // ===== openChat =====
-
 let currentChatPartner = null;
 
 function openChat(conversationId, partner) {
@@ -126,7 +120,6 @@ function openChat(conversationId, partner) {
 }
 
 // ===== initChat =====
-
 function initChat() {
   if (!currentConversationId) { goBack(); return; }
 
@@ -151,7 +144,6 @@ function initChat() {
 }
 
 // ===== loadMessages =====
-
 async function loadMessages(convId) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
@@ -175,18 +167,41 @@ async function loadMessages(convId) {
 }
 
 // ===== renderMessages =====
-
 function renderMessages(messages) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
 
   const myId = getCurrentUser().id;
+  let lastDateLabel = '';
+
   messages.forEach(function(msg) {
+    if (msg.created_at) {
+      const label = getDateLabel(msg.created_at);
+      if (label !== lastDateLabel) {
+        lastDateLabel = label;
+        const divider = document.createElement('div');
+        divider.className = 'chat-date-divider';
+        divider.textContent = label;
+        container.appendChild(divider);
+      }
+    }
     const bubble = createBubble(msg, myId);
     container.appendChild(bubble);
   });
 
   container.scrollTop = container.scrollHeight;
+}
+
+function getDateLabel(isoStr) {
+  const d = new Date(isoStr);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = today - msgDay;
+
+  if (diff === 0) return 'Сегодня';
+  if (diff === 86400000) return 'Вчера';
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
 }
 
 function createBubble(msg, myId) {
@@ -217,7 +232,6 @@ function createBubble(msg, myId) {
 }
 
 // ===== subscribeRealtime =====
-
 function subscribeRealtime(convId) {
   chatUnsubscribe();
 
@@ -234,7 +248,6 @@ function subscribeRealtime(convId) {
 }
 
 // ===== appendMessage =====
-
 function appendMessage(message) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
@@ -249,7 +262,6 @@ function appendMessage(message) {
 }
 
 // ===== chatSend =====
-
 async function chatSend() {
   const input = document.getElementById('chatInput');
   if (!input) return;
@@ -271,7 +283,6 @@ async function chatSend() {
 }
 
 // ===== chatInputResize =====
-
 function chatInputResize(el) {
   el.style.height = 'auto';
   const maxH = 120;
@@ -279,7 +290,6 @@ function chatInputResize(el) {
 }
 
 // ===== chatInputKeydown =====
-
 function chatInputKeydown(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -288,7 +298,6 @@ function chatInputKeydown(event) {
 }
 
 // ===== chatAttachFile =====
-
 function chatAttachFile() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -318,7 +327,6 @@ function chatAttachFile() {
 }
 
 // ===== initChatInfo =====
-
 function initChatInfo() {
   if (!currentChatPartner) { goBack(); return; }
 
@@ -336,7 +344,6 @@ function initChatInfo() {
 }
 
 // ===== chatUnsubscribe =====
-
 function chatUnsubscribe() {
   if (realtimeSubscription) {
     window.sb.removeChannel(realtimeSubscription);
@@ -345,25 +352,97 @@ function chatUnsubscribe() {
 }
 
 // ===== Вспомогательные =====
+async function findOrCreateConversation(targetUserId) {
+  const user = getCurrentUser();
+  if (!user || !targetUserId) return null;
+
+  const { data: myConvs } = await window.sb
+    .from('conversation_members')
+    .select('conversation_id')
+    .eq('user_id', user.id);
+
+  if (myConvs && myConvs.length) {
+    const convIds = myConvs.map(function(c) { return c.conversation_id; });
+    const { data: match } = await window.sb
+      .from('conversation_members')
+      .select('conversation_id')
+      .eq('user_id', targetUserId)
+      .in('conversation_id', convIds);
+
+    if (match && match.length) {
+      const { data: conv } = await window.sb
+        .from('conversations')
+        .select('id, type')
+        .eq('id', match[0].conversation_id)
+        .eq('type', 'personal')
+        .single();
+      if (conv) return conv.id;
+    }
+  }
+
+  const { data: newConv, error } = await window.sb
+    .from('conversations')
+    .insert({ type: 'personal' })
+    .select('id')
+    .single();
+  if (error || !newConv) return null;
+
+  await window.sb.from('conversation_members').insert([
+    { conversation_id: newConv.id, user_id: user.id },
+    { conversation_id: newConv.id, user_id: targetUserId }
+  ]);
+
+  return newConv.id;
+}
 
 function chatStartNew() {
-  if (window.showToast) showToast('Скоро: выбор собеседника');
+  showToast('Выберите собеседника из профиля');
 }
 
 function chatShowMenu() {
-  if (window.showToast) showToast('Скоро: меню чата');
+  showToast('Скоро: меню чата');
 }
 
 function chatMute() {
-  if (window.showToast) showToast('Уведомления обновлены');
+  showToast('Уведомления обновлены');
 }
 
-function chatClearHistory() {
-  if (window.showToast) showToast('Скоро: очистка истории');
+async function chatClearHistory() {
+  const user = getCurrentUser();
+  if (!user || !currentConversationId) return;
+
+  try {
+    await window.sb.from('messages')
+      .delete()
+      .eq('conversation_id', currentConversationId)
+      .eq('sender_id', user.id);
+
+    const container = document.getElementById('chatMessages');
+    if (container) container.innerHTML = '';
+    loadMessages(currentConversationId);
+    showToast('История очищена');
+  } catch (err) {
+    console.error('Clear history error:', err);
+    showToast('Ошибка очистки');
+  }
 }
 
-function chatDelete() {
-  if (window.showToast) showToast('Скоро: удаление диалога');
+async function chatDelete() {
+  if (!currentConversationId) return;
+
+  try {
+    await window.sb.from('conversations')
+      .delete()
+      .eq('id', currentConversationId);
+
+    currentConversationId = null;
+    currentChatPartner = null;
+    showToast('Диалог удалён');
+    goBack();
+  } catch (err) {
+    console.error('Delete chat error:', err);
+    showToast('Ошибка удаления');
+  }
 }
 
 function formatChatTime(dateStr) {
@@ -385,7 +464,6 @@ function formatMsgTime(dateStr) {
 function pad2(n) { return n < 10 ? '0' + n : '' + n; }
 
 // ===== Экспорт =====
-
 window.initChatList = initChatList;
 window.initChat = initChat;
 window.initChatInfo = initChatInfo;
@@ -397,3 +475,4 @@ window.chatInputKeydown = chatInputKeydown;
 window.chatAttachFile = chatAttachFile;
 window.chatUnsubscribe = chatUnsubscribe;
 window.chatStartNew = chatStartNew;
+window.findOrCreateConversation = findOrCreateConversation;
