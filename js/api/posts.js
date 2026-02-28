@@ -124,6 +124,59 @@ async function toggleBookmark(postId) {
   return { bookmarked: !existing.data };
 }
 
+// ═══ searchPosts ═══
+
+async function searchPosts(query, limit = 20) {
+  try {
+    const { data, error } = await window.sb
+      .from('posts')
+      .select('id, content, type, author_id, created_at, images, likes_count')
+      .ilike('content', `%${query}%`)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return { data: data || [], error: null };
+  } catch (err) {
+    console.error('searchPosts error:', err);
+    return { data: [], error: err };
+  }
+}
+
+// ═══ searchForum ═══
+
+async function searchForum(query, limit = 20) {
+  try {
+    const { data, error } = await window.sb
+      .from('forum_topics')
+      .select('id, title, category, author_id, views_count, replies_count, created_at')
+      .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return { data: data || [], error: null };
+  } catch (err) {
+    console.error('searchForum error:', err);
+    return { data: [], error: err };
+  }
+}
+
+// ═══ searchExperts ═══
+
+async function searchExperts(query, limit = 20) {
+  try {
+    const { data, error } = await window.sb
+      .from('expert_cards')
+      .select('id, user_id, title, specialization, hourly_rate, rating, skills')
+      .or(`title.ilike.%${query}%,specialization.ilike.%${query}%`)
+      .limit(limit);
+    if (error) throw error;
+    return { data: data || [], error: null };
+  } catch (err) {
+    console.error('searchExperts error:', err);
+    return { data: [], error: err };
+  }
+}
+
 // ═══ Экспорт ═══
 
 window.loadPosts = loadPosts;
@@ -132,3 +185,6 @@ window.toggleLike = toggleLike;
 window.addComment = addComment;
 window.loadComments = loadComments;
 window.toggleBookmark = toggleBookmark;
+window.searchPosts = searchPosts;
+window.searchForum = searchForum;
+window.searchExperts = searchExperts;
