@@ -1,0 +1,35 @@
+<!-- =============== SCREEN: FRIENDS =============== -->
+<div class="scr hidden" id="scrFriends">
+
+  <!-- Header -->
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Друзья</span>
+    <span class="fr-head-badge" id="frHeadBadge"></span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="fr-tabs">
+    <div class="fr-tab fr-active" data-tab="accepted">Друзья <span class="fr-tab-badge" id="frBadgeAccepted"></span></div>
+    <div class="fr-tab" data-tab="incoming">Входящие <span class="fr-tab-badge" id="frBadgeIncoming"></span></div>
+    <div class="fr-tab" data-tab="outgoing">Исходящие</div>
+  </div>
+
+  <!-- Search -->
+  <div class="fr-search-wrap">
+    <svg class="fr-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input class="fr-search" id="frSearch" type="text" placeholder="Поиск по имени...">
+  </div>
+
+  <!-- List -->
+  <div class="fr-list" id="frList"></div>
+
+  <!-- Empty state -->
+  <div class="fr-empty hidden" id="frEmpty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    <div class="fr-empty-text" id="frEmptyText">Пока нет друзей</div>
+  </div>
+
+</div>

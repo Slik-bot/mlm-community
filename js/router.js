@@ -58,7 +58,8 @@ const TEMPLATES = {
   scrSubscription: '/templates/subscription.html',
   scrVerifyEmail: '/templates/verify-email.html',
   scrAchievements: '/templates/achievements.html',
-  scrRoadmap: '/templates/roadmap.html'
+  scrRoadmap: '/templates/roadmap.html',
+  scrFriends: '/templates/friends.html'
 };
 const loadedTemplates = {};
 
@@ -107,7 +108,8 @@ const SCREEN_INITS = {
   scrSubscription: ['initSubscription'],
   scrVerifyEmail: ['initVerifyEmail'],
   scrAchievements: ['initAchievements'],
-  scrRoadmap: ['initRoadmap']
+  scrRoadmap: ['initRoadmap'],
+  scrFriends: ['initFriends']
 };
 
 async function loadTemplate(id) {
