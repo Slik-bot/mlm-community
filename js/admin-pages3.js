@@ -1,10 +1,10 @@
 // ===== ADMIN PAGES 3 — Finance =====
 
 let _finTab = 'subscriptions';
-let _subFilter = '', _subPage = 1, _txPage = 1, _payFilter = '';
+let _subFilter = '', _subPage = 1, _txPage = 1;
 
 function renderFinance() {
-  const tabs = 'subscriptions:Подписки,transactions:Транзакции,withdrawals:Выводы,payouts:Выплаты,referrals:Рефералы,channels:Платёжные каналы';
+  const tabs = 'subscriptions:Подписки,transactions:Транзакции,withdrawals:Выводы,referrals:Рефералы,channels:Платёжные каналы';
   let h = '<div class="tabs">';
   tabs.split(',').forEach(function(s) { const p = s.split(':'); h += '<button class="tab' + (p[0] === _finTab ? ' active' : '') + '" onclick="switchFinTab(\'' + p[0] + '\',this)">' + p[1] + '</button>'; });
   h += '</div><div id="contentArea"></div>';
@@ -15,7 +15,7 @@ function switchFinTab(tab, btn) {
   _finTab = tab;
   document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  ({ subscriptions: loadSubscriptions, transactions: loadTransactions, withdrawals: loadWithdrawals, payouts: loadPayouts, referrals: loadReferrals, channels: loadPayChannels }[tab] || function(){})();
+  ({ subscriptions: loadSubscriptions, transactions: loadTransactions, withdrawals: loadWithdrawals, referrals: loadReferrals, channels: loadPayChannels }[tab] || function(){})();
 }
 
 // ===== ПОДПИСКИ =====
@@ -86,47 +86,9 @@ async function loadTransactions() {
 }
 function loadTxPage(p) { _txPage = p; loadTransactions(); }
 
-// ===== ВЫПЛАТЫ =====
-async function loadPayouts() {
-  const area = document.getElementById('contentArea');
-  area.innerHTML = 'Загрузка...';
-  let q = sb.from('withdrawals').select('*, users(name)').order('requested_at', { ascending: false });
-  if (_payFilter) q = q.eq('status', _payFilter);
-  const r = await q;
-  const data = r.data || [];
-  const sm = { pending: 'badge-gold', approved: 'badge-blue', paid: 'badge-green', rejected: 'badge-red' };
-  const fh = '<div class="toolbar"><select class="field field-select" onchange="_payFilter=this.value;loadPayouts()">' +
-    '<option value="">Все статусы</option>' +
-    '<option value="pending"' + (_payFilter === 'pending' ? ' selected' : '') + '>Pending</option>' +
-    '<option value="approved"' + (_payFilter === 'approved' ? ' selected' : '') + '>Approved</option>' +
-    '<option value="paid"' + (_payFilter === 'paid' ? ' selected' : '') + '>Paid</option>' +
-    '<option value="rejected"' + (_payFilter === 'rejected' ? ' selected' : '') + '>Rejected</option>' +
-    '</select></div>';
-  if (!data.length) { area.innerHTML = fh + '<div class="empty">Нет выплат</div>'; return; }
-  let h = fh + '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-    '<th>Пользователь</th><th>Сумма</th><th>Статус</th><th>Запрошено</th><th>Оплачено</th><th>Действия</th>' +
-    '</tr></thead><tbody>';
-  data.forEach(function(p) {
-    const usr = p.users ? p.users.name : '—';
-    const badge = sm[p.status] || 'badge-purple';
-    let acts = '';
-    if (p.status === 'pending') acts = '<button class="btn btn-success btn-sm" onclick="handlePayout(\'' + p.id + '\',\'approved\')">Одобрить</button><button class="btn btn-danger btn-sm" onclick="handlePayout(\'' + p.id + '\',\'rejected\')">Отклонить</button>';
-    if (p.status === 'approved') acts = '<button class="btn btn-primary btn-sm" onclick="handlePayout(\'' + p.id + '\',\'paid\')">Оплачено</button>';
-    h += '<tr><td>' + esc(usr) + '</td><td><b>' + (p.amount || 0) + '</b></td>' +
-      '<td><span class="badge ' + badge + '">' + esc(p.status || '—') + '</span></td>' +
-      '<td>' + fmtDate(p.requested_at) + '</td><td>' + fmtDate(p.paid_at) + '</td>' +
-      '<td class="actions">' + acts + '</td></tr>';
-  });
-  h += '</tbody></table></div>';
-  area.innerHTML = h;
-}
-async function handlePayout(id, status) {
-  const upd = { status: status };
-  if (status === 'paid') upd.paid_at = new Date().toISOString();
-  await sb.from('withdrawals').update(upd).eq('id', id);
-  showToast(status === 'approved' ? 'Одобрена' : status === 'paid' ? 'Оплачена' : 'Отклонена', 'ok');
-  loadPayouts();
-}
+// ═══════════════════════════════════════
+// ВЫВОДЫ / ВЫПЛАТЫ — см. admin-withdrawals.js
+// ═══════════════════════════════════════
 
 // ===== РЕФЕРАЛЫ =====
 async function loadReferrals() {
