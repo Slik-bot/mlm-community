@@ -1,0 +1,42 @@
+<!-- =============== SCREEN: BIZCARD =============== -->
+<div class="scr hidden" id="scrBizcard">
+
+  <!-- Header -->
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Моя визитка</span>
+    <div class="bc-head-spacer"></div>
+  </div>
+
+  <!-- Card -->
+  <div class="bc-card" id="bcCard">
+    <div class="bc-avatar-wrap" id="bcAvatarWrap"></div>
+    <div class="bc-name" id="bcName"></div>
+    <div class="bc-dna" id="bcDna"></div>
+    <div class="bc-level" id="bcLevel"></div>
+    <div class="bc-bio" id="bcBio"></div>
+    <div class="bc-divider"></div>
+    <div class="bc-qr-wrap">
+      <img class="bc-qr" id="bcQr" src="" alt="QR" width="140" height="140">
+    </div>
+    <div class="bc-ref-code" id="bcRefCode"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="bc-actions">
+    <button class="bc-btn-share" id="bcBtnShare" onclick="bcHandleShare()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Поделиться
+    </button>
+    <button class="bc-btn-copy" onclick="bcHandleCopy()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Скопировать
+    </button>
+  </div>
+
+  <!-- Social -->
+  <div class="bc-social" id="bcSocial"></div>
+
+</div>

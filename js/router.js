@@ -60,7 +60,8 @@ const TEMPLATES = {
   scrAchievements: '/templates/achievements.html',
   scrRoadmap: '/templates/roadmap.html',
   scrFriends: '/templates/friends.html',
-  scrProfileStats: '/templates/profile-stats.html'
+  scrProfileStats: '/templates/profile-stats.html',
+  scrBizcard: '/templates/bizcard.html'
 };
 const loadedTemplates = {};
 
@@ -111,7 +112,8 @@ const SCREEN_INITS = {
   scrAchievements: ['initAchievements'],
   scrRoadmap: ['initRoadmap'],
   scrFriends: ['initFriends'],
-  scrProfileStats: ['initProfileStats']
+  scrProfileStats: ['initProfileStats'],
+  scrBizcard: ['initBizcard']
 };
 
 async function loadTemplate(id) {
