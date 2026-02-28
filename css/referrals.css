@@ -120,61 +120,99 @@
   background: rgba(255,255,255,0.08);
 }
 
-/* Funnel stats */
+/* Stats grid 2x2 */
 
-.referrals__funnel {
+.referrals__stats {
   margin: 0 16px 12px;
-  padding: 18px 12px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.referrals__funnel-item {
+.referrals__stat-card {
+  padding: 14px;
   text-align: center;
 }
 
-.referrals__funnel-value {
-  font-size: var(--fs-h2);
+.referrals__stat-value {
+  font-size: 20px;
   font-weight: 800;
   color: var(--text);
-  line-height: var(--lh-tight);
+  line-height: 1.2;
 }
 
-.referrals__funnel-label {
+.referrals__stat-label {
   font-size: var(--fs-micro);
   color: var(--text-muted);
   margin-top: 4px;
   font-weight: 500;
 }
 
-/* Income */
+/* Inviter block */
 
-.referrals__income {
+.referrals__inviter {
   margin: 0 16px 16px;
-  padding: 18px 16px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--primary);
 }
 
-.referrals__income-row {
-  display: flex;
-  gap: 16px;
-}
-
-.referrals__income-item {
-  flex: 1;
-}
-
-.referrals__income-label {
+.referrals__inviter-label {
   font-size: var(--fs-caption);
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   font-weight: 500;
 }
 
-.referrals__income-value {
+.referrals__inviter-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.referrals__inviter-ava {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.referrals__inviter-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.referrals__inviter-placeholder {
   font-size: var(--fs-h3);
-  font-weight: 800;
-  color: var(--green);
+  font-weight: 700;
+}
+
+.referrals__inviter-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.referrals__inviter-name {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.referrals__inviter-dna {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.referrals__inviter-dna svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Section */
@@ -208,7 +246,15 @@
   border-radius: var(--radius);
 }
 
-.referrals__avatar {
+.referrals__item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.referrals__item-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -218,21 +264,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
 }
 
-.referrals__avatar img {
+.referrals__item-avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.referrals__info {
+.referrals__item-avatar-placeholder {
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+
+.referrals__item-info {
   flex: 1;
   min-width: 0;
 }
 
-.referrals__name {
+.referrals__item-name {
   font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text);
@@ -241,24 +291,49 @@
   text-overflow: ellipsis;
 }
 
-.referrals__meta {
+.referrals__item-level {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-top: 2px;
 }
 
-.referrals__date {
-  font-size: var(--fs-caption);
-  color: var(--text-dim);
+.referrals__item-chess svg {
+  width: 16px;
+  height: 16px;
 }
 
-.referrals__item-income {
+.referrals__item-date {
+  font-size: var(--fs-caption);
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.referrals__item-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.referrals__item-bonus {
   font-size: var(--fs-body);
   font-weight: 700;
   color: var(--green);
-  flex-shrink: 0;
-  margin-left: auto;
+}
+
+.referrals__item-rate {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.referrals__item--frozen .referrals__item-bonus {
+  color: var(--orange);
+}
+
+.referrals__verified-badge {
+  color: var(--primary-light);
+  margin-left: 4px;
+  font-size: var(--fs-caption);
 }
 
 /* Badges */
