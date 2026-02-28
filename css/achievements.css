@@ -1,0 +1,181 @@
+/* ===== ACHIEVEMENTS SCREEN ===== */
+
+/* Header spacer */
+.ach-head-spacer {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+/* Summary */
+.ach-summary {
+  margin: 0 16px 16px;
+  padding: 20px;
+}
+
+.ach-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ach-summary-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.ach-summary-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ach-summary-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ach-summary-xp {
+  font-size: 16px;
+  font-weight: 700;
+  color: #8b5cf6;
+}
+
+/* Progress Bar */
+.ach-progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ach-progress-fill {
+  height: 100%;
+  background: #8b5cf6;
+  border-radius: 6px;
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Filters */
+.ach-filters {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ach-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.ach-filter-tab {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ach-filter-tab.ach-active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+/* Grid */
+.ach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px 24px;
+}
+
+/* Card */
+.ach-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  animation: achFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.ach-card.ach-locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.ach-card-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ach-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.ach-card-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+}
+
+.ach-card-xp {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8b5cf6;
+  margin-bottom: 4px;
+}
+
+.ach-card-date {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Empty State */
+.ach-empty {
+  text-align: center;
+  padding: 40px 16px;
+}
+
+.ach-empty-icon {
+  color: rgba(255, 255, 255, 0.15);
+  margin-bottom: 12px;
+}
+
+.ach-empty-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  line-height: 1.5;
+}
+
+/* Animation */
+@keyframes achFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

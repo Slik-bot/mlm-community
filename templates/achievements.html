@@ -1,0 +1,46 @@
+<!-- =============== SCREEN: ACHIEVEMENTS =============== -->
+<div class="scr hidden" id="scrAchievements">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Достижения</span>
+    <div class="ach-head-spacer"></div>
+  </div>
+
+  <!-- Summary -->
+  <div class="ach-summary glass-card">
+    <div class="ach-summary-row">
+      <div class="ach-summary-info">
+        <span class="ach-summary-count" id="achCount">0 из 0</span>
+        <span class="ach-summary-label">разблокировано</span>
+      </div>
+      <div class="ach-summary-xp" id="achTotalXp">+0 XP</div>
+    </div>
+    <div class="ach-progress-bar">
+      <div class="ach-progress-fill" id="achProgressFill"></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="ach-filters" id="achFilters">
+    <button class="ach-filter-tab ach-active" data-filter="all">Все</button>
+    <button class="ach-filter-tab" data-filter="streak">Стрик</button>
+    <button class="ach-filter-tab" data-filter="task">Задания</button>
+    <button class="ach-filter-tab" data-filter="deal">Сделки</button>
+    <button class="ach-filter-tab" data-filter="social">Соцсеть</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="ach-grid" id="achGrid"></div>
+
+  <!-- Empty state -->
+  <div class="ach-empty hidden" id="achEmpty">
+    <svg class="ach-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+      <path d="M6 9a6 6 0 0012 0V3H6v6z"/>
+      <path d="M12 15v3"/>
+      <path d="M8 21h8"/>
+    </svg>
+    <div class="ach-empty-text">Выполняйте задания, чтобы получить достижения</div>
+  </div>
+</div>
