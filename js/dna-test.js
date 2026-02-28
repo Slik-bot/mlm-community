@@ -291,3 +291,5 @@ function dnaReset(){
 }
 
 async function dnaRetry(){await goTo('scrDnaTest');setTimeout(dnaReset,400);}
+
+window.dnaReset = dnaReset;
