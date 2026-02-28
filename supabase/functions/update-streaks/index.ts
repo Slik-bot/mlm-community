@@ -84,15 +84,15 @@ async function awardBadges(
         .from("achievements")
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id)
-        .eq("badge_type", ms.badge);
+        .eq("achievement_type", ms.badge);
 
       if ((count ?? 0) > 0) continue;
 
       await supabase.from("achievements").insert({
         user_id: user.id,
-        badge_type: ms.badge,
-        badge_name: ms.name,
-        xp_bonus: ms.xp,
+        achievement_type: ms.badge,
+        title: ms.name,
+        xp_reward: ms.xp,
       });
 
       await supabase.from("notifications").insert({
