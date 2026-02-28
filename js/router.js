@@ -61,7 +61,8 @@ const TEMPLATES = {
   scrRoadmap: '/templates/roadmap.html',
   scrFriends: '/templates/friends.html',
   scrProfileStats: '/templates/profile-stats.html',
-  scrBizcard: '/templates/bizcard.html'
+  scrBizcard: '/templates/bizcard.html',
+  scrWeeklyReport: '/templates/weekly-report.html'
 };
 const loadedTemplates = {};
 
@@ -113,7 +114,8 @@ const SCREEN_INITS = {
   scrRoadmap: ['initRoadmap'],
   scrFriends: ['initFriends'],
   scrProfileStats: ['initProfileStats'],
-  scrBizcard: ['initBizcard']
+  scrBizcard: ['initBizcard'],
+  scrWeeklyReport: ['initWeeklyReport']
 };
 
 async function loadTemplate(id) {

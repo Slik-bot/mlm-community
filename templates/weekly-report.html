@@ -1,0 +1,38 @@
+<!-- =============== SCREEN: WEEKLY REPORT =============== -->
+<div class="scr hidden" id="scrWeeklyReport">
+  <div class="scr-head">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="scr-head-title">Недельный отчёт</span>
+    <div class="icon-btn wr-spacer"></div>
+  </div>
+
+  <!-- Week selector -->
+  <div class="wr-week-nav">
+    <button class="wr-nav-btn" id="wr-prev" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="wr-week-label" id="wr-week-label">--</span>
+    <button class="wr-nav-btn" id="wr-next" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <!-- Report card -->
+  <div id="wr-report"></div>
+
+  <!-- History -->
+  <div id="wr-history"></div>
+
+  <!-- Empty state -->
+  <div class="wr-empty hidden" id="wr-empty">
+    <svg class="wr-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+    </svg>
+    <div class="wr-empty-title">Отчёт появится в воскресенье</div>
+    <div class="wr-empty-text">Система автоматически формирует отчёт каждое воскресенье</div>
+  </div>
+</div>
