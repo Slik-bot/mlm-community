@@ -283,7 +283,6 @@ async function goTo(id) {
   updateNavActive(id);
   handleScreenTransition(currentEl, nextEl, 'forward');
 
-  if(id==='scrSearch') setTimeout(function(){document.getElementById('searchInp').focus()},450);
   if(id==='scrFeed'){
     const feedName=document.getElementById('feedUserName');
     if(feedName){ feedName.textContent='Привет, '+(localStorage.getItem('userName')||'Участник')+'!'; }
