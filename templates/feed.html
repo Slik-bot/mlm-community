@@ -39,14 +39,9 @@
       </div>
     </div>
 
-    <!-- Stories -->
-    <div class="stories">
-      <div class="story" onclick="alert('Создать Story')"><div class="story-ring add"><div class="story-ava">+</div></div><div class="story-nm">Создать</div></div>
-      <div class="story" onclick="alert('Story Анны')"><div class="story-ring new"><div class="story-ava">👩‍💼</div></div><div class="story-nm">Анна М.</div></div>
-      <div class="story"><div class="story-ring new"><div class="story-ava">👨‍💻</div></div><div class="story-nm">Дмитрий</div></div>
-      <div class="story"><div class="story-ring seen"><div class="story-ava">👩</div></div><div class="story-nm">Елена К.</div></div>
-      <div class="story"><div class="story-ring new"><div class="story-ava">👨</div></div><div class="story-nm">Максим</div></div>
-      <div class="story"><div class="story-ring seen"><div class="story-ava">👩‍🎨</div></div><div class="story-nm">Ольга</div></div>
+    <!-- Stories (загружаются из БД через loadStories()) -->
+    <div class="stories" id="storiesRow">
+      <div class="story" onclick="goTo('scrCreate')"><div class="story-ring add"><div class="story-ava"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="story-nm">Создать</div></div>
     </div>
 
     <!-- Filters -->

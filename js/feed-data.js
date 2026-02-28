@@ -14,7 +14,8 @@
     Promise.all([
       loadWisdomCard(),
       loadQuestsBar(profile),
-      loadFeedPosts()
+      loadFeedPosts(),
+      loadStories(profile)
     ]);
   };
 
@@ -89,6 +90,52 @@
       }
     } catch (err) {
       console.error('Error loading quests bar:', err);
+    }
+  }
+
+  // ===== STORIES — друзья из БД =====
+
+  const STORY_DNA_CLS = { strategist: 'dna-blue', communicator: 'dna-green', creator: 'dna-orange', analyst: 'dna-purple' };
+
+  async function loadStories(profile) {
+    const row = document.getElementById('storiesRow');
+    if (!row || !profile) return;
+    const uid = profile.id;
+    for (let i = 0; i < 4; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'story story-sk';
+      sk.innerHTML = '<div class="story-ring"><div class="story-ava"></div></div><div class="story-nm">\u00a0\u00a0\u00a0\u00a0</div>';
+      row.appendChild(sk);
+    }
+    try {
+      const [r1, r2] = await Promise.all([
+        window.sb.from('friends')
+          .select('friend:vw_public_profiles!user_b_id(id,name,avatar_url,dna_type)')
+          .eq('user_a_id', uid).eq('status', 'accepted').limit(10),
+        window.sb.from('friends')
+          .select('friend:vw_public_profiles!user_a_id(id,name,avatar_url,dna_type)')
+          .eq('user_b_id', uid).eq('status', 'accepted').limit(10)
+      ]);
+      const friends = (r1.data || []).concat(r2.data || [])
+        .map(function(f) { return f.friend; }).filter(Boolean).slice(0, 10);
+      row.querySelectorAll('.story-sk').forEach(function(s) { s.remove(); });
+      friends.forEach(function(f) {
+        const cls = STORY_DNA_CLS[f.dna_type] || '';
+        const nm = f.name || '?';
+        const shortName = nm.length > 8 ? nm.substring(0, 8) + '\u2026' : nm;
+        const avaHtml = f.avatar_url
+          ? '<img src="' + escHtml(f.avatar_url) + '" alt="">'
+          : escHtml(nm[0].toUpperCase());
+        const div = document.createElement('div');
+        div.className = 'story';
+        div.onclick = function() { goTo('scrProfile', { userId: f.id }); };
+        div.innerHTML = '<div class="story-ring ' + cls + '"><div class="story-ava">' +
+          avaHtml + '</div></div><div class="story-nm">' + escHtml(shortName) + '</div>';
+        row.appendChild(div);
+      });
+    } catch (err) {
+      console.error('Stories load error:', err);
+      row.querySelectorAll('.story-sk').forEach(function(s) { s.remove(); });
     }
   }
 

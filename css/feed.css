@@ -34,6 +34,13 @@
 .story-ring.add .story-ava{border:none;color:var(--primary);font-size:20px;}
 .story-nm{font-size:11px;color:var(--text-dim);max-width:72px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .story-live{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);padding:1px 6px;border-radius:4px;background:linear-gradient(135deg,#ef4444,#f97316);font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;white-space:nowrap;}
+.story-ring.dna-blue{background:linear-gradient(135deg,#3b82f6,#8b5cf6)}
+.story-ring.dna-green{background:linear-gradient(135deg,#22c55e,#34d399)}
+.story-ring.dna-orange{background:linear-gradient(135deg,#f59e0b,#f97316)}
+.story-ring.dna-purple{background:linear-gradient(135deg,#8b5cf6,#ec4899)}
+.story-ava img{width:100%;height:100%;object-fit:cover}
+.story-sk{pointer-events:none}
+.story-sk .story-ava,.story-sk .story-nm{animation:skPulse 1.2s ease-in-out infinite}
 
 /* ============ FILTERS ============ */
 .filters{display:flex;gap:6px;padding:8px 16px 10px;overflow-x:auto;scrollbar-width:none;}
