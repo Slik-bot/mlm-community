@@ -73,18 +73,27 @@ function handleRegister() {
       const result = await authRegister(email, password, name);
       if (window.haptic) haptic('success');
       if (name) localStorage.setItem('userName', name);
-      // Email требует верификации
+      // BYPASS: Email-верификация готова, но домен Resend не подключен.
+      // Когда домен будет — раскомментировать блок ниже и удалить bypass.
+      // --- НАЧАЛО BYPASS ---
       if (result && result.needs_verification) {
-        window._verifyData = {
-          user_id: result.user_id,
-          email: result.email,
-          password: password,
-        };
-        closeLndModals();
-        showApp();
-        goTo('scrVerifyEmail');
+        try {
+          await window.authLogin(email, password);
+          freshRegistration();
+          closeLndModals();
+          showApp();
+          goTo('scrWelcome');
+        } catch (loginErr) {
+          showAuthError('register', 'Аккаунт создан, но вход не удался. Попробуйте войти.');
+        }
         return;
       }
+      // --- КОНЕЦ BYPASS ---
+      // TODO: Включить email-верификацию когда домен Resend подключен
+      // if (result.needs_verification) {
+      //   window._verifyData = { user_id: result.user_id, email: result.email, password };
+      //   closeLndModals(); showApp(); goTo('scrVerifyEmail'); return;
+      // }
       // Fallback: прямая сессия (Telegram OAuth и т.д.)
       freshRegistration();
       closeLndModals();
