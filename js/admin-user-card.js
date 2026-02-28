@@ -32,25 +32,25 @@ function renderCardModal(u) {
     ? '<span class="badge badge-' + (DC[u.dna_type] || 'purple') + '">' + (DN[u.dna_type] || u.dna_type) + '</span>'
     : '';
   const avatar = u.avatar_url
-    ? '<img class="avatar-sm" src="' + esc(u.avatar_url) + '" style="border-radius:50%">'
+    ? '<img class="avatar-sm" src="' + esc(u.avatar_url) + '">'
     : '<div class="avatar-sm avatar-placeholder">&#128100;</div>';
   const verif = u.is_verified
     ? '<span class="badge badge-green">Верифицирован</span>'
     : '<span class="badge badge-gold">Не верифицирован</span>';
 
-  let h = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">' + avatar +
+  let h = '<div class="user-card-header">' + avatar +
     '<div><b>' + esc(u.name || '—') + '</b>' +
-    (u.telegram_id ? ' <span style="opacity:.5">@' + esc(u.telegram_id) + '</span>' : '') +
-    '<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">' + dna +
+    (u.telegram_id ? ' <span class="user-card-dates">@' + esc(u.telegram_id) + '</span>' : '') +
+    '<div class="user-card-meta">' + dna +
     '<span class="badge badge-purple">' + (LN[u.level] || '—') + '</span>' +
     '<span class="badge badge-blue">' + (u.tariff || 'free').toUpperCase() + '</span>' + verif +
     '</div></div></div>' +
-    '<div style="opacity:.5;font-size:12px">Рег: ' + fmtDate(u.created_at) +
+    '<div class="user-card-dates">Рег: ' + fmtDate(u.created_at) +
     ' | Вход: ' + fmtDate(u.last_active_at) + '</div>';
 
   const TABS = [['profile', 'Профиль'], ['finance', 'Финансы'], ['tasks', 'Задания'], ['deals', 'Сделки'],
     ['referrals', 'Рефералы'], ['moderation', 'Модерация'], ['socials', 'Соцсети'], ['log', 'Лог']];
-  h += '<div class="tabs" style="flex-wrap:wrap;margin:12px 0 0">';
+  h += '<div class="tabs tabs-card">';
   TABS.forEach(function(t) {
     h += '<button class="tab card-tab' + (t[0] === 'profile' ? ' active' : '') +
       '" onclick="switchCardTab(\'' + t[0] + '\',this)">' + t[1] + '</button>';
@@ -104,7 +104,7 @@ function renderTabProfile() {
   fields.forEach(function(f) {
     h += '<div class="info-row"><div class="info-label">' + f[0] + '</div><div>' + f[1] + '</div></div>';
   });
-  h += '<div class="modal-actions" style="margin-top:12px">' +
+  h += '<div class="modal-actions">' +
     '<button class="btn ' + (u.is_banned ? 'btn-success' : 'btn-danger') + ' btn-sm" ' +
       'onclick="toggleBan(\'' + u.id + '\',' + !u.is_banned + ')">' +
       (u.is_banned ? 'Разбанить' : 'Забанить') + '</button>' +
@@ -113,11 +113,11 @@ function renderTabProfile() {
       (u.is_verified ? 'Снять верификацию' : 'Верифицировать') + '</button>' +
     '<button class="btn btn-ghost btn-sm" onclick="openStrikeModal(\'' + u.id + '\')">Strike</button>' +
     '</div>' +
-    '<div style="margin-top:12px"><div class="fl">Коррекция XP</div>' +
-      '<div style="display:flex;gap:8px">' +
-        '<input type="number" class="field" id="xpAmount" placeholder="±XP" style="margin:0;flex:1">' +
+    '<div class="fl">Коррекция XP</div>' +
+      '<div class="xp-adjust">' +
+        '<input type="number" class="field" id="xpAmount" placeholder="±XP">' +
         '<button class="btn btn-primary btn-sm" onclick="doAdjustXp(\'' + u.id + '\')">Применить</button>' +
-      '</div></div>';
+      '</div>';
   el.innerHTML = h;
 }
 
@@ -274,7 +274,7 @@ async function renderTabLog() {
 
 // ===== STRIKE МОДАЛКА =====
 function openStrikeModal(userId) {
-  const h = '<div style="display:flex;flex-direction:column;gap:10px">' +
+  const h = '<div class="strike-form">' +
     '<label class="fl">Тип</label>' +
     '<select class="field" id="strikeType">' +
       '<option value="warning">Предупреждение</option>' +

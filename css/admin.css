@@ -327,3 +327,87 @@ textarea.field { min-height: 80px; resize: vertical; }
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════
+   QUEUE 2 — Users, User Card, Moderation, Strikes
+   ═══════════════════════════════════════════════ */
+
+/* ===== BULK BAR ===== */
+.bulk-bar {
+  position: sticky; bottom: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 10px 16px; z-index: 30;
+  animation: slideUp .25s var(--ease);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== AVATAR PLACEHOLDER ===== */
+.avatar-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card); color: var(--text-dim);
+  font-size: 16px; line-height: 1;
+}
+
+/* ===== USER CARD HEADER ===== */
+.user-card-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+}
+.user-card-meta {
+  display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap;
+}
+.user-card-dates {
+  opacity: .5; font-size: 12px;
+}
+
+/* ===== CARD TABS ===== */
+.card-tab {
+  padding: 8px 14px; font-size: 13px;
+}
+.tabs.tabs-card {
+  flex-wrap: wrap; margin: 12px 0 0;
+}
+
+/* ===== SUB-TABS (moderation) ===== */
+.tabs-sub {
+  margin-bottom: 14px; gap: 2px;
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+.tabs-sub .tab {
+  padding: 7px 14px; font-size: 13px;
+}
+
+/* ===== MOD STATS ===== */
+.mod-stats {
+  display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.mod-stats .stat-card {
+  flex: 1; min-width: 100px; padding: 14px; text-align: center;
+}
+.stat-lbl {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+}
+
+/* ===== STRIKE FORM ===== */
+.strike-form {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ===== STRIKE BADGES ===== */
+.strike-badge { display: inline-block; padding: 3px 8px; border-radius: var(--radius-xs); font-size: 11px; font-weight: 600; }
+.strike-warning { background: var(--warning-bg); color: var(--warning); }
+.strike-restrict { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+.strike-ban { background: var(--error-bg); color: var(--error); }
+
+/* ===== SLA INDICATORS ===== */
+.sla-ok { color: var(--success); }
+.sla-warning { color: var(--warning); }
+.sla-overdue { color: var(--error); font-weight: 600; }
+
+/* ===== XP ADJUST ROW ===== */
+.xp-adjust {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+.xp-adjust .field { margin: 0; flex: 1; }
