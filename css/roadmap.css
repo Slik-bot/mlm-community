@@ -1,0 +1,262 @@
+/* ═══════════════════════════════════════
+   ROADMAP — Дорожная карта
+   ═══════════════════════════════════════ */
+
+/* ═══ Head Spacer ═══ */
+
+.rm-head-spacer {
+  width: 40px;
+}
+
+/* ═══ Section Label ═══ */
+
+.rm-section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0 16px 12px;
+}
+
+/* ═══ Current Level Card ═══ */
+
+.rm-current {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  margin: 0 16px 24px;
+}
+
+.rm-current-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rm-current-icon svg {
+  width: 56px;
+  height: 56px;
+}
+
+.rm-current-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rm-current-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.rm-progress-bar {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.rm-progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: #8b5cf6;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rm-progress-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ═══ Timeline ═══ */
+
+.rm-timeline {
+  position: relative;
+  padding: 0 16px 24px 44px;
+}
+
+.rm-timeline::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ═══ Node ═══ */
+
+.rm-node {
+  position: relative;
+  padding: 6px 0;
+}
+
+.rm-node::before {
+  content: '';
+  position: absolute;
+  left: -27px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: #06060b;
+  z-index: 1;
+}
+
+.rm-node-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rm-node-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rm-node-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rm-node-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rm-node-xp {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+.rm-node-status {
+  flex-shrink: 0;
+}
+
+/* ═══ Node: Passed ═══ */
+
+.rm-passed::before {
+  border-color: #22c55e;
+  background: #22c55e;
+}
+
+.rm-passed .rm-node-card {
+  opacity: 0.6;
+}
+
+.rm-passed .rm-node-name {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ═══ Node: Active (Current) ═══ */
+
+.rm-active::before {
+  border-color: #8b5cf6;
+  background: #8b5cf6;
+  animation: rm-pulse 2s ease-in-out infinite;
+}
+
+.rm-active .rm-node-card {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+}
+
+/* ═══ Node: Locked ═══ */
+
+.rm-locked::before {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rm-locked .rm-node-card {
+  opacity: 0.4;
+}
+
+.rm-locked .rm-node-name {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ═══ Legend ═══ */
+
+.rm-legend {
+  margin: 0 16px 24px;
+  padding: 16px;
+}
+
+.rm-legend-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+}
+
+.rm-legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rm-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rm-legend-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rm-legend-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.rm-legend-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+.rm-legend-mult {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8b5cf6;
+}
+
+/* ═══ Pulse Animation ═══ */
+
+@keyframes rm-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0);
+  }
+}

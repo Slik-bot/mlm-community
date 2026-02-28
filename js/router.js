@@ -57,7 +57,8 @@ const TEMPLATES = {
   scrReferrals: '/templates/referrals.html',
   scrSubscription: '/templates/subscription.html',
   scrVerifyEmail: '/templates/verify-email.html',
-  scrAchievements: '/templates/achievements.html'
+  scrAchievements: '/templates/achievements.html',
+  scrRoadmap: '/templates/roadmap.html'
 };
 const loadedTemplates = {};
 
@@ -105,7 +106,8 @@ const SCREEN_INITS = {
   scrReferrals: ['initReferrals'],
   scrSubscription: ['initSubscription'],
   scrVerifyEmail: ['initVerifyEmail'],
-  scrAchievements: ['initAchievements']
+  scrAchievements: ['initAchievements'],
+  scrRoadmap: ['initRoadmap']
 };
 
 async function loadTemplate(id) {
