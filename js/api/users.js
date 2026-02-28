@@ -50,7 +50,7 @@ async function updateProfile(fields) {
   if (!uid) return { data: null, error: { message: 'Не авторизован' } };
 
   const allowed = {};
-  const keys = ['name', 'bio', 'avatar_url', 'specialization'];
+  const keys = ['name', 'bio', 'avatar_url', 'specialization', 'city'];
   keys.forEach(function (k) {
     if (fields[k] !== undefined) allowed[k] = fields[k];
   });
