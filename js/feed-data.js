@@ -6,10 +6,10 @@
   // ===== ЗАГРУЗКА РЕАЛЬНОЙ ЛЕНТЫ =====
 
   window.initFeedFromDB = async function() {
-    var user = window.getCurrentUser ? window.getCurrentUser() : null;
+    const user = window.getCurrentUser ? window.getCurrentUser() : null;
     if (!user) return;
 
-    var profile = window._cachedProfile || user;
+    const profile = window._cachedProfile || user;
     updateFeedHeader(profile);
     Promise.all([
       loadWisdomCard(),
@@ -21,27 +21,27 @@
   function updateFeedHeader(profile) {
     if (!profile) return;
 
-    var nameEl = document.querySelector('.fd-name, .hdr-name, #feedUserName');
+    const nameEl = document.querySelector('.fd-name, .hdr-name, #feedUserName');
     if (nameEl) nameEl.textContent = 'Привет, ' + (profile.name || 'Участник') + '!';
 
-    var dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
-    var hdrLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
-    var dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
+    const dnaMap = { strategist: 'Стратег', communicator: 'Коммуникатор', creator: 'Креатор', analyst: 'Аналитик' };
+    const hdrLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
+    const dnaBadge = document.querySelector('.fd-dna, .hdr-dna');
     if (dnaBadge && profile.dna_type) {
       dnaBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ' + (dnaMap[profile.dna_type] || '') + ' · ♟ ' + hdrLevel.label;
     }
 
-    var xpEl = document.querySelector('.imp-xp-val');
+    const xpEl = document.querySelector('.imp-xp-val');
     if (xpEl) xpEl.textContent = (profile.xp_total || 0) + ' XP';
 
-    var streakEl = document.querySelector('.imp-streak-val');
+    const streakEl = document.querySelector('.imp-streak-val');
     if (streakEl) {
       streakEl.innerHTML = (profile.streak_days || 0) + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>';
     }
   }
 
   async function loadWisdomCard() {
-    var result = await window.sb
+    const result = await window.sb
       .from('wisdom_cards')
       .select('text, author')
       .eq('is_active', true)
@@ -50,8 +50,8 @@
 
     if (!result.data) return;
 
-    var textEl = document.querySelector('.wis-text');
-    var authorEl = document.querySelector('.wis-author');
+    const textEl = document.querySelector('.wis-text');
+    const authorEl = document.querySelector('.wis-author');
     if (textEl) textEl.textContent = '«' + result.data.text + '»';
     if (authorEl) authorEl.textContent = '— ' + (result.data.author || 'TRAFIQO');
   }
@@ -59,25 +59,25 @@
   async function loadQuestsBar(profile) {
     if (!profile) return;
     try {
-      var questsResult = await window.sb
+      const questsResult = await window.sb
         .from('task_completions').select('*, tasks(*)')
         .eq('user_id', profile.id).order('taken_at', { ascending: false }).limit(5);
-      var quests = questsResult.data || [];
+      const quests = questsResult.data || [];
 
-      var xpEl = document.querySelector('.imp-xp-val');
-      var xpMaxEl = document.querySelector('.imp-xp-max');
-      var lvlEl = document.querySelector('.imp-lvl');
+      const xpEl = document.querySelector('.imp-xp-val');
+      const xpMaxEl = document.querySelector('.imp-xp-max');
+      const lvlEl = document.querySelector('.imp-lvl');
       if (xpEl) xpEl.textContent = profile.xp_total || 0;
-      var gLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
-      var gProgress = window.Gamification.getLevelProgress(profile.xp_total || 0);
+      const gLevel = window.Gamification.getUserLevel(profile.xp_total || 0);
+      const gProgress = window.Gamification.getLevelProgress(profile.xp_total || 0);
       if (xpMaxEl) xpMaxEl.textContent = gLevel.xpNext || '∞';
       if (lvlEl) lvlEl.textContent = gLevel.label;
-      var progressBar = document.querySelector('.imp-bar-fill');
+      const progressBar = document.querySelector('.imp-bar-fill');
       if (progressBar) {
         progressBar.style.width = gProgress.percent + '%';
       }
 
-      var questsBox = document.querySelector('.imp-quests');
+      const questsBox = document.querySelector('.imp-quests');
       if (questsBox && quests.length) {
         questsBox.innerHTML = quests.map(function(q) {
           return '<div class="q-item imp-quest' + (q.is_completed ? ' done' : '') + '"><div class="q-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div class="q-text">' + (q.tasks ? q.tasks.title : '') + '</div><div class="q-xp">' + (q.is_completed ? '✓ ' : '') + '+' + (q.tasks ? q.tasks.xp_reward : 0) + '</div></div>';
