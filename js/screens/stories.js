@@ -283,6 +283,8 @@ function buildStoryViewerHtml(story, profile, isOwn, total) {
     ? '<div class="story-caption">' + window.escHtml(story.caption) + '</div>' : '';
   const deleteHtml = isOwn
     ? '<button class="story-delete" onclick="deleteMyStory(\'' + story.id + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' : '';
+  const viewsHtml = isOwn
+    ? '<button class="story-views-btn" onclick="toggleStoryViewers(\'' + story.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>' + (story.views_count || 0) + '</span></button>' : '';
   return '<div class="story-viewer" id="storyViewerEl">' +
     '<div class="story-progress">' + buildStoryProgressHtml(total, _storyIndex) + '</div>' +
     '<div class="story-header">' +
@@ -298,6 +300,7 @@ function buildStoryViewerHtml(story, profile, isOwn, total) {
     '<div class="story-tap-left" onclick="prevStory()"></div>' +
     '<div class="story-tap-right" onclick="nextStory()"></div>' +
     deleteHtml +
+    viewsHtml +
   '</div>';
 }
 
@@ -398,20 +401,50 @@ function closeStoryViewer() {
 }
 
 // =====================================================
-// VIEWER — Инкремент просмотров
+// VIEWER — Просмотры (запись + список)
 // =====================================================
 
 function incrementStoryView(storyId) {
   const user = window.getCurrentUser ? window.getCurrentUser() : null;
   const story = _storyList[_storyIndex];
-  if (user && story && story.user_id === user.id) return;
+  if (!user || (story && story.user_id === user.id)) return;
+  window.sb.from('story_views').upsert(
+    { story_id: storyId, viewer_id: user.id },
+    { onConflict: 'story_id,viewer_id' }
+  ).then(function() {});
+}
 
-  window.sb.rpc('increment_story_views', { story_id: storyId }).catch(function() {
-    window.sb.from('user_stories')
-      .update({ views_count: (story ? story.views_count || 0 : 0) + 1 })
-      .eq('id', storyId)
-      .then(function() {});
-  });
+async function toggleStoryViewers(storyId) {
+  const existing = document.querySelector('.story-viewers-panel');
+  if (existing) { existing.remove(); _storyPaused = false; startStoryTimer(); return; }
+  if (!storyId) return;
+  _storyPaused = true;
+  clearTimeout(_storyTimer);
+  const el = document.getElementById('storyViewerEl');
+  if (!el) return;
+  el.insertAdjacentHTML('beforeend', '<div class="story-viewers-panel">' +
+    '<div class="story-viewers-header"><span>Просмотры</span>' +
+    '<button onclick="toggleStoryViewers()" class="story-viewers-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
+    '<div class="story-viewers-list" id="storyViewersList"><div class="story-spinner"></div></div></div>');
+  try {
+    const { data } = await window.sb.from('story_views')
+      .select('viewer_id, viewed_at, users(name, avatar_url)')
+      .eq('story_id', storyId).order('viewed_at', { ascending: false }).limit(50);
+    const list = document.getElementById('storyViewersList');
+    if (!list) return;
+    if (!data || !data.length) { list.innerHTML = '<div class="story-viewers-empty">Пока никто не смотрел</div>'; return; }
+    list.innerHTML = data.map(function(v) {
+      const u = v.users || {};
+      const ava = u.avatar_url ? '<img src="' + window.escHtml(u.avatar_url) + '" alt="">' : window.escHtml((u.name || '?')[0]);
+      return '<div class="story-viewer-row"><div class="story-viewer-ava">' + ava + '</div>' +
+        '<div class="story-viewer-name">' + window.escHtml(u.name || 'Пользователь') + '</div>' +
+        '<div class="story-viewer-time">' + storyTimeAgo(v.viewed_at) + '</div></div>';
+    }).join('');
+  } catch (err) {
+    console.error('Story viewers error:', err);
+    const list = document.getElementById('storyViewersList');
+    if (list) list.innerHTML = '<div class="story-viewers-empty">Ошибка загрузки</div>';
+  }
 }
 
 // =====================================================
@@ -464,3 +497,4 @@ window.nextStory = nextStory;
 window.prevStory = prevStory;
 window.closeStoryViewer = closeStoryViewer;
 window.deleteMyStory = deleteMyStory;
+window.toggleStoryViewers = toggleStoryViewers;
