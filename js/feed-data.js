@@ -97,10 +97,73 @@
 
   const STORY_DNA_CLS = { strategist: 'dna-blue', communicator: 'dna-green', creator: 'dna-orange', analyst: 'dna-purple' };
 
+  async function fetchFriendsList(uid) {
+    const [r1, r2] = await Promise.all([
+      window.sb.from('friends')
+        .select('friend:vw_public_profiles!user_b_id(id,name,avatar_url,dna_type)')
+        .eq('user_a_id', uid).eq('status', 'accepted').limit(10),
+      window.sb.from('friends')
+        .select('friend:vw_public_profiles!user_a_id(id,name,avatar_url,dna_type)')
+        .eq('user_b_id', uid).eq('status', 'accepted').limit(10)
+    ]);
+    return (r1.data || []).concat(r2.data || [])
+      .map(function(f) { return f.friend; }).filter(Boolean).slice(0, 10);
+  }
+
+  async function fetchStoryUserIds(friendIds) {
+    if (!friendIds.length) return [];
+    const stRes = await window.sb.from('user_stories')
+      .select('user_id')
+      .in('user_id', friendIds)
+      .eq('is_active', true)
+      .gt('expires_at', new Date().toISOString());
+    return (stRes.data || []).map(function(s) { return s.user_id; });
+  }
+
+  function renderStoryItems(row, friends, storyUserIds, profile, myHasStory) {
+    row.querySelectorAll('.story-sk').forEach(function(s) { s.remove(); });
+    if (myHasStory && profile) {
+      const myDiv = document.createElement('div');
+      myDiv.className = 'story';
+      myDiv.onclick = function() {
+        window._storyViewUserId = profile.id;
+        window._storyViewProfile = { name: profile.name, avatar_url: profile.avatar_url };
+        goTo('scrStoryViewer');
+      };
+      const myAva = profile.avatar_url
+        ? '<img src="' + escHtml(profile.avatar_url) + '" alt="">' : escHtml((profile.name || '?')[0].toUpperCase());
+      myDiv.innerHTML = '<div class="story-ring has-story"><div class="story-ava">' +
+        myAva + '</div></div><div class="story-nm">Моя</div>';
+      row.appendChild(myDiv);
+    }
+    friends.forEach(function(f) {
+      const hasStory = storyUserIds.indexOf(f.id) !== -1;
+      const cls = hasStory ? 'has-story' : (STORY_DNA_CLS[f.dna_type] || '');
+      const nm = f.name || '?';
+      const shortName = nm.length > 8 ? nm.substring(0, 8) + '\u2026' : nm;
+      const avaHtml = f.avatar_url
+        ? '<img src="' + escHtml(f.avatar_url) + '" alt="">'
+        : escHtml(nm[0].toUpperCase());
+      const div = document.createElement('div');
+      div.className = 'story';
+      div.onclick = function() {
+        if (hasStory) {
+          window._storyViewUserId = f.id;
+          window._storyViewProfile = { name: f.name, avatar_url: f.avatar_url };
+          goTo('scrStoryViewer');
+        } else {
+          goTo('scrProfile');
+        }
+      };
+      div.innerHTML = '<div class="story-ring ' + cls + '"><div class="story-ava">' +
+        avaHtml + '</div></div><div class="story-nm">' + escHtml(shortName) + '</div>';
+      row.appendChild(div);
+    });
+  }
+
   async function loadStories(profile) {
     const row = document.getElementById('storiesRow');
     if (!row || !profile) return;
-    const uid = profile.id;
     for (let i = 0; i < 4; i++) {
       const sk = document.createElement('div');
       sk.className = 'story story-sk';
@@ -108,31 +171,11 @@
       row.appendChild(sk);
     }
     try {
-      const [r1, r2] = await Promise.all([
-        window.sb.from('friends')
-          .select('friend:vw_public_profiles!user_b_id(id,name,avatar_url,dna_type)')
-          .eq('user_a_id', uid).eq('status', 'accepted').limit(10),
-        window.sb.from('friends')
-          .select('friend:vw_public_profiles!user_a_id(id,name,avatar_url,dna_type)')
-          .eq('user_b_id', uid).eq('status', 'accepted').limit(10)
-      ]);
-      const friends = (r1.data || []).concat(r2.data || [])
-        .map(function(f) { return f.friend; }).filter(Boolean).slice(0, 10);
-      row.querySelectorAll('.story-sk').forEach(function(s) { s.remove(); });
-      friends.forEach(function(f) {
-        const cls = STORY_DNA_CLS[f.dna_type] || '';
-        const nm = f.name || '?';
-        const shortName = nm.length > 8 ? nm.substring(0, 8) + '\u2026' : nm;
-        const avaHtml = f.avatar_url
-          ? '<img src="' + escHtml(f.avatar_url) + '" alt="">'
-          : escHtml(nm[0].toUpperCase());
-        const div = document.createElement('div');
-        div.className = 'story';
-        div.onclick = function() { goTo('scrProfile', { userId: f.id }); };
-        div.innerHTML = '<div class="story-ring ' + cls + '"><div class="story-ava">' +
-          avaHtml + '</div></div><div class="story-nm">' + escHtml(shortName) + '</div>';
-        row.appendChild(div);
-      });
+      const friends = await fetchFriendsList(profile.id);
+      const friendIds = friends.map(function(f) { return f.id; });
+      const myQ = window.sb.from('user_stories').select('id', { count: 'exact', head: true }).eq('user_id', profile.id).eq('is_active', true).gt('expires_at', new Date().toISOString());
+      const [storyUserIds, myRes] = await Promise.all([fetchStoryUserIds(friendIds), myQ]);
+      renderStoryItems(row, friends, storyUserIds, profile, (myRes.count || 0) > 0);
     } catch (err) {
       console.error('Stories load error:', err);
       row.querySelectorAll('.story-sk').forEach(function(s) { s.remove(); });
