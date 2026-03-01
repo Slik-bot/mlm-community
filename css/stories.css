@@ -57,6 +57,7 @@
     transparent 100%);
   z-index: 1008;
   pointer-events: none;
+  transition: opacity 150ms ease-out;
 }
 
 .story-viewer::after {
@@ -72,6 +73,20 @@
     transparent 100%);
   z-index: 1008;
   pointer-events: none;
+  transition: opacity 150ms ease-out;
+}
+
+/* --- Paused state (long press = immersive) --- */
+
+.story-viewer.paused .story-header,
+.story-viewer.paused .story-caption,
+.story-viewer.paused .story-progress {
+  opacity: 0;
+}
+
+.story-viewer.paused::before,
+.story-viewer.paused::after {
+  opacity: 0;
 }
 
 @keyframes storyFadeIn {
@@ -95,6 +110,7 @@
   left: 0;
   right: 0;
   z-index: 1010;
+  transition: opacity 150ms ease-out;
 }
 
 .story-progress-seg {
@@ -141,6 +157,7 @@
   left: 0;
   right: 0;
   z-index: 1010;
+  transition: opacity 150ms ease-out;
 }
 
 .story-header-ava {
@@ -259,6 +276,7 @@
   font-size: 15px;
   line-height: 1.4;
   z-index: 1010;
+  transition: opacity 150ms ease-out;
 }
 
 /* --- Tap-зоны (невидимые) --- */

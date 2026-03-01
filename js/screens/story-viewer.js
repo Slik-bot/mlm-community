@@ -10,6 +10,9 @@ let _storyTimer = null;
 let _storyList = [];
 let _storyIndex = 0;
 let _storyPaused = false;
+let _storyHoldTimer = null;
+let _storyTimerStart = 0;
+let _storyRemaining = STORY_DURATION;
 
 // =====================================================
 // Инициализация просмотра
@@ -91,8 +94,8 @@ function buildStoryViewerHtml(story, profile, isOwn, total) {
     '</div>' +
     '<div class="story-image-wrap"><div class="story-spinner"></div><img class="story-image story-image--loading" data-src="' + window.escHtml(story.image_url) + '" alt=""></div>' +
     captionHtml +
-    '<div class="story-tap-left" onclick="prevStory()"></div>' +
-    '<div class="story-tap-right" onclick="nextStory()"></div>' +
+    '<div class="story-tap-left"></div>' +
+    '<div class="story-tap-right"></div>' +
     deleteHtml +
     viewsHtml +
   '</div>';
@@ -115,6 +118,7 @@ function renderStoryViewer(retries) {
   const isOwn = user && story.user_id === user.id;
   const profile = window._storyViewProfile || {};
   root.innerHTML = buildStoryViewerHtml(story, profile, isOwn, _storyList.length);
+  setupStoryTouch();
   preloadStoryImage(story);
   incrementStoryView(story.id);
 }
@@ -152,10 +156,70 @@ function preloadStoryImage(story) {
 function startStoryTimer() {
   clearTimeout(_storyTimer);
   _storyPaused = false;
+  _storyRemaining = STORY_DURATION;
+  _storyTimerStart = Date.now();
   _storyTimer = setTimeout(function() {
     if (_storyPaused) return;
     nextStory();
   }, STORY_DURATION);
+}
+
+// =====================================================
+// Long press = пауза (touch + mouse)
+// =====================================================
+
+function setupStoryTouch() {
+  const left = document.querySelector('.story-tap-left');
+  const right = document.querySelector('.story-tap-right');
+  if (left) bindTapZone(left, -1);
+  if (right) bindTapZone(right, 1);
+}
+
+function bindTapZone(el, dir) {
+  function onDown(e) {
+    e.preventDefault();
+    _storyHoldTimer = setTimeout(function() {
+      _storyHoldTimer = null;
+      pauseStory();
+    }, 200);
+  }
+  function onUp(e) {
+    e.preventDefault();
+    if (_storyHoldTimer) {
+      clearTimeout(_storyHoldTimer);
+      _storyHoldTimer = null;
+      switchStory(dir);
+    } else if (_storyPaused) {
+      resumeStory();
+    }
+  }
+  el.addEventListener('touchstart', onDown, { passive: false });
+  el.addEventListener('touchend', onUp, { passive: false });
+  el.addEventListener('touchcancel', onUp, { passive: false });
+}
+
+function pauseStory() {
+  _storyPaused = true;
+  const elapsed = Date.now() - _storyTimerStart;
+  _storyRemaining = Math.max(0, STORY_DURATION - elapsed);
+  clearTimeout(_storyTimer);
+  const viewer = document.getElementById('storyViewerEl');
+  if (viewer) viewer.classList.add('paused');
+  const seg = document.querySelector('.story-progress-seg.active');
+  if (seg) seg.classList.add('paused');
+}
+
+function resumeStory() {
+  _storyPaused = false;
+  const viewer = document.getElementById('storyViewerEl');
+  if (viewer) viewer.classList.remove('paused');
+  const seg = document.querySelector('.story-progress-seg.active');
+  if (seg) seg.classList.remove('paused');
+  _storyTimerStart = Date.now();
+  _storyTimer = setTimeout(function() {
+    if (_storyPaused) return;
+    nextStory();
+  }, _storyRemaining);
 }
 
 // =====================================================
