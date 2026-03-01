@@ -365,25 +365,22 @@ function startStoryTimer() {
 // VIEWER — Навигация: вперёд / назад
 // =====================================================
 
-function nextStory() {
+function switchStory(dir) {
   clearTimeout(_storyTimer);
-  if (_storyIndex < _storyList.length - 1) {
-    _storyIndex++;
+  const next = _storyIndex + dir;
+  if (next < 0) { startStoryTimer(); return; }
+  if (next >= _storyList.length) { closeStoryViewer(); return; }
+  const imgEl = document.querySelector('.story-image');
+  if (imgEl) imgEl.classList.add('story-image--loading');
+  setTimeout(function() {
+    _storyIndex = next;
     renderStoryViewer();
-  } else {
-    closeStoryViewer();
-  }
+  }, 150);
 }
 
-function prevStory() {
-  clearTimeout(_storyTimer);
-  if (_storyIndex > 0) {
-    _storyIndex--;
-    renderStoryViewer();
-  } else {
-    startStoryTimer();
-  }
-}
+function nextStory() { switchStory(1); }
+
+function prevStory() { switchStory(-1); }
 
 // =====================================================
 // VIEWER — Закрытие
