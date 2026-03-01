@@ -178,14 +178,14 @@ async function publishStory() {
   try {
     const canPost = await checkDailyLimit();
     if (!canPost) {
-      window.showToast('Лимит историй на сегодня исчерпан');
+      if (window.showToast) try { window.showToast('Лимит историй на сегодня исчерпан'); } catch(e) {}
       if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
       return;
     }
 
     const user = window.getCurrentUser();
     if (!user) {
-      window.showToast('Требуется авторизация');
+      if (window.showToast) try { window.showToast('Требуется авторизация'); } catch(e) {}
       if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
       return;
     }
@@ -202,7 +202,7 @@ async function publishStory() {
     });
     if (error) throw error;
 
-    window.showToast('История опубликована');
+    if (window.showToast) try { window.showToast('История опубликована'); } catch(e) {}
     _storyFile = null;
     setTimeout(function() {
       if (window.goBack) window.goBack();
@@ -210,7 +210,7 @@ async function publishStory() {
     }, 100);
   } catch (err) {
     console.error('Story publish error:', err);
-    window.showToast('Ошибка публикации');
+    if (window.showToast) try { window.showToast('Ошибка публикации'); } catch(e) {}
   } finally {
     var _btn = document.getElementById('storyPublishBtn');
     if (_btn) { _btn.disabled = false; _btn.textContent = 'Опубликовать'; }
