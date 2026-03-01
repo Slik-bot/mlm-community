@@ -194,6 +194,7 @@ function storyCompressImage(file) {
 
 async function storyUploadImage(blob) {
   const user = window.getCurrentUser();
+  if (!user) throw new Error('Требуется авторизация');
   const mimeType = blob.type || 'image/jpeg';
   const extMap = {
     'image/png': 'png',
