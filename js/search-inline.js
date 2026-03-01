@@ -126,7 +126,7 @@ function renderInlineCard(user) {
   body.appendChild(name);
   const meta = document.createElement('div');
   meta.className = 'inline-search-meta';
-  meta.textContent = user.specialization || ('Уровень ' + (user.level || 1));
+  meta.textContent = user.bio || ('Уровень ' + (user.level || 1));
   body.appendChild(meta);
   card.appendChild(body);
   if (user.dna_type) {

@@ -201,8 +201,8 @@ async function searchUsers(query, limit = 20) {
   try {
     const { data, error } = await window.sb
       .from('vw_public_profiles')
-      .select('id, name, avatar_url, dna_type, level, specialization')
-      .or(`name.ilike.%${query}%,specialization.ilike.%${query}%`)
+      .select('id, name, avatar_url, dna_type, level, bio')
+      .or(`name.ilike.%${query}%,bio.ilike.%${query}%`)
       .limit(limit);
     if (error) throw error;
     return { data: data || [], error: null };
