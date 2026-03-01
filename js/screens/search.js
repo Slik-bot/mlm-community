@@ -198,7 +198,7 @@ function renderUserItem(user) {
   meta.textContent = user.city || 'Уровень ' + (user.level || 1);
   body.appendChild(meta);
   el.appendChild(body);
-  el.addEventListener('click', function() { goTo('scrProfile'); });
+  el.addEventListener('click', function() { window._viewProfileId = user.id; goTo('scrProfile'); });
   return el;
 }
 
