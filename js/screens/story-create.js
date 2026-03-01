@@ -44,6 +44,14 @@ function initStoryCreate() {
     fileInput.onchange = handleStoryFileChange;
   }
 
+  if (preview && fileInput) {
+    preview.onclick = function() {
+      if (!_storyFile) return;
+      fileInput.value = '';
+      fileInput.click();
+    };
+  }
+
   removeCancelListener();
   checkDailyLimit();
   triggerFilePicker();
