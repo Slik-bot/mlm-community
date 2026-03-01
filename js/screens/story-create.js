@@ -263,7 +263,8 @@ async function publishStory() {
     }, 100);
   } catch (err) {
     console.error('Story publish error:', err);
-    if (window.showToast) window.showToast('Ошибка публикации');
+    const msg = err.message || 'Неизвестная ошибка';
+    if (window.showToast) window.showToast('Ошибка: ' + msg);
     resetPublishBtn();
   }
 }
