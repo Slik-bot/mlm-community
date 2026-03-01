@@ -202,17 +202,26 @@
   }
 
   let currentFilter = 'all';
+  let _postsOffset = 0;
+  let _postsHasMore = true;
+  let _postsLoading = false;
 
   async function loadFeedPosts(filter) {
     if (filter) currentFilter = filter;
+    _postsOffset = 0;
+    _postsHasMore = true;
     const feed = document.getElementById('feedScroll');
     if (!feed) return;
 
     feed.querySelectorAll('.post-card').forEach(function(p) { p.remove(); });
     showSkeletons(3);
 
-    const postsResult = await loadPosts(currentFilter, 20);
+    _postsLoading = true;
+    const postsResult = await loadPosts(currentFilter, 20, 0);
+    _postsLoading = false;
     const posts = postsResult.data || [];
+    _postsHasMore = postsResult.hasMore;
+    _postsOffset = posts.length;
     removeSkeletons();
 
     if (!posts.length) {
@@ -229,12 +238,51 @@
       return;
     }
 
+    const sentinel = document.getElementById('feedLoadMore');
     posts.forEach(function(post) {
-      feed.appendChild(window.createPostElement(post));
+      feed.insertBefore(window.createPostElement(post), sentinel);
     });
 
-    // Инициализировать карусели после рендера
     initCarousels();
+  }
+
+  async function loadMorePosts() {
+    if (_postsLoading || !_postsHasMore) return;
+    const feed = document.getElementById('feedScroll');
+    if (!feed) return;
+
+    _postsLoading = true;
+    const postsResult = await loadPosts(currentFilter, 20, _postsOffset);
+    _postsLoading = false;
+    const posts = postsResult.data || [];
+    _postsHasMore = postsResult.hasMore;
+    _postsOffset += posts.length;
+
+    const sentinel = document.getElementById('feedLoadMore');
+    posts.forEach(function(post) {
+      feed.insertBefore(window.createPostElement(post), sentinel);
+    });
+
+    initCarousels();
+  }
+
+  // IntersectionObserver для бесконечного скролла
+  const feedObserver = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
+      loadMorePosts();
+    }
+  }, { rootMargin: '200px' });
+
+  function initFeedObserver() {
+    const sentinel = document.getElementById('feedLoadMore');
+    if (sentinel) feedObserver.observe(sentinel);
+  }
+
+  // Инициализация observer после загрузки DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFeedObserver);
+  } else {
+    initFeedObserver();
   }
 
   window.loadFeedByFilter = function(filter) {
