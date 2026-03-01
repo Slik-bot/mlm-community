@@ -301,9 +301,17 @@ function buildStoryViewerHtml(story, profile, isOwn, total) {
   '</div>';
 }
 
-function renderStoryViewer() {
+function renderStoryViewer(retries) {
   const root = document.getElementById('storyViewerRoot');
-  if (!root) return;
+  if (!root) {
+    const attempt = retries || 0;
+    if (attempt < 3) {
+      requestAnimationFrame(function() { renderStoryViewer(attempt + 1); });
+    } else {
+      window.showToast('Ошибка загрузки');
+    }
+    return;
+  }
   const story = _storyList[_storyIndex];
   if (!story) return;
   const user = window.getCurrentUser ? window.getCurrentUser() : null;

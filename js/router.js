@@ -164,6 +164,7 @@ function handleExistingTemplate(id) {
   }
   if (id === 'scrDnaTest' && window.dnaReset) window.dnaReset();
   if (id === 'scrDnaResult' && window.initDnaResult) window.initDnaResult();
+  if (id === 'scrStoryViewer' && window.initStoryViewer) window.initStoryViewer();
 }
 
 function initScreenModule(id) {
