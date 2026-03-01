@@ -10,14 +10,23 @@
       <div class="hdr-dna"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Стратег · ♟ Пешка</div>
       <div class="hdr-balance" id="feedBalance"></div>
     </div>
-    <button class="icon-btn" onclick="goTo('scrSearch')">
+    <button class="icon-btn" onclick="openInlineSearch()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
     <button class="icon-btn" onclick="goTo('scrNotifications')" style="position:relative">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <div class="notif-badge hidden">0</div>
     </button>
+    <div class="inline-search" id="inlineSearch">
+      <svg class="inline-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="inline-search__input" id="inlineSearchInput" placeholder="Поиск людей..." autocomplete="off">
+      <button class="inline-search__close" onclick="closeInlineSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="inline-search-drop" id="inlineSearchDrop"></div>
   </div>
+  <div class="inline-search-backdrop" id="inlineSearchBackdrop"></div>
 
   <div class="feed" id="feedScroll">
     <!-- Impulse -->
