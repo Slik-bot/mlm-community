@@ -195,7 +195,7 @@ function renderUserItem(user) {
   body.appendChild(name);
   const meta = document.createElement('div');
   meta.className = 'search-result__meta';
-  meta.textContent = user.city || 'Уровень ' + (user.level || 1);
+  meta.textContent = user.specialization || 'Уровень ' + (user.level || 1);
   body.appendChild(meta);
   el.appendChild(body);
   el.addEventListener('click', function() { window._viewProfileId = user.id; goTo('scrProfile'); });
