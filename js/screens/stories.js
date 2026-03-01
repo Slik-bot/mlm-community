@@ -209,7 +209,8 @@ async function publishStory() {
     console.error('Story publish error:', err);
     window.showToast('Ошибка публикации');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
+    var _btn = document.getElementById('storyPublishBtn');
+    if (_btn) { _btn.disabled = false; _btn.textContent = 'Опубликовать'; }
   }
 }
 
