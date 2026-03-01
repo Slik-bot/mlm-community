@@ -204,7 +204,10 @@ async function publishStory() {
 
     window.showToast('История опубликована');
     _storyFile = null;
-    goBack();
+    setTimeout(function() {
+      if (window.goBack) window.goBack();
+      else if (window.goTo) window.goTo('scrFeed');
+    }, 100);
   } catch (err) {
     console.error('Story publish error:', err);
     window.showToast('Ошибка публикации');
