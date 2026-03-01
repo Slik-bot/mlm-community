@@ -136,18 +136,40 @@ async function checkDailyLimit() {
 }
 
 // =====================================================
+// Сжатие фото (stories: 1080x1920, quality 0.75)
+// =====================================================
+
+function storyCompressImage(file) {
+  if (file.size < 300 * 1024) return Promise.resolve(file);
+  return new Promise(function(resolve) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
+        if (w > 1080) { h = Math.round((h * 1080) / w); w = 1080; }
+        if (h > 1920) { w = Math.round((w * 1920) / h); h = 1920; }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function(blob) { resolve(blob || file); }, 'image/jpeg', 0.75);
+      };
+      img.onerror = function() { resolve(file); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() { resolve(file); };
+    reader.readAsDataURL(file);
+  });
+}
+
+// =====================================================
 // Загрузка фото в Storage
 // =====================================================
 
-async function storyUploadImage(file) {
+async function storyUploadImage(blob) {
   const user = window.getCurrentUser();
-  const compress = window.compressImage || function(f) { return Promise.resolve(f); };
-  let _t;
-  const blob = await Promise.race([
-    compress(file),
-    new Promise(function(resolve) { _t = setTimeout(function() { resolve(file); }, 10000); })
-  ]);
-  clearTimeout(_t);
   const mimeType = blob.type || 'image/jpeg';
   const extMap = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' };
   const ext = extMap[mimeType] || 'jpg';
@@ -169,27 +191,33 @@ async function storyUploadImage(file) {
 async function publishStory() {
   const btn = document.getElementById('storyPublishBtn');
   if (!_storyFile || (btn && btn.disabled)) return;
-  if (btn) { btn.disabled = true; btn.textContent = 'Загрузка...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Сжатие...'; }
 
   try {
-    const canPost = await checkDailyLimit();
-    if (!canPost) {
-      if (window.showToast) try { window.showToast('Лимит историй на сегодня исчерпан'); } catch(e) {}
-      if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
-      return;
-    }
-
     const user = window.getCurrentUser();
     if (!user) {
-      if (window.showToast) try { window.showToast('Требуется авторизация'); } catch(e) {}
+      if (window.showToast) window.showToast('Требуется авторизация');
       if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
       return;
     }
 
+    const [canPost, compressed] = await Promise.all([
+      checkDailyLimit(),
+      storyCompressImage(_storyFile)
+    ]);
+
+    if (!canPost) {
+      if (window.showToast) window.showToast('Лимит историй на сегодня исчерпан');
+      if (btn) { btn.disabled = false; btn.textContent = 'Опубликовать'; }
+      return;
+    }
+
+    if (btn) btn.textContent = 'Загрузка...';
+    const imageUrl = await storyUploadImage(compressed);
+
+    if (btn) btn.textContent = 'Сохранение...';
     const caption = document.getElementById('storyCaptionInput');
     const captionText = caption ? caption.value.trim().substring(0, STORY_MAX_CAPTION) : '';
-
-    const imageUrl = await storyUploadImage(_storyFile);
 
     const { error } = await window.sb.from('user_stories').insert({
       user_id: user.id,
@@ -198,7 +226,7 @@ async function publishStory() {
     });
     if (error) throw error;
 
-    if (window.showToast) try { window.showToast('История опубликована'); } catch(e) {}
+    if (window.showToast) window.showToast('История опубликована');
     _storyFile = null;
     setTimeout(function() {
       if (window.goBack) window.goBack();
@@ -206,7 +234,7 @@ async function publishStory() {
     }, 100);
   } catch (err) {
     console.error('Story publish error:', err);
-    if (window.showToast) try { window.showToast('Ошибка публикации'); } catch(e) {}
+    if (window.showToast) window.showToast('Ошибка публикации');
   } finally {
     const _btn = document.getElementById('storyPublishBtn');
     if (_btn) { _btn.disabled = false; _btn.textContent = 'Опубликовать'; }
