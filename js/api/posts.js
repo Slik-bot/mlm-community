@@ -2,20 +2,22 @@
 
 // ═══ loadPosts ═══
 
-async function loadPosts(filter, limit) {
+async function loadPosts(filter, limit, offset) {
   limit = limit || 20;
+  offset = offset || 0;
   let query = window.sb.from('posts')
     .select('*, author:users(id, name, avatar_url, level, dna_type, is_verified)')
     .eq('moderation_status', 'approved')
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
   if (filter && filter !== 'all') {
     query = query.eq('type', filter);
   }
 
   const result = await query;
-  return { data: result.data, error: result.error };
+  const data = result.data || [];
+  return { data: data, error: result.error, hasMore: data.length === limit };
 }
 
 // ═══ createPost ═══
