@@ -9,7 +9,7 @@ const STORY_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const STORY_MAX_SIZE = 5 * 1024 * 1024;
 
 let _storyFile = null;
-let _storyCancelListener = null;
+let _storyPickerOpen = false;
 
 // =====================================================
 // Инициализация — сразу открыть выбор фото
@@ -25,7 +25,7 @@ function initStoryCreate() {
   const previewImg = document.getElementById('storyPreviewImg');
   const limitMsg = document.getElementById('storyLimitMsg');
 
-  if (btn) btn.disabled = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'Опубликовать'; }
   if (caption) caption.value = '';
   if (counter) counter.textContent = '0/200';
   if (preview) preview.classList.remove('has-photo');
@@ -52,7 +52,7 @@ function initStoryCreate() {
     };
   }
 
-  removeCancelListener();
+  hideEmptyState();
   checkDailyLimit();
   triggerFilePicker();
 }
@@ -64,22 +64,18 @@ function initStoryCreate() {
 function triggerFilePicker() {
   const fileInput = document.getElementById('storyFileInput');
   if (!fileInput) return;
-
-  _storyCancelListener = function() {
-    setTimeout(function() {
-      if (!_storyFile) closeStoryCreate();
-    }, 300);
-  };
-  window.addEventListener('focus', _storyCancelListener, { once: true });
-
+  _storyPickerOpen = true;
   setTimeout(function() { fileInput.click(); }, 100);
 }
 
-function removeCancelListener() {
-  if (_storyCancelListener) {
-    window.removeEventListener('focus', _storyCancelListener);
-    _storyCancelListener = null;
-  }
+function showEmptyState() {
+  const empty = document.getElementById('storyEmptyState');
+  if (empty) empty.classList.add('visible');
+}
+
+function hideEmptyState() {
+  const empty = document.getElementById('storyEmptyState');
+  if (empty) empty.classList.remove('visible');
 }
 
 // =====================================================
@@ -87,12 +83,13 @@ function removeCancelListener() {
 // =====================================================
 
 function handleStoryFileChange() {
-  removeCancelListener();
+  _storyPickerOpen = false;
   const fileInput = document.getElementById('storyFileInput');
   if (!fileInput || !fileInput.files || !fileInput.files[0]) {
-    closeStoryCreate();
+    showEmptyState();
     return;
   }
+  hideEmptyState();
   storyPreviewPhoto(fileInput.files[0]);
 }
 
@@ -122,8 +119,8 @@ function storyPreviewPhoto(file) {
 // =====================================================
 
 function closeStoryCreate() {
-  removeCancelListener();
   _storyFile = null;
+  _storyPickerOpen = false;
   if (window.goBack) window.goBack();
   else if (window.goTo) window.goTo('scrFeed');
 }
@@ -281,3 +278,4 @@ function resetPublishBtn() {
 window.initStoryCreate = initStoryCreate;
 window.closeStoryCreate = closeStoryCreate;
 window.publishStory = publishStory;
+window.triggerFilePicker = triggerFilePicker;

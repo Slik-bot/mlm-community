@@ -468,12 +468,13 @@ function setupSwipeDown() {
   viewer.addEventListener('touchend', function(e) {
     if (!_swipeActive) return;
     e.stopPropagation();
-    viewer.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1)';
     if (_swipeDeltaY > 150) {
+      viewer.style.transition = 'transform 300ms ease-out, opacity 300ms ease-out';
       viewer.style.transform = 'translateY(100%)';
       viewer.style.opacity = '0';
-      setTimeout(closeStoryViewer, 200);
+      setTimeout(closeStoryViewer, 300);
     } else {
+      viewer.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1)';
       viewer.style.transform = '';
       viewer.style.opacity = '';
     }
