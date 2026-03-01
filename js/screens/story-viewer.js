@@ -3,32 +3,21 @@
 // Таблица: user_stories, story_views
 // =====================================================
 
-const STORY_DURATION = 5000;
-
-let _storyTimer = null;
 let _storyList = [];
 let _storyIndex = 0;
-let _storyPaused = false;
-let _storyHoldTimer = null;
-let _storyTimerStart = 0;
-let _storyRemaining = STORY_DURATION;
-let _swipeStartY = 0;
-let _swipeDeltaY = 0;
-let _swipeActive = false;
 
 // =====================================================
 // Инициализация — полный сброс + загрузка
 // =====================================================
 
 function initStoryViewer() {
-  clearTimeout(_storyTimer);
-  clearTimeout(_storyHoldTimer);
-  _storyTimer = null;
-  _storyHoldTimer = null;
+  clearTimeout(window._storyTimer);
+  window.resetGestureTimers();
+  window._storyTimer = null;
   _storyList = [];
   _storyIndex = 0;
-  _storyPaused = false;
-  _storyRemaining = STORY_DURATION;
+  window._storyPaused = false;
+  window._storyRemaining = window.STORY_DURATION;
 
   const root = document.getElementById('storyViewerRoot');
   if (root) root.innerHTML = '';
@@ -178,8 +167,8 @@ function renderStoryViewer(retries) {
   root.innerHTML = buildViewerHtml(
     story, profile, isOwn, _storyList.length
   );
-  setupStoryTouch();
-  setupSwipeDown();
+  window.setupStoryTouch();
+  window.setupSwipeDown();
   preloadStoryImage(story);
   incrementStoryView(story.id);
 }
@@ -215,80 +204,26 @@ function preloadStoryImage(story) {
 // =====================================================
 
 function startStoryTimer() {
-  clearTimeout(_storyTimer);
-  _storyPaused = false;
-  _storyRemaining = STORY_DURATION;
-  _storyTimerStart = Date.now();
-  _storyTimer = setTimeout(function() {
-    if (_storyPaused) return;
+  clearTimeout(window._storyTimer);
+  window._storyPaused = false;
+  window._storyRemaining = window.STORY_DURATION;
+  window._storyTimerStart = Date.now();
+  window._storyTimer = setTimeout(function() {
+    if (window._storyPaused) return;
     nextStory();
-  }, STORY_DURATION);
+  }, window.STORY_DURATION);
 }
 
 // =====================================================
-// Long press = пауза
+// GESTURE HANDLING — см. story-gestures.js
 // =====================================================
-
-function setupStoryTouch() {
-  const left = document.querySelector('.story-tap-left');
-  const right = document.querySelector('.story-tap-right');
-  if (left) bindTapZone(left, -1);
-  if (right) bindTapZone(right, 1);
-}
-
-function bindTapZone(el, dir) {
-  function onDown(e) {
-    e.preventDefault();
-    _storyHoldTimer = setTimeout(function() {
-      _storyHoldTimer = null;
-      pauseStory();
-    }, 200);
-  }
-  function onUp(e) {
-    e.preventDefault();
-    if (_storyHoldTimer) {
-      clearTimeout(_storyHoldTimer);
-      _storyHoldTimer = null;
-      switchStory(dir);
-    } else if (_storyPaused) {
-      resumeStory();
-    }
-  }
-  el.addEventListener('touchstart', onDown, { passive: false });
-  el.addEventListener('touchend', onUp, { passive: false });
-  el.addEventListener('touchcancel', onUp, { passive: false });
-}
-
-function pauseStory() {
-  _storyPaused = true;
-  const elapsed = Date.now() - _storyTimerStart;
-  _storyRemaining = Math.max(0, STORY_DURATION - elapsed);
-  clearTimeout(_storyTimer);
-  const viewer = document.getElementById('storyViewerEl');
-  if (viewer) viewer.classList.add('paused');
-  const seg = document.querySelector('.story-progress-seg.active');
-  if (seg) seg.classList.add('paused');
-}
-
-function resumeStory() {
-  _storyPaused = false;
-  const viewer = document.getElementById('storyViewerEl');
-  if (viewer) viewer.classList.remove('paused');
-  const seg = document.querySelector('.story-progress-seg.active');
-  if (seg) seg.classList.remove('paused');
-  _storyTimerStart = Date.now();
-  _storyTimer = setTimeout(function() {
-    if (_storyPaused) return;
-    nextStory();
-  }, _storyRemaining);
-}
 
 // =====================================================
 // Навигация: вперёд / назад
 // =====================================================
 
 function switchStory(dir) {
-  clearTimeout(_storyTimer);
+  clearTimeout(window._storyTimer);
   const next = _storyIndex + dir;
   if (next < 0) { startStoryTimer(); return; }
   if (next >= _storyList.length) { closeStoryViewer(); return; }
@@ -305,10 +240,9 @@ function prevStory() { switchStory(-1); }
 // =====================================================
 
 function closeStoryViewer() {
-  clearTimeout(_storyTimer);
-  clearTimeout(_storyHoldTimer);
-  _storyTimer = null;
-  _storyHoldTimer = null;
+  clearTimeout(window._storyTimer);
+  window.resetGestureTimers();
+  window._storyTimer = null;
   const el = document.getElementById('storyViewerEl');
   if (el) {
     el.classList.add('closing');
@@ -336,13 +270,13 @@ async function toggleStoryViewers(storyId) {
   const existing = document.querySelector('.story-viewers-panel');
   if (existing) {
     existing.remove();
-    _storyPaused = false;
+    window._storyPaused = false;
     startStoryTimer();
     return;
   }
   if (!storyId) return;
-  _storyPaused = true;
-  clearTimeout(_storyTimer);
+  window._storyPaused = true;
+  clearTimeout(window._storyTimer);
   const el = document.getElementById('storyViewerEl');
   if (!el) return;
 
@@ -438,58 +372,13 @@ function storyTimeAgo(dateStr) {
 }
 
 // =====================================================
-// Свайп вниз = закрыть (Telegram-like)
-// =====================================================
-
-function setupSwipeDown() {
-  const viewer = document.getElementById('storyViewerEl');
-  if (!viewer) return;
-
-  viewer.addEventListener('touchstart', function(e) {
-    _swipeStartY = e.touches[0].clientY;
-    _swipeDeltaY = 0;
-    _swipeActive = false;
-  }, true);
-
-  viewer.addEventListener('touchmove', function(e) {
-    const dy = e.touches[0].clientY - _swipeStartY;
-    if (dy <= 10) return;
-    if (!_swipeActive) {
-      _swipeActive = true;
-      clearTimeout(_storyHoldTimer);
-      _storyHoldTimer = null;
-      viewer.style.transition = 'none';
-    }
-    _swipeDeltaY = dy;
-    viewer.style.transform = 'translateY(' + dy + 'px)';
-    viewer.style.opacity = String(Math.max(0.2, 1 - dy / 400));
-  }, true);
-
-  viewer.addEventListener('touchend', function(e) {
-    if (!_swipeActive) return;
-    e.stopPropagation();
-    if (_swipeDeltaY > 150) {
-      viewer.style.transition = 'transform 300ms ease-out, opacity 300ms ease-out';
-      viewer.style.transform = 'translateY(100%)';
-      viewer.style.opacity = '0';
-      setTimeout(closeStoryViewer, 300);
-    } else {
-      viewer.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1)';
-      viewer.style.transform = '';
-      viewer.style.opacity = '';
-    }
-    _swipeActive = false;
-    _swipeDeltaY = 0;
-  }, true);
-}
-
-// =====================================================
 // EXPORTS
 // =====================================================
 
 window.initStoryViewer = initStoryViewer;
 window.nextStory = nextStory;
 window.prevStory = prevStory;
+window.switchStory = switchStory;
 window.closeStoryViewer = closeStoryViewer;
 window.deleteMyStory = deleteMyStory;
 window.toggleStoryViewers = toggleStoryViewers;
