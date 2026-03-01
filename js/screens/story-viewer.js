@@ -1,6 +1,5 @@
 // =====================================================
-// STORY VIEWER — Просмотр историй (Instagram-like)
-// Отделено от stories.js
+// STORY VIEWER — Просмотр историй (Telegram-like)
 // Таблица: user_stories, story_views
 // =====================================================
 
@@ -15,10 +14,22 @@ let _storyTimerStart = 0;
 let _storyRemaining = STORY_DURATION;
 
 // =====================================================
-// Инициализация просмотра
+// Инициализация — полный сброс + загрузка
 // =====================================================
 
 function initStoryViewer() {
+  clearTimeout(_storyTimer);
+  clearTimeout(_storyHoldTimer);
+  _storyTimer = null;
+  _storyHoldTimer = null;
+  _storyList = [];
+  _storyIndex = 0;
+  _storyPaused = false;
+  _storyRemaining = STORY_DURATION;
+
+  const root = document.getElementById('storyViewerRoot');
+  if (root) root.innerHTML = '';
+
   const userId = window._storyViewUserId;
   if (!userId) { goBack(); return; }
   window._storyViewUserId = null;
@@ -60,44 +71,86 @@ async function loadUserStories(userId) {
 }
 
 // =====================================================
-// Рендер полноэкранного viewer
+// Рендер viewer
 // =====================================================
 
-function buildStoryProgressHtml(total, currentIndex) {
+function buildProgressHtml(total, current) {
   let html = '';
   for (let i = 0; i < total; i++) {
-    const cls = i < currentIndex ? 'done' : (i === currentIndex ? 'active' : '');
-    html += '<div class="story-progress-seg ' + cls + '"><div class="story-progress-fill"></div></div>';
+    const cls = i < current ? 'done'
+      : (i === current ? 'active' : '');
+    html += '<div class="story-progress-seg ' + cls + '">' +
+      '<div class="story-progress-fill"></div></div>';
   }
   return html;
 }
 
-function buildStoryViewerHtml(story, profile, isOwn, total) {
+function buildViewerHtml(story, profile, isOwn, total) {
+  const esc = window.escHtml;
+
   const avaHtml = profile.avatar_url
-    ? '<img src="' + window.escHtml(profile.avatar_url) + '" alt="">'
-    : window.escHtml((profile.name || '?')[0]);
+    ? '<img src="' + esc(profile.avatar_url) + '" alt="">'
+    : esc((profile.name || '?')[0]);
+
+  const deleteBtn = isOwn
+    ? '<button class="story-delete" onclick="deleteMyStory(\'' +
+      story.id + '\')">' +
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M3 6h18"/>' +
+      '<path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/>' +
+      '<path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>' +
+      '</svg></button>'
+    : '';
+
+  const closeBtn =
+    '<button class="story-close" onclick="closeStoryViewer()">' +
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    '<line x1="18" y1="6" x2="6" y2="18"/>' +
+    '<line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+
   const captionHtml = story.caption
-    ? '<div class="story-caption">' + window.escHtml(story.caption) + '</div>' : '';
-  const deleteHtml = isOwn
-    ? '<button class="story-delete" onclick="deleteMyStory(\'' + story.id + '\')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' : '';
-  const viewsHtml = isOwn
-    ? '<button class="story-views-btn" onclick="toggleStoryViewers(\'' + story.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>' + (story.views_count || 0) + '</span></button>' : '';
+    ? '<div class="story-caption">' + esc(story.caption) + '</div>'
+    : '';
+
+  let footerHtml = '';
+  if (isOwn) {
+    footerHtml =
+      '<button class="story-views-btn" ' +
+      'onclick="toggleStoryViewers(\'' + story.id + '\')">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+      'stroke="currentColor" stroke-width="2">' +
+      '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>' +
+      '<circle cx="12" cy="12" r="3"/></svg>' +
+      '<span>' + (story.views_count || 0) + '</span></button>';
+  } else {
+    footerHtml = '<div class="story-reply-stub">Ответить...</div>';
+  }
+
   return '<div class="story-viewer" id="storyViewerEl">' +
-    '<div class="story-progress">' + buildStoryProgressHtml(total, _storyIndex) + '</div>' +
+    '<div class="story-image-wrap">' +
+      '<div class="story-spinner"></div>' +
+      '<img class="story-image story-image--loading" ' +
+        'data-src="' + esc(story.image_url) + '" alt="">' +
+    '</div>' +
+    '<div class="story-progress">' +
+      buildProgressHtml(total, _storyIndex) +
+    '</div>' +
     '<div class="story-header">' +
       '<div class="story-header-ava">' + avaHtml + '</div>' +
       '<div class="story-header-info">' +
-        '<div class="story-header-name">' + window.escHtml(profile.name || '') + '</div>' +
-        '<div class="story-header-time">' + storyTimeAgo(story.created_at) + '</div>' +
+        '<span class="story-header-name">' +
+          esc(profile.name || '') + '</span>' +
+        '<span class="story-header-time">' +
+          storyTimeAgo(story.created_at) + '</span>' +
       '</div>' +
-      '<button class="story-close" onclick="closeStoryViewer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+      deleteBtn + closeBtn +
     '</div>' +
-    '<div class="story-image-wrap"><div class="story-spinner"></div><img class="story-image story-image--loading" data-src="' + window.escHtml(story.image_url) + '" alt=""></div>' +
     captionHtml +
+    footerHtml +
     '<div class="story-tap-left"></div>' +
     '<div class="story-tap-right"></div>' +
-    deleteHtml +
-    viewsHtml +
   '</div>';
 }
 
@@ -105,8 +158,10 @@ function renderStoryViewer(retries) {
   const root = document.getElementById('storyViewerRoot');
   if (!root) {
     const attempt = retries || 0;
-    if (attempt < 3) {
-      requestAnimationFrame(function() { renderStoryViewer(attempt + 1); });
+    if (attempt < 5) {
+      requestAnimationFrame(function() {
+        renderStoryViewer(attempt + 1);
+      });
     } else {
       window.showToast('Ошибка загрузки');
     }
@@ -117,7 +172,9 @@ function renderStoryViewer(retries) {
   const user = window.getCurrentUser ? window.getCurrentUser() : null;
   const isOwn = user && story.user_id === user.id;
   const profile = window._storyViewProfile || {};
-  root.innerHTML = buildStoryViewerHtml(story, profile, isOwn, _storyList.length);
+  root.innerHTML = buildViewerHtml(
+    story, profile, isOwn, _storyList.length
+  );
   setupStoryTouch();
   preloadStoryImage(story);
   incrementStoryView(story.id);
@@ -165,7 +222,7 @@ function startStoryTimer() {
 }
 
 // =====================================================
-// Long press = пауза (touch + mouse)
+// Long press = пауза
 // =====================================================
 
 function setupStoryTouch() {
@@ -231,12 +288,8 @@ function switchStory(dir) {
   const next = _storyIndex + dir;
   if (next < 0) { startStoryTimer(); return; }
   if (next >= _storyList.length) { closeStoryViewer(); return; }
-  const imgEl = document.querySelector('.story-image');
-  if (imgEl) imgEl.classList.add('story-image--loading');
-  setTimeout(function() {
-    _storyIndex = next;
-    renderStoryViewer();
-  }, 150);
+  _storyIndex = next;
+  renderStoryViewer();
 }
 
 function nextStory() { switchStory(1); }
@@ -249,6 +302,9 @@ function prevStory() { switchStory(-1); }
 
 function closeStoryViewer() {
   clearTimeout(_storyTimer);
+  clearTimeout(_storyHoldTimer);
+  _storyTimer = null;
+  _storyHoldTimer = null;
   const el = document.getElementById('storyViewerEl');
   if (el) {
     el.classList.add('closing');
@@ -274,34 +330,64 @@ function incrementStoryView(storyId) {
 
 async function toggleStoryViewers(storyId) {
   const existing = document.querySelector('.story-viewers-panel');
-  if (existing) { existing.remove(); _storyPaused = false; startStoryTimer(); return; }
+  if (existing) {
+    existing.remove();
+    _storyPaused = false;
+    startStoryTimer();
+    return;
+  }
   if (!storyId) return;
   _storyPaused = true;
   clearTimeout(_storyTimer);
   const el = document.getElementById('storyViewerEl');
   if (!el) return;
-  el.insertAdjacentHTML('beforeend', '<div class="story-viewers-panel">' +
+
+  el.insertAdjacentHTML('beforeend',
+    '<div class="story-viewers-panel">' +
     '<div class="story-viewers-header"><span>Просмотры</span>' +
-    '<button onclick="toggleStoryViewers()" class="story-viewers-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
-    '<div class="story-viewers-list" id="storyViewersList"><div class="story-spinner"></div></div></div>');
+    '<button onclick="toggleStoryViewers()" ' +
+    'class="story-viewers-close">' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    '<line x1="18" y1="6" x2="6" y2="18"/>' +
+    '<line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
+    '<div class="story-viewers-list" id="storyViewersList">' +
+    '<div class="story-spinner"></div></div></div>'
+  );
+
   try {
     const { data } = await window.sb.from('story_views')
       .select('viewer_id, viewed_at, users(name, avatar_url)')
-      .eq('story_id', storyId).order('viewed_at', { ascending: false }).limit(50);
+      .eq('story_id', storyId)
+      .order('viewed_at', { ascending: false })
+      .limit(50);
     const list = document.getElementById('storyViewersList');
     if (!list) return;
-    if (!data || !data.length) { list.innerHTML = '<div class="story-viewers-empty">Пока никто не смотрел</div>'; return; }
+    if (!data || !data.length) {
+      list.innerHTML = '<div class="story-viewers-empty">' +
+        'Пока никто не смотрел</div>';
+      return;
+    }
+    const esc = window.escHtml;
     list.innerHTML = data.map(function(v) {
       const u = v.users || {};
-      const ava = u.avatar_url ? '<img src="' + window.escHtml(u.avatar_url) + '" alt="">' : window.escHtml((u.name || '?')[0]);
-      return '<div class="story-viewer-row"><div class="story-viewer-ava">' + ava + '</div>' +
-        '<div class="story-viewer-name">' + window.escHtml(u.name || 'Пользователь') + '</div>' +
-        '<div class="story-viewer-time">' + storyTimeAgo(v.viewed_at) + '</div></div>';
+      const ava = u.avatar_url
+        ? '<img src="' + esc(u.avatar_url) + '" alt="">'
+        : esc((u.name || '?')[0]);
+      return '<div class="story-viewer-row">' +
+        '<div class="story-viewer-ava">' + ava + '</div>' +
+        '<div class="story-viewer-name">' +
+          esc(u.name || 'Пользователь') + '</div>' +
+        '<div class="story-viewer-time">' +
+          storyTimeAgo(v.viewed_at) + '</div></div>';
     }).join('');
   } catch (err) {
     console.error('Story viewers error:', err);
     const list = document.getElementById('storyViewersList');
-    if (list) list.innerHTML = '<div class="story-viewers-empty">Ошибка загрузки</div>';
+    if (list) {
+      list.innerHTML = '<div class="story-viewers-empty">' +
+        'Ошибка загрузки</div>';
+    }
   }
 }
 
@@ -315,12 +401,16 @@ async function deleteMyStory(storyId) {
       .from('user_stories').delete().eq('id', storyId);
     if (error) throw error;
     window.showToast('История удалена');
-    _storyList = _storyList.filter(function(s) { return s.id !== storyId; });
+    _storyList = _storyList.filter(function(s) {
+      return s.id !== storyId;
+    });
     if (!_storyList.length) {
       closeStoryViewer();
       return;
     }
-    if (_storyIndex >= _storyList.length) _storyIndex = _storyList.length - 1;
+    if (_storyIndex >= _storyList.length) {
+      _storyIndex = _storyList.length - 1;
+    }
     renderStoryViewer();
   } catch (err) {
     console.error('Story delete error:', err);
