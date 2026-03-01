@@ -63,7 +63,9 @@ const TEMPLATES = {
   scrFriends: '/templates/friends.html',
   scrProfileStats: '/templates/profile-stats.html',
   scrBizcard: '/templates/bizcard.html',
-  scrWeeklyReport: '/templates/weekly-report.html'
+  scrWeeklyReport: '/templates/weekly-report.html',
+  scrStoryCreate: '/templates/story-create.html',
+  scrStoryViewer: '/templates/story-viewer.html'
 };
 const loadedTemplates = {};
 
@@ -119,7 +121,9 @@ const SCREEN_INITS = {
   scrFriends: ['initFriends'],
   scrProfileStats: ['initProfileStats'],
   scrBizcard: ['initBizcard'],
-  scrWeeklyReport: ['initWeeklyReport']
+  scrWeeklyReport: ['initWeeklyReport'],
+  scrStoryCreate: ['initStoryCreate'],
+  scrStoryViewer: ['initStoryViewer']
 };
 
 async function loadTemplate(id) {
@@ -205,7 +209,8 @@ const NAV_TAB_MAP = {
   scrReferrals: 5, scrWallet: 5, scrNotifications: 5,
   scrVerification: 5, scrAlliances: 5, scrSubscription: 5,
   scrAchievements: 5, scrRoadmap: 5, scrFriends: 5,
-  scrProfileStats: 5, scrBizcard: 5, scrWeeklyReport: 5
+  scrProfileStats: 5, scrBizcard: 5, scrWeeklyReport: 5,
+  scrStoryCreate: 0, scrStoryViewer: 0
 };
 
 function updateNavActive(id) {
