@@ -146,7 +146,7 @@ async function checkDailyLimit() {
 async function storyUploadImage(file) {
   const user = window.getCurrentUser();
   const compress = window.compressImage || function(f) { return Promise.resolve(f); };
-  var _t;
+  let _t;
   const blob = await Promise.race([
     compress(file),
     new Promise(function(resolve) { _t = setTimeout(function() { resolve(file); }, 10000); })
@@ -212,7 +212,7 @@ async function publishStory() {
     console.error('Story publish error:', err);
     if (window.showToast) try { window.showToast('Ошибка публикации'); } catch(e) {}
   } finally {
-    var _btn = document.getElementById('storyPublishBtn');
+    const _btn = document.getElementById('storyPublishBtn');
     if (_btn) { _btn.disabled = false; _btn.textContent = 'Опубликовать'; }
   }
 }
