@@ -1,7 +1,6 @@
 /* =====================================================
    STORIES — Создание + Просмотр + Gradient Ring
    Дизайн-система: #06060b, #8b5cf6, Outfit, glass
-   Существующие .story-* стили в feed.css — НЕ дублируем
    ===================================================== */
 
 /* =====================================================
@@ -42,7 +41,7 @@
   animation: storyFadeOut 250ms ease-out forwards;
 }
 
-/* --- Gradient overlays (читаемость на любом фоне) --- */
+/* --- Gradient overlays --- */
 
 .story-viewer::before {
   content: '';
@@ -99,11 +98,11 @@
   to { opacity: 0; transform: scale(0.96); }
 }
 
-/* --- Progress bar (сегменты сверху) --- */
+/* --- Progress bar --- */
 
 .story-progress {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   padding: 8px 12px 0;
   position: absolute;
   top: 0;
@@ -117,7 +116,7 @@
   flex: 1;
   height: 2px;
   border-radius: 1px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
   overflow: hidden;
 }
 
@@ -145,15 +144,15 @@
   to { width: 100%; }
 }
 
-/* --- Header: аватар + имя + время + кнопка X --- */
+/* --- Header: аватар + имя + время + кнопки --- */
 
 .story-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 12px 8px;
+  padding: 8px 12px;
   position: absolute;
-  top: 14px;
+  top: 18px;
   left: 0;
   right: 0;
   z-index: 1010;
@@ -161,8 +160,8 @@
 }
 
 .story-header-ava {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -170,7 +169,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
 }
 
@@ -183,6 +182,9 @@
 .story-header-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .story-header-name {
@@ -197,44 +199,40 @@
 .story-header-time {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
 }
 
 .story-close {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: none;
   border: none;
   color: #fff;
-  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
-  transition: background 200ms;
+  padding: 0;
 }
 
-.story-close:active {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* --- Image (центр экрана) --- */
+/* --- Image (edge-to-edge) --- */
 
 .story-image-wrap {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  position: relative;
 }
 
 .story-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -263,20 +261,23 @@
   to { transform: rotate(360deg); }
 }
 
-/* --- Caption (низ) --- */
+/* --- Caption (низ, над footer) --- */
 
 .story-caption {
   position: absolute;
-  bottom: 0;
+  bottom: 60px;
   left: 0;
   right: 0;
-  padding: 40px 16px 24px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 0 12px;
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.4;
   z-index: 1010;
   transition: opacity 150ms ease-out;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* --- Tap-зоны (невидимые) --- */
@@ -284,7 +285,7 @@
 .story-tap-left,
 .story-tap-right {
   position: absolute;
-  top: 80px;
+  top: 60px;
   bottom: 60px;
   z-index: 1005;
   -webkit-tap-highlight-color: transparent;
@@ -300,67 +301,69 @@
   width: 65%;
 }
 
-/* --- Delete button (для owner) --- */
+/* --- Footer: views (own) / reply (other) --- */
+
+.story-views-btn {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.story-views-btn svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.story-reply-stub {
+  position: absolute;
+  bottom: 16px;
+  left: 12px;
+  right: 12px;
+  z-index: 1010;
+  height: 40px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* --- Delete button (header, для owner) --- */
 
 .story-delete {
-  position: absolute;
-  bottom: 20px;
-  right: 16px;
-  z-index: 1015;
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 200ms, transform 200ms;
+  flex-shrink: 0;
+  padding: 0;
 }
 
 .story-delete:active {
-  background: rgba(239, 68, 68, 0.3);
-  transform: scale(0.9);
-}
-
-/* --- Views button (для owner) --- */
-
-.story-views-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 16px;
-  z-index: 1015;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
-  font-weight: 500;
-  font-family: 'Outfit', sans-serif;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 200ms, transform 200ms;
-}
-
-.story-views-btn:active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(0.95);
-}
-
-.story-views-btn svg {
-  flex-shrink: 0;
-  opacity: 0.9;
+  color: #ef4444;
 }
 
 /* --- Viewers panel (slide-up) --- */
@@ -489,164 +492,77 @@
 }
 
 /* =====================================================
-   3. STORY CREATE (экран создания)
+   3. STORY CREATE (Telegram-like fullscreen)
    ===================================================== */
 
-.story-create-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  gap: 12px;
+.story-create {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 1000;
 }
 
-.story-create-back {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #fff;
+.story-create-preview {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  background: #000;
 }
 
-.story-create-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-  flex: 1;
-}
-
-/* --- Photo preview --- */
-
-.story-preview-zone {
-  margin: 0 16px;
-  aspect-ratio: 9 / 16;
-  max-height: 55vh;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  transition: border-color 300ms;
-}
-
-.story-preview-zone.has-photo {
-  border: none;
-}
-
-.story-preview-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.story-preview-placeholder svg {
-  opacity: 0.4;
-}
-
-.story-preview-placeholder span {
-  font-size: 14px;
-}
-
-.story-preview-img {
+.story-create-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* --- Photo pick buttons --- */
+.story-create-preview.has-photo img {
+  opacity: 1;
+}
 
-.story-pick-row {
+.story-create-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
-  gap: 10px;
-  padding: 14px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
 }
 
-.story-pick-btn {
-  flex: 1;
+.story-create-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  font-family: 'Outfit', sans-serif;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 200ms;
+  padding: 0;
 }
 
-.story-pick-btn:active {
-  background: rgba(139, 92, 246, 0.15);
+.story-create-close:active {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* --- Caption input --- */
-
-.story-caption-wrap {
-  padding: 0 16px;
-  position: relative;
-}
-
-.story-caption-input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #fff;
-  font-size: 14px;
-  font-family: 'Outfit', sans-serif;
-  resize: none;
-  height: 44px;
-  outline: none;
-  transition: border-color 200ms;
-}
-
-.story-caption-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
-}
-
-.story-caption-input:focus {
-  border-color: rgba(139, 92, 246, 0.4);
-}
-
-.story-caption-counter {
-  text-align: right;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.2);
-  padding: 4px 16px 0;
-}
-
-.story-caption-counter.warn {
-  color: #ef4444;
-}
-
-/* --- Publish button --- */
-
-.story-publish-btn {
-  margin: 14px 16px 0;
-  width: calc(100% - 32px);
-  padding: 14px;
-  border-radius: 10px;
+.story-create-publish {
+  padding: 10px 20px;
+  border-radius: 20px;
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   border: none;
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
@@ -654,28 +570,67 @@
   transition: opacity 200ms, transform 200ms;
 }
 
-.story-publish-btn:active {
-  transform: scale(0.97);
+.story-create-publish:active {
+  transform: scale(0.95);
 }
 
-.story-publish-btn:disabled {
+.story-create-publish:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }
 
-/* --- Limit warning --- */
+.story-create-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.story-create-caption {
+  flex: 1;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+}
+
+.story-create-caption::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.story-create-count {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
 
 .story-limit-msg {
-  margin: 10px 16px 0;
+  position: absolute;
+  bottom: 70px;
+  left: 16px;
+  right: 16px;
+  z-index: 10;
   padding: 10px 14px;
   border-radius: 10px;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.15);
   color: rgba(239, 68, 68, 0.8);
   font-size: 13px;
-  display: none;
   text-align: center;
+  display: none;
 }
 
 .story-limit-msg.visible {
