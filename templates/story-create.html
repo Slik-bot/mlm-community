@@ -1,0 +1,49 @@
+<!-- =============== SCREEN: STORY CREATE =============== -->
+<div class="scr hidden" id="scrStoryCreate">
+
+  <div class="story-create-header">
+    <button class="story-create-back" onclick="goBack()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="story-create-title">Новая история</div>
+  </div>
+
+  <!-- Photo preview -->
+  <div class="story-preview-zone" id="storyPreviewZone">
+    <div class="story-preview-placeholder" id="storyPlaceholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <span>Выберите фото</span>
+    </div>
+  </div>
+
+  <!-- Photo pick buttons -->
+  <div class="story-pick-row">
+    <button class="story-pick-btn" onclick="storyPickPhoto('camera')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Камера
+    </button>
+    <button class="story-pick-btn" onclick="storyPickPhoto('gallery')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Галерея
+    </button>
+  </div>
+
+  <input type="file" id="storyFileInput" accept="image/jpeg,image/png,image/webp" class="hidden" style="display:none">
+
+  <!-- Caption -->
+  <div class="story-caption-wrap">
+    <textarea class="story-caption-input" id="storyCaptionInput" placeholder="Подпись..." maxlength="200"></textarea>
+  </div>
+  <div class="story-caption-counter" id="storyCaptionCounter">0 / 200</div>
+
+  <!-- Limit warning -->
+  <div class="story-limit-msg" id="storyLimitMsg">Лимит: 10 историй в сутки</div>
+
+  <!-- Publish -->
+  <button class="story-publish-btn" id="storyPublishBtn" disabled onclick="publishStory()">Опубликовать</button>
+
+</div>
