@@ -12,6 +12,9 @@ let _storyPaused = false;
 let _storyHoldTimer = null;
 let _storyTimerStart = 0;
 let _storyRemaining = STORY_DURATION;
+let _swipeStartY = 0;
+let _swipeDeltaY = 0;
+let _swipeActive = false;
 
 // =====================================================
 // Инициализация — полный сброс + загрузка
@@ -176,6 +179,7 @@ function renderStoryViewer(retries) {
     story, profile, isOwn, _storyList.length
   );
   setupStoryTouch();
+  setupSwipeDown();
   preloadStoryImage(story);
   incrementStoryView(story.id);
 }
@@ -431,6 +435,51 @@ function storyTimeAgo(dateStr) {
   if (mins < 60) return mins + ' мин';
   const hrs = Math.floor(mins / 60);
   return hrs + 'ч назад';
+}
+
+// =====================================================
+// Свайп вниз = закрыть (Telegram-like)
+// =====================================================
+
+function setupSwipeDown() {
+  const viewer = document.getElementById('storyViewerEl');
+  if (!viewer) return;
+
+  viewer.addEventListener('touchstart', function(e) {
+    _swipeStartY = e.touches[0].clientY;
+    _swipeDeltaY = 0;
+    _swipeActive = false;
+  }, true);
+
+  viewer.addEventListener('touchmove', function(e) {
+    const dy = e.touches[0].clientY - _swipeStartY;
+    if (dy <= 10) return;
+    if (!_swipeActive) {
+      _swipeActive = true;
+      clearTimeout(_storyHoldTimer);
+      _storyHoldTimer = null;
+      viewer.style.transition = 'none';
+    }
+    _swipeDeltaY = dy;
+    viewer.style.transform = 'translateY(' + dy + 'px)';
+    viewer.style.opacity = String(Math.max(0.2, 1 - dy / 400));
+  }, true);
+
+  viewer.addEventListener('touchend', function(e) {
+    if (!_swipeActive) return;
+    e.stopPropagation();
+    viewer.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1)';
+    if (_swipeDeltaY > 150) {
+      viewer.style.transform = 'translateY(100%)';
+      viewer.style.opacity = '0';
+      setTimeout(closeStoryViewer, 200);
+    } else {
+      viewer.style.transform = '';
+      viewer.style.opacity = '';
+    }
+    _swipeActive = false;
+    _swipeDeltaY = 0;
+  }, true);
 }
 
 // =====================================================
