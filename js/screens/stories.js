@@ -293,7 +293,7 @@ function buildStoryViewerHtml(story, profile, isOwn, total) {
       '</div>' +
       '<button class="story-close" onclick="closeStoryViewer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
     '</div>' +
-    '<div class="story-image-wrap"><img class="story-image" src="' + window.escHtml(story.image_url) + '" alt=""></div>' +
+    '<div class="story-image-wrap"><div class="story-spinner"></div><img class="story-image story-image--loading" data-src="' + window.escHtml(story.image_url) + '" alt=""></div>' +
     captionHtml +
     '<div class="story-tap-left" onclick="prevStory()"></div>' +
     '<div class="story-tap-right" onclick="nextStory()"></div>' +
@@ -318,8 +318,34 @@ function renderStoryViewer(retries) {
   const isOwn = user && story.user_id === user.id;
   const profile = window._storyViewProfile || {};
   root.innerHTML = buildStoryViewerHtml(story, profile, isOwn, _storyList.length);
-  startStoryTimer();
+  preloadStoryImage(story);
   incrementStoryView(story.id);
+}
+
+// =====================================================
+// VIEWER — Preload изображения + спиннер
+// =====================================================
+
+function preloadStoryImage(story) {
+  const wrap = document.querySelector('.story-image-wrap');
+  const imgEl = wrap ? wrap.querySelector('.story-image') : null;
+  if (!imgEl) { startStoryTimer(); return; }
+  const loader = new Image();
+  loader.onload = function() {
+    imgEl.src = story.image_url;
+    imgEl.classList.remove('story-image--loading');
+    const spinner = wrap.querySelector('.story-spinner');
+    if (spinner) spinner.remove();
+    startStoryTimer();
+  };
+  loader.onerror = function() {
+    const spinner = wrap.querySelector('.story-spinner');
+    if (spinner) spinner.remove();
+    imgEl.classList.remove('story-image--loading');
+    imgEl.classList.add('story-image--error');
+    startStoryTimer();
+  };
+  loader.src = story.image_url;
 }
 
 // =====================================================
