@@ -1,52 +1,206 @@
 <!-- =============== SCREEN: WALLET =============== -->
 <div class="scr hidden" id="scrWallet">
+
+  <!-- HEADER -->
   <div class="scr-head">
     <button class="icon-btn" onclick="goBack()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     </button>
     <span class="scr-head-title">Кошелёк</span>
-    <div style="width:36px"></div>
-  </div>
-
-  <!-- Balance card -->
-  <div class="wallet-balance-card glass-card">
-    <div class="wallet-balance-label">Баланс</div>
-    <div class="wallet-balance-amount" id="walletBalance">0.00 руб.</div>
-    <button class="btn-primary wallet-withdraw-btn" onclick="openWithdrawModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 5v14"/><path d="M5 12l7-7 7 7"/></svg>
-      Вывести средства
+    <button class="icon-btn" onclick="openWalletSettings()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="24" height="24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     </button>
   </div>
 
-  <!-- Transactions -->
-  <div class="wallet-section">
-    <div class="wallet-section-title">История транзакций</div>
-    <div class="wallet-tx-list" id="walletTxList"></div>
-    <div class="wallet-empty hidden" id="walletEmpty">
-      <div class="wallet-empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M6 14h4"/></svg>
+  <!-- HERO CARD -->
+  <div class="wallet-hero">
+    <div class="wallet-hero-brand">
+      <svg class="wallet-hero-diamond" viewBox="0 0 24 24" fill="none" width="20" height="20">
+        <path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/>
+      </svg>
+      <span class="wallet-hero-coin-name">TrafiqCoin</span>
+    </div>
+    <div class="wallet-hero-balance">
+      <span class="wallet-balance-tf" id="walletBalanceTF">0</span>
+      <span class="wallet-hero-tf-label">TF</span>
+    </div>
+    <div class="wallet-hero-convert">
+      <span class="wallet-hero-convert-text">
+        ≈ <span class="wallet-balance-usd" id="walletBalanceUSD">$0</span>
+        <span class="wallet-hero-sep">·</span>
+        <span class="wallet-balance-rub" id="walletBalanceRUB">0 ₽</span>
+        <span class="wallet-hero-sep">·</span>
+        <span class="wallet-balance-usdt" id="walletBalanceUSDT">0 USDT</span>
+      </span>
+    </div>
+    <div class="wallet-hero-stats">
+      <div class="wallet-hero-stat">
+        <span class="wallet-hero-stat-value" id="walletMonthIn">0 TF</span>
+        <span class="wallet-hero-stat-label">Получено за месяц</span>
       </div>
-      <div class="wallet-empty-title">Нет транзакций</div>
-      <div class="wallet-empty-desc">Ваши операции появятся здесь</div>
+      <div class="wallet-hero-stat">
+        <span class="wallet-hero-stat-value" id="walletMonthOut">0 TF</span>
+        <span class="wallet-hero-stat-label">Выведено</span>
+      </div>
+    </div>
+    <div class="wallet-hero-shimmer"></div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="wallet-actions">
+    <button class="wallet-action" onclick="openDepositModal()">
+      <div class="wallet-action-icon wallet-action-icon--deposit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" width="24" height="24">
+          <path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+      <span class="wallet-action-label">Пополнить</span>
+    </button>
+    <button class="wallet-action" onclick="openWithdrawModal()">
+      <div class="wallet-action-icon wallet-action-icon--withdraw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" width="24" height="24">
+          <path d="M12 19V5"/><path d="M5 12l7-7 7 7"/>
+        </svg>
+      </div>
+      <span class="wallet-action-label">Вывести</span>
+    </button>
+    <button class="wallet-action" onclick="openTransferModal()">
+      <div class="wallet-action-icon wallet-action-icon--transfer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f6" stroke-width="2" stroke-linecap="round" width="24" height="24">
+          <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+      <span class="wallet-action-label">Перевести</span>
+    </button>
+  </div>
+
+  <!-- CONVERTER -->
+  <div class="wallet-converter">
+    <div class="wallet-converter-title">Конвертер TF</div>
+    <div class="wallet-converter-input-wrap">
+      <svg class="wallet-converter-icon" viewBox="0 0 24 24" fill="none" width="20" height="20">
+        <path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/>
+      </svg>
+      <input type="number" class="wallet-converter-input" id="walletConverterInput" placeholder="0" min="0">
+      <span class="wallet-converter-suffix">TF</span>
+    </div>
+    <div class="wallet-converter-results">
+      <div class="wallet-converter-card">
+        <span class="wallet-converter-card-label">USD</span>
+        <span class="wallet-converter-card-value" id="convertUSD">$0</span>
+      </div>
+      <div class="wallet-converter-card">
+        <span class="wallet-converter-card-label">USDT</span>
+        <span class="wallet-converter-card-value" id="convertUSDT">0</span>
+      </div>
+      <div class="wallet-converter-card">
+        <span class="wallet-converter-card-label">RUB</span>
+        <span class="wallet-converter-card-value" id="convertRUB">0 ₽</span>
+      </div>
+    </div>
+    <div class="wallet-converter-rate" id="walletConverterRate">Курс: 1 TF = $0.01 · обновлено только что</div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="wallet-history">
+    <div class="wallet-history-tabs">
+      <button class="wallet-tab wallet-tab--active" data-filter="all">Все</button>
+      <button class="wallet-tab" data-filter="in">Получено</button>
+      <button class="wallet-tab" data-filter="out">Выведено</button>
+    </div>
+    <div class="wallet-history-group">
+      <div class="wallet-history-date">Сегодня</div>
+      <div class="wallet-skeleton-list" id="walletSkeletons">
+        <div class="wallet-skeleton-card">
+          <div class="wallet-skeleton-icon"></div>
+          <div class="wallet-skeleton-lines">
+            <div class="wallet-skeleton-line wallet-skeleton-line--long"></div>
+            <div class="wallet-skeleton-line wallet-skeleton-line--short"></div>
+          </div>
+          <div class="wallet-skeleton-amount"></div>
+        </div>
+        <div class="wallet-skeleton-card">
+          <div class="wallet-skeleton-icon"></div>
+          <div class="wallet-skeleton-lines">
+            <div class="wallet-skeleton-line wallet-skeleton-line--long"></div>
+            <div class="wallet-skeleton-line wallet-skeleton-line--short"></div>
+          </div>
+          <div class="wallet-skeleton-amount"></div>
+        </div>
+        <div class="wallet-skeleton-card">
+          <div class="wallet-skeleton-icon"></div>
+          <div class="wallet-skeleton-lines">
+            <div class="wallet-skeleton-line wallet-skeleton-line--long"></div>
+            <div class="wallet-skeleton-line wallet-skeleton-line--short"></div>
+          </div>
+          <div class="wallet-skeleton-amount"></div>
+        </div>
+      </div>
+      <div class="wallet-tx-list" id="walletTxList"></div>
     </div>
   </div>
 
-  <!-- Withdraw modal -->
-  <div class="wallet-modal-overlay hidden" id="walletModalOverlay" onclick="closeWithdrawModal()">
-    <div class="wallet-modal" onclick="event.stopPropagation()">
-      <div class="wallet-modal-head">
-        <span class="wallet-modal-title">Вывод средств</span>
-        <button class="icon-btn" onclick="closeWithdrawModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+  <!-- WITHDRAW MODAL -->
+  <div class="wallet-withdraw-overlay" id="walletWithdrawOverlay">
+    <div class="wallet-withdraw-modal" id="walletWithdrawModal">
+      <div class="wallet-withdraw-handle"></div>
+      <div class="wallet-withdraw-head">
+        <span class="wallet-withdraw-title">Вывод TF</span>
+        <span class="wallet-withdraw-available">Доступно: <span id="withdrawAvailable">0</span> TF</span>
       </div>
-      <div class="wallet-modal-body">
-        <label class="wallet-field-label">Сумма (руб.)</label>
-        <input type="number" class="wallet-input" id="withdrawAmount" placeholder="0.00" min="1" step="0.01">
-        <label class="wallet-field-label">Реквизиты</label>
-        <textarea class="wallet-textarea" id="withdrawDetails" placeholder="Номер карты или кошелька" rows="3"></textarea>
-        <button class="btn-primary wallet-submit-btn" id="withdrawBtn" onclick="submitWithdrawal()">Отправить заявку</button>
+      <div class="wallet-withdraw-body">
+        <div class="wallet-withdraw-amount-wrap">
+          <input type="number" class="wallet-withdraw-input" id="withdrawAmount" placeholder="0" min="0">
+          <button class="wallet-withdraw-max" id="withdrawMaxBtn">MAX</button>
+        </div>
+        <div class="wallet-withdraw-convert" id="withdrawConvert">≈ $0 · 0 ₽ · 0 USDT</div>
+        <div class="wallet-withdraw-methods">
+          <label class="wallet-withdraw-method">
+            <input type="radio" name="withdrawMethod" value="ton" class="wallet-withdraw-radio">
+            <div class="wallet-withdraw-method-card">
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z" fill="#0098ea"/>
+              </svg>
+              <span class="wallet-withdraw-method-name">TON кошелёк</span>
+            </div>
+          </label>
+          <label class="wallet-withdraw-method">
+            <input type="radio" name="withdrawMethod" value="usdt-trc20" class="wallet-withdraw-radio">
+            <div class="wallet-withdraw-method-card">
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#ef4444"/>
+              </svg>
+              <span class="wallet-withdraw-method-name">USDT TRC20</span>
+            </div>
+          </label>
+          <label class="wallet-withdraw-method">
+            <input type="radio" name="withdrawMethod" value="usdt-erc20" class="wallet-withdraw-radio">
+            <div class="wallet-withdraw-method-card">
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#627eea"/>
+              </svg>
+              <span class="wallet-withdraw-method-name">USDT ERC20</span>
+            </div>
+          </label>
+        </div>
+        <div class="wallet-withdraw-address-wrap">
+          <input type="text" class="wallet-withdraw-address" id="withdrawAddress" placeholder="Адрес кошелька">
+          <button class="wallet-withdraw-copy" id="withdrawCopyBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <div class="wallet-withdraw-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+          </svg>
+          <span>Срок: 72 часа · Минимум: 1,000 TF</span>
+        </div>
+        <button class="wallet-withdraw-submit" id="withdrawSubmitBtn" disabled>Подать заявку</button>
       </div>
     </div>
   </div>
+
 </div>
