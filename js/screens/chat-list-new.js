@@ -7,6 +7,7 @@ let _clData = [];
 let _clDebounce = null;
 let _clSub = null;
 let _clSwipeOpen = null;
+let _clBound = false;
 
 const CL_DNA = {
   strategist: '#3b82f6', communicator: '#22c55e',
@@ -38,8 +39,11 @@ function initChatList() {
   _clData = [];
   _clSwipeOpen = null;
 
-  clBindTabs();
-  clBindSearch();
+  if (!_clBound) {
+    clBindTabs();
+    clBindSearch();
+    _clBound = true;
+  }
   clSubscribeRealtime(user.id);
 
   loadClData(user.id).then(function(convs) {
