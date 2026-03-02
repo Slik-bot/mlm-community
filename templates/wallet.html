@@ -216,47 +216,88 @@
       </button>
     </div>
     <div class="wallet-modal-body">
-      <p class="wallet-modal-subtitle">Отправьте криптовалюту на один из адресов платформы</p>
-      <div class="wallet-deposit-addr">
-        <div class="wallet-deposit-addr-head">
-          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z" fill="#0098ea"/></svg>
-          <span class="wallet-deposit-addr-label">TON</span>
+
+      <!-- Крипта -->
+      <div class="wallet-deposit-section">
+        <div class="wallet-deposit-section-title">Крипта</div>
+        <div class="wallet-deposit-addr">
+          <div class="wallet-deposit-addr-head">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z" fill="#0098ea"/></svg>
+            <span class="wallet-deposit-addr-label">TON</span>
+          </div>
+          <div class="wallet-deposit-addr-row">
+            <span class="wallet-deposit-addr-text">UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa</span>
+            <button class="wallet-copy-btn" onclick="copyAddress('UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="wallet-deposit-addr-row">
-          <span class="wallet-deposit-addr-text">UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa</span>
-          <button class="wallet-copy-btn" onclick="copyAddress('UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+        <div class="wallet-deposit-addr">
+          <div class="wallet-deposit-addr-head">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#ef4444"/></svg>
+            <span class="wallet-deposit-addr-label">USDT TRC20</span>
+          </div>
+          <div class="wallet-deposit-addr-row">
+            <span class="wallet-deposit-addr-text">TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb</span>
+            <button class="wallet-copy-btn" onclick="copyAddress('TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="wallet-deposit-addr">
+          <div class="wallet-deposit-addr-head">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#627eea"/></svg>
+            <span class="wallet-deposit-addr-label">USDT ERC20</span>
+          </div>
+          <div class="wallet-deposit-addr-row">
+            <span class="wallet-deposit-addr-text">0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18</span>
+            <button class="wallet-copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
         </div>
       </div>
-      <div class="wallet-deposit-addr">
-        <div class="wallet-deposit-addr-head">
-          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#ef4444"/></svg>
-          <span class="wallet-deposit-addr-label">USDT TRC20</span>
+
+      <!-- Telegram -->
+      <div class="wallet-deposit-section">
+        <div class="wallet-deposit-section-title">Telegram</div>
+        <div class="wallet-deposit-method wallet-deposit-method--soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <div>
+            <div class="wallet-deposit-method-name">Tribute</div>
+            <div class="wallet-deposit-method-desc">Оплата через Tribute</div>
+          </div>
+          <span class="wallet-soon-badge">Скоро</span>
         </div>
-        <div class="wallet-deposit-addr-row">
-          <span class="wallet-deposit-addr-text">TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb</span>
-          <button class="wallet-copy-btn" onclick="copyAddress('TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="wallet-deposit-addr">
-        <div class="wallet-deposit-addr-head">
-          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#627eea"/></svg>
-          <span class="wallet-deposit-addr-label">USDT ERC20</span>
-        </div>
-        <div class="wallet-deposit-addr-row">
-          <span class="wallet-deposit-addr-text">0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18</span>
-          <button class="wallet-copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
+        <div class="wallet-deposit-method wallet-deposit-method--soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <div>
+            <div class="wallet-deposit-method-name">Telegram Stars</div>
+            <div class="wallet-deposit-method-desc">Через @trafiqo_bot</div>
+          </div>
+          <span class="wallet-soon-badge">Скоро</span>
         </div>
       </div>
-      <div class="wallet-withdraw-info">
+
+      <!-- Банковская карта -->
+      <div class="wallet-deposit-section">
+        <div class="wallet-deposit-section-title">Банковская карта</div>
+        <div class="wallet-deposit-method wallet-deposit-method--soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="24" height="24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <div>
+            <div class="wallet-deposit-method-name">Visa / Mastercard / МИР</div>
+            <div class="wallet-deposit-method-desc">Эквайринг подключается</div>
+          </div>
+          <span class="wallet-soon-badge">Скоро</span>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="wallet-deposit-info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        <span>После отправки баланс пополнится в течение 24 часов. Минимум: 100 TF</span>
+        <span>После отправки баланс пополнится в течение 24 часов. Минимум: 100 TF. При вопросах — поддержка в Telegram.</span>
       </div>
+
     </div>
   </div>
 
