@@ -16,10 +16,17 @@ function initChat() {
 
   if (currentChatPartner) {
     const headAvatar = document.getElementById('chatHeadAvatar');
+    const headImg = document.getElementById('chatHeadAvatarImg');
     const headName = document.getElementById('chatHeadName');
+    if (headImg) {
+      headImg.src = currentChatPartner.avatar_url || '';
+      headImg.style.display = currentChatPartner.avatar_url ? '' : 'none';
+    }
     if (headAvatar) {
-      headAvatar.src = currentChatPartner.avatar_url || '';
-      headAvatar.style.display = currentChatPartner.avatar_url ? '' : 'none';
+      const DNA_CLS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna-r', analyst: 'dna-a' };
+      headAvatar.className = 'chat-head-avatar';
+      const dnaCls = DNA_CLS[currentChatPartner.dna_type];
+      if (dnaCls) headAvatar.classList.add(dnaCls);
     }
     if (headName) headName.textContent = currentChatPartner.name || 'Пользователь';
   }
@@ -29,6 +36,9 @@ function initChat() {
 
   const input = document.getElementById('chatInput');
   if (input) { input.value = ''; input.style.height = 'auto'; }
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  if (sendBtn) sendBtn.classList.add('chat-send-btn--hidden');
 
   loadMessages(currentConversationId);
   subscribeRealtime(currentConversationId);
@@ -125,6 +135,43 @@ function formatChatTime(dateStr) {
 
 function pad2(n) { return n < 10 ? '0' + n : '' + n; }
 
+// ===== toggleSendBtn =====
+function toggleSendBtn() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  if (!input || !btn) return;
+  if (input.value.trim()) {
+    btn.classList.remove('chat-send-btn--hidden');
+  } else {
+    btn.classList.add('chat-send-btn--hidden');
+  }
+}
+
+// ===== Typing indicator =====
+let _typingTimer = null;
+
+function showTyping() {
+  const el = document.getElementById('chatTyping');
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.classList.add('visible');
+  clearTimeout(_typingTimer);
+  _typingTimer = setTimeout(hideTyping, 2500);
+}
+
+function hideTyping() {
+  const el = document.getElementById('chatTyping');
+  if (!el) return;
+  el.classList.add('hidden');
+  el.classList.remove('visible');
+  clearTimeout(_typingTimer);
+}
+
+// ===== chatTransfer =====
+function chatTransfer() {
+  showToast('Скоро: TF перевод');
+}
+
 // ===== Экспорт =====
 window.initChat = initChat;
 window.initChatInfo = initChatInfo;
@@ -134,3 +181,7 @@ window.chatShowMenu = chatShowMenu;
 window.chatMute = chatMute;
 window.findOrCreateConversation = findOrCreateConversation;
 window.pad2 = pad2;
+window.toggleSendBtn = toggleSendBtn;
+window.showTyping = showTyping;
+window.hideTyping = hideTyping;
+window.chatTransfer = chatTransfer;
