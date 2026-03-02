@@ -203,4 +203,107 @@
     </div>
   </div>
 
+  <!-- SHARED MODAL BACKDROP -->
+  <div class="wallet-modal-backdrop"></div>
+
+  <!-- DEPOSIT MODAL -->
+  <div class="wallet-deposit-modal">
+    <div class="wallet-withdraw-handle"></div>
+    <div class="wallet-modal-head">
+      <span class="wallet-withdraw-title">Пополнение TF</span>
+      <button class="icon-btn" onclick="closeDepositModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="wallet-modal-body">
+      <p class="wallet-modal-subtitle">Отправьте криптовалюту на один из адресов платформы</p>
+      <div class="wallet-deposit-addr">
+        <div class="wallet-deposit-addr-head">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z" fill="#0098ea"/></svg>
+          <span class="wallet-deposit-addr-label">TON</span>
+        </div>
+        <div class="wallet-deposit-addr-row">
+          <span class="wallet-deposit-addr-text">UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa</span>
+          <button class="wallet-copy-btn" onclick="copyAddress('UQCxJ4lRLfNpT3RH_vy4TKil5TYnkqW9KMhRbGCR0goQMAaa',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="wallet-deposit-addr">
+        <div class="wallet-deposit-addr-head">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#ef4444"/></svg>
+          <span class="wallet-deposit-addr-label">USDT TRC20</span>
+        </div>
+        <div class="wallet-deposit-addr-row">
+          <span class="wallet-deposit-addr-text">TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb</span>
+          <button class="wallet-copy-btn" onclick="copyAddress('TXqK3a4NRxVBMwSaDo9eSvLTkyFZRGfqRb',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="wallet-deposit-addr">
+        <div class="wallet-deposit-addr-head">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2l9 5.2v9.6L12 22l-9-5.2V7.2L12 2z" fill="#627eea"/></svg>
+          <span class="wallet-deposit-addr-label">USDT ERC20</span>
+        </div>
+        <div class="wallet-deposit-addr-row">
+          <span class="wallet-deposit-addr-text">0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18</span>
+          <button class="wallet-copy-btn" onclick="copyAddress('0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="wallet-withdraw-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span>После отправки баланс пополнится в течение 24 часов. Минимум: 100 TF</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSFER MODAL -->
+  <div class="wallet-transfer-modal">
+    <div class="wallet-withdraw-handle"></div>
+    <div class="wallet-modal-head">
+      <span class="wallet-withdraw-title">Перевод TF</span>
+      <button class="icon-btn" onclick="closeTransferModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="wallet-modal-body">
+      <p class="wallet-modal-subtitle">Кому перевести?</p>
+      <div class="wallet-search-wrap">
+        <svg class="wallet-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="wallet-search-input" id="transferSearch" placeholder="Имя или ID...">
+      </div>
+      <div class="wallet-search-results" id="transferSearchResults"></div>
+      <div class="wallet-recipient" id="transferRecipient">
+        <img class="wallet-recipient-avatar" id="transferRecipientAvatar" src="" alt="">
+        <span class="wallet-recipient-name" id="transferRecipientName"></span>
+      </div>
+      <p class="wallet-modal-subtitle">Сумма перевода:</p>
+      <div class="wallet-transfer-amount-wrap">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/></svg>
+        <input type="number" class="wallet-transfer-input" id="transferAmount" placeholder="0" min="0">
+        <span class="wallet-converter-suffix">TF</span>
+        <button class="wallet-withdraw-max" id="transferMaxBtn">MAX</button>
+      </div>
+      <div class="wallet-fee-line">
+        <span id="transferConvert">≈ $0.00</span>
+        <span id="transferFee">Комиссия: 5% (0 TF)</span>
+      </div>
+      <div class="wallet-fee-total" id="transferTotal">Итого спишется: 0 TF</div>
+      <button class="wallet-withdraw-submit" id="transferSubmit" disabled>Перевести</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div class="wallet-success-modal">
+    <div class="wallet-success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="wallet-success-title">Готово!</div>
+    <div class="wallet-success-text" id="successMessage"></div>
+    <button class="wallet-success-btn" onclick="closeSuccessModal()">Закрыть</button>
+  </div>
+
 </div>
