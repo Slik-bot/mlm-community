@@ -264,6 +264,7 @@ async function shopBuyProduct() {
 
 function shopOpenAuthor() {
   if (!currentProduct || !currentProduct.author) return;
+  window._viewProfileId = currentProduct.author.id;
   goTo('scrProfile');
 }
 
