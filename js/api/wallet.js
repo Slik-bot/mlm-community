@@ -244,6 +244,68 @@ async function createTransfer(fromId, toId, amountTf) {
   }
 }
 
+// ═══ uploadDepositReceipt ═══
+// Загрузка чека в Supabase Storage (deposit-receipts bucket)
+
+async function uploadDepositReceipt(userId, file) {
+  try {
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return { url: null, error: 'Файл слишком большой. Максимум 5 МБ' };
+    }
+
+    const ext = (file.name || '').split('.').pop() || 'jpg';
+    const path = userId + '/' + Date.now() + '.' + ext;
+
+    const { error } = await window.sb.storage
+      .from('deposit-receipts')
+      .upload(path, file);
+
+    if (error) return { url: null, error: error.message };
+    return { url: path, error: null };
+  } catch (err) {
+    console.error('[uploadDepositReceipt]', err);
+    return { url: null, error: err.message };
+  }
+}
+
+// ═══ createDepositRequest ═══
+// INSERT в deposit_requests
+
+async function createDepositRequest(userId, amountTf, currency, receiptUrl, txHash) {
+  try {
+    if (amountTf < 100) return { error: 'Минимум 100 TF' };
+    if (!receiptUrl) return { error: 'Прикрепите чек' };
+
+    const rate = await getTfRate();
+    const crypto = convertTf(amountTf, rate);
+    const tonPrice = 3.7;
+    const amountCrypto = currency === 'TON'
+      ? +(amountTf * (rate.usd || 0.01) / tonPrice).toFixed(4)
+      : crypto.usdt;
+
+    const { data, error } = await window.sb
+      .from('deposit_requests')
+      .insert({
+        user_id: userId,
+        amount_tf: amountTf,
+        currency: currency,
+        amount_crypto: amountCrypto,
+        receipt_url: receiptUrl,
+        tx_hash: txHash || null,
+        status: 'pending'
+      })
+      .select('id')
+      .single();
+
+    if (error) return { error: error.message };
+    return { success: true, id: data.id };
+  } catch (err) {
+    console.error('[createDepositRequest]', err);
+    return { error: err.message };
+  }
+}
+
 // ═══ Экспорт ═══
 
 window.getWalletData = getWalletData;
@@ -253,3 +315,5 @@ window.createWithdrawal = createWithdrawal;
 window.convertTf = convertTf;
 window.getWithdrawals = getWithdrawals;
 window.createTransfer = createTransfer;
+window.uploadDepositReceipt = uploadDepositReceipt;
+window.createDepositRequest = createDepositRequest;
