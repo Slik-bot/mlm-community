@@ -151,14 +151,15 @@ function frRenderCard(item, type, index) {
   const delay = 'animation-delay:' + (index * 0.04) + 's';
   let buttons = '';
   if (type === 'accepted') {
-    buttons = '<button class="fr-btn fr-btn-remove" onclick="frRemoveFriend(\'' + item.id + '\')">Удалить</button>';
+    buttons = '<button class="fr-btn fr-btn-remove" onclick="event.stopPropagation();frRemoveFriend(\'' + item.id + '\')">Удалить</button>';
   } else if (type === 'incoming') {
-    buttons = '<button class="fr-btn fr-btn-accept" onclick="frAcceptFriend(\'' + item.id + '\')">Принять</button>' +
-              '<button class="fr-btn fr-btn-reject" onclick="frRejectFriend(\'' + item.id + '\')">Отклонить</button>';
+    buttons = '<button class="fr-btn fr-btn-accept" onclick="event.stopPropagation();frAcceptFriend(\'' + item.id + '\')">Принять</button>' +
+              '<button class="fr-btn fr-btn-reject" onclick="event.stopPropagation();frRejectFriend(\'' + item.id + '\')">Отклонить</button>';
   } else {
-    buttons = '<button class="fr-btn fr-btn-reject" onclick="frRejectFriend(\'' + item.id + '\')">Отменить</button>';
+    buttons = '<button class="fr-btn fr-btn-reject" onclick="event.stopPropagation();frRejectFriend(\'' + item.id + '\')">Отменить</button>';
   }
-  return '<div class="fr-card" style="' + delay + '">' +
+  const profileId = p.id || '';
+  return '<div class="fr-card" style="' + delay + '" onclick="window._viewProfileId=\'' + profileId + '\';goTo(\'scrProfile\')">' +
     avatar.replace('class="fr-avatar"', 'class="fr-avatar" style="border-color:' + dnaColor + '"') +
     '<div class="fr-info">' +
       '<div class="fr-name">' + escHtml(p.name || 'Участник') + '</div>' +
