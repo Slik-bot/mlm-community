@@ -319,105 +319,9 @@ function formatMsgTime(dateStr) {
   return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
 }
 
-// ===== КОНТЕКСТНОЕ МЕНЮ =====
-let chatLongPressTimer = null;
-
-function initMessageLongPress(el, msg, isOwn) {
-  el.addEventListener('touchstart', function(e) {
-    chatLongPressTimer = setTimeout(function() {
-      showMsgContextMenu(msg, isOwn, e.touches[0]);
-    }, 500);
-  }, { passive: true });
-
-  el.addEventListener('touchend', function() {
-    clearTimeout(chatLongPressTimer);
-  });
-
-  el.addEventListener('touchmove', function() {
-    clearTimeout(chatLongPressTimer);
-  });
-}
-
-function showMsgContextMenu(msg, isOwn, touch) {
-  const old = document.getElementById('chatContextMenu');
-  if (old) old.remove();
-
-  const menu = document.createElement('div');
-  menu.id = 'chatContextMenu';
-  menu.className = 'chat-context-menu';
-
-  const actions = [
-    { label: 'Ответить', fn: function() { startReply(msg); } },
-    { label: 'Копировать', fn: function() {
-      navigator.clipboard.writeText(msg.content || '');
-      showToast('Скопировано');
-    }}
-  ];
-
-  if (isOwn) {
-    actions.push({ label: 'Удалить', fn: function() {
-      deleteMessage(msg.id);
-    }, danger: true });
-  }
-
-  actions.forEach(function(a) {
-    const btn = document.createElement('button');
-    btn.className = 'chat-context-btn' + (a.danger ? ' chat-context-btn--danger' : '');
-    btn.textContent = a.label;
-    btn.onclick = function() { menu.remove(); a.fn(); };
-    menu.appendChild(btn);
-  });
-
-  document.body.appendChild(menu);
-
-  const x = Math.min(touch.clientX, window.innerWidth - 180);
-  const y = Math.min(touch.clientY, window.innerHeight - 150);
-  menu.style.left = x + 'px';
-  menu.style.top = y + 'px';
-
-  setTimeout(function() {
-    document.addEventListener('touchstart', function closeMenu() {
-      menu.remove();
-      document.removeEventListener('touchstart', closeMenu);
-    }, { once: true });
-  }, 100);
-}
-
-async function deleteMessage(msgId) {
-  try {
-    const { error } = await window.sb.from('messages')
-      .delete().eq('id', msgId);
-    if (error) throw error;
-    const el = document.querySelector('[data-msg-id="' + msgId + '"]');
-    if (el) {
-      el.style.transition = 'opacity 250ms, transform 250ms';
-      el.style.opacity = '0';
-      el.style.transform = 'scale(0.8)';
-      setTimeout(function() { el.remove(); }, 250);
-    }
-  } catch (err) {
-    console.error('deleteMessage:', err);
-    showToast('Не удалось удалить');
-  }
-}
-
-function startReply(msg) {
-  window.chatReplyTo = msg;
-  const preview = document.getElementById('chatReplyPreview');
-  const text = document.getElementById('chatReplyText');
-  if (preview && text) {
-    text.textContent = msg.content || '';
-    preview.classList.add('visible');
-    const inp = document.getElementById('chatInput');
-    if (inp) inp.focus();
-  }
-}
-
-function cancelReply() {
-  window.chatReplyTo = null;
-  const preview = document.getElementById('chatReplyPreview');
-  if (preview) preview.classList.remove('visible');
-}
+// ═══════════════════════════════════════
+// КОНТЕКСТНОЕ МЕНЮ — см. chat-context.js
+// ═══════════════════════════════════════
 
 // ЭКСПОРТЫ
 window.loadMessages = loadMessages;
@@ -430,4 +334,3 @@ window.chatAttachFile = chatAttachFile;
 window.chatUnsubscribe = chatUnsubscribe;
 window.chatClearHistory = chatClearHistory;
 window.chatDelete = chatDelete;
-window.cancelReply = cancelReply;
