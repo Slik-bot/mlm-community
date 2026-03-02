@@ -176,10 +176,10 @@ function buildClItem(conv) {
   item.className = 'cl-item';
   item.setAttribute('data-conv-id', conv.id);
 
-  const border = CL_DNA[o.dna_type] || 'rgba(255,255,255,0.12)';
+  const CL_DNA_CLASS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna-r', analyst: 'dna-a' };
+  const dnaClass = CL_DNA_CLASS[o.dna_type] || '';
   const ava = document.createElement('div');
-  ava.className = 'cl-ava';
-  ava.style.borderColor = border;
+  ava.className = 'cl-ava' + (dnaClass ? ' ' + dnaClass : '');
   if (o.avatar_url) {
     const img = document.createElement('img');
     img.src = o.avatar_url;
