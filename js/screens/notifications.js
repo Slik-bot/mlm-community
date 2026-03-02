@@ -190,9 +190,52 @@ async function updateNotifBadge() {
   }
 }
 
+// ===== REALTIME BADGE =====
+
+let _notifChannel = null;
+
+function initNotifRealtime() {
+  cleanupNotifRealtime();
+  const user = getCurrentUser();
+  if (!user) return;
+
+  _notifChannel = window.sb.channel('notif:' + user.id)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'notifications',
+      filter: 'user_id=eq.' + user.id
+    }, function() {
+      updateNotifBadge();
+    })
+    .subscribe();
+}
+
+function cleanupNotifRealtime() {
+  if (_notifChannel) {
+    window.sb.removeChannel(_notifChannel);
+    _notifChannel = null;
+  }
+}
+
+// Auto-init: подписка при авторизации (login + session restore)
+if (window.AppEvents) {
+  window.AppEvents.on('state:changed', function(e) {
+    if (e.key === 'currentUser' && e.value) {
+      initNotifRealtime();
+      // Отложенный вызов — ждём загрузки feed-шаблона с .notif-badge
+      setTimeout(updateNotifBadge, 1500);
+    }
+  });
+  window.AppEvents.on('user:logout', function() {
+    cleanupNotifRealtime();
+  });
+}
+
 // ===== EXPORTS =====
 
 window.initNotifications = initNotifications;
 window.markOneRead = markOneRead;
 window.markAllRead = markAllRead;
 window.updateNotifBadge = updateNotifBadge;
+window.cleanupNotifRealtime = cleanupNotifRealtime;
