@@ -791,3 +791,9 @@
 .wallet-success-btn { padding: 14px 48px; border-radius: 14px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: none; color: #fff; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .wallet-success-btn:active { transform: scale(0.97); }
 @keyframes successPop { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+
+.wallet-deposit-section { margin-bottom: 20px; }.wallet-deposit-section-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+.wallet-deposit-method { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); margin-bottom: 8px; }
+.wallet-deposit-method--soon { opacity: 0.6; cursor: not-allowed; }.wallet-deposit-method-name { font-size: 15px; font-weight: 500; color: #f4f4f6; }
+.wallet-deposit-method-desc { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 2px; }.wallet-soon-badge { margin-left: auto; padding: 4px 10px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 20px; font-size: 11px; color: #f59e0b; white-space: nowrap; }
+.wallet-deposit-info { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
