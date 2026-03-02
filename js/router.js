@@ -166,6 +166,7 @@ function handleExistingTemplate(id) {
   if (id === 'scrDnaResult' && window.initDnaResult) window.initDnaResult();
   if (id === 'scrStoryViewer' && window.initStoryViewer) window.initStoryViewer();
   if (id === 'scrStoryCreate' && window.initStoryCreate) window.initStoryCreate();
+  if (id === 'scrProfile' && window.initProfile) window.initProfile();
 }
 
 function initScreenModule(id) {
@@ -268,7 +269,7 @@ async function goTo(id) {
   if (lndEl && id !== 'scrLanding') lndEl.classList.add('hidden');
 
   const current = navHistory[navHistory.length-1];
-  if(current===id) return;
+  if(current===id && !(id==='scrProfile' && window._viewProfileId)) return;
 
   if (current === 'scrWelcome') {
     const wEl = document.getElementById('scrWelcome');
