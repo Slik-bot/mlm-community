@@ -17,6 +17,11 @@
   position: relative;
   margin: 16px;
   padding: 24px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
   border-radius: 24px;
   background: linear-gradient(135deg, #0a0a1a 0%, #1a0533 40%, #0d1f3c 70%, #0a0a1a 100%);
   border: 1px solid rgba(139,92,246,0.4);
@@ -31,7 +36,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .wallet-hero-diamond {
@@ -49,7 +55,8 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
 }
 
 .wallet-balance-tf {
@@ -67,13 +74,15 @@
   color: rgba(255,255,255,0.5);
 }
 
-.wallet-hero-convert { margin-bottom: 20px; }
+.wallet-hero-convert { position: relative; z-index: 2; }
 .wallet-hero-convert-text { font-size: 13px; color: rgba(255,255,255,0.5); }
 .wallet-hero-sep { margin: 0 4px; color: rgba(255,255,255,0.25); }
 
 .wallet-hero-stats {
   display: flex;
   gap: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .wallet-hero-stat {
@@ -111,6 +120,7 @@
   pointer-events: none;
   overflow: hidden;
   border-radius: 24px;
+  z-index: 1;
 }
 
 .wallet-hero-shimmer::after {
