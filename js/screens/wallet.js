@@ -252,6 +252,7 @@ function bindWalletEvents() {
   }
 
   if (window.bindTransferEvents) window.bindTransferEvents();
+  if (window.bindDepositEvents) window.bindDepositEvents();
 
   setupTxSentinel();
 }
