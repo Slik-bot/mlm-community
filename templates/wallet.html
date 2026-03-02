@@ -15,30 +15,37 @@
   <!-- HERO CARD -->
   <div class="wallet-hero">
     <div class="wallet-hero-brand">
-      <svg class="wallet-hero-diamond" viewBox="0 0 24 24" fill="none" width="20" height="20">
-        <path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/>
-      </svg>
-      <span class="wallet-hero-coin-name">TF</span>
+      <div class="wallet-hero-brand-left">
+        <svg class="wallet-hero-brand-icon" viewBox="0 0 24 24" fill="none" width="28" height="28">
+          <path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/>
+        </svg>
+        <span class="wallet-hero-brand-name">TrafiqCoin</span>
+      </div>
+      <button class="wallet-hero-toggle" onclick="toggleBalance()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
     </div>
     <div class="wallet-hero-balance">
-      <span class="wallet-balance-tf" id="walletBalanceTF">0</span>
-      <span class="wallet-hero-tf-label">TF</span>
+      <span class="wallet-hero-balance-tf" id="walletBalanceTF">0</span>
+      <span class="wallet-hero-balance-unit">TF</span>
     </div>
     <div class="wallet-hero-convert">
-      <span class="wallet-hero-convert-text">
-        ≈ <span class="wallet-balance-usd" id="walletBalanceUSD">$0</span>
-        <span class="wallet-hero-sep">·</span>
-        <span class="wallet-balance-rub" id="walletBalanceRUB">0 ₽</span>
-        <span class="wallet-hero-sep">·</span>
-        <span class="wallet-balance-usdt" id="walletBalanceUSDT">0 USDT</span>
-      </span>
+      ≈ <span id="walletBalanceUSD">$0</span>
+      <span class="wallet-hero-convert-sep">·</span>
+      <span id="walletBalanceRUB">0 ₽</span>
+      <span class="wallet-hero-convert-sep">·</span>
+      <span id="walletBalanceUSDT">0 USDT</span>
     </div>
+    <div class="wallet-hero-divider"></div>
     <div class="wallet-hero-stats">
-      <div class="wallet-hero-stat">
+      <div class="wallet-hero-stat wallet-hero-stat--income">
         <span class="wallet-hero-stat-value" id="walletMonthIn">0 TF</span>
-        <span class="wallet-hero-stat-label">Получено за месяц</span>
+        <span class="wallet-hero-stat-label">За месяц</span>
       </div>
-      <div class="wallet-hero-stat">
+      <div class="wallet-hero-stat wallet-hero-stat--outcome">
         <span class="wallet-hero-stat-value" id="walletMonthOut">0 TF</span>
         <span class="wallet-hero-stat-label">Выведено</span>
       </div>
