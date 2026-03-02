@@ -258,6 +258,53 @@
         </div>
       </div>
 
+      <!-- ФОРМА ЗАЯВКИ — появляется после выбора метода -->
+      <div class="wallet-deposit-form hidden" id="walletDepositForm">
+        <div class="wallet-deposit-step">
+          <div class="wallet-deposit-step-label">Сколько TF хочешь получить?</div>
+          <div class="wallet-deposit-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2L2 12l10 10 10-10L12 2z" fill="#fbbf24"/></svg>
+            <input type="number" id="depositAmountTF" class="wallet-deposit-input" placeholder="Например: 5000" min="100">
+            <span class="wallet-deposit-input-suffix">TF</span>
+          </div>
+          <div class="wallet-deposit-convert" id="depositConvert">Укажите сумму для расчёта</div>
+        </div>
+        <div class="wallet-deposit-step">
+          <div class="wallet-deposit-step-label">Прикрепите чек после отправки</div>
+          <label class="wallet-deposit-receipt-zone" id="depositReceiptZone">
+            <input type="file" id="depositReceiptFile" accept="image/*" class="hidden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="wallet-deposit-receipt-text">Нажмите чтобы загрузить скриншот</span>
+            <span class="wallet-deposit-receipt-hint">JPG, PNG до 5 МБ</span>
+          </label>
+          <div class="wallet-deposit-receipt-preview hidden" id="depositReceiptPreview">
+            <img id="depositReceiptImg" src="" alt="чек">
+            <button class="wallet-deposit-receipt-remove" onclick="removeDepositReceipt()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="wallet-deposit-step">
+          <div class="wallet-deposit-step-label">Хэш транзакции <span class="wallet-optional">(необязательно)</span></div>
+          <input type="text" id="depositTxHash" class="wallet-deposit-input" placeholder="0x... или хэш из кошелька">
+        </div>
+        <div class="wallet-deposit-summary" id="depositSummary">
+          <div class="wallet-deposit-summary-row">
+            <span>Получите:</span>
+            <span id="depositSummaryTF">— TF</span>
+          </div>
+          <div class="wallet-deposit-summary-row">
+            <span>Метод:</span>
+            <span id="depositSummaryMethod">—</span>
+          </div>
+          <div class="wallet-deposit-summary-row">
+            <span>Срок зачисления:</span>
+            <span>до 24 часов</span>
+          </div>
+        </div>
+        <button class="wallet-btn-primary" id="depositSubmitBtn" onclick="submitDepositRequest()" disabled>Отправить заявку</button>
+      </div>
+
       <!-- Telegram -->
       <div class="wallet-deposit-section">
         <div class="wallet-deposit-section-title">Telegram</div>
