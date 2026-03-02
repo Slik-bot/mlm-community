@@ -308,21 +308,21 @@ function formatMsgTime(dateStr) {
 }
 
 // ===== КОНТЕКСТНОЕ МЕНЮ =====
-let longPressTimer = null;
+let chatLongPressTimer = null;
 
 function initMessageLongPress(el, msg, isOwn) {
   el.addEventListener('touchstart', function(e) {
-    longPressTimer = setTimeout(function() {
+    chatLongPressTimer = setTimeout(function() {
       showMsgContextMenu(msg, isOwn, e.touches[0]);
     }, 500);
   }, { passive: true });
 
   el.addEventListener('touchend', function() {
-    clearTimeout(longPressTimer);
+    clearTimeout(chatLongPressTimer);
   });
 
   el.addEventListener('touchmove', function() {
-    clearTimeout(longPressTimer);
+    clearTimeout(chatLongPressTimer);
   });
 }
 
