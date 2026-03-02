@@ -31,7 +31,8 @@ let walletState = {
   txFilter: 'all',
   txOffset: 0,
   txHasMore: true,
-  loading: false
+  loading: false,
+  transferRecipient: null
 };
 
 /* === INIT === */
@@ -45,10 +46,11 @@ async function initWallet() {
   if (skel) skel.classList.remove('hidden');
   if (list) list.innerHTML = '';
 
-  walletState = {
+  Object.assign(walletState, {
     balance: 0, rate: { usd: 0.01 },
-    txFilter: 'all', txOffset: 0, txHasMore: true, loading: false
-  };
+    txFilter: 'all', txOffset: 0, txHasMore: true, loading: false,
+    transferRecipient: null
+  });
 
   try {
     const [wd, rate, txRes] = await Promise.all([
@@ -241,6 +243,16 @@ function bindWalletEvents() {
     });
   }
 
+  const backdrop = document.querySelector('.wallet-modal-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', function() {
+      closeDepositModal();
+      if (window.closeTransferModal) window.closeTransferModal();
+    });
+  }
+
+  if (window.bindTransferEvents) window.bindTransferEvents();
+
   setupTxSentinel();
 }
 
@@ -412,18 +424,67 @@ async function submitWithdrawal() {
   if (btn) { btn.disabled = false; btn.textContent = 'Подать заявку'; }
 }
 
+/* === DEPOSIT MODAL === */
+
+function openDepositModal() {
+  const modal = document.querySelector('.wallet-deposit-modal');
+  const backdrop = document.querySelector('.wallet-modal-backdrop');
+  if (modal) modal.classList.add('active');
+  if (backdrop) backdrop.classList.add('active');
+}
+
+function closeDepositModal() {
+  const modal = document.querySelector('.wallet-deposit-modal');
+  const backdrop = document.querySelector('.wallet-modal-backdrop');
+  if (modal) modal.classList.remove('active');
+  if (backdrop) backdrop.classList.remove('active');
+}
+
+/* === COPY ADDRESS === */
+
+function copyAddress(address, btnEl) {
+  navigator.clipboard.writeText(address).then(function() {
+    showToast('Адрес скопирован');
+    if (!btnEl) return;
+    const origSvg = btnEl.innerHTML;
+    btnEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><path d="M20 6L9 17l-5-5"/></svg>';
+    setTimeout(function() { btnEl.innerHTML = origSvg; }, 2000);
+  }).catch(function() {
+    showToast('Не удалось скопировать');
+  });
+}
+
+/* === SUCCESS MODAL === */
+
+function showSuccessModal(message) {
+  const modal = document.querySelector('.wallet-success-modal');
+  const msgEl = document.getElementById('successMessage');
+  if (msgEl) msgEl.textContent = message;
+  if (modal) modal.classList.add('active');
+  setTimeout(closeSuccessModal, 3000);
+}
+
+function closeSuccessModal() {
+  const modal = document.querySelector('.wallet-success-modal');
+  if (modal) modal.classList.remove('active');
+}
+
 /* === STUBS === */
 
-function openDepositModal() { showToast('Пополнение — скоро'); }
-function openTransferModal() { showToast('Переводы — скоро'); }
 function openWalletSettings() { showToast('Настройки кошелька — скоро'); }
 
 /* === EXPORTS === */
 
 window.initWallet = initWallet;
+window.walletState = walletState;
 window.openWithdrawModal = openWithdrawModal;
 window.closeWithdrawModal = closeWithdrawModal;
 window.submitWithdrawal = submitWithdrawal;
 window.openDepositModal = openDepositModal;
-window.openTransferModal = openTransferModal;
+window.closeDepositModal = closeDepositModal;
 window.openWalletSettings = openWalletSettings;
+window.copyAddress = copyAddress;
+window.showSuccessModal = showSuccessModal;
+window.closeSuccessModal = closeSuccessModal;
+window.escW = escW;
+window.renderHero = renderHero;
