@@ -1,0 +1,116 @@
+/* ═══════════════════════════════════════ */
+/* CHAT DIALOG — дополнительные стили     */
+/* Подключается ПОСЛЕ chat.css            */
+/* ═══════════════════════════════════════ */
+
+/* ── DNA рамки на аватаре шапки ── */
+.chat-head-avatar { position: relative; }
+.chat-head-avatar-img {
+  width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+}
+.chat-head-avatar.dna-s { border-color: #3b82f6; }
+.chat-head-avatar.dna-c { border-color: #22c55e; }
+.chat-head-avatar.dna-r { border-color: #f59e0b; }
+.chat-head-avatar.dna-a { border-color: #a78bfa; }
+
+/* ── Онлайн-точка в шапке ── */
+.chat-head-online {
+  position: absolute; bottom: 0; right: 0;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #22c55e; border: 2px solid #06060b;
+}
+
+/* ── TF кнопка (золотая молния) ── */
+.chat-head-tf { color: #fbbf24; }
+.chat-head-tf:active { transform: scale(0.88); }
+
+/* ── Reply bar (фиолетовая полоска) ── */
+.chat-reply-line {
+  width: 3px; height: 26px; flex-shrink: 0;
+  background: #8b5cf6; border-radius: 2px;
+}
+
+/* ── Send button: скрыт по умолчанию ── */
+.chat-send-btn--hidden {
+  opacity: 0; transform: scale(0.5);
+  pointer-events: none;
+  transition: opacity 240ms cubic-bezier(.16,1,.3,1),
+              transform 240ms cubic-bezier(.16,1,.3,1);
+}
+.chat-send-btn:not(.chat-send-btn--hidden) {
+  opacity: 1; transform: scale(1);
+  pointer-events: all;
+  transition: opacity 240ms cubic-bezier(.16,1,.3,1),
+              transform 240ms cubic-bezier(.16,1,.3,1);
+}
+
+/* ═══════════════════════════════════════ */
+/* КОНТЕКСТНОЕ МЕНЮ — blur overlay        */
+/* ═══════════════════════════════════════ */
+
+.chat-ctx-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0);
+  backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+  transition: background 230ms, backdrop-filter 230ms, -webkit-backdrop-filter 230ms;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.chat-ctx-overlay.on {
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  pointer-events: all;
+}
+
+/* ── Box ── */
+.chat-ctx-box {
+  position: absolute;
+  width: 192px;
+  background: #181828;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.75);
+  transform: scale(0.8) translateY(12px);
+  opacity: 0;
+  transition: transform 220ms cubic-bezier(.16,1,.3,1),
+              opacity 220ms cubic-bezier(.16,1,.3,1);
+}
+.chat-ctx-overlay.on .chat-ctx-box {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ── Реакции ── */
+.chat-ctx-reactions {
+  display: flex; justify-content: space-around;
+  padding: 10px 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.chat-ctx-rx {
+  font-size: 20px; cursor: pointer;
+  padding: 3px; border-radius: 8px;
+  background: none; border: none;
+  transition: transform 180ms cubic-bezier(.16,1,.3,1);
+  -webkit-tap-highlight-color: transparent;
+}
+.chat-ctx-rx:active { transform: scale(1.5); }
+
+/* ── Пункты меню ── */
+.chat-ctx-row {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 12px 14px;
+  background: none; border: none;
+  color: #f1f1f5; font-family: 'Outfit', sans-serif;
+  font-size: 13px; cursor: pointer;
+  text-align: left;
+  transition: background 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.chat-ctx-row + .chat-ctx-row {
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.chat-ctx-row:active { background: rgba(255,255,255,0.06); }
+.chat-ctx-row--danger { color: #f43f5e; }
+.chat-ctx-row svg { flex-shrink: 0; opacity: 0.6; }
+.chat-ctx-row--danger svg { opacity: 1; }
