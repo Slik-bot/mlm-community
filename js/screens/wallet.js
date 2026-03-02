@@ -3,23 +3,7 @@
 // API: js/api/wallet.js | HTML: templates/wallet.html
 // ═══════════════════════════════════════
 
-/* === CONSTANTS === */
-
-const TX_TYPES = {
-  referral:     { label: 'Реферальный бонус', color: 'in' },
-  task:         { label: 'За задание',        color: 'in' },
-  reward:       { label: 'Награда',           color: 'in' },
-  bonus:        { label: 'Бонус платформы',   color: 'in' },
-  deposit:      { label: 'Пополнение',        color: 'in' },
-  transfer_in:  { label: 'Перевод получен',   color: 'in' },
-  deal_income:  { label: 'Доход от сделки',   color: 'in' },
-  withdrawal:   { label: 'Вывод средств',     color: 'out' },
-  purchase:     { label: 'Покупка',           color: 'out' },
-  subscription: { label: 'Подписка',          color: 'out' },
-  transfer_out: { label: 'Перевод отправлен', color: 'out' },
-  deal_payment: { label: 'Оплата сделки',     color: 'out' },
-  fee:          { label: 'Комиссия',          color: 'out' }
-};
+// ═══ TX_TYPES, escW, buildDateGroups, buildTxCard — см. wallet-helpers.js ═══
 
 const TX_PAGE = 20;
 
@@ -120,84 +104,33 @@ function renderTransactions(txList, append) {
   if (!append) container.innerHTML = '';
 
   if (!txList || !txList.length) {
-    if (!append && !container.children.length) {
+    if (!append) {
       container.innerHTML =
-        '<div class="wallet-history-date" style="text-align:center;padding:32px 0">' +
-        'Операций пока нет</div>';
+        '<div class="wallet-tx-empty">Операций пока нет</div>';
     }
     return;
   }
 
   const groups = buildDateGroups(txList);
-  let html = '';
+  let lastLabel = '';
 
-  groups.forEach(function(g) {
-    html += '<div class="wallet-history-date">' + escW(g.label) + '</div>';
+  if (append) {
+    const headers = container.querySelectorAll('.wallet-history-date');
+    if (headers.length) {
+      lastLabel = headers[headers.length - 1].textContent.trim();
+    }
+  }
+
+  let html = '';
+  groups.forEach(function(g, i) {
+    const skipHeader = (i === 0 && append && g.label === lastLabel);
+    if (!skipHeader) {
+      html += '<div class="wallet-history-date">' + escW(g.label) + '</div>';
+    }
     g.items.forEach(function(tx) { html += buildTxCard(tx); });
   });
 
   container.insertAdjacentHTML('beforeend', html);
-}
-
-/* === BUILD DATE GROUPS === */
-
-function buildDateGroups(txList) {
-  const now = new Date();
-  const todayKey = now.toLocaleDateString('ru-RU');
-  const yesterdayKey = new Date(now - 86400000).toLocaleDateString('ru-RU');
-  const map = new Map();
-
-  txList.forEach(function(tx) {
-    const d = tx.created_at ? new Date(tx.created_at) : now;
-    const key = d.toLocaleDateString('ru-RU');
-    const label = key === todayKey ? 'Сегодня' : key === yesterdayKey ? 'Вчера' : key;
-    if (!map.has(key)) map.set(key, { label: label, items: [] });
-    map.get(key).items.push(tx);
-  });
-
-  return Array.from(map.values());
-}
-
-/* === BUILD TX CARD === */
-
-function buildTxCard(tx) {
-  const isIn = tx.amount > 0;
-  const info = TX_TYPES[tx.type] || {
-    label: tx.type || 'Операция',
-    color: isIn ? 'in' : 'out'
-  };
-  const abs = Math.abs(tx.amount || 0) / 100;
-  const sign = isIn ? '+' : '−';
-  const cls = isIn ? 'in' : 'out';
-  const desc = tx.description || info.label;
-
-  const time = tx.created_at
-    ? new Date(tx.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-    : '';
-
-  const iconSvg = isIn
-    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>'
-    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>';
-
-  return '<div class="wallet-tx-card">' +
-    '<div class="wallet-tx-icon wallet-tx-icon--' + cls + '">' + iconSvg + '</div>' +
-    '<div class="wallet-tx-info">' +
-      '<div class="wallet-tx-desc">' + escW(desc) + '</div>' +
-      '<div class="wallet-tx-date">' + time + '</div>' +
-    '</div>' +
-    '<div class="wallet-tx-amount wallet-tx-amount--' + cls + '">' +
-      sign + abs.toLocaleString('ru-RU') + ' TF' +
-    '</div>' +
-  '</div>';
-}
-
-/* === ESCAPE HTML === */
-
-function escW(str) {
-  if (!str) return '';
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
 }
 
 /* === BIND EVENTS === */
@@ -494,5 +427,5 @@ function openWalletSettings() { showToast('Настройки кошелька �
 Object.assign(window, {
   initWallet, walletState, openWithdrawModal, closeWithdrawModal, submitWithdrawal,
   openDepositModal, closeDepositModal, openWalletSettings, copyAddress,
-  showSuccessModal, closeSuccessModal, escW, renderHero, toggleWalletBalance
+  showSuccessModal, closeSuccessModal, renderHero, toggleWalletBalance
 });
