@@ -26,13 +26,9 @@ const TX_PAGE = 20;
 /* === STATE === */
 
 let walletState = {
-  balance: 0,
-  rate: { usd: 0.01 },
-  txFilter: 'all',
-  txOffset: 0,
-  txHasMore: true,
-  loading: false,
-  transferRecipient: null
+  balance: 0, rate: { usd: 0.01 }, txFilter: 'all',
+  txOffset: 0, txHasMore: true, loading: false,
+  transferRecipient: null, balanceHidden: false, lastData: null
 };
 
 /* === INIT === */
@@ -46,11 +42,8 @@ async function initWallet() {
   if (skel) skel.classList.remove('hidden');
   if (list) list.innerHTML = '';
 
-  Object.assign(walletState, {
-    balance: 0, rate: { usd: 0.01 },
-    txFilter: 'all', txOffset: 0, txHasMore: true, loading: false,
-    transferRecipient: null
-  });
+  Object.assign(walletState, { balance: 0, rate: { usd: 0.01 }, txFilter: 'all',
+    txOffset: 0, txHasMore: true, loading: false, transferRecipient: null });
 
   try {
     const [wd, rate, txRes] = await Promise.all([
@@ -77,6 +70,8 @@ async function initWallet() {
 /* === RENDER HERO === */
 
 function renderHero(data, rate) {
+  walletState.lastData = data;
+  if (walletState.balanceHidden) return;
   const balEl = document.getElementById('walletBalanceTF');
   if (balEl) animateCounter(balEl, 0, data.balance_tf, 800);
 
@@ -470,22 +465,34 @@ function closeSuccessModal() {
   if (modal) modal.classList.remove('active');
 }
 
+/* === TOGGLE BALANCE VISIBILITY === */
+
+function toggleWalletBalance() {
+  walletState.balanceHidden = !walletState.balanceHidden;
+  const toggle = document.querySelector('.wallet-hero-toggle');
+  const unit = document.querySelector('.wallet-hero-balance-unit');
+  if (walletState.balanceHidden) {
+    wtText('walletBalanceTF', '••••••');
+    wtText('walletBalanceUSD', '••••'); wtText('walletBalanceRUB', '••••');
+    wtText('walletBalanceUSDT', '••••');
+    wtText('walletMonthIn', '•••• TF'); wtText('walletMonthOut', '•••• TF');
+    if (unit) unit.style.opacity = '0';
+    if (toggle) toggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  } else {
+    if (unit) unit.style.opacity = '1';
+    if (toggle) toggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    if (walletState.lastData) renderHero(walletState.lastData, walletState.rate);
+  }
+}
+
 /* === STUBS === */
 
 function openWalletSettings() { showToast('Настройки кошелька — скоро'); }
 
 /* === EXPORTS === */
 
-window.initWallet = initWallet;
-window.walletState = walletState;
-window.openWithdrawModal = openWithdrawModal;
-window.closeWithdrawModal = closeWithdrawModal;
-window.submitWithdrawal = submitWithdrawal;
-window.openDepositModal = openDepositModal;
-window.closeDepositModal = closeDepositModal;
-window.openWalletSettings = openWalletSettings;
-window.copyAddress = copyAddress;
-window.showSuccessModal = showSuccessModal;
-window.closeSuccessModal = closeSuccessModal;
-window.escW = escW;
-window.renderHero = renderHero;
+Object.assign(window, {
+  initWallet, walletState, openWithdrawModal, closeWithdrawModal, submitWithdrawal,
+  openDepositModal, closeDepositModal, openWalletSettings, copyAddress,
+  showSuccessModal, closeSuccessModal, escW, renderHero, toggleWalletBalance
+});
