@@ -65,7 +65,8 @@ const TEMPLATES = {
   scrBizcard: '/templates/bizcard.html',
   scrWeeklyReport: '/templates/weekly-report.html',
   scrStoryCreate: '/templates/story-create.html',
-  scrStoryViewer: '/templates/story-viewer.html'
+  scrStoryViewer: '/templates/story-viewer.html',
+  scrDealScreen: '/templates/deal.html'
 };
 const loadedTemplates = {};
 
@@ -123,7 +124,8 @@ const SCREEN_INITS = {
   scrBizcard: ['initBizcard'],
   scrWeeklyReport: ['initWeeklyReport'],
   scrStoryCreate: ['initStoryCreate'],
-  scrStoryViewer: ['initStoryViewer']
+  scrStoryViewer: ['initStoryViewer'],
+  scrDealScreen: ['initDealScreen']
 };
 
 async function loadTemplate(id) {
@@ -167,6 +169,7 @@ function handleExistingTemplate(id) {
   if (id === 'scrStoryViewer' && window.initStoryViewer) window.initStoryViewer();
   if (id === 'scrStoryCreate' && window.initStoryCreate) window.initStoryCreate();
   if (id === 'scrProfile' && window.initProfile) window.initProfile();
+  if (id === 'scrChatList' && window.initChatList) window.initChatList();
 }
 
 function initScreenModule(id) {
@@ -204,7 +207,7 @@ const NAV_TAB_MAP = {
   scrFeed: 0, scrSearch: 0, scrCreate: 0,
   scrCompanies: 1, scrCompanyCard: 1, scrDetail: 1,
   scrShop: 2, scrProductDetail: 2, scrProductCreate: 2,
-  scrDealList: 2, scrDealCreate: 2, scrDealDetail: 2,
+  scrDealList: 2, scrDealCreate: 2, scrDealDetail: 2, scrDealScreen: 2,
   scrChatList: 3, scrChat: 3, scrChatInfo: 3,
   scrForum: 3, scrForumTopic: 3, scrForumCreate: 3,
   scrProfile: 4, scrProfileEdit: 4, scrProfileSettings: 4,
@@ -253,12 +256,15 @@ function handleScreenTransition(currentEl, nextEl, direction) {
   }
 }
 
-async function goTo(id) {
+async function goTo(id, params) {
   if(isTransitioning) return;
+  window._screenParams = params || {};
   if (window.haptic) haptic('light');
   if (window.chatUnsubscribe) chatUnsubscribe();
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   if (window.webinarsCleanup && id !== 'scrWebinarDetail') webinarsCleanup();
+  if (window.destroyDealScreen && id !== 'scrDealScreen') destroyDealScreen();
+  if (window.destroyChatList && id !== 'scrChatList') destroyChatList();
   await ensureTemplate(id);
 
   const onbScreens = ['scrWelcome','scrDnaTest','scrDnaResult','scrSetup1','scrSetup2','scrSetup3','scrDone'];
