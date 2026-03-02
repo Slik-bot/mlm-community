@@ -235,7 +235,13 @@
 /* 2. HEADER ОТКРЫТОГО ЧАТА               */
 /* ═══════════════════════════════════════ */
 
-#scrChat { display: flex; flex-direction: column; }
+#scrChat {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background: #06060b;
+}
 .chat-head {
   display: flex;
   align-items: center;
@@ -324,8 +330,9 @@
   padding: 16px 16px 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 /* Date divider — pill label */
@@ -353,6 +360,8 @@
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.chat-msg { margin-bottom: 2px; }
+.chat-msg:not(.chat-msg--continued) { margin-top: 8px; }
 .chat-msg--in { flex-direction: row; align-self: flex-start; }
 .chat-msg--out { flex-direction: row-reverse; align-self: flex-end; }
 .chat-msg-avatar {
@@ -472,8 +481,10 @@
 
 .chat-input-wrap,
 .chat-input-area {
-  padding: 8px 12px 24px;
-  background: rgba(6, 6, 11, 0.9);
+  flex-shrink: 0;
+  padding: 8px 12px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  background: rgba(6, 6, 11, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
