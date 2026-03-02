@@ -677,7 +677,76 @@
 }
 
 /* ═══════════════════════════════════════ */
-/* 7. УТИЛИТЫ                              */
+/* 7. КОНТЕКСТНОЕ МЕНЮ                     */
+/* ═══════════════════════════════════════ */
+
+.chat-context-menu {
+  position: fixed;
+  z-index: 1000;
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  min-width: 160px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: contextAppear 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes contextAppear {
+  from { opacity: 0; transform: scale(0.9) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.chat-context-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  color: #f4f4f6;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 150ms;
+}
+.chat-context-btn:active { background: rgba(255, 255, 255, 0.07); }
+.chat-context-btn--danger { color: #f43f5e; }
+.chat-context-btn + .chat-context-btn {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ═══════════════════════════════════════ */
+/* 8. АВАТАРЫ СООБЩЕНИЙ                    */
+/* ═══════════════════════════════════════ */
+
+.chat-msg-avatar-wrap {
+  width: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+}
+.chat-msg--continued .chat-msg-avatar-wrap { visibility: hidden; }
+.chat-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.chat-msg-avatar--placeholder {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f4f4f6;
+}
+
+/* ═══════════════════════════════════════ */
+/* 9. УТИЛИТЫ                              */
 /* ═══════════════════════════════════════ */
 
 .scr-head-spacer { width: 36px; flex-shrink: 0; }
