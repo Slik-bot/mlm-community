@@ -247,8 +247,11 @@ function setupTxSentinel() {
     container.parentNode.insertBefore(sentinel, container.nextSibling);
   }
 
+  let ready = false;
+  setTimeout(function() { ready = true; }, 500);
+
   walletObserver = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting && walletState.txHasMore && !walletState.loading) {
+    if (entries[0].isIntersecting && ready && walletState.txHasMore && !walletState.loading) {
       loadMoreTransactions();
     }
   }, { rootMargin: '200px' });
