@@ -36,7 +36,7 @@ function renderMessages(messages) {
   const myId = getCurrentUser().id;
   let lastDateLabel = '';
 
-  messages.forEach(function(msg) {
+  messages.forEach(function(msg, i) {
     if (msg.created_at) {
       const label = getDateLabel(msg.created_at);
       if (label !== lastDateLabel) {
@@ -47,7 +47,7 @@ function renderMessages(messages) {
         container.appendChild(divider);
       }
     }
-    const bubble = createBubble(msg, myId);
+    const bubble = createBubble(msg, myId, messages[i - 1]);
     container.appendChild(bubble);
   });
 
@@ -66,31 +66,77 @@ function getDateLabel(isoStr) {
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
 }
 
-function createBubble(msg, myId) {
+function createBubble(msg, myId, prevMsg) {
   const isOwn = msg.sender_id === myId;
-  const div = document.createElement('div');
-  div.className = 'chat-bubble ' + (isOwn ? 'own' : 'other');
-  div.setAttribute('data-msg-id', msg.id);
 
-  const time = msg.created_at ? formatMsgTime(msg.created_at) : '';
+  const wrapper = document.createElement('div');
+  const continued = prevMsg &&
+    prevMsg.sender_id === msg.sender_id &&
+    (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 60000;
 
-  const bubbleContent = document.createElement('div');
-  bubbleContent.className = 'chat-bubble-content';
-  if (msg.type === 'file' && msg.file_url) {
-    const safeFileUrl = (msg.file_url && msg.file_url.startsWith('https://')) ? escHtml(msg.file_url) : '#';
-    bubbleContent.innerHTML = '<a class="chat-file-link" href="' + safeFileUrl + '" target="_blank">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> ' +
-      escHtml(msg.file_name || 'Файл') + '</a>';
-  } else {
-    bubbleContent.textContent = msg.content || '';
+  wrapper.className = 'chat-msg ' +
+    (isOwn ? 'chat-msg--out' : 'chat-msg--in') +
+    (continued ? ' chat-msg--continued' : '');
+  wrapper.setAttribute('data-msg-id', msg.id);
+
+  if (!isOwn) {
+    const avatarWrap = document.createElement('div');
+    avatarWrap.className = 'chat-msg-avatar-wrap';
+    if (!continued) {
+      const sender = msg.sender || {};
+      if (sender.avatar_url) {
+        const img = document.createElement('img');
+        img.className = 'chat-msg-avatar';
+        img.src = sender.avatar_url;
+        img.alt = sender.name || '';
+        avatarWrap.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'chat-msg-avatar chat-msg-avatar--placeholder';
+        placeholder.textContent = (sender.name || '?')[0].toUpperCase();
+        avatarWrap.appendChild(placeholder);
+      }
+    }
+    wrapper.appendChild(avatarWrap);
   }
-  const bubbleTime = document.createElement('div');
-  bubbleTime.className = 'chat-bubble-time';
-  bubbleTime.textContent = time;
-  div.appendChild(bubbleContent);
-  div.appendChild(bubbleTime);
 
-  return div;
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+
+  const content = document.createElement('div');
+  content.className = 'chat-bubble-content';
+  if (msg.type === 'file' && msg.file_url) {
+    const link = document.createElement('a');
+    link.href = msg.file_url;
+    link.target = '_blank';
+    link.className = 'chat-file-link';
+    link.textContent = msg.content || 'Файл';
+    content.appendChild(link);
+  } else {
+    content.textContent = msg.content || '';
+  }
+  bubble.appendChild(content);
+
+  const meta = document.createElement('div');
+  meta.className = 'chat-bubble-meta';
+  const time = document.createElement('span');
+  time.className = 'chat-bubble-time';
+  time.textContent = msg.created_at ? formatMsgTime(msg.created_at) : '';
+  meta.appendChild(time);
+
+  if (isOwn) {
+    const status = document.createElement('span');
+    status.className = 'chat-status ' +
+      (msg.is_read ? 'chat-status--read' : 'chat-status--sent');
+    status.innerHTML = msg.is_read
+      ? '<svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5l3 3L12 1M5 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    meta.appendChild(status);
+  }
+
+  bubble.appendChild(meta);
+  wrapper.appendChild(bubble);
+  return wrapper;
 }
 
 // ===== subscribeRealtime =====
@@ -130,18 +176,31 @@ async function chatSend() {
   const text = input.value.trim();
   if (!text || !currentConversationId) return;
 
-  input.value = '';
-  input.style.height = 'auto';
-
   const user = getCurrentUser();
   if (!user) return;
 
-  await window.sb.from('messages').insert({
-    conversation_id: currentConversationId,
-    sender_id: user.id,
-    content: text,
-    type: 'text'
-  });
+  const savedText = text;
+  input.value = '';
+  input.style.height = 'auto';
+
+  try {
+    const { error } = await window.sb.from('messages').insert({
+      conversation_id: currentConversationId,
+      sender_id: user.id,
+      content: savedText,
+      type: 'text'
+    });
+    if (error) throw error;
+
+    await window.sb.from('conversations').update({
+      last_message_at: new Date().toISOString()
+    }).eq('id', currentConversationId);
+
+  } catch (err) {
+    console.error('chatSend:', err);
+    input.value = savedText;
+    showToast('Не удалось отправить сообщение');
+  }
 }
 
 // ===== chatInputResize =====
