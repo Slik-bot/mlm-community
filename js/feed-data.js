@@ -152,6 +152,7 @@
           window._storyViewProfile = { name: f.name, avatar_url: f.avatar_url };
           goTo('scrStoryViewer');
         } else {
+          window._viewProfileId = f.id;
           goTo('scrProfile');
         }
       };
