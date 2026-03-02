@@ -11,6 +11,8 @@ async function loadMessages(convId) {
   if (!container) return;
   container.innerHTML = '';
 
+  const user = getCurrentUser();
+
   const result = await window.sb.from('messages')
     .select('*, sender:users(id, name, avatar_url, dna_type)')
     .eq('conversation_id', convId)
@@ -18,18 +20,26 @@ async function loadMessages(convId) {
     .limit(50);
 
   const messages = result.data || [];
-  renderMessages(messages);
 
-  window.sb.from('messages')
-    .update({ is_read: true })
+  // last_read_at собеседника — для статуса «прочитано» на своих сообщениях
+  const { data: members } = await window.sb.from('conversation_members')
+    .select('user_id, last_read_at')
     .eq('conversation_id', convId)
-    .neq('sender_id', getCurrentUser().id)
-    .eq('is_read', false)
+    .neq('user_id', user.id);
+  const partnerReadAt = (members && members[0]) ? members[0].last_read_at : null;
+
+  renderMessages(messages, partnerReadAt);
+
+  // Обновляем last_read_at текущего пользователя
+  window.sb.from('conversation_members')
+    .update({ last_read_at: new Date().toISOString() })
+    .eq('conversation_id', convId)
+    .eq('user_id', user.id)
     .then(function() {});
 }
 
 // ===== renderMessages =====
-function renderMessages(messages) {
+function renderMessages(messages, partnerReadAt) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
 
@@ -47,7 +57,7 @@ function renderMessages(messages) {
         container.appendChild(divider);
       }
     }
-    const bubble = createBubble(msg, myId, messages[i - 1]);
+    const bubble = createBubble(msg, myId, messages[i - 1], partnerReadAt);
     container.appendChild(bubble);
   });
 
@@ -66,7 +76,7 @@ function getDateLabel(isoStr) {
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
 }
 
-function createBubble(msg, myId, prevMsg) {
+function createBubble(msg, myId, prevMsg, partnerReadAt) {
   const isOwn = msg.sender_id === myId;
 
   const wrapper = document.createElement('div');
@@ -125,10 +135,12 @@ function createBubble(msg, myId, prevMsg) {
   meta.appendChild(time);
 
   if (isOwn) {
+    const isRead = partnerReadAt && msg.created_at &&
+      new Date(partnerReadAt) >= new Date(msg.created_at);
     const status = document.createElement('span');
     status.className = 'chat-status ' +
-      (msg.is_read ? 'chat-status--read' : 'chat-status--sent');
-    status.innerHTML = msg.is_read
+      (isRead ? 'chat-status--read' : 'chat-status--sent');
+    status.innerHTML = isRead
       ? '<svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5l3 3L12 1M5 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     meta.appendChild(status);
