@@ -180,6 +180,70 @@ async function getWithdrawals(userId) {
   }
 }
 
+// ═══ createTransfer ═══
+// Перевод TF между пользователями
+// Комиссия из platform_settings key='transfer_fee', fallback 5%
+// Деньги в копейках (INT)
+
+async function createTransfer(fromId, toId, amountTf) {
+  try {
+    if (amountTf < 100) return { success: false, error: 'Минимум 100 TF' };
+    if (fromId === toId) return { success: false, error: 'Нельзя перевести себе' };
+
+    const feeRes = await window.sb
+      .from('platform_settings')
+      .select('value')
+      .eq('key', 'transfer_fee')
+      .maybeSingle();
+
+    const feePercent = (feeRes.data && Number(feeRes.data.value)) || 5;
+    const fee = Math.ceil(amountTf * feePercent / 100);
+    const total = amountTf + fee;
+    const totalKop = total * 100;
+    const amountKop = amountTf * 100;
+
+    const { data: sender } = await window.sb
+      .from('users').select('balance').eq('id', fromId).single();
+
+    if (!sender || (sender.balance || 0) < totalKop) {
+      return { success: false, error: 'Недостаточно средств' };
+    }
+
+    const { error: debitErr } = await window.sb.rpc('transfer_balance', {
+      p_from: fromId, p_to: toId,
+      p_amount: amountKop, p_fee: fee * 100
+    });
+
+    if (debitErr) {
+      const { error: e1 } = await window.sb
+        .from('users').update({ balance: sender.balance - totalKop }).eq('id', fromId);
+      if (e1) throw e1;
+
+      const { error: e2 } = await window.sb.rpc('increment_balance', {
+        user_id: toId, amount: amountKop
+      });
+
+      if (e2) {
+        await window.sb
+          .from('users').update({ balance: sender.balance }).eq('id', fromId);
+        throw e2;
+      }
+    }
+
+    await window.sb.from('transactions').insert([
+      { user_id: fromId, type: 'transfer_out', amount: -totalKop,
+        description: 'Перевод: ' + amountTf + ' TF + комиссия ' + fee + ' TF' },
+      { user_id: toId, type: 'transfer_in', amount: amountKop,
+        description: 'Получен перевод: ' + amountTf + ' TF' }
+    ]);
+
+    return { success: true };
+  } catch (err) {
+    console.error('[createTransfer]', err);
+    return { success: false, error: err.message };
+  }
+}
+
 // ═══ Экспорт ═══
 
 window.getWalletData = getWalletData;
@@ -188,3 +252,4 @@ window.getTransactions = getTransactions;
 window.createWithdrawal = createWithdrawal;
 window.convertTf = convertTf;
 window.getWithdrawals = getWithdrawals;
+window.createTransfer = createTransfer;
