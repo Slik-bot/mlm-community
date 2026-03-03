@@ -75,12 +75,12 @@ function showMsgContextMenu(msg, isOwn, touch) {
     const span = document.createElement('span');
     span.textContent = a.label;
     row.appendChild(span);
-    row.onclick = function() { closeMsgContextMenu(); a.fn(); };
+    row.addEventListener('click', function() { closeMsgContextMenu(); a.fn(); });
     box.appendChild(row);
   });
 
   ov.appendChild(box);
-  document.getElementById('scrChat').appendChild(ov);
+  document.body.appendChild(ov);
 
   // Position
   const bx = box.getBoundingClientRect();
@@ -109,15 +109,24 @@ function closeMsgContextMenu() {
 // ===== Delete message =====
 async function deleteMessage(msgId) {
   try {
-    const { error } = await window.sb.from('messages')
-      .delete().eq('id', msgId);
+    const user = window.getCurrentUser();
+    if (!user) return;
+    const { error, count } = await window.sb
+      .from('messages')
+      .delete({ count: 'exact' })
+      .eq('id', msgId)
+      .eq('sender_id', user.id);
     if (error) throw error;
+    if (count === 0) {
+      window.showToast('Нет прав на удаление');
+      return;
+    }
     const el = document.querySelector('[data-msg-id="' + msgId + '"]');
     if (el) {
-      el.style.transition = 'opacity 250ms, transform 250ms';
+      el.style.transition = 'opacity 180ms, transform 180ms';
       el.style.opacity = '0';
-      el.style.transform = 'scale(0.8)';
-      setTimeout(function() { el.remove(); }, 250);
+      el.style.transform = 'scale(0.92)';
+      setTimeout(function() { el.remove(); }, 200);
     }
   } catch (err) {
     console.error('deleteMessage:', err);
