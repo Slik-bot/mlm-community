@@ -153,9 +153,4 @@ function cancelReply() {
   if (preview) preview.classList.remove('visible');
 }
 
-// ===== ЭКСПОРТЫ =====
-window.initMessageLongPress = initMessageLongPress;
-window.closeMsgContextMenu = closeMsgContextMenu;
-window.deleteMessage = deleteMessage;
-window.startReply = startReply;
-window.cancelReply = cancelReply;
+// Функции перенесены в chat-messages.js
