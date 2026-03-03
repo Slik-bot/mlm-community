@@ -149,7 +149,40 @@ function createBubble(msg, myId, prevMsg, partnerReadAt) {
   bubble.appendChild(meta);
   wrapper.appendChild(bubble);
   initMessageLongPress(wrapper, msg, isOwn);
+  initMsgSwipe(wrapper, msg);
   return wrapper;
+}
+
+// ===== Swipe → Reply =====
+function initMsgSwipe(el, msg) {
+  let startX = 0;
+  let startY = 0;
+  let dx = 0;
+  let swiping = false;
+  el.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dx = 0; swiping = false;
+  }, { passive: true });
+  el.addEventListener('touchmove', function(e) {
+    dx = e.touches[0].clientX - startX;
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (dy > 12 || dx < 0) return;
+    if (dx > 8) {
+      swiping = true;
+      const shift = Math.min(dx * 0.45, 52);
+      el.style.transform = 'translateX(' + shift + 'px)';
+      el.style.transition = 'none';
+    }
+  }, { passive: true });
+  el.addEventListener('touchend', function() {
+    el.style.transition = 'transform 220ms cubic-bezier(.16,1,.3,1)';
+    el.style.transform = '';
+    if (swiping && dx > 48) {
+      if (window.startReply) window.startReply(msg);
+    }
+    swiping = false; dx = 0;
+  });
 }
 
 // ===== subscribeRealtime =====
