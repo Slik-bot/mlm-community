@@ -7,7 +7,7 @@
 #scrChat {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: var(--tg-viewport-height, 100dvh);
   overflow: hidden;
   background: #06060b;
 }
