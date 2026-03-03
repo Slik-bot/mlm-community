@@ -111,8 +111,8 @@ function clAssemble(convRows, readMap, otherMems, msgs, users, deals) {
   msgs.forEach(function(m) { if (!mMap[m.conversation_id]) mMap[m.conversation_id] = m; });
 
   return convRows.map(function(c) {
-    const others = otherMems
-      .filter(function(m) { return m.conversation_id === c.id; })
+    const othersRaw = otherMems.filter(function(m) { return m.conversation_id === c.id; });
+    const others = othersRaw
       .map(function(m) { return uMap[m.user_id] || null; })
       .filter(Boolean);
     const lastMsg = mMap[c.id] || null;
