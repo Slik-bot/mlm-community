@@ -170,6 +170,9 @@ async function chatSend() {
   const input = document.getElementById('chatInput');
   const text = input?.value.trim();
   if (!text || !_convId || !_myId) return;
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  }
   input.value = '';
   chatToggleSend();
   chatInputResize(input);
@@ -363,6 +366,28 @@ function bindChatInput() {
   const input = document.getElementById('chatInput');
   if (input) { input.value = ''; chatInputResize(input); }
   cancelReply();
+  bindViewportResize();
+}
+
+function bindViewportResize() {
+  const foot = document.querySelector('.ch-foot');
+  const scr = document.getElementById('scrChat');
+  if (!foot || !scr) return;
+  const applyOffset = () => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const offset = window.innerHeight - vv.height - vv.offsetTop;
+    foot.style.transform = offset > 0
+      ? 'translateY(-' + offset + 'px)'
+      : '';
+    const msgs = document.getElementById('chatMessages');
+    if (msgs) msgs.style.paddingBottom = offset > 0 ? '8px' : '8px';
+  };
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', applyOffset);
+    window.visualViewport.addEventListener('scroll', applyOffset);
+  }
+  window.addEventListener('resize', applyOffset);
 }
 
 // ── Скролл ─────────────────────────────
