@@ -366,6 +366,22 @@ function bindChatInput() {
   const input = document.getElementById('chatInput');
   if (input) { input.value = ''; chatInputResize(input); }
   cancelReply();
+  bindTgViewport();
+}
+
+function bindTgViewport() {
+  const tg = window.Telegram?.WebApp;
+  if (!tg) return;
+  const update = () => {
+    const h = tg.viewportHeight;
+    if (h && h > 100) {
+      document.documentElement.style.setProperty(
+        '--tg-viewport-height', h + 'px'
+      );
+    }
+  };
+  tg.onEvent('viewportChanged', update);
+  update();
 }
 
 // ── Скролл ─────────────────────────────
