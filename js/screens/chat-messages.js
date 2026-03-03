@@ -1,376 +1,474 @@
-// ═══════════════════════════════════════
-// CHAT — СООБЩЕНИЯ
-// Отделено от chat.js
-// ═══════════════════════════════════════
+// ════════════════════════════════════════
+// CHAT MESSAGES — TRAFIQO
+// ════════════════════════════════════════
 
-let realtimeSubscription = null;
+let _convId = null;
+let _myId = null;
+let _partner = null;
+let _chatChannel = null;
+let _replyTo = null;
+let _msgMap = {};
+let _atBottom = true;
+let _unreadCount = 0;
 
-// ===== loadMessages =====
-async function loadMessages(convId) {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  container.innerHTML = '';
+// ── Инициализация ──────────────────────
 
-  const user = getCurrentUser();
-
-  const result = await window.sb.from('messages')
-    .select('*, sender:users(id, name, avatar_url, dna_type), reply_to:messages!reply_to_id(id, content, sender_id)')
-    .eq('conversation_id', convId)
-    .order('created_at', { ascending: true })
-    .limit(50);
-
-  const messages = result.data || [];
-
-  // last_read_at собеседника — для статуса «прочитано» на своих сообщениях
-  const { data: members } = await window.sb.from('conversation_members')
-    .select('user_id, last_read_at')
-    .eq('conversation_id', convId)
-    .neq('user_id', user.id);
-  const partnerReadAt = (members && members[0]) ? members[0].last_read_at : null;
-
-  renderMessages(messages, partnerReadAt);
-
-  // Обновляем last_read_at текущего пользователя
-  window.sb.from('conversation_members')
-    .update({ last_read_at: new Date().toISOString() })
-    .eq('conversation_id', convId)
-    .eq('user_id', user.id)
-    .then(function() {});
+async function initChatMessages(convId, partner) {
+  _convId = convId;
+  _partner = partner;
+  _myId = window.getCurrentUser()?.id;
+  _replyTo = null;
+  _msgMap = {};
+  _atBottom = true;
+  _unreadCount = 0;
+  if (!_convId || !_myId) return;
+  renderChatHead();
+  await loadMessages();
+  bindChatInput();
+  bindScrollWatch();
+  subscribeChatRealtime();
+  scrollToBottom();
 }
 
-// ===== renderMessages =====
-function renderMessages(messages, partnerReadAt) {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
+// ── Шапка чата ────────────────────────
 
-  const myId = getCurrentUser().id;
-  let lastDateLabel = '';
+function renderChatHead() {
+  const ph = document.getElementById('chAvPh');
+  const dot = document.getElementById('chAvDot');
+  const name = document.getElementById('chName');
+  const status = document.getElementById('chStatus');
+  const tfRecipient = document.getElementById('tfRecipient');
+  if (!ph || !name) return;
+  const p = _partner || {};
+  const dnaMap = {
+    strategist: 'dna-s', communicator: 'dna-c',
+    creator: 'dna-r', analyst: 'dna-a'
+  };
+  ph.textContent = (p.name || 'П')[0].toUpperCase();
+  ph.className = 'ch-av-ph' + (dnaMap[p.dna_type] ? ' ' + dnaMap[p.dna_type] : '');
+  if (name) name.textContent = p.name || 'Пользователь';
+  if (status) { status.textContent = 'В сети'; status.className = 'ch-status'; }
+  if (dot) dot.classList.remove('hidden');
+  if (tfRecipient) tfRecipient.textContent = p.name || '';
+}
 
-  messages.forEach(function(msg, i) {
-    if (msg.created_at) {
-      const label = getDateLabel(msg.created_at);
-      if (label !== lastDateLabel) {
-        lastDateLabel = label;
-        const divider = document.createElement('div');
-        divider.className = 'chat-date-divider';
-        divider.textContent = label;
-        container.appendChild(divider);
+// ── Загрузка сообщений ─────────────────
+
+async function loadMessages() {
+  try {
+    const { data, error } = await window.sb
+      .from('messages')
+      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+      .eq('conversation_id', _convId)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: true })
+      .limit(50);
+    if (error) throw error;
+    const box = document.getElementById('chatMessages');
+    if (!box) return;
+    box.innerHTML = '';
+    _msgMap = {};
+    let lastDate = null;
+    let lastSender = null;
+    (data || []).forEach((msg) => {
+      _msgMap[msg.id] = msg;
+      const msgDate = new Date(msg.created_at).toDateString();
+      if (msgDate !== lastDate) {
+        box.appendChild(buildDateDivider(msg.created_at));
+        lastDate = msgDate;
+        lastSender = null;
       }
-    }
-    const bubble = createBubble(msg, myId, messages[i - 1], partnerReadAt);
-    container.appendChild(bubble);
-  });
-
-  container.scrollTop = container.scrollHeight;
+      const isGrp = lastSender === msg.sender_id;
+      box.appendChild(buildBubble(msg, isGrp));
+      lastSender = msg.sender_id;
+    });
+    await markAsRead();
+  } catch (err) {
+    console.error('loadMessages:', err);
+  }
 }
 
-function getDateLabel(isoStr) {
-  const d = new Date(isoStr);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const msgDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const diff = today - msgDay;
+// ── Построить пузырь ───────────────────
 
-  if (diff === 0) return 'Сегодня';
-  if (diff === 86400000) return 'Вчера';
-  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-}
-
-function createBubble(msg, myId, prevMsg, partnerReadAt) {
-  const isOwn = msg.sender_id === myId;
-
+function buildBubble(msg, isGrp) {
+  const isOut = msg.sender_id === _myId;
   const wrapper = document.createElement('div');
-  const continued = prevMsg &&
-    prevMsg.sender_id === msg.sender_id &&
-    (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 60000;
-
-  wrapper.className = 'chat-msg ' +
-    (isOwn ? 'chat-msg--out' : 'chat-msg--in') +
-    (continued ? ' chat-msg--continued' : '');
-  wrapper.setAttribute('data-msg-id', msg.id);
-
-  if (!isOwn) {
-    const avatarWrap = document.createElement('div');
-    avatarWrap.className = 'chat-msg-avatar-wrap';
-    if (!continued) {
-      const sender = msg.sender || {};
-      if (sender.avatar_url) {
-        const img = document.createElement('img');
-        img.className = 'chat-msg-avatar';
-        img.src = sender.avatar_url;
-        img.alt = sender.name || '';
-        avatarWrap.appendChild(img);
-      } else {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'chat-msg-avatar chat-msg-avatar--placeholder';
-        placeholder.textContent = (sender.name || '?')[0].toUpperCase();
-        avatarWrap.appendChild(placeholder);
-      }
-    }
-    wrapper.appendChild(avatarWrap);
+  wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + (isGrp ? ' grp' : '');
+  wrapper.dataset.msgId = msg.id;
+  if (!isOut) {
+    const av = document.createElement('div');
+    av.className = 'msg-av-w';
+    av.textContent = (msg.sender?.name || 'П')[0].toUpperCase();
+    wrapper.appendChild(av);
   }
-
-  const bubble = document.createElement('div');
-  bubble.className = 'chat-bubble';
-
-  if (msg.reply_to && msg.reply_to.content) {
+  const bbl = document.createElement('div');
+  bbl.className = 'bbl';
+  if (msg.reply_to?.content) {
     const replyDiv = document.createElement('div');
-    replyDiv.className = 'chat-bubble-reply';
+    replyDiv.className = 'bbl-reply';
     replyDiv.textContent = msg.reply_to.content.slice(0, 60);
-    bubble.appendChild(replyDiv);
+    replyDiv.addEventListener('click', () => scrollToMsg(msg.reply_to.id));
+    bbl.appendChild(replyDiv);
   }
-
   const content = document.createElement('div');
-  content.className = 'chat-bubble-content';
-  if (msg.type === 'file' && msg.file_url) {
-    const link = document.createElement('a');
-    link.href = msg.file_url;
-    link.target = '_blank';
-    link.className = 'chat-file-link';
-    link.textContent = msg.content || 'Файл';
-    content.appendChild(link);
-  } else {
-    content.textContent = msg.content || '';
-  }
-  bubble.appendChild(content);
-
-  const meta = document.createElement('div');
-  meta.className = 'chat-bubble-meta';
-  const time = document.createElement('span');
-  time.className = 'chat-bubble-time';
-  time.textContent = msg.created_at ? formatMsgTime(msg.created_at) : '';
-  meta.appendChild(time);
-
-  if (isOwn) {
-    const isRead = partnerReadAt && msg.created_at &&
-      new Date(partnerReadAt) >= new Date(msg.created_at);
-    const status = document.createElement('span');
-    status.className = 'chat-status ' +
-      (isRead ? 'chat-status--read' : 'chat-status--sent');
-    status.innerHTML = isRead
-      ? '<svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5l3 3L12 1M5 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-      : '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5l3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    meta.appendChild(status);
-  }
-
-  bubble.appendChild(meta);
-  wrapper.appendChild(bubble);
-  initMessageLongPress(wrapper, msg, isOwn);
-  initMsgSwipe(wrapper, msg);
+  content.textContent = msg.content || '';
+  bbl.appendChild(content);
+  const meta = buildMeta(msg, isOut);
+  bbl.appendChild(meta);
+  wrapper.appendChild(bbl);
+  bindBubbleEvents(wrapper, bbl, msg, isOut);
   return wrapper;
 }
 
-// ===== Swipe → Reply =====
-function initMsgSwipe(el, msg) {
-  let startX = 0;
-  let startY = 0;
-  let dx = 0;
-  let swiping = false;
-  el.addEventListener('touchstart', function(e) {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    dx = 0; swiping = false;
+// ── Мета сообщения ─────────────────────
+
+function buildMeta(msg, isOut) {
+  const meta = document.createElement('div');
+  meta.className = 'bbl-meta';
+  const t = document.createElement('span');
+  t.className = 'bbl-t';
+  t.textContent = formatMsgTime(msg.created_at);
+  meta.appendChild(t);
+  if (isOut) {
+    const chk = document.createElement('span');
+    chk.className = 'chk chk-sent';
+    chk.innerHTML = '<svg width="10" height="8" fill="none" viewBox="0 0 10 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    meta.appendChild(chk);
+    setTimeout(() => {
+      chk.className = 'chk chk-read';
+      chk.innerHTML = '<svg width="15" height="8" fill="none" viewBox="0 0 15 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 4l2.5 2.5L14 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    }, 2400);
+  }
+  return meta;
+}
+
+// ── События пузыря ─────────────────────
+
+function bindBubbleEvents(wrapper, bbl, msg, isOut) {
+  let pressTimer = null;
+  const onLongPress = () => showCtxMenu(msg, isOut);
+  bbl.addEventListener('touchstart', () => {
+    pressTimer = setTimeout(onLongPress, 420);
   }, { passive: true });
-  el.addEventListener('touchmove', function(e) {
-    dx = e.touches[0].clientX - startX;
-    const dy = Math.abs(e.touches[0].clientY - startY);
-    if (dy > 12 || dx < 0) return;
-    if (dx > 8) {
-      swiping = true;
-      const shift = Math.min(dx * 0.45, 52);
-      el.style.transform = 'translateX(' + shift + 'px)';
-      el.style.transition = 'none';
-    }
+  bbl.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
+  bbl.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
+  bbl.addEventListener('mousedown', () => { pressTimer = setTimeout(onLongPress, 420); });
+  bbl.addEventListener('mouseup', () => clearTimeout(pressTimer));
+  let swipeStartX = 0;
+  wrapper.addEventListener('touchstart', e => {
+    swipeStartX = e.touches[0].clientX;
   }, { passive: true });
-  el.addEventListener('touchend', function() {
-    el.style.transition = 'transform 220ms cubic-bezier(.16,1,.3,1)';
-    el.style.transform = '';
-    if (swiping && dx > 48) {
-      if (window.startReply) window.startReply(msg);
+  wrapper.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - swipeStartX;
+    if (dx > 60) startReply(msg);
+  }, { passive: true });
+}
+
+// ── Отправка ───────────────────────────
+
+async function chatSend() {
+  const input = document.getElementById('chatInput');
+  const text = input?.value.trim();
+  if (!text || !_convId || !_myId) return;
+  input.value = '';
+  chatToggleSend();
+  chatInputResize(input);
+  const payload = {
+    conversation_id: _convId,
+    sender_id: _myId,
+    content: text,
+    type: 'text'
+  };
+  if (_replyTo) {
+    payload.reply_to_id = _replyTo.id;
+    cancelReply();
+  }
+  try {
+    const { data, error } = await window.sb
+      .from('messages').insert(payload).select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)').single();
+    if (error) throw error;
+    _msgMap[data.id] = data;
+    const box = document.getElementById('chatMessages');
+    const el = buildBubble(data, false);
+    el.classList.add('msg-new');
+    box?.appendChild(el);
+    scrollToBottom();
+    await window.sb.from('conversations')
+      .update({ last_message_at: new Date().toISOString() })
+      .eq('id', _convId);
+  } catch (err) {
+    console.error('chatSend:', err);
+    window.showToast?.('Ошибка отправки');
+  }
+}
+
+// ── Realtime ───────────────────────────
+
+function subscribeChatRealtime() {
+  if (_chatChannel) {
+    window.sb.removeChannel(_chatChannel);
+    _chatChannel = null;
+  }
+  _chatChannel = window.sb
+    .channel('chat:' + _convId)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public',
+      table: 'messages',
+      filter: 'conversation_id=eq.' + _convId
+    }, async (payload) => {
+      const msg = payload.new;
+      if (msg.sender_id === _myId) return;
+      const { data } = await window.sb
+        .from('messages')
+        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+        .eq('id', msg.id).single();
+      if (!data) return;
+      _msgMap[data.id] = data;
+      const box = document.getElementById('chatMessages');
+      const el = buildBubble(data, false);
+      el.classList.add('msg-new');
+      box?.appendChild(el);
+      if (_atBottom) { scrollToBottom(); await markAsRead(); }
+      else { _unreadCount++; updateScrollBtn(); }
+    })
+    .subscribe((status) => {
+      if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+        setTimeout(() => { if (_convId) subscribeChatRealtime(); }, 3000);
+      }
+    });
+}
+
+// ── Reply ──────────────────────────────
+
+function startReply(msg) {
+  _replyTo = msg;
+  const bar = document.getElementById('chatReplyBar');
+  const txt = document.getElementById('chatReplyText');
+  if (bar && txt) {
+    txt.textContent = msg.content?.slice(0, 60) || '';
+    bar.classList.remove('hidden');
+    document.getElementById('chatInput')?.focus();
+  }
+}
+
+function cancelReply() {
+  _replyTo = null;
+  document.getElementById('chatReplyBar')?.classList.add('hidden');
+}
+
+// ── Контекстное меню ───────────────────
+
+function showCtxMenu(msg, isOut) {
+  const ctx = document.getElementById('chatCtx');
+  if (!ctx) return;
+  document.getElementById('ctxReply')?.addEventListener('click', () => {
+    startReply(msg); hideCtxMenu();
+  }, { once: true });
+  document.getElementById('ctxCopy')?.addEventListener('click', () => {
+    navigator.clipboard?.writeText(msg.content || '');
+    window.showToast?.('Скопировано'); hideCtxMenu();
+  }, { once: true });
+  document.getElementById('ctxDelete')?.addEventListener('click', () => {
+    if (isOut) deleteMessage(msg.id);
+    hideCtxMenu();
+  }, { once: true });
+  document.getElementById('ctxForward')?.addEventListener('click', () => {
+    window.showToast?.('Скоро: пересылка'); hideCtxMenu();
+  }, { once: true });
+  document.querySelectorAll('.ctx-rx').forEach(btn => {
+    btn.addEventListener('click', () => {
+      window.showToast?.('Реакция: ' + btn.dataset.emoji);
+      hideCtxMenu();
+    }, { once: true });
+  });
+  ctx.classList.add('on');
+}
+
+function hideCtxMenu() {
+  document.getElementById('chatCtx')?.classList.remove('on');
+}
+
+// ── Удаление ───────────────────────────
+
+async function deleteMessage(msgId) {
+  try {
+    const { error } = await window.sb
+      .from('messages')
+      .update({ is_deleted: true })
+      .eq('id', msgId)
+      .eq('sender_id', _myId);
+    if (error) throw error;
+    const el = document.querySelector('[data-msg-id="' + msgId + '"]');
+    if (el) {
+      el.style.transition = 'all 200ms';
+      el.style.opacity = '0';
+      el.style.transform = 'scale(0.9)';
+      setTimeout(() => el.remove(), 210);
     }
-    swiping = false; dx = 0;
+  } catch (err) {
+    console.error('deleteMessage:', err);
+    window.showToast?.('Не удалось удалить');
+  }
+}
+
+// ── TF перевод ─────────────────────────
+
+function chatTransfer() {
+  document.getElementById('chatTfOv')?.classList.add('on');
+  setTimeout(() => document.getElementById('tfInput')?.focus(), 380);
+}
+function hideTfModal() {
+  document.getElementById('chatTfOv')?.classList.remove('on');
+}
+function calcTf(v) {
+  const el = document.getElementById('tfConvert');
+  if (el) el.textContent = '≈ $' + ((parseFloat(v) || 0) * 0.01).toFixed(2);
+}
+async function sendTf() {
+  window.showToast?.('Скоро: TF перевод');
+  hideTfModal();
+}
+
+// ── Typing indicator ───────────────────
+
+function showTyping() {
+  document.getElementById('chatTyping')?.classList.remove('hidden');
+  scrollToBottom();
+}
+function hideTyping() {
+  document.getElementById('chatTyping')?.classList.add('hidden');
+}
+
+// ── Input хелперы ──────────────────────
+
+function chatInputResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+function chatToggleSend() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  if (!input || !btn) return;
+  if (input.value.trim()) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}
+function chatInputKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault(); chatSend();
+  }
+}
+function bindChatInput() {
+  const btn = document.getElementById('chatSendBtn');
+  if (btn) btn.classList.remove('visible');
+  const input = document.getElementById('chatInput');
+  if (input) { input.value = ''; chatInputResize(input); }
+  cancelReply();
+}
+
+// ── Скролл ─────────────────────────────
+
+function scrollToBottom() {
+  const box = document.getElementById('chatMessages');
+  if (box) box.scrollTop = box.scrollHeight;
+  _atBottom = true;
+  _unreadCount = 0;
+  updateScrollBtn();
+}
+function scrollToMsg(msgId) {
+  const el = document.querySelector('[data-msg-id="' + msgId + '"]');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function bindScrollWatch() {
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+  box.addEventListener('scroll', () => {
+    const dist = box.scrollHeight - box.scrollTop - box.clientHeight;
+    _atBottom = dist < 80;
+    if (_atBottom) { _unreadCount = 0; }
+    updateScrollBtn();
+  }, { passive: true });
+}
+function updateScrollBtn() {
+  const btn = document.getElementById('chScrollBtn');
+  const badge = document.getElementById('chScrollBadge');
+  if (!btn) return;
+  if (_atBottom) btn.classList.add('hidden');
+  else btn.classList.remove('hidden');
+  if (badge) {
+    if (_unreadCount > 0) {
+      badge.textContent = _unreadCount;
+      badge.classList.remove('hidden');
+    } else badge.classList.add('hidden');
+  }
+}
+
+// ── Прочитано ──────────────────────────
+
+async function markAsRead() {
+  if (!_convId || !_myId) return;
+  try {
+    await window.sb.from('conversation_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('conversation_id', _convId)
+      .eq('user_id', _myId);
+  } catch (err) {
+    console.error('markAsRead:', err);
+  }
+}
+
+// ── Дата разделитель ───────────────────
+
+function buildDateDivider(dateStr) {
+  const d = document.createElement('div');
+  d.className = 'msg-date';
+  const s = document.createElement('span');
+  const date = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (date.toDateString() === today.toDateString()) s.textContent = 'Сегодня';
+  else if (date.toDateString() === yesterday.toDateString()) s.textContent = 'Вчера';
+  else s.textContent = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  d.appendChild(s);
+  return d;
+}
+
+// ── Форматирование времени ─────────────
+
+function formatMsgTime(dateStr) {
+  return new Date(dateStr).toLocaleTimeString('ru-RU', {
+    hour: '2-digit', minute: '2-digit'
   });
 }
 
-// ===== subscribeRealtime =====
-function subscribeRealtime(convId) {
-  chatUnsubscribe();
+// ── Уничтожение ────────────────────────
 
-  realtimeSubscription = window.sb.channel('chat:' + convId)
-    .on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'messages',
-      filter: 'conversation_id=eq.' + convId
-    }, function(payload) {
-      appendMessage(payload.new);
-    })
-    .subscribe();
-}
-
-// ===== appendMessage =====
-function appendMessage(message) {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-
-  const existing = container.querySelector('[data-msg-id="' + message.id + '"]');
-  if (existing) return;
-
-  const myId = getCurrentUser().id;
-  const bubble = createBubble(message, myId);
-  container.appendChild(bubble);
-  container.scrollTop = container.scrollHeight;
-}
-
-// ===== chatSend =====
-async function chatSend() {
-  const input = document.getElementById('chatInput');
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text || !currentConversationId) return;
-
-  const user = getCurrentUser();
-  if (!user) return;
-
-  const savedText = text;
-  input.value = '';
-  input.style.height = 'auto';
-
-  try {
-    const payload = {
-      conversation_id: currentConversationId,
-      sender_id: user.id,
-      content: savedText,
-      type: 'text'
-    };
-    if (window.chatReplyTo) {
-      payload.reply_to_id = window.chatReplyTo.id;
-      cancelReply();
-    }
-    const { error } = await window.sb.from('messages').insert(payload);
-    if (error) throw error;
-
-    await window.sb.from('conversations').update({
-      last_message_at: new Date().toISOString()
-    }).eq('id', currentConversationId);
-
-  } catch (err) {
-    console.error('chatSend:', err);
-    input.value = savedText;
-    showToast('Не удалось отправить сообщение');
+function destroyChat() {
+  if (_chatChannel) {
+    window.sb.removeChannel(_chatChannel);
+    _chatChannel = null;
   }
+  _convId = null;
+  _myId = null;
+  _partner = null;
+  _replyTo = null;
+  _msgMap = {};
 }
 
-// ===== chatInputResize =====
-function chatInputResize(el) {
-  el.style.height = 'auto';
-  const maxH = 120;
-  el.style.height = Math.min(el.scrollHeight, maxH) + 'px';
-}
+// ── Экспорты ───────────────────────────
 
-// ===== chatInputKeydown =====
-function chatInputKeydown(event) {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault();
-    chatSend();
-  }
-}
-
-// ===== chatAttachFile =====
-function chatAttachFile() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*,.pdf,.doc,.docx,.xls,.xlsx';
-  input.onchange = async function() {
-    const file = input.files[0];
-    if (!file || !currentConversationId) return;
-    const user = getCurrentUser();
-    if (!user) return;
-
-    const path = 'chat-files/' + currentConversationId + '/' + Date.now() + '_' + file.name;
-    const uploadResult = await window.sb.storage.from('chat-files').upload(path, file);
-    if (uploadResult.error) return;
-
-    const urlData = window.sb.storage.from('chat-files').getPublicUrl(path);
-
-    await window.sb.from('messages').insert({
-      conversation_id: currentConversationId,
-      sender_id: user.id,
-      content: file.name,
-      type: 'file',
-      file_url: urlData.data.publicUrl,
-      file_name: file.name
-    });
-  };
-  input.click();
-}
-
-// ===== chatUnsubscribe =====
-function chatUnsubscribe() {
-  if (realtimeSubscription) {
-    window.sb.removeChannel(realtimeSubscription);
-    realtimeSubscription = null;
-  }
-}
-
-// ===== chatClearHistory =====
-async function chatClearHistory() {
-  const user = getCurrentUser();
-  if (!user || !currentConversationId) return;
-
-  try {
-    await window.sb.from('messages')
-      .delete()
-      .eq('conversation_id', currentConversationId)
-      .eq('sender_id', user.id);
-
-    const container = document.getElementById('chatMessages');
-    if (container) container.innerHTML = '';
-    loadMessages(currentConversationId);
-    showToast('История очищена');
-  } catch (err) {
-    console.error('Clear history error:', err);
-    showToast('Ошибка очистки');
-  }
-}
-
-// ===== chatDelete =====
-async function chatDelete() {
-  if (!currentConversationId) return;
-
-  try {
-    await window.sb.from('conversations')
-      .delete()
-      .eq('id', currentConversationId);
-
-    currentConversationId = null;
-    currentChatPartner = null;
-    showToast('Диалог удалён');
-    goBack();
-  } catch (err) {
-    console.error('Delete chat error:', err);
-    showToast('Ошибка удаления');
-  }
-}
-
-// ===== formatMsgTime =====
-function formatMsgTime(dateStr) {
-  const d = new Date(dateStr);
-  return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
-}
-
-// ═══════════════════════════════════════
-// КОНТЕКСТНОЕ МЕНЮ — см. chat-context.js
-// ═══════════════════════════════════════
-
-// ЭКСПОРТЫ
-window.loadMessages = loadMessages;
-window.subscribeRealtime = subscribeRealtime;
-window.appendMessage = appendMessage;
+window.initChatMessages = initChatMessages;
 window.chatSend = chatSend;
 window.chatInputResize = chatInputResize;
+window.chatToggleSend = chatToggleSend;
 window.chatInputKeydown = chatInputKeydown;
-window.chatAttachFile = chatAttachFile;
-window.chatUnsubscribe = chatUnsubscribe;
-window.chatClearHistory = chatClearHistory;
-window.chatDelete = chatDelete;
+window.chatTransfer = chatTransfer;
+window.hideTfModal = hideTfModal;
+window.calcTf = calcTf;
+window.sendTf = sendTf;
+window.cancelReply = cancelReply;
+window.hideCtxMenu = hideCtxMenu;
+window.scrollToBottom = scrollToBottom;
+window.showTyping = showTyping;
+window.hideTyping = hideTyping;
+window.destroyChat = destroyChat;
