@@ -14,7 +14,7 @@ async function loadMessages(convId) {
   const user = getCurrentUser();
 
   const result = await window.sb.from('messages')
-    .select('*, sender:users(id, name, avatar_url, dna_type)')
+    .select('*, sender:users(id, name, avatar_url, dna_type), reply_to:messages!reply_to_id(id, content, sender_id)')
     .eq('conversation_id', convId)
     .order('created_at', { ascending: true })
     .limit(50);
@@ -112,6 +112,13 @@ function createBubble(msg, myId, prevMsg, partnerReadAt) {
 
   const bubble = document.createElement('div');
   bubble.className = 'chat-bubble';
+
+  if (msg.reply_to && msg.reply_to.content) {
+    const replyDiv = document.createElement('div');
+    replyDiv.className = 'chat-bubble-reply';
+    replyDiv.textContent = msg.reply_to.content.slice(0, 60);
+    bubble.appendChild(replyDiv);
+  }
 
   const content = document.createElement('div');
   content.className = 'chat-bubble-content';
