@@ -5,15 +5,11 @@
 
 /* ── Экран ── */
 #scrChat {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  bottom: 0;
   display: flex;
   flex-direction: column;
+  height: 100dvh;
   overflow: hidden;
   background: #06060b;
-  height: 100%;
-  height: -webkit-fill-available;
 }
 
 /* ── Шапка ── */
@@ -284,9 +280,6 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid rgba(255,255,255,0.055);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  transform: none !important;
-  transition: none !important;
 }
 .reply-bar {
   display: flex; align-items: center;
@@ -309,9 +302,10 @@
   color: rgba(241,241,245,0.5);
 }
 .ch-row {
-  display: flex; align-items: flex-end;
-  gap: 7px; padding: 7px 11px;
-  padding-bottom: env(safe-area-inset-bottom, 8px);
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 7px 11px 12px;
 }
 .ch-att {
   width: 36px; height: 36px; border-radius: 50%;
