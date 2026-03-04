@@ -26,6 +26,7 @@ async function initChatMessages(convId, partner) {
   bindChatInput();
   bindScrollWatch();
   window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
+  window.subscribeReadStatus(_convId, _myId);
   window.initChatPresence(_convId, _myId);
   scrollToBottom();
 }
@@ -134,10 +135,6 @@ function buildMeta(msg, isOut) {
     chk.className = 'chk chk-sent';
     chk.innerHTML = '<svg width="10" height="8" fill="none" viewBox="0 0 10 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     meta.appendChild(chk);
-    setTimeout(() => {
-      chk.className = 'chk chk-read';
-      chk.innerHTML = '<svg width="15" height="8" fill="none" viewBox="0 0 15 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 4l2.5 2.5L14 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    }, 2400);
   }
   return meta;
 }
@@ -377,6 +374,20 @@ async function markAsRead() {
   }
 }
 
+// ── Галочки прочтения ───────────────────
+
+function markOutgoingAsRead() {
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+  const SVG_READ = '<svg width="15" height="8" fill="none" viewBox="0 0 15 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 4l2.5 2.5L14 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  box.querySelectorAll('.msg-out:not(.msg-sending) .chk').forEach(chk => {
+    if (!chk.classList.contains('chk-read')) {
+      chk.className = 'chk chk-read';
+      chk.innerHTML = SVG_READ;
+    }
+  });
+}
+
 // ── Дата разделитель ───────────────────
 
 function buildDateDivider(dateStr) {
@@ -431,6 +442,7 @@ window.calcTf = calcTf;
 window.sendTf = sendTf;
 window.deleteMessage = deleteMessage;
 window.scrollToBottom = scrollToBottom;
+window.markOutgoingAsRead = markOutgoingAsRead;
 window.showTyping = showTyping;
 window.hideTyping = hideTyping;
 window.destroyChat = destroyChat;

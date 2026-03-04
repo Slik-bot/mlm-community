@@ -4,6 +4,7 @@
 // ════════════════════════════════════════
 
 let _chatChannel = null;
+let _readChannel = null;
 let _presenceCh = null;
 let _typingTimer = null;
 
@@ -35,6 +36,27 @@ function subscribeChatRealtime(convId, myId, onNewMessage) {
         setTimeout(() => subscribeChatRealtime(convId, myId, onNewMessage), 3000);
       }
     });
+}
+
+// ── Подписка на прочтение ────────────────
+
+function subscribeReadStatus(convId, myId) {
+  if (_readChannel) {
+    window.sb.removeChannel(_readChannel);
+    _readChannel = null;
+  }
+  _readChannel = window.sb
+    .channel('read:' + convId)
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public',
+      table: 'conversation_members',
+      filter: 'conversation_id=eq.' + convId
+    }, (payload) => {
+      if (payload.new.user_id !== myId) {
+        window.markOutgoingAsRead?.();
+      }
+    })
+    .subscribe();
 }
 
 // ── Presence: typing + online ───────────
@@ -94,6 +116,10 @@ function unsubscribeRealtime() {
     window.sb.removeChannel(_chatChannel);
     _chatChannel = null;
   }
+  if (_readChannel) {
+    window.sb.removeChannel(_readChannel);
+    _readChannel = null;
+  }
   if (_presenceCh) {
     window.sb.removeChannel(_presenceCh);
     _presenceCh = null;
@@ -105,6 +131,7 @@ function unsubscribeRealtime() {
 // ── Экспорты ───────────────────────────
 
 window.subscribeChatRealtime = subscribeChatRealtime;
+window.subscribeReadStatus = subscribeReadStatus;
 window.initChatPresence = initChatPresence;
 window.handleTyping = handleTyping;
 window.unsubscribeRealtime = unsubscribeRealtime;
