@@ -78,6 +78,7 @@ async function loadClData(userId) {
         .select('conversation_id, content, created_at, sender_id')
         .in('conversation_id', convIds).eq('is_deleted', false)
         .order('created_at', { ascending: false })
+        .limit(convIds.length)
     ]);
     if (r1.error) throw r1.error;
     if (r2.error) throw r2.error;
@@ -321,6 +322,34 @@ function clFormatTime(dateStr) {
 
 // ═══ 7. Realtime ═══
 
+function updateClCard(convId, msg) {
+  var card = document.querySelector('[data-conv-id="' + convId + '"]');
+  if (!card) {
+    var user = window.getCurrentUser();
+    if (!user) return;
+    loadClData(user.id).then(function(convs) {
+      _clData = convs;
+      var q = document.getElementById('clSearch');
+      renderClList(convs, _clTab, q ? q.value.trim() : '');
+    });
+    return;
+  }
+  var prev = card.querySelector('.cl-preview');
+  if (prev) {
+    var txt = msg.content || '';
+    prev.textContent = txt.length > 40 ? txt.substring(0, 40) + '...' : txt;
+  }
+  var time = card.querySelector('.cl-time');
+  if (time) time.textContent = clFormatTime(msg.created_at);
+  var idx = _clData.findIndex(function(c) { return c.id === convId; });
+  if (idx > -1) {
+    _clData[idx].lastMsg = msg;
+    _clData[idx].last_message_at = msg.created_at;
+  }
+  var list = card.parentElement;
+  if (list && list.firstChild !== card) list.insertBefore(card, list.firstChild);
+}
+
 function clSubscribeRealtime(userId) {
   if (_clSub) { _clSub.unsubscribe(); _clSub = null; }
   if (!window.sb) return;
@@ -329,12 +358,10 @@ function clSubscribeRealtime(userId) {
     .channel('cl-rt-' + userId)
     .on('postgres_changes', {
       event: 'INSERT', schema: 'public', table: 'messages'
-    }, function() {
-      loadClData(userId).then(function(convs) {
-        _clData = convs;
-        const q = document.getElementById('clSearch');
-        renderClList(convs, _clTab, q ? q.value.trim() : '');
-      });
+    }, function(payload) {
+      var msg = payload.new;
+      if (!msg || !msg.conversation_id) return;
+      updateClCard(msg.conversation_id, msg);
     })
     .subscribe();
 }
@@ -456,8 +483,16 @@ function buildDnaRing(dnaType, size) {
   return svg;
 }
 
+function chatStartNew() {
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  }
+  window.showToast('Выберите пользователя для начала диалога');
+}
+
 // ═══ Exports ═══
 
 window.initChatList = initChatList;
 window.destroyChatList = destroyChatList;
 window.buildDnaRing = buildDnaRing;
+window.chatStartNew = chatStartNew;
