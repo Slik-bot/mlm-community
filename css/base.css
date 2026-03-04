@@ -154,3 +154,9 @@ input, textarea, select {
 .toast.toast-ok{background:var(--green);color:#fff;}
 .toast.toast-err{background:var(--red);color:#fff;}
 .toast.toast-warn{background:var(--orange);color:#000;}
+
+/* ============ DNA RING ROTATE ============ */
+@keyframes dna-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

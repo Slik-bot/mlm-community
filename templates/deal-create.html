@@ -1,61 +1,98 @@
 <!-- =============== SCREEN: DEAL CREATE =============== -->
 <div class="scr hidden" id="scrDealCreate">
-  <div class="scr-head">
+  <!-- Header -->
+  <div class="hd">
     <button class="icon-btn" onclick="goBack()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     </button>
-    <span class="scr-head-title">Новая сделка</span>
+    <div class="hd-title" id="dcTitle">Новая сделка</div>
     <div style="width:36px"></div>
   </div>
 
-  <div class="deal-form">
-    <div class="form-field">
-      <label>Название</label>
-      <input class="glass-input" id="dealTitle" type="text" placeholder="Что нужно сделать?" maxlength="100">
-    </div>
+  <!-- Steps indicator -->
+  <div class="deal-steps" id="dcSteps">
+    <div class="deal-step active" data-step="1"></div>
+    <div class="deal-step" data-step="2"></div>
+  </div>
 
-    <div class="form-field">
-      <label>Описание</label>
-      <textarea class="glass-input" id="dealDesc" placeholder="Подробно опишите задачу..." maxlength="1000" rows="4"></textarea>
-    </div>
+  <!-- Step 1: Form -->
+  <div id="dcStep1">
+    <!-- Templates -->
+    <div class="deal-templates" id="dcTemplates"></div>
 
-    <div class="form-field">
-      <label>Бюджет (руб.)</label>
-      <input class="glass-input" id="dealBudget" type="number" placeholder="0" min="100" max="1000000" oninput="updateDealCalc()">
-    </div>
+    <!-- Executor card -->
+    <div class="executor-card hidden" id="dcExecutor"></div>
 
-    <div class="form-field">
-      <label>Срок выполнения</label>
-      <input class="glass-input" id="dealDeadline" type="date">
-    </div>
-
-    <div class="form-field">
-      <label>Категория</label>
-      <select class="glass-input" id="dealCategory">
-        <option value="design">Дизайн</option>
-        <option value="marketing">Маркетинг</option>
-        <option value="development">Разработка</option>
-        <option value="content">Контент</option>
-        <option value="consulting">Консалтинг</option>
-        <option value="other">Другое</option>
-      </select>
-    </div>
-
-    <div class="deal-calc glass-card" id="dealCalc">
-      <div class="calc-row">
-        <span>Бюджет</span>
-        <span id="calcTotal">0 руб.</span>
+    <!-- Form -->
+    <div class="deal-form" id="dcForm">
+      <div class="form-field">
+        <label>Название</label>
+        <input class="glass-input" id="dcTitleInput" type="text" placeholder="Что нужно сделать?" maxlength="100">
       </div>
-      <div class="calc-row">
-        <span>Комиссия платформы (20%)</span>
-        <span id="calcFee">0 руб.</span>
+      <div class="form-field">
+        <label>Описание</label>
+        <textarea class="glass-input" id="dcDescInput" placeholder="Подробности задачи..." maxlength="1000" rows="4"></textarea>
       </div>
-      <div class="calc-row calc-result">
-        <span>Исполнитель получит</span>
-        <span id="calcExecutor">0 руб.</span>
+      <div class="form-field">
+        <label>Категория</label>
+        <select class="glass-input" id="dcCategory">
+          <option value="design">Дизайн</option>
+          <option value="development">Разработка</option>
+          <option value="copywriting">Тексты</option>
+          <option value="consulting">Консалтинг</option>
+          <option value="marketing">Маркетинг</option>
+          <option value="other">Другое</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Дедлайн</label>
+        <input class="glass-input" id="dcDeadline" type="date">
       </div>
     </div>
 
-    <button class="btn-primary" onclick="dealCreate()">Создать сделку</button>
+    <!-- Amount slider -->
+    <div class="deal-slider-wrap">
+      <div class="deal-slider-header">
+        <span class="deal-slider-label">Сумма</span>
+        <span class="deal-slider-value" id="dcAmountValue">5 000 TF</span>
+      </div>
+      <input class="deal-slider" id="dcAmountSlider" type="range" min="500" max="100000" step="500" value="5000">
+    </div>
+
+    <!-- Broker % slider (hidden by default) -->
+    <div class="deal-slider-wrap hidden" id="dcBrokerWrap" style="margin-top:16px">
+      <div class="deal-slider-header">
+        <span class="deal-slider-label">Комиссия брокера</span>
+        <span class="deal-slider-value" id="dcBrokerValue">5%</span>
+      </div>
+      <input class="deal-slider" id="dcBrokerSlider" type="range" min="1" max="30" step="1" value="5">
+    </div>
+
+    <!-- Live split -->
+    <div class="split-grid" id="dcSplit" style="margin-top:16px"></div>
+
+    <!-- Milestones -->
+    <div style="padding:0 16px;margin-bottom:8px">
+      <label style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:500">Этапы</label>
+    </div>
+    <div class="ms-editor" id="dcMilestones"></div>
+
+    <!-- Revisions picker -->
+    <div style="padding:0 16px;margin:16px 0 8px">
+      <label style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:500">Правки</label>
+    </div>
+    <div class="rev-picker" id="dcRevPicker"></div>
+  </div>
+
+  <!-- Step 2: Contract -->
+  <div id="dcStep2" class="hidden">
+    <div class="doc-header" id="dcDocHeader"></div>
+    <div class="agree-sec" id="dcAgreeSec"></div>
+    <div class="sign-row" id="dcSignRow"></div>
+  </div>
+
+  <!-- Bottom button -->
+  <div class="deal-bottom-btn">
+    <button class="btn-primary" id="dcSubmitBtn" onclick="dcNextStep()">Далее</button>
   </div>
 </div>

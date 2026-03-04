@@ -129,13 +129,24 @@
       '<div class="r-btn" onclick="handleBookmark(\'' + post.id + '\',this)"><span class="r-icon">' + SVG_SAVE + '</span></div></div>';
   }
 
+  function buildDealBadge(post) {
+    let html = '';
+    if (post.post_subtype === 'service_offer') {
+      html += '<div style="padding:8px 16px"><button style="width:100%;padding:10px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;font-size:13px;font-weight:600;font-family:Outfit,sans-serif;cursor:pointer" onclick="event.stopPropagation();goTo(\'scrDealCreate\',{executorId:\'' + post.author_id + '\'})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Предложить сделку</button></div>';
+    }
+    if (post.broker_reward_tf > 0) {
+      html += '<div style="padding:0 16px 8px"><span style="display:inline-block;padding:4px 10px;border-radius:8px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);color:#fbbf24;font-size:12px;font-weight:600"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Брокеру: ' + post.broker_reward_tf.toLocaleString('ru') + ' TF</span></div>';
+    }
+    return html;
+  }
+
   function createPostElement(post) {
     const profile = post.author || {};
     const div = document.createElement('div');
     div.className = 'post-card';
     div.setAttribute('data-post-id', post.id);
     div.setAttribute('data-author-dna', profile.dna_type || '');
-    div.innerHTML = buildPostAuthor(post, profile) + buildPostImages(post) + buildPostBody(post) + buildPostActions(post);
+    div.innerHTML = buildPostAuthor(post, profile) + buildPostImages(post) + buildPostBody(post) + buildDealBadge(post) + buildPostActions(post);
     return div;
   }
 
