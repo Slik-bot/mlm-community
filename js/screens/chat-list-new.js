@@ -440,6 +440,8 @@ function buildDnaRing(dnaType, size) {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
+  svg.setAttribute('width', full);
+  svg.setAttribute('height', full);
   svg.setAttribute('class', 'dna-ring dna-ring--' + (dnaType || 'unknown') + ' dna-ring--animated');
   const circle = document.createElementNS(ns, 'circle');
   circle.setAttribute('cx', full / 2);
