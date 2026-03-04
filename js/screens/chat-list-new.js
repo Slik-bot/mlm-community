@@ -184,6 +184,10 @@ function buildClItem(conv) {
   const dnaClass = CL_DNA_CLASS[o.dna_type] || '';
   const ava = document.createElement('div');
   ava.className = 'cl-ava' + (dnaClass ? ' ' + dnaClass : '');
+  if (dnaClass && window.buildDnaRing) {
+    ava.insertAdjacentHTML('beforeend',
+      window.buildDnaRing(o.dna_type, 54));
+  }
   if (o.avatar_url) {
     const img = document.createElement('img');
     img.src = o.avatar_url;

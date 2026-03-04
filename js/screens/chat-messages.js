@@ -49,6 +49,9 @@ function renderChatHead() {
   };
   ph.textContent = (p.name || 'П')[0].toUpperCase();
   ph.className = 'ch-av-ph' + (dnaMap[p.dna_type] ? ' ' + dnaMap[p.dna_type] : '');
+  if (p.dna_type && window.buildDnaRing) {
+    ph.insertAdjacentHTML('beforeend', window.buildDnaRing(p.dna_type, 35));
+  }
   if (name) name.textContent = p.name || 'Пользователь';
   if (status) { status.textContent = 'В сети'; status.className = 'ch-status'; }
   if (dot) dot.classList.remove('hidden');
