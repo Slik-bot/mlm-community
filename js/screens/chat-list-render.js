@@ -252,11 +252,6 @@ function clCloseSwipe(item) {
 
 // ═══ DNA Ring — arc segments ═══
 
-const DNA_COLORS = {
-  strategist: '#3b82f6', communicator: '#22c55e',
-  creator: '#f59e0b', analyst: '#a78bfa', default: '#94a3b8'
-};
-
 function createArcPath(cx, cy, r, startDeg, endDeg) {
   const startRad = (startDeg - 90) * Math.PI / 180;
   const endRad = (endDeg - 90) * Math.PI / 180;
@@ -293,7 +288,8 @@ function buildDnaRing(dnaType, size) {
   const cx = full / 2;
   const cy = full / 2;
   const r = size / 2 - 1;
-  const color = DNA_COLORS[dnaType] || DNA_COLORS.default;
+  const dnaClrs = window.DNA_COLORS || {};
+  const color = dnaClrs[dnaType] || '#94a3b8';
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
