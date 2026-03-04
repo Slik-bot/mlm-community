@@ -28,7 +28,9 @@ async function initChatMessages(convId, partner) {
   window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
   window.subscribeReadStatus(_convId, _myId);
   window.initChatPresence(_convId, _myId);
-  scrollToBottom();
+  const divider = document.getElementById('msgUnreadDivider');
+  if (divider) divider.scrollIntoView({ block: 'center' });
+  else scrollToBottom();
 }
 
 // ── Шапка чата ────────────────────────
@@ -57,22 +59,36 @@ function renderChatHead() {
 
 async function loadMessages() {
   try {
-    const { data, error } = await window.sb
-      .from('messages')
-      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
-      .eq('conversation_id', _convId)
-      .eq('is_deleted', false)
-      .order('created_at', { ascending: true })
-      .limit(50);
-    if (error) throw error;
+    const [msgRes, memberRes] = await Promise.all([
+      window.sb
+        .from('messages')
+        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+        .eq('conversation_id', _convId)
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: true })
+        .limit(50),
+      window.sb
+        .from('conversation_members')
+        .select('last_read_at')
+        .eq('conversation_id', _convId)
+        .eq('user_id', _myId)
+        .single()
+    ]);
+    if (msgRes.error) throw msgRes.error;
+    const lastReadAt = memberRes.data?.last_read_at || null;
     const box = document.getElementById('chatMessages');
     if (!box) return;
     box.innerHTML = '';
     _msgMap = {};
     let lastDate = null;
     let lastSender = null;
-    (data || []).forEach((msg) => {
+    let dividerInserted = false;
+    (msgRes.data || []).forEach((msg) => {
       _msgMap[msg.id] = msg;
+      if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
+        box.appendChild(buildUnreadDivider());
+        dividerInserted = true;
+      }
       const msgDate = new Date(msg.created_at).toDateString();
       if (msgDate !== lastDate) {
         box.appendChild(buildDateDivider(msg.created_at));
@@ -364,6 +380,12 @@ function updateScrollBtn() {
 
 async function markAsRead() {
   if (!_convId || !_myId) return;
+  const div = document.getElementById('msgUnreadDivider');
+  if (div) {
+    div.style.transition = 'opacity 400ms';
+    div.style.opacity = '0';
+    setTimeout(() => div.remove(), 400);
+  }
   try {
     await window.sb.from('conversation_members')
       .update({ last_read_at: new Date().toISOString() })
@@ -403,6 +425,16 @@ function buildDateDivider(dateStr) {
   else s.textContent = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   d.appendChild(s);
   return d;
+}
+
+// ── Разделитель непрочитанных ─────────
+
+function buildUnreadDivider() {
+  const el = document.createElement('div');
+  el.className = 'msg-unread-divider';
+  el.id = 'msgUnreadDivider';
+  el.innerHTML = '<span>Новые сообщения</span>';
+  return el;
 }
 
 // ── Форматирование времени ─────────────
