@@ -5,7 +5,6 @@
 let _convId = null;
 let _myId = null;
 let _partner = null;
-let _chatChannel = null;
 let _replyTo = null;
 let _msgMap = {};
 let _atBottom = true;
@@ -26,7 +25,8 @@ async function initChatMessages(convId, partner) {
   await loadMessages();
   bindChatInput();
   bindScrollWatch();
-  subscribeChatRealtime();
+  window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
+  window.initChatPresence(_convId, _myId);
   scrollToBottom();
 }
 
@@ -183,40 +183,16 @@ async function chatSend() {
   }
 }
 
-// ── Realtime ───────────────────────────
+// ── Обработка входящего сообщения ────────
 
-function subscribeChatRealtime() {
-  if (_chatChannel) {
-    window.sb.removeChannel(_chatChannel);
-    _chatChannel = null;
-  }
-  _chatChannel = window.sb
-    .channel('chat:' + _convId)
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public',
-      table: 'messages',
-      filter: 'conversation_id=eq.' + _convId
-    }, async (payload) => {
-      const msg = payload.new;
-      if (msg.sender_id === _myId) return;
-      const { data } = await window.sb
-        .from('messages')
-        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
-        .eq('id', msg.id).single();
-      if (!data) return;
-      _msgMap[data.id] = data;
-      const box = document.getElementById('chatMessages');
-      const el = buildBubble(data, false);
-      el.classList.add('msg-new');
-      box?.appendChild(el);
-      if (_atBottom) { scrollToBottom(); await markAsRead(); }
-      else { _unreadCount++; updateScrollBtn(); }
-    })
-    .subscribe((status) => {
-      if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-        setTimeout(() => { if (_convId) subscribeChatRealtime(); }, 3000);
-      }
-    });
+async function onIncomingMessage(data) {
+  _msgMap[data.id] = data;
+  const box = document.getElementById('chatMessages');
+  const el = buildBubble(data, false);
+  el.classList.add('msg-new');
+  box?.appendChild(el);
+  if (_atBottom) { scrollToBottom(); await markAsRead(); }
+  else { _unreadCount++; updateScrollBtn(); }
 }
 
 // ── Удаление ───────────────────────────
@@ -292,7 +268,11 @@ function bindChatInput() {
   const btn = document.getElementById('chatSendBtn');
   if (btn) btn.classList.remove('visible');
   const input = document.getElementById('chatInput');
-  if (input) { input.value = ''; chatInputResize(input); }
+  if (input) {
+    input.value = '';
+    chatInputResize(input);
+    input.addEventListener('input', () => window.handleTyping?.());
+  }
   window.cancelReply();
   bindTgViewport();
 }
@@ -391,10 +371,7 @@ function formatMsgTime(dateStr) {
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
-  if (_chatChannel) {
-    window.sb.removeChannel(_chatChannel);
-    _chatChannel = null;
-  }
+  window.unsubscribeRealtime();
   _convId = null;
   _myId = null;
   _partner = null;
