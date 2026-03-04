@@ -47,8 +47,17 @@ function renderChatHead() {
     strategist: 'dna-s', communicator: 'dna-c',
     creator: 'dna-r', analyst: 'dna-a'
   };
-  ph.textContent = (p.name || 'П')[0].toUpperCase();
   ph.className = 'ch-av-ph' + (dnaMap[p.dna_type] ? ' ' + dnaMap[p.dna_type] : '');
+  ph.innerHTML = '';
+  if (p.avatar_url) {
+    const img = document.createElement('img');
+    img.src = p.avatar_url;
+    img.alt = '';
+    img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+    ph.appendChild(img);
+  } else {
+    ph.textContent = (p.name || 'П')[0].toUpperCase();
+  }
   if (name) name.textContent = p.name || 'Пользователь';
   if (status) { status.textContent = 'В сети'; status.className = 'ch-status'; }
   if (dot) dot.classList.remove('hidden');
