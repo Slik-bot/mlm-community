@@ -315,15 +315,14 @@
   text-align: center;
 }
 
-/* ═══ DNA Ring — SVG спираль ═══ */
+/* ═══ DNA Ring — arc segments ═══ */
 
 .dna-ring {
   position: absolute;
   top: -4px;
   left: -4px;
-  width: 56px;
-  height: 56px;
   pointer-events: none;
+  will-change: transform;
 }
 @keyframes dnaRotate {
   from { transform: rotate(0deg); }

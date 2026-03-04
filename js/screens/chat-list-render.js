@@ -250,33 +250,66 @@ function clCloseSwipe(item) {
   if (window._clSwipeOpen === item) window._clSwipeOpen = null;
 }
 
-// ═══ DNA Ring ═══
+// ═══ DNA Ring — arc segments ═══
+
+const DNA_COLORS = {
+  strategist: '#3b82f6', communicator: '#22c55e',
+  creator: '#f59e0b', analyst: '#a78bfa', default: '#94a3b8'
+};
+
+function createArcPath(cx, cy, r, startDeg, endDeg) {
+  const startRad = (startDeg - 90) * Math.PI / 180;
+  const endRad = (endDeg - 90) * Math.PI / 180;
+  const x1 = cx + r * Math.cos(startRad);
+  const y1 = cy + r * Math.sin(startRad);
+  const x2 = cx + r * Math.cos(endRad);
+  const y2 = cy + r * Math.sin(endRad);
+  const largeArc = (endDeg - startDeg) > 180 ? 1 : 0;
+  return 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r +
+    ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2;
+}
+
+function getDnaSegments(dnaType) {
+  const GAP = 8;
+  const patterns = {
+    strategist: [82, 82, 82, 82],
+    communicator: [37, 37, 37, 37, 37, 37, 37, 37],
+    creator: [70, 45, 60, 35, 50],
+    analyst: [52, 52, 52, 52, 52, 52]
+  };
+  const arcs = patterns[dnaType];
+  if (!arcs) return [[0, 355]];
+  const segments = [];
+  let cursor = 0;
+  for (let i = 0; i < arcs.length; i++) {
+    segments.push([cursor, cursor + arcs[i]]);
+    cursor += arcs[i] + GAP;
+  }
+  return segments;
+}
 
 function buildDnaRing(dnaType, size) {
-  const DNA_RING = {
-    strategist:   { color: '#3b82f6', dash: '18 8 18 8 18 8 18 8' },
-    communicator: { color: '#22c55e', dash: '8 6 8 6 8 6 8 6 8 6 8 6 8 6 8 6' },
-    creator:      { color: '#f59e0b', dash: '20 6 12 6 8 6 16 6 10 6' },
-    analyst:      { color: '#a78bfa', dash: '14 7 14 7 14 7 14 7 14 7 14 7' }
-  };
-  const cfg = DNA_RING[dnaType] || { color: '#94a3b8', dash: '' };
   const full = size + 8;
+  const cx = full / 2;
+  const cy = full / 2;
+  const r = size / 2 - 1;
+  const color = DNA_COLORS[dnaType] || DNA_COLORS.default;
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
   svg.setAttribute('width', full);
   svg.setAttribute('height', full);
-  svg.setAttribute('class', 'dna-ring dna-ring--' + (dnaType || 'unknown') + ' dna-ring--animated');
-  const circle = document.createElementNS(ns, 'circle');
-  circle.setAttribute('cx', full / 2);
-  circle.setAttribute('cy', full / 2);
-  circle.setAttribute('r', size / 2);
-  circle.setAttribute('fill', 'none');
-  circle.setAttribute('stroke', cfg.color);
-  circle.setAttribute('stroke-width', '2');
-  if (cfg.dash) circle.setAttribute('stroke-dasharray', cfg.dash);
-  circle.setAttribute('stroke-linecap', 'round');
-  svg.appendChild(circle);
+  svg.setAttribute('class', 'dna-ring dna-ring--animated');
+  const segments = getDnaSegments(dnaType);
+  segments.forEach(function(seg) {
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', createArcPath(cx, cy, r, seg[0], seg[1]));
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+  });
   return svg;
 }
 
