@@ -364,6 +364,7 @@ function subscribeStatusUpdates(convId, myId) {
       });
     })
     .subscribe();
+  window._statusChannel = _statusChannel;
 }
 
 // ── Прочитано ──────────────────────────
@@ -398,6 +399,7 @@ function destroyChat() {
   if (_statusChannel) {
     window.sb.removeChannel(_statusChannel);
     _statusChannel = null;
+    window._statusChannel = null;
   }
   window.unsubscribeRealtime();
   _convId = null;

@@ -151,6 +151,20 @@ function updateClCard(convId, msg) {
     _clData[idx].lastMsg = msg;
     _clData[idx].last_message_at = msg.created_at;
   }
+  var badge = card.querySelector('.cl-badge');
+  if (badge) {
+    var current = parseInt(badge.textContent) || 0;
+    badge.textContent = current + 1;
+    badge.style.display = 'flex';
+  } else {
+    var meta = card.querySelector('.cl-meta');
+    if (meta) {
+      var newBadge = document.createElement('div');
+      newBadge.className = 'cl-badge';
+      newBadge.textContent = '1';
+      meta.appendChild(newBadge);
+    }
+  }
   var list = card.parentElement;
   if (list && list.firstChild !== card) list.insertBefore(card, list.firstChild);
 }
