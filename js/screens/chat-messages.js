@@ -33,6 +33,10 @@ async function initChatMessages(convId, partner) {
   _partner = partner;
   applyDnaTheme(partner?.dna_type);
   _myId = window.getCurrentUser()?.id;
+  if (!_myId) {
+    await new Promise(r => setTimeout(r, 500));
+    _myId = window.getCurrentUser()?.id;
+  }
   _replyTo = null;
   _msgMap = {};
   _atBottom = true;
@@ -114,7 +118,9 @@ async function loadMessages() {
 async function chatSend() {
   const input = document.getElementById('chatInput');
   const text = input?.value.trim();
-  if (!text || !_convId || !_myId) return;
+  if (!text || !_convId) return;
+  if (!_myId) _myId = window.getCurrentUser()?.id;
+  if (!_myId) return;
   const box = document.getElementById('chatMessages');
   input.value = '';
   chatToggleSend();
