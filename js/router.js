@@ -170,6 +170,7 @@ function handleExistingTemplate(id) {
   if (id === 'scrStoryCreate' && window.initStoryCreate) window.initStoryCreate();
   if (id === 'scrProfile' && window.initProfile) window.initProfile();
   if (id === 'scrChatList' && window.initChatList) window.initChatList();
+  if (id === 'scrChat' && window.initChat) window.initChat();
 }
 
 function initScreenModule(id) {
@@ -264,6 +265,7 @@ async function goTo(id, params) {
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   if (window.webinarsCleanup && id !== 'scrWebinarDetail') webinarsCleanup();
   if (window.destroyDealScreen && id !== 'scrDealScreen') destroyDealScreen();
+  if (typeof destroyChat === 'function' && id !== 'scrChat') destroyChat();
   if (window.destroyChatList && id !== 'scrChatList') destroyChatList();
   await ensureTemplate(id);
 
