@@ -107,6 +107,13 @@
   user-select: none;
 }
 .cl-item:active { background: rgba(255,255,255,0.025); }
+.cl-inner {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex: 1;
+  min-width: 0;
+}
 .cl-item + .cl-item::before {
   content: '';
   position: absolute;
