@@ -47,7 +47,7 @@ async function loadMessages() {
         .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
         .eq('conversation_id', _convId)
         .eq('is_deleted', false)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
         .limit(50),
       window.sb
         .from('conversation_members')
@@ -65,7 +65,7 @@ async function loadMessages() {
     let lastDate = null;
     let lastSender = null;
     let dividerInserted = false;
-    (msgRes.data || []).forEach((msg) => {
+    (msgRes.data || []).reverse().forEach((msg) => {
       _msgMap[msg.id] = msg;
       if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
         box.appendChild(window.buildUnreadDivider());
