@@ -1,0 +1,58 @@
+<!-- =============== SCREEN: DEAL (active deal) =============== -->
+<div class="scr hidden" id="scrDealScreen">
+  <!-- Header -->
+  <div class="hd">
+    <button class="icon-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="hd-title">Сделка</div>
+    <button class="icon-btn" onclick="dealScreenMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </button>
+  </div>
+
+  <div class="deal-body" id="dealBody">
+    <!-- Hero: title, amount, status -->
+    <div class="deal-hero" id="dealHero"></div>
+
+    <!-- Progress bar + milestone dots -->
+    <div class="deal-prog" id="dealProg"></div>
+
+    <!-- Escrow cards -->
+    <div class="esc-cards" id="dealEscCards"></div>
+
+    <!-- Countdown timer (auto-accept) -->
+    <div class="deal-timer hidden" id="dealTimer">
+      <div class="deal-timer-label">Авто-принятие через</div>
+      <div class="deal-timer-value" id="dealTimerValue">--:--:--</div>
+    </div>
+
+    <!-- Parties -->
+    <div class="deal-parties" id="dealParties"></div>
+
+    <!-- Revisions -->
+    <div class="rev-card hidden" id="dealRevisions"></div>
+
+    <!-- Timeline -->
+    <div class="tl-card" id="dealTimeline">
+      <div class="tl-card-title">История</div>
+      <div id="dealTimelineList"></div>
+    </div>
+
+    <!-- Actions (role-dependent) -->
+    <div class="act-row" id="dealActions"></div>
+  </div>
+
+  <!-- Payout Modal -->
+  <div class="payout-overlay" id="payoutModal">
+    <div class="payout-modal">
+      <div class="payout-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="payout-title">Сделка завершена!</div>
+      <div class="payout-amount" id="payoutAmount"></div>
+      <div class="payout-detail" id="payoutDetail"></div>
+      <button class="payout-close" onclick="closePayoutModal()">Отлично</button>
+    </div>
+  </div>
+</div>
