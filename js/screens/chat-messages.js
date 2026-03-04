@@ -124,7 +124,14 @@ function buildBubble(msg, isGrp) {
   if (!isOut) {
     const av = document.createElement('div');
     av.className = 'msg-av-w';
-    av.textContent = (msg.sender?.name || 'П')[0].toUpperCase();
+    if (msg.sender?.avatar_url) {
+      const img = document.createElement('img');
+      img.src = msg.sender.avatar_url;
+      img.alt = (msg.sender?.name || 'П')[0].toUpperCase();
+      av.appendChild(img);
+    } else {
+      av.textContent = (msg.sender?.name || 'П')[0].toUpperCase();
+    }
     wrapper.appendChild(av);
   }
   const bbl = document.createElement('div');
