@@ -265,6 +265,8 @@ function createArcPath(cx, cy, r, startDeg, endDeg) {
 }
 
 function getDnaSegments(dnaType) {
+  const typeMap = { S: 'strategist', C: 'communicator', K: 'creator', A: 'analyst' };
+  const type = typeMap[dnaType] || dnaType;
   const GAP = 8;
   const patterns = {
     strategist: [82, 82, 82, 82],
@@ -272,7 +274,7 @@ function getDnaSegments(dnaType) {
     creator: [70, 45, 60, 35, 50],
     analyst: [52, 52, 52, 52, 52, 52]
   };
-  const arcs = patterns[dnaType];
+  const arcs = patterns[type];
   if (!arcs) return [[0, 355]];
   const segments = [];
   let cursor = 0;
@@ -288,8 +290,12 @@ function buildDnaRing(dnaType, size) {
   const cx = full / 2;
   const cy = full / 2;
   const r = size / 2 - 1;
-  const dnaClrs = window.DNA_COLORS || {};
-  const color = dnaClrs[dnaType] || '#94a3b8';
+  const DNA_MAP = {
+    strategist: '#3b82f6', communicator: '#22c55e',
+    creator: '#f59e0b', analyst: '#a78bfa',
+    S: '#3b82f6', C: '#22c55e', K: '#f59e0b', A: '#a78bfa'
+  };
+  const color = DNA_MAP[dnaType] || '#94a3b8';
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
