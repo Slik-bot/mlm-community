@@ -37,7 +37,7 @@ function initChatList() {
 
   loadClData(user.id).then(function(convs) {
     _clData = convs;
-    renderClList(convs, _clTab, '');
+    window.renderClList?.(convs, _clTab, '');
   });
 }
 
@@ -135,7 +135,7 @@ function updateClCard(convId, msg) {
     loadClData(user.id).then(function(convs) {
       _clData = convs;
       var q = document.getElementById('clSearch');
-      renderClList(convs, _clTab, q ? q.value.trim() : '');
+      window.renderClList?.(convs, _clTab, q ? q.value.trim() : '');
     });
     return;
   }
@@ -181,7 +181,7 @@ function clBindTabs() {
       tabs.forEach(function(b) { b.classList.remove('active'); });
       t.classList.add('active');
       const q = document.getElementById('clSearch');
-      renderClList(_clData, _clTab, q ? q.value.trim() : '');
+      window.renderClList?.(_clData, _clTab, q ? q.value.trim() : '');
     };
   });
 }
@@ -195,7 +195,7 @@ function clBindSearch() {
   inp.addEventListener('input', function() {
     clearTimeout(_clDebounce);
     _clDebounce = setTimeout(function() {
-      renderClList(_clData, _clTab, inp.value.trim());
+      window.renderClList?.(_clData, _clTab, inp.value.trim());
     }, 300);
   });
 }
