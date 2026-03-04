@@ -118,7 +118,6 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,7 +127,8 @@
   flex-shrink: 0;
   position: relative;
   background: rgba(255,255,255,0.06);
-  transition: border-color 200ms;
+  border: none !important;
+  box-shadow: none !important;
 }
 .cl-ava img {
   width: 100%;
@@ -136,25 +136,87 @@
   border-radius: 50%;
   object-fit: cover;
 }
-.cl-ava.dna-s {
-  border-color: #3b82f6;
-  box-shadow: 0 0 14px rgba(59,130,246,0.3);
-  background: linear-gradient(135deg,rgba(59,130,246,.13),rgba(29,78,216,.09));
+.cl-ava::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  animation: dna-rotate 8s linear infinite;
+  will-change: transform;
+  -webkit-mask:
+    radial-gradient(farthest-side, transparent 76%, white 77%);
+  mask:
+    radial-gradient(farthest-side, transparent 76%, white 77%);
 }
-.cl-ava.dna-c {
-  border-color: #22c55e;
-  box-shadow: 0 0 14px rgba(34,197,94,0.3);
-  background: linear-gradient(135deg,rgba(34,197,94,.13),rgba(16,185,129,.09));
+
+/* Стратег — 4 равных длинных сегмента */
+.cl-ava.dna-s::before {
+  background: conic-gradient(
+    #3b82f6 0deg, #3b82f6 60deg, transparent 60deg,
+    transparent 90deg,
+    #3b82f6 90deg, #3b82f6 150deg, transparent 150deg,
+    transparent 180deg,
+    #3b82f6 180deg, #3b82f6 240deg, transparent 240deg,
+    transparent 270deg,
+    #3b82f6 270deg, #3b82f6 330deg, transparent 330deg,
+    transparent 360deg
+  );
 }
-.cl-ava.dna-r {
-  border-color: #f59e0b;
-  box-shadow: 0 0 14px rgba(245,158,11,0.3);
-  background: linear-gradient(135deg,rgba(245,158,11,.13),rgba(217,119,6,.09));
+
+/* Коммуникатор — 8 частых коротких сегментов */
+.cl-ava.dna-c::before {
+  background: conic-gradient(
+    #22c55e 0deg, #22c55e 25deg, transparent 25deg,
+    transparent 45deg,
+    #22c55e 45deg, #22c55e 70deg, transparent 70deg,
+    transparent 90deg,
+    #22c55e 90deg, #22c55e 115deg, transparent 115deg,
+    transparent 135deg,
+    #22c55e 135deg, #22c55e 160deg, transparent 160deg,
+    transparent 180deg,
+    #22c55e 180deg, #22c55e 205deg, transparent 205deg,
+    transparent 225deg,
+    #22c55e 225deg, #22c55e 250deg, transparent 250deg,
+    transparent 270deg,
+    #22c55e 270deg, #22c55e 295deg, transparent 295deg,
+    transparent 315deg,
+    #22c55e 315deg, #22c55e 340deg, transparent 340deg,
+    transparent 360deg
+  );
 }
-.cl-ava.dna-a {
-  border-color: #a78bfa;
-  box-shadow: 0 0 14px rgba(167,139,250,0.3);
-  background: linear-gradient(135deg,rgba(167,139,250,.13),rgba(124,58,237,.09));
+
+/* Креатор — 5 неравных сегментов */
+.cl-ava.dna-r::before {
+  background: conic-gradient(
+    #f59e0b 0deg, #f59e0b 40deg, transparent 40deg,
+    transparent 72deg,
+    #f59e0b 72deg, #f59e0b 100deg, transparent 100deg,
+    transparent 144deg,
+    #f59e0b 144deg, #f59e0b 190deg, transparent 190deg,
+    transparent 216deg,
+    #f59e0b 216deg, #f59e0b 250deg, transparent 250deg,
+    transparent 288deg,
+    #f59e0b 288deg, #f59e0b 320deg, transparent 320deg,
+    transparent 360deg
+  );
+}
+
+/* Аналитик — 6 точных равномерных сегментов */
+.cl-ava.dna-a::before {
+  background: conic-gradient(
+    #a78bfa 0deg, #a78bfa 40deg, transparent 40deg,
+    transparent 60deg,
+    #a78bfa 60deg, #a78bfa 100deg, transparent 100deg,
+    transparent 120deg,
+    #a78bfa 120deg, #a78bfa 160deg, transparent 160deg,
+    transparent 180deg,
+    #a78bfa 180deg, #a78bfa 220deg, transparent 220deg,
+    transparent 240deg,
+    #a78bfa 240deg, #a78bfa 280deg, transparent 280deg,
+    transparent 300deg,
+    #a78bfa 300deg, #a78bfa 340deg, transparent 340deg,
+    transparent 360deg
+  );
 }
 .cl-online {
   position: absolute;
