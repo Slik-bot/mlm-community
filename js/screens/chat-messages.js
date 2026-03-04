@@ -116,7 +116,7 @@ function buildBubble(msg, isGrp) {
   const meta = buildMeta(msg, isOut);
   bbl.appendChild(meta);
   wrapper.appendChild(bbl);
-  bindBubbleEvents(wrapper, bbl, msg, isOut);
+  window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   return wrapper;
 }
 
@@ -142,28 +142,6 @@ function buildMeta(msg, isOut) {
   return meta;
 }
 
-// ── События пузыря ─────────────────────
-
-function bindBubbleEvents(wrapper, bbl, msg, isOut) {
-  let pressTimer = null;
-  const onLongPress = () => showCtxMenu(msg, isOut);
-  bbl.addEventListener('touchstart', () => {
-    pressTimer = setTimeout(onLongPress, 420);
-  }, { passive: true });
-  bbl.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
-  bbl.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
-  bbl.addEventListener('mousedown', () => { pressTimer = setTimeout(onLongPress, 420); });
-  bbl.addEventListener('mouseup', () => clearTimeout(pressTimer));
-  let swipeStartX = 0;
-  wrapper.addEventListener('touchstart', e => {
-    swipeStartX = e.touches[0].clientX;
-  }, { passive: true });
-  wrapper.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - swipeStartX;
-    if (dx > 60) startReply(msg);
-  }, { passive: true });
-}
-
 // ── Отправка ───────────────────────────
 
 async function chatSend() {
@@ -184,7 +162,7 @@ async function chatSend() {
   };
   if (_replyTo) {
     payload.reply_to_id = _replyTo.id;
-    cancelReply();
+    window.cancelReply();
   }
   try {
     const { data, error } = await window.sb
@@ -239,56 +217,6 @@ function subscribeChatRealtime() {
         setTimeout(() => { if (_convId) subscribeChatRealtime(); }, 3000);
       }
     });
-}
-
-// ── Reply ──────────────────────────────
-
-function startReply(msg) {
-  _replyTo = msg;
-  const bar = document.getElementById('chatReplyBar');
-  const txt = document.getElementById('chatReplyText');
-  if (bar && txt) {
-    txt.textContent = msg.content?.slice(0, 60) || '';
-    bar.classList.remove('hidden');
-    document.getElementById('chatInput')?.focus();
-  }
-}
-
-function cancelReply() {
-  _replyTo = null;
-  document.getElementById('chatReplyBar')?.classList.add('hidden');
-}
-
-// ── Контекстное меню ───────────────────
-
-function showCtxMenu(msg, isOut) {
-  const ctx = document.getElementById('chatCtx');
-  if (!ctx) return;
-  document.getElementById('ctxReply')?.addEventListener('click', () => {
-    startReply(msg); hideCtxMenu();
-  }, { once: true });
-  document.getElementById('ctxCopy')?.addEventListener('click', () => {
-    navigator.clipboard?.writeText(msg.content || '');
-    window.showToast?.('Скопировано'); hideCtxMenu();
-  }, { once: true });
-  document.getElementById('ctxDelete')?.addEventListener('click', () => {
-    if (isOut) deleteMessage(msg.id);
-    hideCtxMenu();
-  }, { once: true });
-  document.getElementById('ctxForward')?.addEventListener('click', () => {
-    window.showToast?.('Скоро: пересылка'); hideCtxMenu();
-  }, { once: true });
-  document.querySelectorAll('.ctx-rx').forEach(btn => {
-    btn.addEventListener('click', () => {
-      window.showToast?.('Реакция: ' + btn.dataset.emoji);
-      hideCtxMenu();
-    }, { once: true });
-  });
-  ctx.classList.add('on');
-}
-
-function hideCtxMenu() {
-  document.getElementById('chatCtx')?.classList.remove('on');
 }
 
 // ── Удаление ───────────────────────────
@@ -365,7 +293,7 @@ function bindChatInput() {
   if (btn) btn.classList.remove('visible');
   const input = document.getElementById('chatInput');
   if (input) { input.value = ''; chatInputResize(input); }
-  cancelReply();
+  window.cancelReply();
   bindTgViewport();
 }
 
@@ -474,6 +402,11 @@ function destroyChat() {
   _msgMap = {};
 }
 
+// ── Доступ к _replyTo для chat-gestures ─
+
+window.getChatReplyTo = () => _replyTo;
+window.setChatReplyTo = (v) => { _replyTo = v; };
+
 // ── Экспорты ───────────────────────────
 
 window.initChatMessages = initChatMessages;
@@ -485,8 +418,7 @@ window.chatTransfer = chatTransfer;
 window.hideTfModal = hideTfModal;
 window.calcTf = calcTf;
 window.sendTf = sendTf;
-window.cancelReply = cancelReply;
-window.hideCtxMenu = hideCtxMenu;
+window.deleteMessage = deleteMessage;
 window.scrollToBottom = scrollToBottom;
 window.showTyping = showTyping;
 window.hideTyping = hideTyping;

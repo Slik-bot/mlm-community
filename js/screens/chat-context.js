@@ -51,7 +51,7 @@ function showMsgContextMenu(msg, isOwn, touch) {
 
   // Action rows
   const actions = [
-    { label: 'Ответить', icon: 'M3 10h10a8 8 0 018 8v2M3 10l6 6M3 10l6-6', fn: function() { startReply(msg); } },
+    { label: 'Ответить', icon: 'M3 10h10a8 8 0 018 8v2M3 10l6 6M3 10l6-6', fn: function() { window.startReply(msg); } },
     { label: 'Копировать', icon: 'M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2v-2M16 4h2a2 2 0 012 2v6M8 4a2 2 0 012-2h4a2 2 0 012 2v0M8 4v0', fn: function() {
       navigator.clipboard.writeText(msg.content || '');
       window.showToast('Скопировано');
@@ -64,7 +64,7 @@ function showMsgContextMenu(msg, isOwn, touch) {
   if (isOwn) {
     actions.push({
       label: 'Удалить', icon: 'M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2',
-      fn: function() { deleteMessage(msg.id); }, danger: true
+      fn: function() { window.deleteMessage(msg.id); }, danger: true
     });
   }
 
@@ -106,51 +106,8 @@ function closeMsgContextMenu() {
   setTimeout(function() { ov.remove(); }, 230);
 }
 
-// ===== Delete message =====
-async function deleteMessage(msgId) {
-  try {
-    const user = window.getCurrentUser();
-    if (!user) return;
-    const { error, count } = await window.sb
-      .from('messages')
-      .delete({ count: 'exact' })
-      .eq('id', msgId)
-      .eq('sender_id', user.id);
-    if (error) throw error;
-    if (count === 0) {
-      window.showToast('Нет прав на удаление');
-      return;
-    }
-    const el = document.querySelector('[data-msg-id="' + msgId + '"]');
-    if (el) {
-      el.style.transition = 'opacity 180ms, transform 180ms';
-      el.style.opacity = '0';
-      el.style.transform = 'scale(0.92)';
-      setTimeout(function() { el.remove(); }, 200);
-    }
-  } catch (err) {
-    console.error('deleteMessage:', err);
-    window.showToast('Не удалось удалить');
-  }
-}
+// ── Экспорты ───────────────────────────
 
-// ===== Reply =====
-function startReply(msg) {
-  window.chatReplyTo = msg;
-  const preview = document.getElementById('chatReplyPreview');
-  const text = document.getElementById('chatReplyText');
-  if (preview && text) {
-    text.textContent = msg.content || '';
-    preview.classList.add('visible');
-    const inp = document.getElementById('chatInput');
-    if (inp) inp.focus();
-  }
-}
-
-function cancelReply() {
-  window.chatReplyTo = null;
-  const preview = document.getElementById('chatReplyPreview');
-  if (preview) preview.classList.remove('visible');
-}
-
-// Функции перенесены в chat-messages.js
+window.initMessageLongPress = initMessageLongPress;
+window.showMsgContextMenu = showMsgContextMenu;
+window.closeMsgContextMenu = closeMsgContextMenu;
