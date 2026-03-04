@@ -142,10 +142,10 @@
   border-radius: 50%;
   object-fit: cover;
 }
-.cl-ava.dna-s { border-color: #3b82f6; }
-.cl-ava.dna-c { border-color: #22c55e; }
-.cl-ava.dna-r { border-color: #f59e0b; }
-.cl-ava.dna-a { border-color: #a78bfa; }
+.cl-ava.dna-s,
+.cl-ava.dna-c,
+.cl-ava.dna-r,
+.cl-ava.dna-a { border-color: transparent; }
 .cl-online {
   position: absolute;
   bottom: 1px; right: 1px;
@@ -313,4 +313,23 @@
   font-size: 13px;
   color: rgba(241,241,245,0.22);
   text-align: center;
+}
+
+/* ═══ DNA Ring — SVG спираль ═══ */
+
+.dna-ring {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 56px;
+  height: 56px;
+  pointer-events: none;
+}
+@keyframes dnaRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.dna-ring--animated {
+  animation: dnaRotate 8s linear infinite;
+  transform-origin: center;
 }

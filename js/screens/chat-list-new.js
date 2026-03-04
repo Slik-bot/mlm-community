@@ -184,10 +184,6 @@ function buildClItem(conv) {
   const dnaClass = CL_DNA_CLASS[o.dna_type] || '';
   const ava = document.createElement('div');
   ava.className = 'cl-ava' + (dnaClass ? ' ' + dnaClass : '');
-  if (dnaClass && window.buildDnaRing) {
-    ava.insertAdjacentHTML('beforeend',
-      window.buildDnaRing(o.dna_type, 54));
-  }
   if (o.avatar_url) {
     const img = document.createElement('img');
     img.src = o.avatar_url;
@@ -196,6 +192,7 @@ function buildClItem(conv) {
   } else {
     ava.textContent = (o.name || 'U').charAt(0).toUpperCase();
   }
+  ava.appendChild(buildDnaRing(o.dna_type, 48));
 
   const body = document.createElement('div');
   body.className = 'cl-body';
@@ -429,7 +426,36 @@ function destroyChatList() {
   _clSwipeOpen = null;
 }
 
+// ═══ DNA Ring ═══
+
+function buildDnaRing(dnaType, size) {
+  const DNA_RING = {
+    strategist:   { color: '#3b82f6', dash: '18 8 18 8 18 8 18 8' },
+    communicator: { color: '#22c55e', dash: '8 6 8 6 8 6 8 6 8 6 8 6 8 6 8 6' },
+    creator:      { color: '#f59e0b', dash: '20 6 12 6 8 6 16 6 10 6' },
+    analyst:      { color: '#a78bfa', dash: '14 7 14 7 14 7 14 7 14 7 14 7' }
+  };
+  const cfg = DNA_RING[dnaType] || { color: '#94a3b8', dash: '' };
+  const full = size + 8;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
+  svg.setAttribute('class', 'dna-ring dna-ring--' + (dnaType || 'unknown') + ' dna-ring--animated');
+  const circle = document.createElementNS(ns, 'circle');
+  circle.setAttribute('cx', full / 2);
+  circle.setAttribute('cy', full / 2);
+  circle.setAttribute('r', size / 2);
+  circle.setAttribute('fill', 'none');
+  circle.setAttribute('stroke', cfg.color);
+  circle.setAttribute('stroke-width', '2');
+  if (cfg.dash) circle.setAttribute('stroke-dasharray', cfg.dash);
+  circle.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(circle);
+  return svg;
+}
+
 // ═══ Exports ═══
 
 window.initChatList = initChatList;
 window.destroyChatList = destroyChatList;
+window.buildDnaRing = buildDnaRing;
