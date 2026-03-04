@@ -106,8 +106,50 @@ function closeMsgContextMenu() {
   setTimeout(function() { ov.remove(); }, 230);
 }
 
+// ── ДНК-рамка SVG ─────────────────────
+
+const CHAT_DNA_SEGS = {
+  s: [[0,60],[90,150],[180,240],[270,330]],
+  c: [[0,25],[45,70],[90,115],[135,160],
+      [180,205],[225,250],[270,295],[315,340]],
+  r: [[0,40],[72,100],[144,190],[216,250],[288,320]],
+  a: [[0,40],[60,100],[120,160],[180,220],
+      [240,280],[300,340]]
+};
+const CHAT_DNA_CLR = {
+  s:'#3b82f6', c:'#22c55e', r:'#f59e0b', a:'#a78bfa'
+};
+
+function buildDnaRing(dnaType, size) {
+  const t = dnaType ? dnaType.charAt(0).toLowerCase() : 's';
+  const color = CHAT_DNA_CLR[t] || CHAT_DNA_CLR.s;
+  const segs = CHAT_DNA_SEGS[t] || CHAT_DNA_SEGS.s;
+  const sz = size || 54;
+  const cx = sz / 2, cy = sz / 2, r = cx - 3;
+  const arcs = segs.map(function(seg) {
+    const s = (seg[0] - 90) * Math.PI / 180;
+    const e = (seg[1] - 90) * Math.PI / 180;
+    const x1 = (cx + r * Math.cos(s)).toFixed(2);
+    const y1 = (cy + r * Math.sin(s)).toFixed(2);
+    const x2 = (cx + r * Math.cos(e)).toFixed(2);
+    const y2 = (cy + r * Math.sin(e)).toFixed(2);
+    const lg = (seg[1] - seg[0]) > 180 ? 1 : 0;
+    return '<path d="M' + x1 + ',' + y1 +
+      'A' + r + ',' + r + ' 0 ' + lg + ',1 ' +
+      x2 + ',' + y2 + '"' +
+      ' stroke="' + color + '" stroke-width="2.5"' +
+      ' fill="none" stroke-linecap="round"/>';
+  }).join('');
+  return '<svg class="dna-ring" width="' + sz + '" height="' + sz +
+    '" viewBox="0 0 ' + sz + ' ' + sz + '"' +
+    ' style="position:absolute;inset:-3px;pointer-events:none;' +
+    'animation:dna-rotate 8s linear infinite">' +
+    arcs + '</svg>';
+}
+
 // ── Экспорты ───────────────────────────
 
 window.initMessageLongPress = initMessageLongPress;
 window.showMsgContextMenu = showMsgContextMenu;
 window.closeMsgContextMenu = closeMsgContextMenu;
+window.buildDnaRing = buildDnaRing;
