@@ -10,11 +10,27 @@ let _msgMap = {};
 let _atBottom = true;
 let _unreadCount = 0;
 
+// ── ДНК-тема диалога ─────────────────────
+
+function applyDnaTheme(dnaType) {
+  const DNA_THEME = {
+    strategist: '#3b82f6', S: '#3b82f6',
+    communicator: '#22c55e', C: '#22c55e',
+    creator: '#f59e0b', K: '#f59e0b',
+    analyst: '#a78bfa', A: '#a78bfa'
+  };
+  const color = DNA_THEME[dnaType] || '#8b5cf6';
+  const wrap = document.getElementById('scrChat');
+  if (!wrap) return;
+  wrap.style.setProperty('--dna-color', color);
+}
+
 // ── Инициализация ──────────────────────
 
 async function initChatMessages(convId, partner) {
   _convId = convId;
   _partner = partner;
+  applyDnaTheme(partner?.dna_type);
   _myId = window.getCurrentUser()?.id;
   _replyTo = null;
   _msgMap = {};
@@ -339,6 +355,8 @@ async function markAsRead() {
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
+  const wrap = document.getElementById('scrChat');
+  if (wrap) wrap.style.removeProperty('--dna-color');
   window.unsubscribeRealtime();
   _convId = null;
   _myId = null;
