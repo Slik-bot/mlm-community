@@ -572,3 +572,29 @@
   0%, 100% { opacity: 0.8; }
   50%       { opacity: 1; }
 }
+
+/* ── Статусы сообщений ── */
+.msg-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: middle;
+  transition: transform 300ms ease;
+}
+
+.msg-status__spinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-top-color: #8b5cf6;
+  border-radius: 50%;
+  animation: msgSpin 600ms linear infinite;
+}
+
+@keyframes msgSpin {
+  to { transform: rotate(360deg); }
+}
+
+.msg-status--read svg path {
+  stroke: #8b5cf6;
+}

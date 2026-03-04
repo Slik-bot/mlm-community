@@ -74,6 +74,22 @@ function buildBubble(msg, isGrp) {
   return wrapper;
 }
 
+// ── SVG галочек ──────────────────────────
+
+function buildTicksSVG(type) {
+  const color = type === 'read' ? '#8b5cf6' : '#94a3b8';
+  if (type === 'sent') {
+    return '<svg width="12" height="8" viewBox="0 0 12 8">' +
+      '<path d="M1 4 L4 7 L11 1" stroke="' + color +
+      '" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  }
+  return '<svg width="16" height="8" viewBox="0 0 16 8">' +
+    '<path d="M1 4 L4 7 L11 1" stroke="' + color +
+    '" stroke-width="1.5" fill="none" stroke-linecap="round"/>' +
+    '<path d="M5 4 L8 7 L15 1" stroke="' + color +
+    '" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+}
+
 // ── Мета сообщения ─────────────────────
 
 function buildMeta(msg, isOut) {
@@ -83,26 +99,58 @@ function buildMeta(msg, isOut) {
   t.className = 'bbl-t';
   t.textContent = formatMsgTime(msg.created_at);
   meta.appendChild(t);
-  if (isOut) {
-    const chk = document.createElement('span');
-    chk.className = 'chk chk-sent';
-    chk.innerHTML = '<svg width="10" height="8" fill="none" viewBox="0 0 10 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    meta.appendChild(chk);
-  }
+  const status = buildMsgStatus(msg, isOut);
+  if (status) meta.appendChild(status);
   return meta;
 }
 
-// ── Галочки прочтения ───────────────────
+// ── Статус сообщения ─────────────────────
+
+function buildMsgStatus(msg, isMine) {
+  if (!isMine) return null;
+  const wrap = document.createElement('span');
+  wrap.className = 'msg-status';
+  wrap.dataset.msgId = msg.id;
+  if (msg._temp) {
+    const spinner = document.createElement('span');
+    spinner.className = 'msg-status__spinner';
+    wrap.appendChild(spinner);
+    return wrap;
+  }
+  if (msg.is_read) {
+    wrap.classList.add('msg-status--read');
+    wrap.innerHTML = buildTicksSVG('read');
+  } else if (msg.delivered_at) {
+    wrap.classList.add('msg-status--delivered');
+    wrap.innerHTML = buildTicksSVG('delivered');
+  } else {
+    wrap.classList.add('msg-status--sent');
+    wrap.innerHTML = buildTicksSVG('sent');
+  }
+  return wrap;
+}
+
+// ── Обновление статуса ───────────────────
+
+function updateMsgStatus(msgId, status) {
+  const el = document.querySelector('.msg-status[data-msg-id="' + msgId + '"]');
+  if (!el) return;
+  el.className = 'msg-status msg-status--' + status;
+  el.innerHTML = buildTicksSVG(status);
+  if (status === 'read') {
+    el.style.transform = 'scale(1.2)';
+    setTimeout(() => { el.style.transform = ''; }, 300);
+  }
+}
+
+// ── Галочки прочтения (bulk) ─────────────
 
 function markOutgoingAsRead() {
   const box = document.getElementById('chatMessages');
   if (!box) return;
-  const SVG_READ = '<svg width="15" height="8" fill="none" viewBox="0 0 15 8"><path d="M1 4l2.5 2.5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 4l2.5 2.5L14 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  box.querySelectorAll('.msg-out:not(.msg-sending) .chk').forEach(chk => {
-    if (!chk.classList.contains('chk-read')) {
-      chk.className = 'chk chk-read';
-      chk.innerHTML = SVG_READ;
-    }
+  box.querySelectorAll('.msg-out .msg-status:not(.msg-status--read)').forEach(el => {
+    el.className = 'msg-status msg-status--read';
+    el.innerHTML = buildTicksSVG('read');
   });
 }
 
@@ -146,6 +194,9 @@ function formatMsgTime(dateStr) {
 window.renderChatHead = renderChatHead;
 window.buildBubble = buildBubble;
 window.buildMeta = buildMeta;
+window.buildTicksSVG = buildTicksSVG;
+window.buildMsgStatus = buildMsgStatus;
+window.updateMsgStatus = updateMsgStatus;
 window.markOutgoingAsRead = markOutgoingAsRead;
 window.buildDateDivider = buildDateDivider;
 window.buildUnreadDivider = buildUnreadDivider;
