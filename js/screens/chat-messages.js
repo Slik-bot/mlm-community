@@ -148,38 +148,72 @@ async function chatSend() {
   const input = document.getElementById('chatInput');
   const text = input?.value.trim();
   if (!text || !_convId || !_myId) return;
-  if (window.Telegram?.WebApp?.HapticFeedback) {
-    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-  }
+  const box = document.getElementById('chatMessages');
   input.value = '';
   chatToggleSend();
   chatInputResize(input);
+  const replyRef = _replyTo;
+  if (_replyTo) window.cancelReply();
+
+  // Optimistic: мгновенный пузырь
+  const tempId = 'temp_' + Date.now();
+  const user = window.getCurrentUser() || {};
+  const tempMsg = {
+    id: tempId,
+    content: text,
+    sender_id: _myId,
+    sender: { id: _myId, name: user.name || '' },
+    created_at: new Date().toISOString(),
+    reply_to: replyRef ? { id: replyRef.id, content: replyRef.content } : null
+  };
+  const el = buildBubble(tempMsg, false);
+  el.dataset.tempId = tempId;
+  el.classList.add('msg-new', 'msg-sending');
+  box?.appendChild(el);
+  scrollToBottom();
+
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  }
+
+  // Фоновая отправка
   const payload = {
     conversation_id: _convId,
     sender_id: _myId,
     content: text,
     type: 'text'
   };
-  if (_replyTo) {
-    payload.reply_to_id = _replyTo.id;
-    window.cancelReply();
-  }
+  if (replyRef) payload.reply_to_id = replyRef.id;
+
   try {
     const { data, error } = await window.sb
-      .from('messages').insert(payload).select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)').single();
+      .from('messages').insert(payload)
+      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+      .single();
     if (error) throw error;
     _msgMap[data.id] = data;
-    const box = document.getElementById('chatMessages');
-    const el = buildBubble(data, false);
-    el.classList.add('msg-new');
-    box?.appendChild(el);
-    scrollToBottom();
+    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
+    if (tmp) {
+      tmp.dataset.msgId = data.id;
+      tmp.dataset.tempId = '';
+      tmp.classList.remove('msg-sending');
+    }
     await window.sb.from('conversations')
       .update({ last_message_at: new Date().toISOString() })
       .eq('id', _convId);
   } catch (err) {
     console.error('chatSend:', err);
-    window.showToast?.('Ошибка отправки');
+    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
+    if (tmp) {
+      tmp.classList.remove('msg-sending');
+      tmp.classList.add('msg-error');
+      tmp.addEventListener('click', () => {
+        tmp.remove();
+        const inp = document.getElementById('chatInput');
+        if (inp) { inp.value = text; chatToggleSend(); }
+        window.showToast?.('Текст возвращён — отправьте снова');
+      }, { once: true });
+    }
   }
 }
 
