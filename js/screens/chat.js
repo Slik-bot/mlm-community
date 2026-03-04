@@ -5,8 +5,59 @@
 let _pendingConvId = null;
 let _pendingPartner = null;
 
+async function findOrCreateConversation(partnerId) {
+  if (!partnerId) return null;
+  const myId = window.getCurrentUser()?.id;
+  if (!myId) return null;
+  try {
+    const { data: myConvs } = await window.sb
+      .from('conversation_members')
+      .select('conversation_id')
+      .eq('user_id', myId);
+    if (myConvs?.length) {
+      const myIds = myConvs.map(r => r.conversation_id);
+      const { data: shared } = await window.sb
+        .from('conversation_members')
+        .select('conversation_id')
+        .eq('user_id', partnerId)
+        .in('conversation_id', myIds);
+      if (shared?.length) {
+        const { data: conv } = await window.sb
+          .from('conversations')
+          .select('id')
+          .eq('id', shared[0].conversation_id)
+          .eq('type', 'personal')
+          .single();
+        if (conv) return conv.id;
+      }
+    }
+    const { data: newConv } = await window.sb
+      .from('conversations')
+      .insert({ type: 'personal', created_by: myId })
+      .select('id')
+      .single();
+    if (!newConv) return null;
+    await window.sb
+      .from('conversation_members')
+      .insert([
+        { conversation_id: newConv.id, user_id: myId },
+        { conversation_id: newConv.id, user_id: partnerId }
+      ]);
+    return newConv.id;
+  } catch (err) {
+    console.error('findOrCreateConversation:', err);
+    return null;
+  }
+}
+
 async function openChat(convId, partner) {
-  if (!convId) return;
+  if (!convId && partner?.id) {
+    convId = await findOrCreateConversation(partner.id);
+  }
+  if (!convId) {
+    window.showToast?.('Не удалось открыть чат');
+    return;
+  }
   _pendingConvId = convId;
   _pendingPartner = partner || null;
   window.goTo('scrChat');
@@ -53,6 +104,7 @@ function chatAttachFile() {
   window.showToast?.('Скоро: прикрепить файл');
 }
 
+window.findOrCreateConversation = findOrCreateConversation;
 window.openChat = openChat;
 window.initChat = initChat;
 window.chatShowMenu = chatShowMenu;
