@@ -348,13 +348,20 @@ function subscribeStatusUpdates(convId, myId) {
     .channel('msg-status:' + convId)
     .on('postgres_changes', {
       event: 'UPDATE', schema: 'public',
-      table: 'messages',
+      table: 'conversation_members',
       filter: 'conversation_id=eq.' + convId
     }, (payload) => {
-      const msg = payload.new;
-      if (msg.sender_id !== myId) return;
-      if (msg.is_read) window.updateMsgStatus?.(msg.id, 'read');
-      else if (msg.delivered_at) window.updateMsgStatus?.(msg.id, 'delivered');
+      const upd = payload.new;
+      if (upd.user_id === myId) return;
+      const readTime = new Date(upd.last_read_at);
+      document.querySelectorAll('.msg-out .msg-status[data-msg-id]').forEach(el => {
+        if (el.classList.contains('msg-status--read')) return;
+        const bubble = el.closest('[data-created-at]');
+        if (!bubble) return;
+        if (new Date(bubble.dataset.createdAt) <= readTime) {
+          window.updateMsgStatus?.(el.dataset.msgId, 'read');
+        }
+      });
     })
     .subscribe();
 }
@@ -370,17 +377,10 @@ async function markAsRead() {
     setTimeout(() => div.remove(), 400);
   }
   try {
-    await Promise.all([
-      window.sb.from('conversation_members')
-        .update({ last_read_at: new Date().toISOString() })
-        .eq('conversation_id', _convId)
-        .eq('user_id', _myId),
-      window.sb.from('messages')
-        .update({ is_read: true, delivered_at: new Date().toISOString() })
-        .eq('conversation_id', _convId)
-        .neq('sender_id', _myId)
-        .eq('is_read', false)
-    ]);
+    await window.sb.from('conversation_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('conversation_id', _convId)
+      .eq('user_id', _myId);
   } catch (err) {
     console.error('markAsRead:', err);
   }
