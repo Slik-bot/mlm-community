@@ -50,6 +50,7 @@ async function initProfile() {
 
   const result = await loadProfile(profileUserId);
   if (!result.data) return;
+  window._profileUser = result.data;
   renderProfile(result.data);
 
   if (isOwn) {
