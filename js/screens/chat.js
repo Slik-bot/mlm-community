@@ -64,7 +64,11 @@ async function openChat(convId, partner) {
 }
 
 async function initChat() {
-  const convId = _pendingConvId;
+  let convId = _pendingConvId;
+  if (!convId) {
+    await new Promise(r => setTimeout(r, 300));
+    convId = _pendingConvId;
+  }
   if (!convId) return;
   const user = window.getCurrentUser();
   if (!user) return;
