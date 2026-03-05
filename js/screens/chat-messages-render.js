@@ -94,6 +94,37 @@ function buildBubble(msg, isGrp) {
   return wrapper;
 }
 
+// ── Таблетки реакций на пузыре ────────────
+
+window.addReactionToBubble = function(msgId, emoji, count) {
+  const bubble = document.querySelector('[data-msg-id="' + msgId + '"] .bbl');
+  if (!bubble) return;
+  let pill = bubble.querySelector('.bbl-rx[data-emoji="' + CSS.escape(emoji) + '"]');
+  if (pill) {
+    const cnt = pill.querySelector('.rx-cnt');
+    if (count !== null) cnt.textContent = count;
+    else cnt.textContent = parseInt(cnt.textContent || '0') + 1;
+  } else {
+    pill = document.createElement('div');
+    pill.className = 'bbl-rx';
+    pill.dataset.emoji = emoji;
+    const displayCount = count !== null ? count : 1;
+    pill.innerHTML = emoji + ' <span class="rx-cnt">' + displayCount + '</span>';
+    bubble.appendChild(pill);
+  }
+};
+
+window.removeReactionFromBubble = function(msgId, emoji, userId) {
+  const bubble = document.querySelector('[data-msg-id="' + msgId + '"] .bbl');
+  if (!bubble) return;
+  const pill = bubble.querySelector('.bbl-rx[data-emoji="' + emoji + '"]');
+  if (!pill) return;
+  const cnt = pill.querySelector('.rx-cnt');
+  const count = parseInt(cnt.textContent || '1') - 1;
+  if (count <= 0) pill.remove();
+  else cnt.textContent = count;
+};
+
 // ── SVG галочек ──────────────────────────
 
 function buildTicksSVG(type) {

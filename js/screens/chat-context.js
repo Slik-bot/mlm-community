@@ -25,6 +25,7 @@ function initMessageLongPress(el, msg, isOwn) {
 // ===== Show context menu =====
 function showMsgContextMenu(msg, isOwn, touch) {
   closeMsgContextMenu();
+  window._ctxMsgId = msg.id;
 
   const ov = document.createElement('div');
   ov.className = 'chat-ctx-overlay';
@@ -41,9 +42,28 @@ function showMsgContextMenu(msg, isOwn, touch) {
     const btn = document.createElement('button');
     btn.className = 'chat-ctx-rx';
     btn.textContent = em;
-    btn.onclick = function() {
+    btn.onclick = async function() {
       closeMsgContextMenu();
-      window.showToast('Реакция: ' + em);
+      const myId = window.getCurrentUser?.()?.id;
+      if (!myId || !window._ctxMsgId) return;
+
+      const existing = await window.sb
+        .from('reactions')
+        .select('id')
+        .eq('user_id', myId)
+        .eq('target_type', 'message')
+        .eq('target_id', window._ctxMsgId)
+        .eq('reaction_type', em)
+        .maybeSingle();
+
+      if (existing.data) {
+        await window.sb.from('reactions').delete().eq('id', existing.data.id);
+        window.removeReactionFromBubble?.(window._ctxMsgId, em, myId);
+      } else {
+        await window.sb.from('reactions')
+          .upsert({ user_id: myId, target_type: 'message', target_id: window._ctxMsgId, reaction_type: em });
+        window.addReactionToBubble?.(window._ctxMsgId, em, null);
+      }
     };
     rxRow.appendChild(btn);
   });
