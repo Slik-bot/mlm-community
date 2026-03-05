@@ -41,7 +41,6 @@ async function initChatMessages(convId, partner) {
   bindChatInput();
   bindScrollWatch();
   window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
-  window.subscribeReadStatus(_convId, _myId);
   subscribeStatusUpdates(_convId, _myId);
   window.initChatPresence(_convId, _myId);
   const divider = document.getElementById('msgUnreadDivider');
