@@ -48,6 +48,7 @@ async function initChatMessages(convId, partner) {
   window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
   subscribeStatusUpdates(_convId, _myId);
   window.initChatPresence(_convId, _myId);
+  window.subscribeDelivered?.(_convId, _myId);
   const divider = document.getElementById('msgUnreadDivider');
   if (divider) divider.scrollIntoView({ block: 'center' });
   else scrollToBottom();
