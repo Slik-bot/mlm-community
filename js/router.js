@@ -261,7 +261,6 @@ async function goTo(id, params) {
   if(isTransitioning) return;
   window._screenParams = params || {};
   if (window.haptic) haptic('light');
-  if (window.chatUnsubscribe) chatUnsubscribe();
   if (window.contestsCleanup && id !== 'scrContestDetail') contestsCleanup();
   if (window.webinarsCleanup && id !== 'scrWebinarDetail') webinarsCleanup();
   if (window.destroyDealScreen && id !== 'scrDealScreen') destroyDealScreen();
