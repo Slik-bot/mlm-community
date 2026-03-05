@@ -5,6 +5,7 @@ export default defineConfig({
   publicDir: 'assets',
   server: {
     port: 5173,
+    strictPort: true,
     open: true
   },
   build: {
