@@ -187,9 +187,12 @@ async function chatSend() {
         stEl.innerHTML = window.buildTicksSVG?.('sent') || '';
       }
     }
-    await window.sb.from('conversations')
+    window.sb.from('conversations')
       .update({ last_message_at: new Date().toISOString() })
-      .eq('id', _convId);
+      .eq('id', _convId)
+      .then(function(res) {
+        if (res.error) console.error('update last_message_at:', res.error);
+      });
   } catch (err) {
     console.error('chatSend:', err);
     const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
