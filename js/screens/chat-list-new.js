@@ -178,8 +178,9 @@ function clSubscribeRealtime(userId) {
     .on('postgres_changes', {
       event: 'INSERT', schema: 'public', table: 'messages'
     }, function(payload) {
-      var msg = payload.new;
+      const msg = payload.new;
       if (!msg || !msg.conversation_id) return;
+      if (!_clData.some(function(c) { return c.id === msg.conversation_id; })) return;
       updateClCard(msg.conversation_id, msg);
     })
     .subscribe();
