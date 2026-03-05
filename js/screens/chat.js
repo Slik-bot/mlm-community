@@ -31,18 +31,26 @@ async function findOrCreateConversation(partnerId) {
         if (conv) return conv.id;
       }
     }
-    const { data: newConv } = await window.sb
+    const { data: newConv, error: convErr } = await window.sb
       .from('conversations')
       .insert({ type: 'personal', created_by: myId })
       .select('id')
       .single();
-    if (!newConv) return null;
-    await window.sb
+    if (convErr || !newConv) return null;
+
+    const { error: membersErr } = await window.sb
       .from('conversation_members')
       .insert([
         { conversation_id: newConv.id, user_id: myId },
         { conversation_id: newConv.id, user_id: partnerId }
       ]);
+
+    if (membersErr) {
+      console.error('conversation_members insert:', membersErr);
+      await window.sb.from('conversations').delete().eq('id', newConv.id);
+      return null;
+    }
+
     return newConv.id;
   } catch (err) {
     console.error('findOrCreateConversation:', err);
