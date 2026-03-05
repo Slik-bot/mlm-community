@@ -59,7 +59,7 @@ async function loadClData(userId) {
     const [r1, r2, r3] = await Promise.all([
       window.sb.from('conversations')
         .select('id, type, title, deal_id, last_message_at')
-        .in('id', convIds).order('last_message_at', { ascending: false }),
+        .in('id', convIds).order('last_message_at', { ascending: false, nullsFirst: false }),
       window.sb.from('conversation_members')
         .select('conversation_id, user_id')
         .in('conversation_id', convIds).neq('user_id', userId),
