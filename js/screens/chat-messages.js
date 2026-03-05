@@ -95,6 +95,7 @@ async function loadMessages() {
 
     let lastDate = null;
     let lastSender = null;
+    let lastTimestamp = null;
     let dividerInserted = false;
     messages.forEach((msg) => {
       _msgMap[msg.id] = msg;
@@ -107,10 +108,13 @@ async function loadMessages() {
         box.appendChild(window.buildDateDivider(msg.created_at));
         lastDate = msgDate;
         lastSender = null;
+        lastTimestamp = null;
       }
-      const isGrp = lastSender === msg.sender_id;
+      const timeDiff = lastTimestamp ? (new Date(msg.created_at) - new Date(lastTimestamp)) : Infinity;
+      const isGrp = lastSender === msg.sender_id && timeDiff < 5 * 60 * 1000;
       box.appendChild(window.buildBubble(msg, isGrp));
       lastSender = msg.sender_id;
+      lastTimestamp = msg.created_at;
     });
     await markAsRead();
   } catch (err) {
