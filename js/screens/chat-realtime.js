@@ -6,6 +6,7 @@
 let _chatChannel = null;
 let _presenceCh = null;
 let _typingTimer = null;
+let _deliveredChannel = null;
 
 // ── Подписка на новые сообщения ─────────
 
@@ -87,6 +88,31 @@ function handleTyping() {
   }, 1500);
 }
 
+// ── Подписка на delivered_at ─────────────
+
+function subscribeDelivered(convId, myId) {
+  if (_deliveredChannel) {
+    window.sb.removeChannel(_deliveredChannel);
+    _deliveredChannel = null;
+  }
+  if (!window.sb || !convId || !myId) return;
+
+  _deliveredChannel = window.sb
+    .channel('delivered:' + convId)
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'messages',
+      filter: 'conversation_id=eq.' + convId
+    }, (payload) => {
+      const msg = payload.new;
+      if (!msg || msg.sender_id !== myId) return;
+      if (!msg.delivered_at || msg.is_read) return;
+      window.updateMsgStatus?.(msg.id, 'delivered');
+    })
+    .subscribe();
+}
+
 // ── Cleanup ─────────────────────────────
 
 function unsubscribeRealtime() {
@@ -98,6 +124,10 @@ function unsubscribeRealtime() {
     window.sb.removeChannel(_presenceCh);
     _presenceCh = null;
   }
+  if (_deliveredChannel) {
+    window.sb.removeChannel(_deliveredChannel);
+    _deliveredChannel = null;
+  }
   clearTimeout(_typingTimer);
   _typingTimer = null;
 }
@@ -107,4 +137,5 @@ function unsubscribeRealtime() {
 window.subscribeChatRealtime = subscribeChatRealtime;
 window.initChatPresence = initChatPresence;
 window.handleTyping = handleTyping;
+window.subscribeDelivered = subscribeDelivered;
 window.unsubscribeRealtime = unsubscribeRealtime;
