@@ -62,14 +62,14 @@ window.LEVEL_KEYS = LEVEL_KEYS;
 // ── Обратная совместимость ──
 
 const DNA_COLORS = {
-  S: '#3b82f6',
-  C: '#22c55e',
-  K: '#f59e0b',
-  A: '#a78bfa'
+  S: '#3b82f6', strategist: '#3b82f6',
+  C: '#22c55e', communicator: '#22c55e',
+  K: '#f59e0b', creator: '#f59e0b',
+  A: '#a78bfa', analyst: '#a78bfa'
 };
 
 function getDnaColor(type) {
-  return DNA_COLORS[type] || '#3b82f6';
+  return DNA_COLORS[type] || '#8b5cf6';
 }
 
 function applyDnaTheme(type) {
