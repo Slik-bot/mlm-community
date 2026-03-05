@@ -205,6 +205,22 @@ async function chatSend() {
   }
 }
 
+// ── Пометка доставки ────────────────────
+
+async function markAsDelivered(msgId) {
+  if (!msgId || !window.sb) return;
+  try {
+    const { error } = await window.sb
+      .from('messages')
+      .update({ delivered_at: new Date().toISOString() })
+      .eq('id', msgId)
+      .is('delivered_at', null);
+    if (error) throw error;
+  } catch (err) {
+    console.error('markAsDelivered:', err);
+  }
+}
+
 // ── Обработка входящего сообщения ────────
 
 async function onIncomingMessage(data) {
@@ -213,6 +229,7 @@ async function onIncomingMessage(data) {
   const el = window.buildBubble(data, false);
   el.classList.add('msg-new');
   box?.appendChild(el);
+  markAsDelivered(data.id);
   if (_atBottom) { scrollToBottom(); await markAsRead(); }
   else { _unreadCount++; updateScrollBtn(); }
 }
