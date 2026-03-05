@@ -181,6 +181,10 @@ async function authCheckSession() {
     const result = await window.sb.auth.getSession();
     const session = result.data && result.data.session;
     if (!session) return null;
+    await window.sb.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token
+    });
 
     const resp = await window.sb
       .from('users')
