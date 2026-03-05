@@ -128,44 +128,44 @@ function clAssemble(convRows, readMap, otherMems, msgs, users, deals) {
 // ═══ 3. Realtime ═══
 
 function updateClCard(convId, msg) {
-  var card = document.querySelector('[data-conv-id="' + convId + '"]');
+  const card = document.querySelector('[data-conv-id="' + convId + '"]');
   if (!card) {
-    var user = window.getCurrentUser();
+    const user = window.getCurrentUser();
     if (!user) return;
     loadClData(user.id).then(function(convs) {
       _clData = convs;
-      var q = document.getElementById('clSearch');
+      const q = document.getElementById('clSearch');
       window.renderClList?.(convs, _clTab, q ? q.value.trim() : '');
     });
     return;
   }
-  var prev = card.querySelector('.cl-preview');
+  const prev = card.querySelector('.cl-preview');
   if (prev) {
-    var txt = msg.content || '';
+    const txt = msg.content || '';
     prev.textContent = txt.length > 40 ? txt.substring(0, 40) + '...' : txt;
   }
-  var time = card.querySelector('.cl-time');
+  const time = card.querySelector('.cl-time');
   if (time) time.textContent = clFormatTime(msg.created_at);
-  var idx = _clData.findIndex(function(c) { return c.id === convId; });
+  const idx = _clData.findIndex(function(c) { return c.id === convId; });
   if (idx > -1) {
     _clData[idx].lastMsg = msg;
     _clData[idx].last_message_at = msg.created_at;
   }
-  var badge = card.querySelector('.cl-badge');
+  const badge = card.querySelector('.cl-badge');
   if (badge) {
-    var current = parseInt(badge.textContent) || 0;
+    const current = parseInt(badge.textContent) || 0;
     badge.textContent = current + 1;
     badge.style.display = 'flex';
   } else {
-    var meta = card.querySelector('.cl-meta');
+    const meta = card.querySelector('.cl-meta');
     if (meta) {
-      var newBadge = document.createElement('div');
+      const newBadge = document.createElement('div');
       newBadge.className = 'cl-badge';
       newBadge.textContent = '1';
       meta.appendChild(newBadge);
     }
   }
-  var list = card.parentElement;
+  const list = card.parentElement;
   if (list && list.firstChild !== card) list.insertBefore(card, list.firstChild);
 }
 
