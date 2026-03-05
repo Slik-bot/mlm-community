@@ -150,6 +150,9 @@ function updateClCard(convId, msg) {
   if (idx > -1) {
     _clData[idx].lastMsg = msg;
     _clData[idx].last_message_at = msg.created_at;
+    _clData.sort(function(a, b) {
+      return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+    });
   }
   const badge = card.querySelector('.cl-badge');
   if (badge) {
@@ -180,7 +183,11 @@ function clSubscribeRealtime(userId) {
     }, function(payload) {
       const msg = payload.new;
       if (!msg || !msg.conversation_id) return;
-      if (!_clData.some(function(c) { return c.id === msg.conversation_id; })) return;
+      if (!_clData.some(function(c) { return c.id === msg.conversation_id; })) {
+        const user = window.getCurrentUser?.();
+        if (user) loadClData(user.id);
+        return;
+      }
       updateClCard(msg.conversation_id, msg);
     })
     .subscribe();
