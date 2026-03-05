@@ -117,61 +117,6 @@ async function loadMessages() {
   }
 }
 
-// ── Подгрузка старых сообщений ──────────
-
-async function loadOlderMessages() {
-  if (_loadingMore || !_hasMore || !_oldestTs || !_convId) return;
-  _loadingMore = true;
-
-  const box = document.getElementById('chatMessages');
-  if (!box) { _loadingMore = false; return; }
-
-  const prevHeight = box.scrollHeight;
-
-  try {
-    const { data, error } = await window.sb
-      .from('messages')
-      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
-      .eq('conversation_id', _convId)
-      .eq('is_deleted', false)
-      .lt('created_at', _oldestTs)
-      .order('created_at', { ascending: false })
-      .limit(MSG_PAGE + 1);
-
-    if (error) throw error;
-
-    const msgs = data || [];
-    _hasMore = msgs.length > MSG_PAGE;
-    const page = _hasMore ? msgs.slice(1) : msgs;
-    const older = page.reverse();
-
-    if (older.length === 0) { _loadingMore = false; return; }
-
-    _oldestTs = older[0].created_at;
-
-    let lastSender = null;
-    const frag = document.createDocumentFragment();
-    older.forEach(msg => {
-      if (_msgMap[msg.id]) return;
-      _msgMap[msg.id] = msg;
-      const isGrp = lastSender === msg.sender_id;
-      frag.appendChild(window.buildBubble(msg, isGrp));
-      lastSender = msg.sender_id;
-    });
-
-    box.insertBefore(frag, box.firstChild);
-
-    requestAnimationFrame(() => {
-      box.scrollTop = box.scrollHeight - prevHeight;
-      _loadingMore = false;
-    });
-
-  } catch (err) {
-    console.error('loadOlderMessages:', err);
-    _loadingMore = false;
-  }
-}
-
 // ═══════════════════════════════════════
 // ПУЗЫРИ И МЕТА — см. chat-messages-render.js
 // ═══════════════════════════════════════
@@ -387,7 +332,7 @@ function bindScrollWatch() {
   if (!box) return;
   box.addEventListener('scroll', () => {
     if (box.scrollTop < 80 && _hasMore && !_loadingMore) {
-      loadOlderMessages();
+      window.loadOlderMessages?.();
     }
     const dist = box.scrollHeight - box.scrollTop - box.clientHeight;
     _atBottom = dist < 80;
@@ -505,3 +450,16 @@ window.scrollToMsg = scrollToMsg;
 window.showTyping = showTyping;
 window.hideTyping = hideTyping;
 window.destroyChat = destroyChat;
+
+window._chatPagination = {
+  get hasMore()      { return _hasMore; },
+  set hasMore(v)     { _hasMore = v; },
+  get loadingMore()  { return _loadingMore; },
+  set loadingMore(v) { _loadingMore = v; },
+  get oldestTs()     { return _oldestTs; },
+  set oldestTs(v)    { _oldestTs = v; },
+  get convId()       { return _convId; },
+  get myId()         { return _myId; },
+  get msgMap()       { return _msgMap; },
+  get msgPageSize()  { return MSG_PAGE; }
+};
