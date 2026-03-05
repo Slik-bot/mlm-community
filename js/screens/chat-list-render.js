@@ -285,12 +285,7 @@ function buildDnaRing(dnaType, size) {
   const cx = full / 2;
   const cy = full / 2;
   const r = size / 2 - 1;
-  const DNA_MAP = {
-    strategist: '#3b82f6', communicator: '#22c55e',
-    creator: '#f59e0b', analyst: '#a78bfa',
-    S: '#3b82f6', C: '#22c55e', K: '#f59e0b', A: '#a78bfa'
-  };
-  const color = DNA_MAP[dnaType] || '#94a3b8';
+  const color = window.getDnaColor(dnaType);
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
