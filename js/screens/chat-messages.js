@@ -10,6 +10,11 @@ let _msgMap = {};
 let _atBottom = true;
 let _unreadCount = 0;
 let _statusChannel = null;
+let _hasMore = false;
+let _loadingMore = false;
+let _oldestTs = null;
+
+const MSG_PAGE = 30;
 
 // ── ДНК-тема диалога ─────────────────────
 
@@ -55,6 +60,9 @@ async function initChatMessages(convId, partner) {
 // ── Загрузка сообщений ─────────────────
 
 async function loadMessages() {
+  _hasMore = false;
+  _loadingMore = false;
+  _oldestTs = null;
   try {
     const [msgRes, memberRes] = await Promise.all([
       window.sb
@@ -63,7 +71,7 @@ async function loadMessages() {
         .eq('conversation_id', _convId)
         .eq('is_deleted', false)
         .order('created_at', { ascending: false })
-        .limit(50),
+        .limit(MSG_PAGE + 1),
       window.sb
         .from('conversation_members')
         .select('last_read_at')
@@ -77,10 +85,17 @@ async function loadMessages() {
     if (!box) return;
     box.innerHTML = '';
     _msgMap = {};
+
+    const msgs = (msgRes.data || []);
+    _hasMore = msgs.length > MSG_PAGE;
+    const page = _hasMore ? msgs.slice(1) : msgs;
+    const messages = page.reverse();
+    _oldestTs = messages.length > 0 ? messages[0].created_at : null;
+
     let lastDate = null;
     let lastSender = null;
     let dividerInserted = false;
-    (msgRes.data || []).reverse().forEach((msg) => {
+    messages.forEach((msg) => {
       _msgMap[msg.id] = msg;
       if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
         box.appendChild(window.buildUnreadDivider());
@@ -99,6 +114,61 @@ async function loadMessages() {
     await markAsRead();
   } catch (err) {
     console.error('loadMessages:', err);
+  }
+}
+
+// ── Подгрузка старых сообщений ──────────
+
+async function loadOlderMessages() {
+  if (_loadingMore || !_hasMore || !_oldestTs || !_convId) return;
+  _loadingMore = true;
+
+  const box = document.getElementById('chatMessages');
+  if (!box) { _loadingMore = false; return; }
+
+  const prevHeight = box.scrollHeight;
+
+  try {
+    const { data, error } = await window.sb
+      .from('messages')
+      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+      .eq('conversation_id', _convId)
+      .eq('is_deleted', false)
+      .lt('created_at', _oldestTs)
+      .order('created_at', { ascending: false })
+      .limit(MSG_PAGE + 1);
+
+    if (error) throw error;
+
+    const msgs = data || [];
+    _hasMore = msgs.length > MSG_PAGE;
+    const page = _hasMore ? msgs.slice(1) : msgs;
+    const older = page.reverse();
+
+    if (older.length === 0) { _loadingMore = false; return; }
+
+    _oldestTs = older[0].created_at;
+
+    let lastSender = null;
+    const frag = document.createDocumentFragment();
+    older.forEach(msg => {
+      if (_msgMap[msg.id]) return;
+      _msgMap[msg.id] = msg;
+      const isGrp = lastSender === msg.sender_id;
+      frag.appendChild(window.buildBubble(msg, isGrp));
+      lastSender = msg.sender_id;
+    });
+
+    box.insertBefore(frag, box.firstChild);
+
+    requestAnimationFrame(() => {
+      box.scrollTop = box.scrollHeight - prevHeight;
+      _loadingMore = false;
+    });
+
+  } catch (err) {
+    console.error('loadOlderMessages:', err);
+    _loadingMore = false;
   }
 }
 
@@ -316,6 +386,9 @@ function bindScrollWatch() {
   const box = document.getElementById('chatMessages');
   if (!box) return;
   box.addEventListener('scroll', () => {
+    if (box.scrollTop < 80 && _hasMore && !_loadingMore) {
+      loadOlderMessages();
+    }
     const dist = box.scrollHeight - box.scrollTop - box.clientHeight;
     _atBottom = dist < 80;
     if (_atBottom) { _unreadCount = 0; }
