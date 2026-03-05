@@ -14,13 +14,7 @@ let _statusChannel = null;
 // ── ДНК-тема диалога ─────────────────────
 
 function applyDnaTheme(dnaType) {
-  const DNA_THEME = {
-    strategist: '#3b82f6', S: '#3b82f6',
-    communicator: '#22c55e', C: '#22c55e',
-    creator: '#f59e0b', K: '#f59e0b',
-    analyst: '#a78bfa', A: '#a78bfa'
-  };
-  const color = DNA_THEME[dnaType] || '#8b5cf6';
+  const color = window.getDnaColor(dnaType);
   const wrap = document.getElementById('scrChat');
   if (!wrap) return;
   wrap.style.setProperty('--dna-color', color);
