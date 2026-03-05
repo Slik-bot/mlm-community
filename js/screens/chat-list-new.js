@@ -67,7 +67,7 @@ async function loadClData(userId) {
         .select('conversation_id, content, created_at, sender_id')
         .in('conversation_id', convIds).eq('is_deleted', false)
         .order('created_at', { ascending: false })
-        .limit(convIds.length)
+        .limit(convIds.length * 50)
     ]);
     if (r1.error) throw r1.error;
     if (r2.error) throw r2.error;
