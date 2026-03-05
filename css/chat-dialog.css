@@ -165,8 +165,8 @@
 }
 .bbl:active { transform: scale(0.975); }
 .msg-in .bbl {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.085);
+  background: rgba(var(--msg-dna-rgb, 255,255,255), 0.07);
+  border: 1px solid rgba(var(--msg-dna-rgb, 255,255,255), 0.09);
   border-radius: 17px 17px 17px 4px;
 }
 .msg-in.grp .bbl { border-radius: 17px; }

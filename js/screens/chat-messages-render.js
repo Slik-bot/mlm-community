@@ -35,10 +35,21 @@ function renderChatHead() {
   if (tfRecipient) tfRecipient.textContent = p.name || '';
 }
 
+// ── HEX → R,G,B ─────────────────────
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return r + ',' + g + ',' + b;
+}
+
 // ── Построить пузырь ───────────────────
 
 function buildBubble(msg, isGrp) {
   const isOut = msg.sender_id === window._chatMyId?.();
+  const dnaType = !isOut ? (msg.sender?.dna_type || window._chatPartner?.()?.dna_type) : null;
+  const dnaColor = dnaType ? window.getDnaColor(dnaType) : null;
   const wrapper = document.createElement('div');
   wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + (isGrp ? ' grp' : '');
   wrapper.dataset.msgId = msg.id;
@@ -46,6 +57,11 @@ function buildBubble(msg, isGrp) {
   if (!isOut) {
     const av = document.createElement('div');
     av.className = 'msg-av-w';
+    if (dnaColor) {
+      av.style.color = dnaColor;
+      av.style.background = 'rgba(' + hexToRgb(dnaColor) + ',0.15)';
+      av.style.borderColor = 'rgba(' + hexToRgb(dnaColor) + ',0.35)';
+    }
     if (msg.sender?.avatar_url) {
       const img = document.createElement('img');
       img.src = msg.sender.avatar_url;
@@ -58,6 +74,9 @@ function buildBubble(msg, isGrp) {
   }
   const bbl = document.createElement('div');
   bbl.className = 'bbl';
+  if (!isOut && dnaColor) {
+    bbl.style.setProperty('--msg-dna-rgb', hexToRgb(dnaColor));
+  }
   if (msg.reply_to?.content) {
     const replyDiv = document.createElement('div');
     replyDiv.className = 'bbl-reply';
