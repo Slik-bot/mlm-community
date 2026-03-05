@@ -170,6 +170,10 @@ function updateClCard(convId, msg) {
   }
   const list = card.parentElement;
   if (list && list.firstChild !== card) list.insertBefore(card, list.firstChild);
+  _clData.forEach(function(conv) {
+    const el = list.querySelector('[data-conv-id="' + conv.id + '"]');
+    if (el) list.appendChild(el);
+  });
 }
 
 function clSubscribeRealtime(userId) {
