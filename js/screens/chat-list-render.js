@@ -85,8 +85,11 @@ function buildClItem(conv) {
   nameEl.textContent = o.name || 'Пользователь';
   const prev = document.createElement('div');
   prev.className = 'cl-preview';
+  const myId = window.getCurrentUser?.()?.id;
+  const isMe = conv.lastMsg?.sender_id === myId;
   const txt = conv.lastMsg ? (conv.lastMsg.content || '') : '';
-  prev.textContent = txt.length > 40 ? txt.substring(0, 40) + '...' : txt;
+  const display = isMe ? 'Вы: ' + txt : txt;
+  prev.textContent = display.length > 40 ? display.substring(0, 40) + '...' : display;
   body.appendChild(nameEl);
   body.appendChild(prev);
 
