@@ -70,6 +70,13 @@ function buildClItem(conv) {
     ava.textContent = (o.name || 'U').charAt(0).toUpperCase();
   }
   ava.appendChild(buildDnaRing(o.dna_type, 48));
+  const isOnline = o.last_active_at &&
+    (Date.now() - new Date(o.last_active_at).getTime()) < 5 * 60 * 1000;
+  if (isOnline) {
+    const dot = document.createElement('div');
+    dot.className = 'cl-online';
+    ava.appendChild(dot);
+  }
 
   const body = document.createElement('div');
   body.className = 'cl-body';

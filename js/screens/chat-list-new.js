@@ -79,7 +79,7 @@ async function loadClData(userId) {
     const dids = [...new Set(convRows.filter(function(c) { return c.deal_id; }).map(function(c) { return c.deal_id; }))];
 
     const [r4, r5] = await Promise.all([
-      uids.length ? window.sb.from('users').select('id, name, avatar_url, dna_type').in('id', uids) : { data: [], error: null },
+      uids.length ? window.sb.from('users').select('id, name, avatar_url, dna_type, last_active_at').in('id', uids) : { data: [], error: null },
       dids.length ? window.sb.from('deals').select('id, title, status, amount').in('id', dids) : { data: [], error: null }
     ]);
     if (r4.error) throw r4.error;
