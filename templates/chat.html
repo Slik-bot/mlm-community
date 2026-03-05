@@ -100,47 +100,6 @@
     </div>
   </div>
 
-  <!-- Контекстное меню -->
-  <div class="ctx-ov" id="chatCtx" onclick="hideCtxMenu()">
-    <div class="ctx-box" onclick="event.stopPropagation()">
-      <div class="ctx-rxs" id="ctxReactions">
-        <span class="ctx-rx" data-emoji="❤️">❤️</span>
-        <span class="ctx-rx" data-emoji="😂">😂</span>
-        <span class="ctx-rx" data-emoji="👍">👍</span>
-        <span class="ctx-rx" data-emoji="🔥">🔥</span>
-        <span class="ctx-rx" data-emoji="😮">😮</span>
-        <span class="ctx-rx" data-emoji="👎">👎</span>
-      </div>
-      <div class="ctx-r" id="ctxReply">
-        <svg width="14" height="14" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-          <polyline points="9 17 4 12 9 7"/>
-          <path d="M20 18v-2a4 4 0 0 0-4-4H4"/>
-        </svg>Ответить
-      </div>
-      <div class="ctx-r" id="ctxCopy">
-        <svg width="14" height="14" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-          <rect x="9" y="9" width="13" height="13" rx="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>Копировать
-      </div>
-      <div class="ctx-r" id="ctxForward">
-        <svg width="14" height="14" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-        </svg>Переслать
-      </div>
-      <div class="ctx-r red" id="ctxDelete">
-        <svg width="14" height="14" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
-          <polyline points="3 6 5 6 21 6"/>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-        </svg>Удалить
-      </div>
-    </div>
-  </div>
-
   <!-- TF Modal -->
   <div class="tf-ov" id="chatTfOv" onclick="hideTfModal()">
     <div class="tf-sheet" onclick="event.stopPropagation()">
