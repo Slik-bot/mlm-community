@@ -18,7 +18,7 @@ const MSG_PAGE = 30;
 
 // ── ДНК-тема диалога ─────────────────────
 
-function applyDnaTheme(dnaType) {
+function applyChatDnaTheme(dnaType) {
   const color = window.getDnaColor(dnaType);
   const wrap = document.getElementById('scrChat');
   if (!wrap) return;
@@ -30,7 +30,7 @@ function applyDnaTheme(dnaType) {
 async function initChatMessages(convId, partner) {
   _convId = convId;
   _partner = partner;
-  applyDnaTheme(partner?.dna_type);
+  applyChatDnaTheme(partner?.dna_type);
   _myId = window.getCurrentUser()?.id;
   if (!_myId) {
     await new Promise(r => setTimeout(r, 500));
