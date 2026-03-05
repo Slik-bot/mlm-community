@@ -4,11 +4,6 @@
 // Визуальные функции: DOM карточек, рендер списка
 // ═══════════════════════════════════════
 
-const CL_DNA = {
-  strategist: '#3b82f6', communicator: '#22c55e',
-  creator: '#f59e0b', analyst: '#a78bfa'
-};
-
 const CL_DEAL_STATUS = {
   pending: { label: 'Ожидает', color: '#fbbf24', pct: 20 },
   active: { label: 'В работе', color: '#22c55e', pct: 50 },
