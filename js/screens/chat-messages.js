@@ -114,6 +114,16 @@ async function loadMessages() {
       lastSender = msg.sender_id;
       lastTimestamp = msg.created_at;
     });
+    const partnerDna = window._chatPartner?.()?.dna_type;
+    const fallbackColor = partnerDna ? window.getDnaColor(partnerDna) : null;
+    if (fallbackColor) {
+      const rgb = window.hexToRgb(fallbackColor);
+      box.querySelectorAll('.msg:not(.msg-out) .bbl').forEach(b => {
+        if (!b.style.getPropertyValue('--msg-dna-rgb')) {
+          b.style.setProperty('--msg-dna-rgb', rgb);
+        }
+      });
+    }
     await window.markAsRead();
   } catch (err) {
     console.error('loadMessages:', err);
