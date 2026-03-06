@@ -35,16 +35,7 @@ async function loadOlderMessages() {
 
     pg.oldestTs = older[0].created_at;
 
-    let lastSender = null;
-    const fragment = document.createDocumentFragment();
-    older.forEach(msg => {
-      if (pg.msgMap[msg.id]) return;
-      pg.msgMap[msg.id] = msg;
-      const isGrp = lastSender === msg.sender_id;
-      fragment.appendChild(window.buildBubble(msg, isGrp));
-      lastSender = msg.sender_id;
-    });
-    box.insertBefore(fragment, box.firstChild);
+    box.insertBefore(buildMsgFragment(older, pg), box.firstChild);
 
     requestAnimationFrame(() => {
       box.scrollTop = box.scrollHeight - prevHeight;
@@ -55,6 +46,19 @@ async function loadOlderMessages() {
     console.error('loadOlderMessages:', err);
     pg.loadingMore = false;
   }
+}
+
+function buildMsgFragment(older, pg) {
+  let lastSender = null;
+  const fragment = document.createDocumentFragment();
+  older.forEach(function(msg) {
+    if (pg.msgMap[msg.id]) return;
+    pg.msgMap[msg.id] = msg;
+    const isGrp = lastSender === msg.sender_id;
+    fragment.appendChild(window.buildBubble(msg, isGrp));
+    lastSender = msg.sender_id;
+  });
+  return fragment;
 }
 
 // ЭКСПОРТ
