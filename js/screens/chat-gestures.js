@@ -62,7 +62,7 @@ function handleGestureMove(shift) {
     if (Math.abs(s) >= 30 && !_hintShown) {
       const isOut = _gestureWrapper?.classList.contains('msg-out');
       showReplyHint(_gestureWrapper, isOut);
-      if (navigator.vibrate) navigator.vibrate(10);
+      haptic('light');
       _hintShown = true;
       requestAnimationFrame(() => {
         const h = _gestureWrapper?.querySelector('.reply-hint');
@@ -93,7 +93,7 @@ function handleGestureEnd(dir, dx) {
     springBack(_gestureBbl);
     hideReplyHint(_gestureWrapper);
     if (Math.abs(dx) >= REPLY_THRESHOLD) {
-      if (navigator.vibrate) navigator.vibrate(15);
+      haptic('medium');
       startReply(_gestureMsg);
     }
   } else if (_gestureMode === 'screen' && dir === 'right') {
