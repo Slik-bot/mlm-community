@@ -7,6 +7,30 @@ let _chatChannel = null;
 let _presenceCh = null;
 let _typingTimer = null;
 let _deliveredChannel = null;
+let _partnerLastSeen = null;
+
+const MONTHS_RU = ['января','февраля','марта','апреля','мая','июня',
+  'июля','августа','сентября','октября','ноября','декабря'];
+
+// ── Форматирование «был X назад» ─────────
+
+function formatLastActive(isoDate) {
+  if (!isoDate) return 'Не в сети';
+  const now = Date.now();
+  const diff = now - new Date(isoDate).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'только что';
+  if (mins < 60) return 'был ' + mins + ' мин. назад';
+  const d = new Date(isoDate);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) {
+    return 'был сегодня в ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  if (d.toDateString() === yesterday.toDateString()) return 'был вчера';
+  return 'был ' + d.getDate() + ' ' + MONTHS_RU[d.getMonth()];
+}
 
 // ── Подписка на новые сообщения ─────────
 
@@ -62,8 +86,15 @@ function initChatPresence(conversationId, currentUserId) {
       const statusEl = document.getElementById('chStatus');
       const dot = document.getElementById('chAvDot');
       if (statusEl) {
-        statusEl.textContent = anyOnline ? 'В сети' : 'Не в сети';
-        statusEl.className = anyOnline ? 'ch-status' : 'ch-status offline';
+        if (anyOnline) {
+          statusEl.textContent = 'В сети';
+          statusEl.className = 'ch-status';
+          _partnerLastSeen = new Date().toISOString();
+        } else {
+          const lastActive = _partnerLastSeen || window._chatPartner?.()?.last_active_at;
+          statusEl.textContent = formatLastActive(lastActive);
+          statusEl.className = 'ch-status offline';
+        }
       }
       if (dot) {
         if (anyOnline) dot.classList.remove('hidden');
@@ -231,6 +262,7 @@ function unsubscribeRealtime() {
   }
   clearTimeout(_typingTimer);
   _typingTimer = null;
+  _partnerLastSeen = null;
 }
 
 // ── Экспорты ───────────────────────────
@@ -246,3 +278,4 @@ window.showTyping = showTyping;
 window.hideTyping = hideTyping;
 window.subscribeStatusUpdates = subscribeStatusUpdates;
 window.markAsRead = markAsRead;
+window.formatLastActive = formatLastActive;
