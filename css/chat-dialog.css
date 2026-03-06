@@ -66,6 +66,7 @@
 }
 .ch-status { font-size: 11px; color: #22c55e; margin-top: 1px; }
 .ch-status.typing { color: rgba(241,241,245,0.5); }
+.ch-status.offline { color: rgba(255, 255, 255, 0.35); }
 .ch-hbtns { display: flex; gap: 5px; }
 .ch-hbtn {
   width: 30px; height: 30px;

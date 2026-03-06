@@ -30,8 +30,13 @@ function renderChatHead() {
     ph.textContent = (p.name || 'П')[0].toUpperCase();
   }
   if (name) name.textContent = p.name || 'Пользователь';
-  if (status) { status.textContent = 'В сети'; status.className = 'ch-status'; }
-  if (dot) dot.classList.remove('hidden');
+  const isOnline = p.last_active_at &&
+    (Date.now() - new Date(p.last_active_at).getTime()) < 5 * 60 * 1000;
+  if (status) {
+    status.textContent = isOnline ? 'В сети' : 'Не в сети';
+    status.className = 'ch-status' + (isOnline ? '' : ' offline');
+  }
+  if (dot) { isOnline ? dot.classList.remove('hidden') : dot.classList.add('hidden'); }
   if (tfRecipient) tfRecipient.textContent = p.name || '';
 }
 

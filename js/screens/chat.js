@@ -94,7 +94,7 @@ async function initChat() {
       if (otherIds.length > 0) {
         const { data: pData } = await window.sb
           .from('users')
-          .select('id, name, avatar_url, dna_type')
+          .select('id, name, avatar_url, dna_type, last_active_at')
           .eq('id', otherIds[0])
           .single();
         partner = pData;

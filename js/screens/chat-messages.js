@@ -89,7 +89,7 @@ async function loadMessages() {
 
     const msgs = (msgRes.data || []);
     _hasMore = msgs.length > MSG_PAGE;
-    const page = _hasMore ? msgs.slice(1) : msgs;
+    const page = _hasMore ? msgs.slice(0, MSG_PAGE) : msgs;
     const messages = page.reverse();
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
 
