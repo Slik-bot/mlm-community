@@ -4,62 +4,61 @@
 
 let _pendingConvId = null;
 let _pendingPartner = null;
+const _creatingConv = new Map();
 
 async function findExistingConversation(myId, partnerId) {
-  const { data: myConvs } = await window.sb
+  const { data: mine } = await window.sb
     .from('conversation_members')
     .select('conversation_id')
     .eq('user_id', myId);
-  if (!myConvs?.length) return null;
-  const myIds = myConvs.map(r => r.conversation_id);
-  const { data: shared } = await window.sb
+  if (!mine?.length) return null;
+  const myIds = mine.map(r => r.conversation_id);
+  const { data: found } = await window.sb
     .from('conversation_members')
-    .select('conversation_id')
+    .select('conversation_id, conversations!inner(type)')
     .eq('user_id', partnerId)
-    .in('conversation_id', myIds);
-  if (!shared?.length) return null;
-  const { data: conv } = await window.sb
-    .from('conversations')
-    .select('id')
-    .eq('id', shared[0].conversation_id)
-    .eq('type', 'personal')
-    .single();
-  return conv?.id || null;
+    .eq('conversations.type', 'personal')
+    .in('conversation_id', myIds)
+    .limit(1);
+  return found?.[0]?.conversation_id || null;
 }
 
 async function findOrCreateConversation(partnerId) {
   if (!partnerId) return null;
   const myId = window.getCurrentUser()?.id;
   if (!myId) return null;
-  try {
-    const existingId = await findExistingConversation(myId, partnerId);
-    if (existingId) return existingId;
-
-    const { data: newConv, error: convErr } = await window.sb
-      .from('conversations')
-      .insert({ type: 'personal', created_by: myId })
-      .select('id')
-      .single();
-    if (convErr || !newConv) return null;
-
-    const { error: membersErr } = await window.sb
-      .from('conversation_members')
-      .insert([
-        { conversation_id: newConv.id, user_id: myId },
-        { conversation_id: newConv.id, user_id: partnerId }
-      ]);
-
-    if (membersErr) {
-      console.error('conversation_members insert:', membersErr);
-      await window.sb.from('conversations').delete().eq('id', newConv.id);
+  // Защита от race condition: повторный вызов вернёт тот же промис
+  if (_creatingConv.has(partnerId)) return _creatingConv.get(partnerId);
+  const promise = (async () => {
+    try {
+      const existingId = await findExistingConversation(myId, partnerId);
+      if (existingId) return existingId;
+      const { data: newConv, error: convErr } = await window.sb
+        .from('conversations')
+        .insert({ type: 'personal', created_by: myId })
+        .select('id')
+        .single();
+      if (convErr || !newConv) return null;
+      const { error: membersErr } = await window.sb
+        .from('conversation_members')
+        .insert([
+          { conversation_id: newConv.id, user_id: myId },
+          { conversation_id: newConv.id, user_id: partnerId }
+        ]);
+      if (membersErr) {
+        console.error('conversation_members insert:', membersErr);
+        await window.sb.from('conversations').delete().eq('id', newConv.id);
+        return null;
+      }
+      return newConv.id;
+    } catch (err) {
+      console.error('findOrCreateConversation:', err);
       return null;
     }
-
-    return newConv.id;
-  } catch (err) {
-    console.error('findOrCreateConversation:', err);
-    return null;
-  }
+  })();
+  _creatingConv.set(partnerId, promise);
+  promise.finally(() => _creatingConv.delete(partnerId));
+  return promise;
 }
 
 async function openChat(convId, partner) {
