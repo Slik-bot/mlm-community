@@ -5,6 +5,7 @@
 
 let _clTab = 'all';
 let _clData = [];
+let _clCache = null;
 let _clDebounce = null;
 let _clSub = null;
 let _clSwipeOpen = null;
@@ -19,14 +20,23 @@ function initChatList() {
   const skel = document.getElementById('clSkeleton');
   const list = document.getElementById('clList');
   const empty = document.getElementById('clEmpty');
-  if (skel) skel.classList.remove('hidden');
-  if (list) { list.classList.add('hidden'); list.innerHTML = ''; }
-  if (empty) empty.classList.add('hidden');
 
   _clTab = 'all';
-  _clData = [];
   _clSwipeOpen = null;
   window._clSwipeOpen = null;
+
+  // Кэш есть — показать мгновенно без skeleton
+  if (_clCache?.length) {
+    if (skel) skel.classList.add('hidden');
+    if (list) list.classList.remove('hidden');
+    if (empty) empty.classList.add('hidden');
+    _clData = _clCache;
+    window.renderClList?.(_clCache, _clTab, '');
+  } else {
+    if (skel) skel.classList.remove('hidden');
+    if (list) { list.classList.add('hidden'); list.innerHTML = ''; }
+    if (empty) empty.classList.add('hidden');
+  }
 
   if (!_clBound) {
     clBindTabs();
@@ -35,9 +45,14 @@ function initChatList() {
   }
   clSubscribeRealtime(user.id);
 
+  // Фоном загрузить актуальные данные
   loadClData(user.id).then(function(convs) {
+    _clCache = convs;
     _clData = convs;
-    window.renderClList?.(convs, _clTab, '');
+    if (skel) skel.classList.add('hidden');
+    if (list) list.classList.remove('hidden');
+    const q = document.getElementById('clSearch');
+    window.renderClList?.(convs, _clTab, q ? q.value.trim() : '');
   });
 }
 
@@ -231,6 +246,7 @@ function clBindSearch() {
 function destroyChatList() {
   if (_clSub) { _clSub.unsubscribe(); _clSub = null; }
   if (_clDebounce) clearTimeout(_clDebounce);
+  _clCache = null;
   _clData = [];
   _clSwipeOpen = null;
   window._clSwipeOpen = null;
