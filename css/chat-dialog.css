@@ -592,3 +592,22 @@
 .msg-status--read svg path {
   stroke: #8b5cf6;
 }
+
+/* ── Счётчик символов ── */
+.char-count {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #94a3b8;
+  text-align: right;
+  padding: 0 16px 4px;
+  transition: color 200ms ease;
+}
+.char-count--warn { color: #f59e0b; }
+.char-count--limit {
+  color: #ef4444;
+  animation: charPulse 600ms ease-in-out infinite;
+}
+@keyframes charPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
