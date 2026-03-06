@@ -56,6 +56,46 @@ async function initChatMessages(convId, partner) {
   else scrollToBottom();
 }
 
+// ── Загрузка: хелперы ─────────────────
+
+function renderMessages(messages, lastReadAt, box) {
+  let lastDate = null;
+  let lastSender = null;
+  let lastTimestamp = null;
+  let dividerInserted = false;
+  messages.forEach(function(msg) {
+    _msgMap[msg.id] = msg;
+    if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
+      box.appendChild(window.buildUnreadDivider());
+      dividerInserted = true;
+    }
+    const msgDate = new Date(msg.created_at).toDateString();
+    if (msgDate !== lastDate) {
+      box.appendChild(window.buildDateDivider(msg.created_at));
+      lastDate = msgDate;
+      lastSender = null;
+      lastTimestamp = null;
+    }
+    const timeDiff = lastTimestamp ? (new Date(msg.created_at) - new Date(lastTimestamp)) : Infinity;
+    const isGrp = lastSender === msg.sender_id && timeDiff < 5 * 60 * 1000;
+    box.appendChild(window.buildBubble(msg, isGrp));
+    lastSender = msg.sender_id;
+    lastTimestamp = msg.created_at;
+  });
+}
+
+function applyDnaFallback(box) {
+  const partnerDna = window._chatPartner?.()?.dna_type;
+  const fallbackColor = partnerDna ? window.getDnaColor(partnerDna) : null;
+  if (!fallbackColor) return;
+  const rgb = window.hexToRgb(fallbackColor);
+  box.querySelectorAll('.msg:not(.msg-out) .bbl').forEach(function(b) {
+    if (!b.style.getPropertyValue('--msg-dna-rgb')) {
+      b.style.setProperty('--msg-dna-rgb', rgb);
+    }
+  });
+}
+
 // ── Загрузка сообщений ─────────────────
 
 async function loadMessages() {
@@ -84,46 +124,13 @@ async function loadMessages() {
     if (!box) return;
     box.innerHTML = '';
     _msgMap = {};
-
     const msgs = (msgRes.data || []);
     _hasMore = msgs.length > MSG_PAGE;
     const page = _hasMore ? msgs.slice(0, MSG_PAGE) : msgs;
     const messages = page.reverse();
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
-
-    let lastDate = null;
-    let lastSender = null;
-    let lastTimestamp = null;
-    let dividerInserted = false;
-    messages.forEach((msg) => {
-      _msgMap[msg.id] = msg;
-      if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
-        box.appendChild(window.buildUnreadDivider());
-        dividerInserted = true;
-      }
-      const msgDate = new Date(msg.created_at).toDateString();
-      if (msgDate !== lastDate) {
-        box.appendChild(window.buildDateDivider(msg.created_at));
-        lastDate = msgDate;
-        lastSender = null;
-        lastTimestamp = null;
-      }
-      const timeDiff = lastTimestamp ? (new Date(msg.created_at) - new Date(lastTimestamp)) : Infinity;
-      const isGrp = lastSender === msg.sender_id && timeDiff < 5 * 60 * 1000;
-      box.appendChild(window.buildBubble(msg, isGrp));
-      lastSender = msg.sender_id;
-      lastTimestamp = msg.created_at;
-    });
-    const partnerDna = window._chatPartner?.()?.dna_type;
-    const fallbackColor = partnerDna ? window.getDnaColor(partnerDna) : null;
-    if (fallbackColor) {
-      const rgb = window.hexToRgb(fallbackColor);
-      box.querySelectorAll('.msg:not(.msg-out) .bbl').forEach(b => {
-        if (!b.style.getPropertyValue('--msg-dna-rgb')) {
-          b.style.setProperty('--msg-dna-rgb', rgb);
-        }
-      });
-    }
+    renderMessages(messages, lastReadAt, box);
+    applyDnaFallback(box);
     await window.markAsRead();
   } catch (err) {
     console.error('loadMessages:', err);
