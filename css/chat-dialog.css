@@ -494,26 +494,26 @@
   z-index: 100;
 }
 .chat-ctx-box {
-  position: fixed; bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: min(420px, 100vw);
+  position: fixed;
+  width: auto; max-width: 280px;
   background: rgba(20,20,40,0.97);
   border: 1px solid rgba(139,92,246,0.3);
-  border-radius: 16px 16px 0 0;
+  border-radius: 14px;
   backdrop-filter: blur(24px);
   z-index: 101;
-  padding: 16px;
+  padding: 8px;
 }
 .chat-ctx-reactions {
   display: flex;
-  justify-content: space-around;
-  padding: 16px 8px 12px;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 .chat-ctx-rx {
-  font-size: 26px;
-  width: 44px;
-  height: 44px;
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
