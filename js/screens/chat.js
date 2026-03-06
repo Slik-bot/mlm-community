@@ -5,32 +5,36 @@
 let _pendingConvId = null;
 let _pendingPartner = null;
 
+async function findExistingConversation(myId, partnerId) {
+  const { data: myConvs } = await window.sb
+    .from('conversation_members')
+    .select('conversation_id')
+    .eq('user_id', myId);
+  if (!myConvs?.length) return null;
+  const myIds = myConvs.map(r => r.conversation_id);
+  const { data: shared } = await window.sb
+    .from('conversation_members')
+    .select('conversation_id')
+    .eq('user_id', partnerId)
+    .in('conversation_id', myIds);
+  if (!shared?.length) return null;
+  const { data: conv } = await window.sb
+    .from('conversations')
+    .select('id')
+    .eq('id', shared[0].conversation_id)
+    .eq('type', 'personal')
+    .single();
+  return conv?.id || null;
+}
+
 async function findOrCreateConversation(partnerId) {
   if (!partnerId) return null;
   const myId = window.getCurrentUser()?.id;
   if (!myId) return null;
   try {
-    const { data: myConvs } = await window.sb
-      .from('conversation_members')
-      .select('conversation_id')
-      .eq('user_id', myId);
-    if (myConvs?.length) {
-      const myIds = myConvs.map(r => r.conversation_id);
-      const { data: shared } = await window.sb
-        .from('conversation_members')
-        .select('conversation_id')
-        .eq('user_id', partnerId)
-        .in('conversation_id', myIds);
-      if (shared?.length) {
-        const { data: conv } = await window.sb
-          .from('conversations')
-          .select('id')
-          .eq('id', shared[0].conversation_id)
-          .eq('type', 'personal')
-          .single();
-        if (conv) return conv.id;
-      }
-    }
+    const existingId = await findExistingConversation(myId, partnerId);
+    if (existingId) return existingId;
+
     const { data: newConv, error: convErr } = await window.sb
       .from('conversations')
       .insert({ type: 'personal', created_by: myId })
