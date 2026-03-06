@@ -135,7 +135,7 @@
 }
 .msg-in { align-self: flex-start; }
 .msg-out { align-self: flex-end; flex-direction: row-reverse; }
-.msg:not(.grp) { margin-top: 9px; }
+.msg:not(.grp) { margin-top: 8px; }
 .msg.grp { margin-top: 2px; }
 .msg-av-w {
   width: 28px; height: 28px; min-width: 28px;
@@ -157,9 +157,9 @@
 
 /* ── Пузырь ── */
 .bbl {
-  max-width: 255px; padding: 8px 11px;
+  max-width: 72%; padding: 8px 12px;
   word-break: break-word;
-  font-size: 14px; line-height: 1.46;
+  font-size: 15px; line-height: 1.4;
   color: #f1f1f5; position: relative;
   cursor: pointer;
   transition: transform 80ms;
@@ -168,15 +168,15 @@
 .msg-in .bbl {
   background: rgba(var(--msg-dna-rgb, 255,255,255), 0.07);
   border: 1px solid rgba(var(--msg-dna-rgb, 255,255,255), 0.09);
-  border-radius: 17px 17px 17px 4px;
+  border-radius: 18px 18px 18px 4px;
 }
-.msg-in.grp .bbl { border-radius: 17px; }
+.msg-in.grp .bbl { border-radius: 4px 18px 18px 4px; }
 .msg-out .bbl {
-  background: linear-gradient(148deg, #8b5cf6, #6d28d9);
-  border-radius: 17px 17px 4px 17px;
+  background: linear-gradient(148deg, #7c3aed, #6d28d9);
+  border-radius: 18px 18px 4px 18px;
   box-shadow: 0 3px 16px rgba(139,92,246,0.36);
 }
-.msg-out.grp .bbl { border-radius: 17px; }
+.msg-out.grp .bbl { border-radius: 18px 4px 4px 18px; }
 
 /* ── Reply цитата внутри пузыря ── */
 .bbl-reply {
