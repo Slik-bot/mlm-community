@@ -3,7 +3,15 @@
 // Универсальный обработчик горизонтальных свайпов
 // ════════════════════════════════════════
 
-const SWIPE_DEFAULTS = { threshold: 60, resistance: 0.4 };
+const SWIPE_DEFAULTS = { threshold: 60 };
+
+// ── Rubber band физика ────────────────
+
+function rubberBand(dx, max) {
+  const sign = dx < 0 ? -1 : 1;
+  const abs = Math.abs(dx);
+  return sign * max * (1 - Math.exp(-abs / max));
+}
 
 // ── Фабрика свайп-обработчика ─────────
 
@@ -30,7 +38,7 @@ function createSwipeHandler(el, opts) {
     e.preventDefault();
     isSwiping = true;
     lastDx = dx;
-    const shift = dx * cfg.resistance;
+    const shift = rubberBand(dx, 60);
     if (cfg.onMove) cfg.onMove(shift);
   };
 
