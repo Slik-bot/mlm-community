@@ -123,76 +123,7 @@ function updateDealFilterUI() {
   });
 }
 
-// ===== DEAL CREATE =====
-
-function initDealCreate() {
-  const deadlineInput = document.getElementById('dealDeadline');
-  if (deadlineInput) {
-    const today = new Date().toISOString().split('T')[0];
-    deadlineInput.min = today;
-  }
-  const titleInput = document.getElementById('dealTitle');
-  if (titleInput) titleInput.value = '';
-  const descInput = document.getElementById('dealDesc');
-  if (descInput) descInput.value = '';
-  const budgetInput = document.getElementById('dealBudget');
-  if (budgetInput) budgetInput.value = '';
-  if (deadlineInput) deadlineInput.value = '';
-  updateDealCalc();
-}
-
-function updateDealCalc() {
-  const budgetInput = document.getElementById('dealBudget');
-  const budget = budgetInput ? parseFloat(budgetInput.value) || 0 : 0;
-  const fee = Math.round(budget * 0.20);
-  const executor = budget - fee;
-
-  const calcTotal = document.getElementById('calcTotal');
-  const calcFee = document.getElementById('calcFee');
-  const calcExecutor = document.getElementById('calcExecutor');
-  if (calcTotal) calcTotal.textContent = budget.toLocaleString('ru-RU') + ' руб.';
-  if (calcFee) calcFee.textContent = fee.toLocaleString('ru-RU') + ' руб.';
-  if (calcExecutor) calcExecutor.textContent = executor.toLocaleString('ru-RU') + ' руб.';
-}
-
-async function dealCreate() {
-  const user = getCurrentUser();
-  if (!user) return;
-
-  const title = (document.getElementById('dealTitle').value || '').trim();
-  const description = (document.getElementById('dealDesc').value || '').trim();
-  const budget = parseFloat(document.getElementById('dealBudget').value) || 0;
-  const deadline = document.getElementById('dealDeadline').value;
-  const category = document.getElementById('dealCategory').value;
-
-  if (!title) { showToast('Введите название'); return; }
-  if (budget < 100) { showToast('Минимальный бюджет 100 руб.'); return; }
-
-  const total = Math.round(budget * 100);
-  const platform_fee = Math.round(total * 0.20);
-  const prepayment = Math.round(total * 0.50);
-  const escrow = total - prepayment;
-
-  const result = await window.sb.from('deals').insert({
-    client_id: user.id,
-    title: title,
-    description: description,
-    category: category,
-    total: total,
-    prepayment: prepayment,
-    escrow: escrow,
-    platform_fee: platform_fee,
-    deadline_at: deadline || null,
-    status: 'pending'
-  });
-
-  if (result.error) {
-    showToast('Ошибка создания сделки');
-    return;
-  }
-  showToast('Сделка создана!');
-  goBack();
-}
+// ===== DEAL CREATE — см. deal-create-new.js =====
 
 // ===== DEAL DETAIL =====
 
@@ -378,11 +309,8 @@ async function dealActionViaEF(action) {
 // ===== EXPORTS =====
 
 window.initDealList = initDealList;
-window.initDealCreate = initDealCreate;
 window.initDealDetail = initDealDetail;
 window.switchDealTab = switchDealTab;
 window.filterDeals = filterDeals;
-window.dealCreate = dealCreate;
 window.dealAction = dealAction;
 window.openDeal = openDeal;
-window.updateDealCalc = updateDealCalc;
