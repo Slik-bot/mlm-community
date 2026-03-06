@@ -47,7 +47,7 @@ async function initChatMessages(convId, partner) {
   await loadMessages();
   window.bindChatInput();
   bindScrollWatch();
-  window.initChatScreenSwipe(document.getElementById('scrChat'));
+  window.initChatGestures(document.getElementById('scrChat'));
   window.subscribeChatRealtime(_convId, _myId, window.onIncomingMessage);
   window.subscribeStatusUpdates(_convId, _myId);
   window.initChatPresence(_convId, _myId);

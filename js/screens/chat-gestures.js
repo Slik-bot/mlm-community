@@ -1,12 +1,137 @@
 // ════════════════════════════════════════
 // CHAT GESTURES — TRAFIQO
-// Жесты, swipe-reply
+// Единый gesture-менеджер для экрана чата
 // ════════════════════════════════════════
 
-// ── События пузыря ─────────────────────
+// ── Константы ──────────────────────────
 
-function bindBubbleEvents(wrapper, bbl, msg, isOut) {
-  // Long-press → контекстное меню
+const REPLY_THRESHOLD = 60;
+const BACK_THRESHOLD = 80;
+const REPLY_RESISTANCE = 0.5;
+const BACK_RESISTANCE = 0.3;
+
+// ── Состояние жеста ────────────────────
+
+let _gestureMode = null;
+let _gestureBbl = null;
+let _gestureMsg = null;
+let _gestureWrapper = null;
+let _screenEl = null;
+let _swHandler = null;
+let _hintShown = false;
+
+// ── Единый обработчик ──────────────────
+
+function initChatGestures(screenEl) {
+  if (_swHandler) _swHandler.destroy();
+  _screenEl = screenEl;
+  _swHandler = createSwipeHandler(screenEl, {
+    threshold: 1,
+    resistance: 1,
+    onMove(shift) { handleGestureMove(shift); },
+    onSwipeLeft(dx) { handleGestureEnd('left', dx); },
+    onSwipeRight(dx) { handleGestureEnd('right', dx); },
+    onCancel() { handleGestureCancel(); }
+  });
+  screenEl.addEventListener('touchstart', (e) => {
+    const wrapper = e.target.closest('.msg');
+    if (wrapper && wrapper.closest('#chatMessages')) {
+      _gestureMode = 'bubble';
+      _gestureWrapper = wrapper;
+      _gestureBbl = wrapper.querySelector('.bbl');
+      _gestureMsg = _gestureBbl?._msg || null;
+    } else {
+      _gestureMode = 'screen';
+    }
+    _hintShown = false;
+  }, { passive: true });
+}
+
+// ── Движение ───────────────────────────
+
+function handleGestureMove(shift) {
+  if (_gestureMode === 'bubble') {
+    if (shift >= 0) return;
+    const s = shift * REPLY_RESISTANCE;
+    if (_gestureBbl) _gestureBbl.style.transform = 'translateX(' + s + 'px)';
+    if (Math.abs(s) >= 30 && !_hintShown) {
+      const isOut = _gestureWrapper?.classList.contains('msg-out');
+      showReplyHint(_gestureWrapper, isOut);
+      if (navigator.vibrate) navigator.vibrate(10);
+      _hintShown = true;
+    } else if (Math.abs(s) < 30 && _hintShown) {
+      hideReplyHint(_gestureWrapper);
+      _hintShown = false;
+    }
+  } else if (_gestureMode === 'screen') {
+    if (shift <= 0) return;
+    const s = shift * BACK_RESISTANCE;
+    if (_screenEl) _screenEl.style.transform = 'translateX(' + s + 'px)';
+  }
+}
+
+// ── Завершение свайпа ──────────────────
+
+function handleGestureEnd(dir, dx) {
+  if (_gestureMode === 'bubble' && dir === 'left') {
+    springBack(_gestureBbl);
+    hideReplyHint(_gestureWrapper);
+    if (Math.abs(dx) >= REPLY_THRESHOLD) {
+      if (navigator.vibrate) navigator.vibrate(15);
+      startReply(_gestureMsg);
+    }
+  } else if (_gestureMode === 'screen' && dir === 'right') {
+    springBackScreen();
+    if (dx >= BACK_THRESHOLD) {
+      setTimeout(() => window.goBack?.(), 280);
+    }
+  } else {
+    handleGestureCancel();
+  }
+  resetGesture();
+}
+
+// ── Отмена ─────────────────────────────
+
+function handleGestureCancel() {
+  if (_gestureMode === 'bubble') {
+    springBack(_gestureBbl);
+    hideReplyHint(_gestureWrapper);
+  } else if (_gestureMode === 'screen') {
+    springBackScreen();
+  }
+  resetGesture();
+}
+
+// ── Spring-анимации ────────────────────
+
+function springBack(bbl) {
+  if (!bbl) return;
+  bbl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
+  bbl.style.transform = 'translateX(0)';
+  setTimeout(() => { bbl.style.transition = ''; }, 280);
+}
+
+function springBackScreen() {
+  if (!_screenEl) return;
+  _screenEl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
+  _screenEl.style.transform = 'translateX(0)';
+  setTimeout(() => { _screenEl.style.transition = ''; }, 280);
+}
+
+function resetGesture() {
+  _gestureMode = null;
+  _gestureBbl = null;
+  _gestureMsg = null;
+  _gestureWrapper = null;
+  _hintShown = false;
+}
+
+// ── События пузыря (только long-press) ─
+
+function bindBubbleEvents(wrapper, bbl, msg) {
+  bbl._msg = msg;
+  const isOut = wrapper.classList.contains('msg-out');
   let pressTimer = null;
   let lastTouch = null;
   bbl.addEventListener('touchstart', (e) => {
@@ -24,27 +149,9 @@ function bindBubbleEvents(wrapper, bbl, msg, isOut) {
     }, 420);
   });
   bbl.addEventListener('mouseup', () => clearTimeout(pressTimer));
-  // Swipe влево → reply через swipe-manager
-  const springBack = () => {
-    bbl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
-    bbl.style.transform = 'translateX(0)';
-    setTimeout(() => { bbl.style.transition = ''; }, 280);
-    hideReplyHint(wrapper);
-  };
-  const swipeReply = () => { springBack(); startReply(msg); };
-  createSwipeHandler(wrapper, {
-    threshold: 60, resistance: 0.5,
-    onMove(shift) {
-      bbl.style.transform = 'translateX(' + shift + 'px)';
-      if (Math.abs(shift) >= 30) showReplyHint(wrapper, isOut);
-      else hideReplyHint(wrapper);
-    },
-    onSwipeLeft: swipeReply,
-    onCancel: springBack
-  });
 }
 
-// ── Reply hint (иконка при свайпе) ────
+// ── Reply hint (иконка при свайпе) ─────
 
 function showReplyHint(wrapper, isOut) {
   if (wrapper.querySelector('.reply-hint')) return;
@@ -66,32 +173,10 @@ function showReplyHint(wrapper, isOut) {
 }
 
 function hideReplyHint(wrapper) {
-  const el = wrapper.querySelector('.reply-hint');
+  const el = wrapper?.querySelector('.reply-hint');
   if (!el) return;
   el.style.transform = 'translateY(-50%) scale(0)';
   setTimeout(() => el.remove(), 100);
-}
-
-// ── Свайп экрана → goBack() ──────────
-
-let _screenSw = null;
-
-function initChatScreenSwipe(screenEl) {
-  if (_screenSw) _screenSw.destroy();
-  const spring = () => {
-    screenEl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
-    screenEl.style.transform = 'translateX(0)';
-    setTimeout(() => { screenEl.style.transition = ''; }, 280);
-  };
-  _screenSw = createSwipeHandler(screenEl, {
-    threshold: 80, resistance: 0.3,
-    onMove(shift) {
-      if (shift <= 0) return;
-      screenEl.style.transform = 'translateX(' + shift + 'px)';
-    },
-    onSwipeRight() { spring(); setTimeout(() => window.goBack?.(), 280); },
-    onCancel: spring
-  });
 }
 
 // ── Reply ──────────────────────────────
@@ -115,6 +200,6 @@ function cancelReply() {
 // ── Экспорты ───────────────────────────
 
 window.bindBubbleEvents = bindBubbleEvents;
+window.initChatGestures = initChatGestures;
 window.startReply = startReply;
 window.cancelReply = cancelReply;
-window.initChatScreenSwipe = initChatScreenSwipe;
