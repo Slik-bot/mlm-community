@@ -333,3 +333,24 @@
   transform-origin: center;
   transform-box: fill-box;
 }
+
+/* ── Skeleton загрузки ── */
+.cl-skeleton { padding-top: 8px; }
+.cl-skeleton.hidden { display: none; }
+.cl-skeleton-item {
+  height: 72px;
+  margin: 0 16px 1px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: clShimmer 1400ms ease-in-out infinite;
+}
+@keyframes clShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
