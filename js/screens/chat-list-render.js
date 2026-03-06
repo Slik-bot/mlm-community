@@ -49,40 +49,50 @@ function renderClList(convs, tab, query) {
   });
 }
 
-// ═══ Build personal/broker item ═══
+// ═══ Private helpers ═══
 
-function buildClItem(conv) {
-  const o = conv.other || { name: 'Пользователь', avatar_url: '', dna_type: '' };
+const CL_DNA_CLASS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna-r', analyst: 'dna-a' };
+
+function clWrapItem(convId, ava, body, meta, onClick, extraClass) {
   const item = document.createElement('div');
-  item.className = 'cl-item';
-  item.setAttribute('data-conv-id', conv.id);
+  item.className = 'cl-item' + (extraClass ? ' ' + extraClass : '');
+  item.setAttribute('data-conv-id', convId);
+  const inner = document.createElement('div');
+  inner.className = 'cl-inner';
+  inner.appendChild(ava);
+  inner.appendChild(body);
+  inner.appendChild(meta);
+  inner.onclick = onClick;
+  item.appendChild(inner);
+  item.appendChild(clBuildActions());
+  clInitSwipe(item);
+  return item;
+}
 
-  const CL_DNA_CLASS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna-r', analyst: 'dna-a' };
-  const dnaClass = CL_DNA_CLASS[o.dna_type] || '';
+function clBuildAvatar(user) {
+  const dnaClass = CL_DNA_CLASS[user.dna_type] || '';
   const ava = document.createElement('div');
   ava.className = 'cl-ava' + (dnaClass ? ' ' + dnaClass : '');
-  if (o.avatar_url) {
+  if (user.avatar_url) {
     const img = document.createElement('img');
-    img.src = o.avatar_url;
+    img.src = user.avatar_url;
     img.alt = '';
     ava.appendChild(img);
   } else {
-    ava.textContent = (o.name || 'U').charAt(0).toUpperCase();
+    ava.textContent = (user.name || 'U').charAt(0).toUpperCase();
   }
-  ava.appendChild(buildDnaRing(o.dna_type, 48));
-  const isOnline = o.last_active_at &&
-    (Date.now() - new Date(o.last_active_at).getTime()) < 5 * 60 * 1000;
+  ava.appendChild(buildDnaRing(user.dna_type, 48));
+  const isOnline = user.last_active_at &&
+    (Date.now() - new Date(user.last_active_at).getTime()) < 5 * 60 * 1000;
   if (isOnline) {
     const dot = document.createElement('div');
     dot.className = 'cl-online';
     ava.appendChild(dot);
   }
+  return ava;
+}
 
-  const body = document.createElement('div');
-  body.className = 'cl-body';
-  const nameEl = document.createElement('div');
-  nameEl.className = 'cl-name';
-  nameEl.textContent = o.name || 'Пользователь';
+function clBuildPreview(conv) {
   const prev = document.createElement('div');
   prev.className = 'cl-preview';
   const myId = window.getCurrentUser?.()?.id;
@@ -90,49 +100,18 @@ function buildClItem(conv) {
   const txt = conv.lastMsg ? (conv.lastMsg.content || '') : '';
   const display = isMe ? 'Вы: ' + txt : txt;
   prev.textContent = display.length > 40 ? display.substring(0, 40) + '...' : display;
-  body.appendChild(nameEl);
-  body.appendChild(prev);
-
-  const meta = document.createElement('div');
-  meta.className = 'cl-meta';
-  const time = document.createElement('div');
-  time.className = 'cl-time';
-  time.textContent = conv.lastMsg ? clFormatTime(conv.lastMsg.created_at) : '';
-  meta.appendChild(time);
-  if (conv.unread > 0) {
-    const badge = document.createElement('div');
-    badge.className = 'cl-badge';
-    badge.textContent = conv.unread > 99 ? '99+' : conv.unread;
-    meta.appendChild(badge);
-  }
-
-  const inner = document.createElement('div');
-  inner.className = 'cl-inner';
-  inner.appendChild(ava);
-  inner.appendChild(body);
-  inner.appendChild(meta);
-  inner.onclick = function() { window.openChat(conv.id, o); };
-
-  item.appendChild(inner);
-  item.appendChild(clBuildActions());
-  clInitSwipe(item);
-
-  return item;
+  return prev;
 }
 
-// ═══ Build deal item ═══
+function clBuildBadge(unread) {
+  if (!unread || unread <= 0) return null;
+  const badge = document.createElement('div');
+  badge.className = 'cl-badge';
+  badge.textContent = unread > 99 ? '99+' : unread;
+  return badge;
+}
 
-function buildClDealItem(conv) {
-  const d = conv.deal || { title: 'Сделка', status: 'pending', amount: 0 };
-  const st = CL_DEAL_STATUS[d.status] || CL_DEAL_STATUS.pending;
-  const item = document.createElement('div');
-  item.className = 'cl-item cl-item--deal';
-  item.setAttribute('data-conv-id', conv.id);
-
-  const ava = document.createElement('div');
-  ava.className = 'cl-ava cl-ava--deal';
-  ava.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
-
+function clBuildDealBody(d, st) {
   const body = document.createElement('div');
   body.className = 'cl-body';
   const nameEl = document.createElement('div');
@@ -149,7 +128,6 @@ function buildClDealItem(conv) {
   stSpan.textContent = st.label;
   info.appendChild(amtSpan);
   info.appendChild(stSpan);
-
   const bar = document.createElement('div');
   bar.className = 'cl-deal-bar';
   const fill = document.createElement('div');
@@ -160,6 +138,44 @@ function buildClDealItem(conv) {
   body.appendChild(nameEl);
   body.appendChild(info);
   body.appendChild(bar);
+  return body;
+}
+
+// ═══ Build personal/broker item ═══
+
+function buildClItem(conv) {
+  const o = conv.other || { name: 'Пользователь', avatar_url: '', dna_type: '' };
+
+  const body = document.createElement('div');
+  body.className = 'cl-body';
+  const nameEl = document.createElement('div');
+  nameEl.className = 'cl-name';
+  nameEl.textContent = o.name || 'Пользователь';
+  body.appendChild(nameEl);
+  body.appendChild(clBuildPreview(conv));
+
+  const meta = document.createElement('div');
+  meta.className = 'cl-meta';
+  const time = document.createElement('div');
+  time.className = 'cl-time';
+  time.textContent = conv.lastMsg ? clFormatTime(conv.lastMsg.created_at) : '';
+  meta.appendChild(time);
+  const badge = clBuildBadge(conv.unread);
+  if (badge) meta.appendChild(badge);
+
+  return clWrapItem(conv.id, clBuildAvatar(o), body, meta,
+    function() { window.openChat(conv.id, o); });
+}
+
+// ═══ Build deal item ═══
+
+function buildClDealItem(conv) {
+  const d = conv.deal || { title: 'Сделка', status: 'pending', amount: 0 };
+  const st = CL_DEAL_STATUS[d.status] || CL_DEAL_STATUS.pending;
+
+  const ava = document.createElement('div');
+  ava.className = 'cl-ava cl-ava--deal';
+  ava.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
 
   const meta = document.createElement('div');
   meta.className = 'cl-meta';
@@ -169,25 +185,12 @@ function buildClDealItem(conv) {
     act.textContent = 'Действие!';
     meta.appendChild(act);
   }
-  if (conv.unread > 0) {
-    const badge = document.createElement('div');
-    badge.className = 'cl-badge';
-    badge.textContent = conv.unread > 99 ? '99+' : conv.unread;
-    meta.appendChild(badge);
-  }
+  const badge = clBuildBadge(conv.unread);
+  if (badge) meta.appendChild(badge);
 
-  const inner = document.createElement('div');
-  inner.className = 'cl-inner';
-  inner.appendChild(ava);
-  inner.appendChild(body);
-  inner.appendChild(meta);
-  inner.onclick = function() { window.openDeal ? window.openDeal(conv.deal_id) : window.openChat(conv.id); };
-
-  item.appendChild(inner);
-  item.appendChild(clBuildActions());
-  clInitSwipe(item);
-
-  return item;
+  return clWrapItem(conv.id, ava, clBuildDealBody(d, st), meta,
+    function() { window.openDeal ? window.openDeal(conv.deal_id) : window.openChat(conv.id); },
+    'cl-item--deal');
 }
 
 // ═══ Format time ═══
