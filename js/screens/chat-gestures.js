@@ -3,8 +3,6 @@
 // Жесты, swipe-reply
 // ════════════════════════════════════════
 
-const SWIPE_THRESHOLD = 60;
-
 // ── События пузыря ─────────────────────
 
 function bindBubbleEvents(wrapper, bbl, msg, isOut) {
@@ -26,31 +24,24 @@ function bindBubbleEvents(wrapper, bbl, msg, isOut) {
     }, 420);
   });
   bbl.addEventListener('mouseup', () => clearTimeout(pressTimer));
-  // Swipe → reply
-  let startX = 0;
-  let lastDx = 0;
-  wrapper.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    lastDx = 0;
-    bbl.style.transition = '';
-  }, { passive: true });
-  wrapper.addEventListener('touchmove', (e) => {
-    const dx = e.touches[0].clientX - startX;
-    if (isOut && dx > 0) return;
-    if (!isOut && dx < 0) return;
-    lastDx = Math.max(-80, Math.min(80, dx));
-    bbl.style.transform = 'translateX(' + lastDx + 'px)';
-    if (Math.abs(lastDx) >= SWIPE_THRESHOLD) showReplyHint(wrapper, isOut);
-    else hideReplyHint(wrapper);
-  }, { passive: true });
-  wrapper.addEventListener('touchend', () => {
+  // Swipe влево → reply через swipe-manager
+  const springBack = () => {
     bbl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
     bbl.style.transform = 'translateX(0)';
     setTimeout(() => { bbl.style.transition = ''; }, 280);
     hideReplyHint(wrapper);
-    if (Math.abs(lastDx) >= SWIPE_THRESHOLD) startReply(msg);
-    lastDx = 0;
-  }, { passive: true });
+  };
+  const swipeReply = () => { springBack(); startReply(msg); };
+  createSwipeHandler(wrapper, {
+    threshold: 60, resistance: 0.5,
+    onMove(shift) {
+      bbl.style.transform = 'translateX(' + shift + 'px)';
+      if (Math.abs(shift) >= 30) showReplyHint(wrapper, isOut);
+      else hideReplyHint(wrapper);
+    },
+    onSwipeLeft: swipeReply,
+    onCancel: springBack
+  });
 }
 
 // ── Reply hint (иконка при свайпе) ────
@@ -81,6 +72,28 @@ function hideReplyHint(wrapper) {
   setTimeout(() => el.remove(), 100);
 }
 
+// ── Свайп экрана → goBack() ──────────
+
+let _screenSw = null;
+
+function initChatScreenSwipe(screenEl) {
+  if (_screenSw) _screenSw.destroy();
+  const spring = () => {
+    screenEl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
+    screenEl.style.transform = 'translateX(0)';
+    setTimeout(() => { screenEl.style.transition = ''; }, 280);
+  };
+  _screenSw = createSwipeHandler(screenEl, {
+    threshold: 80, resistance: 0.3,
+    onMove(shift) {
+      if (shift <= 0) return;
+      screenEl.style.transform = 'translateX(' + shift + 'px)';
+    },
+    onSwipeRight() { spring(); setTimeout(() => window.goBack?.(), 280); },
+    onCancel: spring
+  });
+}
+
 // ── Reply ──────────────────────────────
 
 function startReply(msg) {
@@ -104,3 +117,4 @@ function cancelReply() {
 window.bindBubbleEvents = bindBubbleEvents;
 window.startReply = startReply;
 window.cancelReply = cancelReply;
+window.initChatScreenSwipe = initChatScreenSwipe;
