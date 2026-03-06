@@ -195,16 +195,9 @@
 
 /* ── Мета (время + галочки) ── */
 .bbl-meta {
-  position: absolute;
-  bottom: 6px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  line-height: 1;
-}
-.bbl > div:not(.bbl-meta):not(.bbl-reply):not(.bbl-rx) {
-  padding-bottom: 18px;
+  display: flex; align-items: center;
+  justify-content: flex-end;
+  gap: 4px; margin-top: 3px;
 }
 .bbl-t { font-size: 10px; color: rgba(255,255,255,0.35); }
 .msg-out .bbl-t { color: rgba(255,255,255,0.5); }
