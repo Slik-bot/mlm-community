@@ -198,7 +198,13 @@
 .bbl-meta {
   display: flex; align-items: center;
   justify-content: flex-end;
-  gap: 4px; margin-top: 3px;
+  gap: 4px; margin-top: 0;
+}
+.bbl-spacer {
+  display: inline-block;
+  width: 52px;
+  height: 1em;
+  vertical-align: bottom;
 }
 .bbl-t { font-size: 11px; color: rgba(255,255,255,0.35); opacity: 0.65; letter-spacing: 0.2px; font-variant-numeric: tabular-nums; }
 .msg-out .bbl-t { color: rgba(255,255,255,0.75); }

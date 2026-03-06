@@ -90,7 +90,11 @@ function buildBubble(msg, isGrp) {
     bbl.appendChild(replyDiv);
   }
   const content = document.createElement('div');
+  content.className = 'bbl-txt';
   content.textContent = msg.content || '';
+  const spacer = document.createElement('span');
+  spacer.className = 'bbl-spacer';
+  content.appendChild(spacer);
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
   bbl.appendChild(meta);
