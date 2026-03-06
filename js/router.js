@@ -171,6 +171,7 @@ function handleExistingTemplate(id) {
   if (id === 'scrProfile' && window.initProfile) window.initProfile();
   if (id === 'scrChatList' && window.initChatList) window.initChatList();
   if (id === 'scrChat' && window.initChat) window.initChat();
+  if (id === 'scrChatInfo' && window.initChatInfo) window.initChatInfo();
 }
 
 function initScreenModule(id) {
