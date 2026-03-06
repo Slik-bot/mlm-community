@@ -37,7 +37,7 @@ function showMsgContextMenu(msg, isOwn, touch) {
   // Reactions row
   const rxRow = document.createElement('div');
   rxRow.className = 'chat-ctx-reactions';
-  const emojis = ['\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDC4D', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDC4E'];
+  const emojis = ['\u2764\uFE0F', '\uD83D\uDD25', '\uD83D\uDC4D', '\uD83E\uDD1D', '\uD83D\uDE02', '\u2753'];
   emojis.forEach(function(em) {
     const btn = document.createElement('button');
     btn.className = 'chat-ctx-rx';
