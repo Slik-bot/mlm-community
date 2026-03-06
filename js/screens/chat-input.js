@@ -3,6 +3,10 @@
 // Отделено от chat-messages.js — 06.03.2026
 // ═══════════════════════════════════════
 
+const CHAR_LIMIT = 4000;
+const CHAR_SHOW = 3500;
+const CHAR_WARN = 3800;
+
 // ── Отправка: хелперы ────────────────────
 
 function buildTempMessage(text, myId, replyRef) {
@@ -71,7 +75,7 @@ function handleSendError(err, tempId, text, box) {
 async function chatSend() {
   const input = document.getElementById('chatInput');
   const text = input?.value.trim();
-  if (!text) return;
+  if (!text || text.length > CHAR_LIMIT) return;
   const convId = window._chatPagination?.convId;
   const myId = window._chatMyId();
   if (!convId || !myId) return;
@@ -110,6 +114,35 @@ function chatToggleSend() {
   if (!input || !btn) return;
   if (input.value.trim()) btn.classList.add('visible');
   else btn.classList.remove('visible');
+  updateCharCount();
+}
+
+function updateCharCount() {
+  const input = document.getElementById('chatInput');
+  const counter = document.getElementById('chatCharCount');
+  const btn = document.getElementById('chatSendBtn');
+  if (!input || !counter) return;
+  const len = input.value.length;
+  if (len < CHAR_SHOW) {
+    counter.classList.add('hidden');
+    counter.classList.remove('char-count--warn', 'char-count--limit');
+    if (btn) btn.disabled = false;
+    return;
+  }
+  counter.classList.remove('hidden');
+  counter.textContent = len + ' / ' + CHAR_LIMIT;
+  if (len >= CHAR_LIMIT) {
+    counter.classList.add('char-count--limit');
+    counter.classList.remove('char-count--warn');
+    if (btn) btn.disabled = true;
+  } else if (len >= CHAR_WARN) {
+    counter.classList.add('char-count--warn');
+    counter.classList.remove('char-count--limit');
+    if (btn) btn.disabled = false;
+  } else {
+    counter.classList.remove('char-count--warn', 'char-count--limit');
+    if (btn) btn.disabled = false;
+  }
 }
 
 function chatInputKeydown(e) {
@@ -174,6 +207,7 @@ window.chatInputResize = chatInputResize;
 window.chatToggleSend = chatToggleSend;
 window.chatInputKeydown = chatInputKeydown;
 window.bindChatInput = bindChatInput;
+window.updateCharCount = updateCharCount;
 window.chatTransfer = chatTransfer;
 window.hideTfModal = hideTfModal;
 window.calcTf = calcTf;
