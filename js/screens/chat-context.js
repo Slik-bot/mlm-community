@@ -22,19 +22,8 @@ function initMessageLongPress(el, msg, isOwn) {
   });
 }
 
-// ===== Show context menu =====
-function showMsgContextMenu(msg, isOwn, touch) {
-  closeMsgContextMenu();
-  window._ctxMsgId = msg.id;
-
-  const ov = document.createElement('div');
-  ov.className = 'chat-ctx-overlay';
-  ov.id = 'chatCtxOverlay';
-
-  const box = document.createElement('div');
-  box.className = 'chat-ctx-box';
-
-  // Reactions row
+// ===== Reactions row =====
+function buildReactionsRow() {
   const rxRow = document.createElement('div');
   rxRow.className = 'chat-ctx-reactions';
   const emojis = ['\u2764\uFE0F', '\uD83D\uDD25', '\uD83D\uDC4D', '\uD83E\uDD1D', '\uD83D\uDE02', '\u2753'];
@@ -67,9 +56,11 @@ function showMsgContextMenu(msg, isOwn, touch) {
     };
     rxRow.appendChild(btn);
   });
-  box.appendChild(rxRow);
+  return rxRow;
+}
 
-  // Action rows
+// ===== Context menu actions =====
+function getContextActions(msg, isOwn) {
   const actions = [
     { label: 'Ответить', icon: 'M3 10h10a8 8 0 018 8v2M3 10l6 6M3 10l6-6', fn: function() { window.startReply(msg); } },
     { label: 'Копировать', icon: 'M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2v-2M16 4h2a2 2 0 012 2v6M8 4a2 2 0 012-2h4a2 2 0 012 2v0M8 4v0', fn: function() {
@@ -80,14 +71,17 @@ function showMsgContextMenu(msg, isOwn, touch) {
       window.showToast('Скоро: пересылка');
     }}
   ];
-
   if (isOwn) {
     actions.push({
       label: 'Удалить', icon: 'M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2',
       fn: function() { window.deleteMessage(msg.id); }, danger: true
     });
   }
+  return actions;
+}
 
+// ===== Build action rows =====
+function buildActionRows(actions, box) {
   actions.forEach(function(a) {
     const row = document.createElement('button');
     row.className = 'chat-ctx-row' + (a.danger ? ' chat-ctx-row--danger' : '');
@@ -98,24 +92,35 @@ function showMsgContextMenu(msg, isOwn, touch) {
     row.addEventListener('click', function() { closeMsgContextMenu(); a.fn(); });
     box.appendChild(row);
   });
+}
 
-  ov.appendChild(box);
-  document.body.appendChild(ov);
-
-  // Position
+// ===== Position + animate =====
+function positionContextMenu(box, ov, touch) {
   const bx = box.getBoundingClientRect();
   const x = Math.min(touch.clientX - 96, window.innerWidth - bx.width - 12);
   const y = Math.min(touch.clientY - 60, window.innerHeight - bx.height - 20);
   box.style.left = Math.max(12, x) + 'px';
   box.style.top = Math.max(20, y) + 'px';
-
-  // Animate in
   requestAnimationFrame(function() { ov.classList.add('on'); });
-
-  // Close on overlay tap
   ov.addEventListener('click', function(e) {
     if (e.target === ov) closeMsgContextMenu();
   });
+}
+
+// ===== Show context menu =====
+function showMsgContextMenu(msg, isOwn, touch) {
+  closeMsgContextMenu();
+  window._ctxMsgId = msg.id;
+  const ov = document.createElement('div');
+  ov.className = 'chat-ctx-overlay';
+  ov.id = 'chatCtxOverlay';
+  const box = document.createElement('div');
+  box.className = 'chat-ctx-box';
+  box.appendChild(buildReactionsRow());
+  buildActionRows(getContextActions(msg, isOwn), box);
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+  positionContextMenu(box, ov, touch);
 }
 
 // ===== Close context menu =====
