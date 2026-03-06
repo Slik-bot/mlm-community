@@ -1,5 +1,8 @@
 // ════════════════════════════════════════
-// CHAT MESSAGES — TRAFIQO
+// CHAT MESSAGES — TRAFIQO (ядро)
+// INPUT → chat-input.js
+// REALTIME → chat-realtime.js
+// RENDER → chat-messages-render.js
 // ════════════════════════════════════════
 
 let _convId = null;
@@ -9,7 +12,6 @@ let _replyTo = null;
 let _msgMap = {};
 let _atBottom = true;
 let _unreadCount = 0;
-let _statusChannel = null;
 let _hasMore = false;
 let _loadingMore = false;
 let _oldestTs = null;
@@ -43,20 +45,16 @@ async function initChatMessages(convId, partner) {
   if (!_convId || !_myId) return;
   window.renderChatHead();
   await loadMessages();
-  bindChatInput();
+  window.bindChatInput();
   bindScrollWatch();
-  window.subscribeChatRealtime(_convId, _myId, onIncomingMessage);
-  subscribeStatusUpdates(_convId, _myId);
+  window.subscribeChatRealtime(_convId, _myId, window.onIncomingMessage);
+  window.subscribeStatusUpdates(_convId, _myId);
   window.initChatPresence(_convId, _myId);
   window.subscribeDelivered?.(_convId, _myId);
   const divider = document.getElementById('msgUnreadDivider');
   if (divider) divider.scrollIntoView({ block: 'center' });
   else scrollToBottom();
 }
-
-// ═══════════════════════════════════════
-// ШАПКА ЧАТА — см. chat-messages-render.js
-// ═══════════════════════════════════════
 
 // ── Загрузка сообщений ─────────────────
 
@@ -116,130 +114,10 @@ async function loadMessages() {
       lastSender = msg.sender_id;
       lastTimestamp = msg.created_at;
     });
-    await markAsRead();
+    await window.markAsRead();
   } catch (err) {
     console.error('loadMessages:', err);
   }
-}
-
-// ═══════════════════════════════════════
-// ПУЗЫРИ И МЕТА — см. chat-messages-render.js
-// ═══════════════════════════════════════
-
-// ── Отправка ───────────────────────────
-
-async function chatSend() {
-  const input = document.getElementById('chatInput');
-  const text = input?.value.trim();
-  if (!text || !_convId) return;
-  if (!_myId) _myId = window.getCurrentUser()?.id;
-  if (!_myId) return;
-  const box = document.getElementById('chatMessages');
-  input.value = '';
-  chatToggleSend();
-  chatInputResize(input);
-  const replyRef = _replyTo;
-  if (_replyTo) window.cancelReply();
-
-  // Optimistic: мгновенный пузырь
-  const tempId = 'temp_' + Date.now();
-  const user = window.getCurrentUser() || {};
-  const tempMsg = {
-    id: tempId,
-    content: text,
-    sender_id: _myId,
-    sender: { id: _myId, name: user.name || '' },
-    created_at: new Date().toISOString(),
-    reply_to: replyRef ? { id: replyRef.id, content: replyRef.content } : null,
-    _temp: true
-  };
-  const el = window.buildBubble(tempMsg, false);
-  el.dataset.tempId = tempId;
-  el.classList.add('msg-new', 'msg-sending');
-  box?.appendChild(el);
-  scrollToBottom();
-
-  if (window.Telegram?.WebApp?.HapticFeedback) {
-    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-  }
-
-  // Фоновая отправка
-  const payload = {
-    conversation_id: _convId,
-    sender_id: _myId,
-    content: text,
-    type: 'text'
-  };
-  if (replyRef) payload.reply_to_id = replyRef.id;
-
-  try {
-    const { data, error } = await window.sb
-      .from('messages').insert(payload)
-      .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
-      .single();
-    if (error) throw error;
-    _msgMap[data.id] = data;
-    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
-    if (tmp) {
-      tmp.dataset.msgId = data.id;
-      tmp.dataset.tempId = '';
-      tmp.classList.remove('msg-sending');
-      const stEl = tmp.querySelector('.msg-status');
-      if (stEl) {
-        stEl.dataset.msgId = data.id;
-        stEl.className = 'msg-status msg-status--sent';
-        stEl.innerHTML = window.buildTicksSVG?.('sent') || '';
-      }
-    }
-    window.sb.from('conversations')
-      .update({ last_message_at: new Date().toISOString() })
-      .eq('id', _convId)
-      .then(function(res) {
-        if (res.error) console.error('update last_message_at:', res.error);
-      });
-  } catch (err) {
-    console.error('chatSend:', err);
-    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
-    if (tmp) {
-      tmp.classList.remove('msg-sending');
-      tmp.classList.add('msg-error');
-      tmp.addEventListener('click', () => {
-        tmp.remove();
-        const inp = document.getElementById('chatInput');
-        if (inp) { inp.value = text; chatToggleSend(); }
-        window.showToast?.('Текст возвращён — отправьте снова');
-      }, { once: true });
-    }
-  }
-}
-
-// ── Пометка доставки ────────────────────
-
-async function markAsDelivered(msgId) {
-  if (!msgId || !window.sb) return;
-  try {
-    const { error } = await window.sb
-      .from('messages')
-      .update({ delivered_at: new Date().toISOString() })
-      .eq('id', msgId)
-      .is('delivered_at', null);
-    if (error) throw error;
-  } catch (err) {
-    console.error('markAsDelivered:', err);
-  }
-}
-
-// ── Обработка входящего сообщения ────────
-
-async function onIncomingMessage(data) {
-  _msgMap[data.id] = data;
-  const box = document.getElementById('chatMessages');
-  const el = window.buildBubble(data, false);
-  el.classList.add('msg-new');
-  box?.appendChild(el);
-  markAsDelivered(data.id);
-  if (_atBottom) { scrollToBottom(); await markAsRead(); }
-  else { _unreadCount++; updateScrollBtn(); }
 }
 
 // ── Удаление ───────────────────────────
@@ -265,80 +143,6 @@ async function deleteMessage(msgId) {
   }
 }
 
-// ── TF перевод ─────────────────────────
-
-function chatTransfer() {
-  document.getElementById('chatTfOv')?.classList.add('on');
-  setTimeout(() => document.getElementById('tfInput')?.focus(), 380);
-}
-function hideTfModal() {
-  document.getElementById('chatTfOv')?.classList.remove('on');
-}
-function calcTf(v) {
-  const el = document.getElementById('tfConvert');
-  if (el) el.textContent = '≈ $' + ((parseFloat(v) || 0) * 0.01).toFixed(2);
-}
-async function sendTf() {
-  window.showToast?.('Скоро: TF перевод');
-  hideTfModal();
-}
-
-// ── Typing indicator ───────────────────
-
-function showTyping() {
-  document.getElementById('chatTyping')?.classList.remove('hidden');
-  scrollToBottom();
-}
-function hideTyping() {
-  document.getElementById('chatTyping')?.classList.add('hidden');
-}
-
-// ── Input хелперы ──────────────────────
-
-function chatInputResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-}
-function chatToggleSend() {
-  const input = document.getElementById('chatInput');
-  const btn = document.getElementById('chatSendBtn');
-  if (!input || !btn) return;
-  if (input.value.trim()) btn.classList.add('visible');
-  else btn.classList.remove('visible');
-}
-function chatInputKeydown(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault(); chatSend();
-  }
-}
-function bindChatInput() {
-  const btn = document.getElementById('chatSendBtn');
-  if (btn) btn.classList.remove('visible');
-  const input = document.getElementById('chatInput');
-  if (input) {
-    input.value = '';
-    chatInputResize(input);
-    input.addEventListener('input', () => window.handleTyping?.());
-  }
-  window.cancelReply();
-  bindTgViewport();
-}
-
-function bindTgViewport() {
-  const tg = window.Telegram?.WebApp;
-  if (!tg) return;
-  const update = () => {
-    const h = tg.viewportHeight;
-    if (h && h > 100) {
-      document.documentElement.style.setProperty(
-        '--tg-viewport-height', h + 'px'
-      );
-    }
-  };
-  tg.onEvent('viewportChanged', update);
-  update();
-}
-
 // ── Скролл ─────────────────────────────
 
 function scrollToBottom() {
@@ -348,10 +152,12 @@ function scrollToBottom() {
   _unreadCount = 0;
   updateScrollBtn();
 }
+
 function scrollToMsg(msgId) {
   const el = document.querySelector('[data-msg-id="' + msgId + '"]');
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
+
 function bindScrollWatch() {
   const box = document.getElementById('chatMessages');
   if (!box) return;
@@ -365,6 +171,7 @@ function bindScrollWatch() {
     updateScrollBtn();
   }, { passive: true });
 }
+
 function updateScrollBtn() {
   const btn = document.getElementById('chScrollBtn');
   const badge = document.getElementById('chScrollBadge');
@@ -379,70 +186,11 @@ function updateScrollBtn() {
   }
 }
 
-// ── Подписка на статусы сообщений ────────
-
-function subscribeStatusUpdates(convId, myId) {
-  if (_statusChannel) {
-    window.sb.removeChannel(_statusChannel);
-    _statusChannel = null;
-  }
-  _statusChannel = window.sb
-    .channel('msg-status:' + convId)
-    .on('postgres_changes', {
-      event: 'UPDATE', schema: 'public',
-      table: 'conversation_members',
-      filter: 'conversation_id=eq.' + convId
-    }, (payload) => {
-      const upd = payload.new;
-      if (upd.user_id === myId) return;
-      const readTime = new Date(upd.last_read_at);
-      document.querySelectorAll('.msg-out .msg-status[data-msg-id]').forEach(el => {
-        if (el.classList.contains('msg-status--read')) return;
-        const bubble = el.closest('[data-created-at]');
-        if (!bubble) return;
-        if (new Date(bubble.dataset.createdAt) <= readTime) {
-          window.updateMsgStatus?.(el.dataset.msgId, 'read');
-        }
-      });
-    })
-    .subscribe();
-  window._statusChannel = _statusChannel;
-}
-
-// ── Прочитано ──────────────────────────
-
-async function markAsRead() {
-  if (!_convId || !_myId) return;
-  const div = document.getElementById('msgUnreadDivider');
-  if (div) {
-    div.style.transition = 'opacity 400ms';
-    div.style.opacity = '0';
-    setTimeout(() => div.remove(), 400);
-  }
-  try {
-    await window.sb.from('conversation_members')
-      .update({ last_read_at: new Date().toISOString() })
-      .eq('conversation_id', _convId)
-      .eq('user_id', _myId);
-  } catch (err) {
-    console.error('markAsRead:', err);
-  }
-}
-
-// ═══════════════════════════════════════
-// ГАЛОЧКИ, РАЗДЕЛИТЕЛИ, ВРЕМЯ — см. chat-messages-render.js
-// ═══════════════════════════════════════
-
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
   const wrap = document.getElementById('scrChat');
   if (wrap) wrap.style.removeProperty('--dna-color');
-  if (_statusChannel) {
-    window.sb.removeChannel(_statusChannel);
-    _statusChannel = null;
-    window._statusChannel = null;
-  }
   window.unsubscribeRealtime();
   _convId = null;
   _myId = null;
@@ -451,7 +199,7 @@ function destroyChat() {
   _msgMap = {};
 }
 
-// ── Доступ к _replyTo для chat-gestures ─
+// ── Доступ к состоянию ─────────────────
 
 window.getChatReplyTo = () => _replyTo;
 window.setChatReplyTo = (v) => { _replyTo = v; };
@@ -461,19 +209,10 @@ window._chatMyId = () => _myId;
 // ── Экспорты ───────────────────────────
 
 window.initChatMessages = initChatMessages;
-window.chatSend = chatSend;
-window.chatInputResize = chatInputResize;
-window.chatToggleSend = chatToggleSend;
-window.chatInputKeydown = chatInputKeydown;
-window.chatTransfer = chatTransfer;
-window.hideTfModal = hideTfModal;
-window.calcTf = calcTf;
-window.sendTf = sendTf;
 window.deleteMessage = deleteMessage;
 window.scrollToBottom = scrollToBottom;
 window.scrollToMsg = scrollToMsg;
-window.showTyping = showTyping;
-window.hideTyping = hideTyping;
+window.updateScrollBtn = updateScrollBtn;
 window.destroyChat = destroyChat;
 
 window._chatPagination = {
@@ -486,5 +225,9 @@ window._chatPagination = {
   get convId()       { return _convId; },
   get myId()         { return _myId; },
   get msgMap()       { return _msgMap; },
-  get msgPageSize()  { return MSG_PAGE; }
+  get msgPageSize()  { return MSG_PAGE; },
+  get atBottom()     { return _atBottom; },
+  set atBottom(v)    { _atBottom = v; },
+  get unreadCount()  { return _unreadCount; },
+  set unreadCount(v) { _unreadCount = v; }
 };

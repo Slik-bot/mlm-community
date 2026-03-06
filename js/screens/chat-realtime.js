@@ -113,6 +113,103 @@ function subscribeDelivered(convId, myId) {
     .subscribe();
 }
 
+// ════════════════════════════════════════
+// Перенесено из chat-messages.js — 06.03.2026
+// ════════════════════════════════════════
+
+// ── Пометка доставки ────────────────────
+
+async function markAsDelivered(msgId) {
+  if (!msgId || !window.sb) return;
+  try {
+    const { error } = await window.sb
+      .from('messages')
+      .update({ delivered_at: new Date().toISOString() })
+      .eq('id', msgId)
+      .is('delivered_at', null);
+    if (error) throw error;
+  } catch (err) {
+    console.error('markAsDelivered:', err);
+  }
+}
+
+// ── Обработка входящего сообщения ────────
+
+async function onIncomingMessage(data) {
+  window._chatPagination.msgMap[data.id] = data;
+  const box = document.getElementById('chatMessages');
+  const el = window.buildBubble(data, false);
+  el.classList.add('msg-new');
+  box?.appendChild(el);
+  markAsDelivered(data.id);
+  if (window._chatPagination.atBottom) { window.scrollToBottom(); await markAsRead(); }
+  else { window._chatPagination.unreadCount++; window.updateScrollBtn(); }
+}
+
+// ── Typing indicator (DOM) ───────────────
+
+function showTyping() {
+  document.getElementById('chatTyping')?.classList.remove('hidden');
+  window.scrollToBottom();
+}
+
+function hideTyping() {
+  document.getElementById('chatTyping')?.classList.add('hidden');
+}
+
+// ── Подписка на статусы сообщений ────────
+
+let _statusChannel = null;
+
+function subscribeStatusUpdates(convId, myId) {
+  if (_statusChannel) {
+    window.sb.removeChannel(_statusChannel);
+    _statusChannel = null;
+  }
+  _statusChannel = window.sb
+    .channel('msg-status:' + convId)
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public',
+      table: 'conversation_members',
+      filter: 'conversation_id=eq.' + convId
+    }, (payload) => {
+      const upd = payload.new;
+      if (upd.user_id === myId) return;
+      const readTime = new Date(upd.last_read_at);
+      document.querySelectorAll('.msg-out .msg-status[data-msg-id]').forEach(el => {
+        if (el.classList.contains('msg-status--read')) return;
+        const bubble = el.closest('[data-created-at]');
+        if (!bubble) return;
+        if (new Date(bubble.dataset.createdAt) <= readTime) {
+          window.updateMsgStatus?.(el.dataset.msgId, 'read');
+        }
+      });
+    })
+    .subscribe();
+}
+
+// ── Прочитано ──────────────────────────
+
+async function markAsRead() {
+  const convId = window._chatPagination?.convId;
+  const myId = window._chatMyId?.();
+  if (!convId || !myId) return;
+  const div = document.getElementById('msgUnreadDivider');
+  if (div) {
+    div.style.transition = 'opacity 400ms';
+    div.style.opacity = '0';
+    setTimeout(() => div.remove(), 400);
+  }
+  try {
+    await window.sb.from('conversation_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('conversation_id', convId)
+      .eq('user_id', myId);
+  } catch (err) {
+    console.error('markAsRead:', err);
+  }
+}
+
 // ── Cleanup ─────────────────────────────
 
 function unsubscribeRealtime() {
@@ -128,6 +225,10 @@ function unsubscribeRealtime() {
     window.sb.removeChannel(_deliveredChannel);
     _deliveredChannel = null;
   }
+  if (_statusChannel) {
+    window.sb.removeChannel(_statusChannel);
+    _statusChannel = null;
+  }
   clearTimeout(_typingTimer);
   _typingTimer = null;
 }
@@ -139,3 +240,9 @@ window.initChatPresence = initChatPresence;
 window.handleTyping = handleTyping;
 window.subscribeDelivered = subscribeDelivered;
 window.unsubscribeRealtime = unsubscribeRealtime;
+window.markAsDelivered = markAsDelivered;
+window.onIncomingMessage = onIncomingMessage;
+window.showTyping = showTyping;
+window.hideTyping = hideTyping;
+window.subscribeStatusUpdates = subscribeStatusUpdates;
+window.markAsRead = markAsRead;
