@@ -3,6 +3,69 @@
 // Отделено от chat-messages.js — 06.03.2026
 // ═══════════════════════════════════════
 
+// ── Отправка: хелперы ────────────────────
+
+function buildTempMessage(text, myId, replyRef) {
+  const user = window.getCurrentUser() || {};
+  return {
+    id: 'temp_' + Date.now(),
+    content: text,
+    sender_id: myId,
+    sender: { id: myId, name: user.name || '' },
+    created_at: new Date().toISOString(),
+    reply_to: replyRef ? { id: replyRef.id, content: replyRef.content } : null,
+    _temp: true
+  };
+}
+
+function insertOptimisticBubble(tempMsg, box) {
+  const el = window.buildBubble(tempMsg, false);
+  el.dataset.tempId = tempMsg.id;
+  el.classList.add('msg-new', 'msg-sending');
+  box?.appendChild(el);
+  window.scrollToBottom();
+  if (window.Telegram?.WebApp?.HapticFeedback) {
+    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  }
+}
+
+function handleSendSuccess(data, tempId, convId, box) {
+  window._chatPagination.msgMap[data.id] = data;
+  const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
+  if (tmp) {
+    tmp.dataset.msgId = data.id;
+    tmp.dataset.tempId = '';
+    tmp.classList.remove('msg-sending');
+    const stEl = tmp.querySelector('.msg-status');
+    if (stEl) {
+      stEl.dataset.msgId = data.id;
+      stEl.className = 'msg-status msg-status--sent';
+      stEl.innerHTML = window.buildTicksSVG?.('sent') || '';
+    }
+  }
+  window.sb.from('conversations')
+    .update({ last_message_at: new Date().toISOString() })
+    .eq('id', convId)
+    .then(function(res) {
+      if (res.error) console.error('update last_message_at:', res.error);
+    });
+}
+
+function handleSendError(err, tempId, text, box) {
+  console.error('chatSend:', err);
+  const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
+  if (tmp) {
+    tmp.classList.remove('msg-sending');
+    tmp.classList.add('msg-error');
+    tmp.addEventListener('click', function() {
+      tmp.remove();
+      const inp = document.getElementById('chatInput');
+      if (inp) { inp.value = text; chatToggleSend(); }
+      window.showToast?.('Текст возвращён — отправьте снова');
+    }, { once: true });
+  }
+}
+
 // ── Отправка ───────────────────────────
 
 async function chatSend() {
@@ -18,76 +81,19 @@ async function chatSend() {
   chatInputResize(input);
   const replyRef = window.getChatReplyTo();
   if (replyRef) window.cancelReply();
-
-  // Optimistic: мгновенный пузырь
-  const tempId = 'temp_' + Date.now();
-  const user = window.getCurrentUser() || {};
-  const tempMsg = {
-    id: tempId,
-    content: text,
-    sender_id: myId,
-    sender: { id: myId, name: user.name || '' },
-    created_at: new Date().toISOString(),
-    reply_to: replyRef ? { id: replyRef.id, content: replyRef.content } : null,
-    _temp: true
-  };
-  const el = window.buildBubble(tempMsg, false);
-  el.dataset.tempId = tempId;
-  el.classList.add('msg-new', 'msg-sending');
-  box?.appendChild(el);
-  window.scrollToBottom();
-
-  if (window.Telegram?.WebApp?.HapticFeedback) {
-    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-  }
-
-  // Фоновая отправка
-  const payload = {
-    conversation_id: convId,
-    sender_id: myId,
-    content: text,
-    type: 'text'
-  };
+  const tempMsg = buildTempMessage(text, myId, replyRef);
+  insertOptimisticBubble(tempMsg, box);
+  const payload = { conversation_id: convId, sender_id: myId, content: text, type: 'text' };
   if (replyRef) payload.reply_to_id = replyRef.id;
-
   try {
     const { data, error } = await window.sb
       .from('messages').insert(payload)
       .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
       .single();
     if (error) throw error;
-    window._chatPagination.msgMap[data.id] = data;
-    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
-    if (tmp) {
-      tmp.dataset.msgId = data.id;
-      tmp.dataset.tempId = '';
-      tmp.classList.remove('msg-sending');
-      const stEl = tmp.querySelector('.msg-status');
-      if (stEl) {
-        stEl.dataset.msgId = data.id;
-        stEl.className = 'msg-status msg-status--sent';
-        stEl.innerHTML = window.buildTicksSVG?.('sent') || '';
-      }
-    }
-    window.sb.from('conversations')
-      .update({ last_message_at: new Date().toISOString() })
-      .eq('id', convId)
-      .then(function(res) {
-        if (res.error) console.error('update last_message_at:', res.error);
-      });
+    handleSendSuccess(data, tempMsg.id, convId, box);
   } catch (err) {
-    console.error('chatSend:', err);
-    const tmp = box?.querySelector('[data-temp-id="' + tempId + '"]');
-    if (tmp) {
-      tmp.classList.remove('msg-sending');
-      tmp.classList.add('msg-error');
-      tmp.addEventListener('click', () => {
-        tmp.remove();
-        const inp = document.getElementById('chatInput');
-        if (inp) { inp.value = text; chatToggleSend(); }
-        window.showToast?.('Текст возвращён — отправьте снова');
-      }, { once: true });
-    }
+    handleSendError(err, tempMsg.id, text, box);
   }
 }
 
