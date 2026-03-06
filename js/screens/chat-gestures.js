@@ -54,11 +54,27 @@ function handleGestureMove(shift) {
     if (shift >= 0) return;
     const s = shift * REPLY_RESISTANCE;
     if (_gestureBbl) _gestureBbl.style.transform = 'translateX(' + s + 'px)';
+    const hint = _gestureWrapper?.querySelector('.reply-hint');
+    if (hint) {
+      hint.style.transform =
+        'translateY(-50%) translateX(' + (-s * 0.6) + 'px)';
+    }
     if (Math.abs(s) >= 30 && !_hintShown) {
       const isOut = _gestureWrapper?.classList.contains('msg-out');
       showReplyHint(_gestureWrapper, isOut);
       if (navigator.vibrate) navigator.vibrate(10);
       _hintShown = true;
+      requestAnimationFrame(() => {
+        const h = _gestureWrapper?.querySelector('.reply-hint');
+        if (!h) return;
+        h.style.transition =
+          'transform 150ms cubic-bezier(0.16,1,0.3,1)';
+        h.style.transform = 'translateY(-50%) scale(1.3)';
+        setTimeout(() => {
+          h.style.transform = 'translateY(-50%) scale(1)';
+          setTimeout(() => { h.style.transition = ''; }, 150);
+        }, 150);
+      });
     } else if (Math.abs(s) < 30 && _hintShown) {
       hideReplyHint(_gestureWrapper);
       _hintShown = false;
@@ -83,7 +99,7 @@ function handleGestureEnd(dir, dx) {
   } else if (_gestureMode === 'screen' && dir === 'right') {
     springBackScreen();
     if (dx >= BACK_THRESHOLD) {
-      setTimeout(() => window.goBack?.(), 280);
+      setTimeout(() => window.goBack?.(), 200);
     }
   } else {
     handleGestureCancel();
@@ -107,16 +123,16 @@ function handleGestureCancel() {
 
 function springBack(bbl) {
   if (!bbl) return;
-  bbl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
+  bbl.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1)';
   bbl.style.transform = 'translateX(0)';
-  setTimeout(() => { bbl.style.transition = ''; }, 280);
+  setTimeout(() => { bbl.style.transition = ''; }, 200);
 }
 
 function springBackScreen() {
   if (!_screenEl) return;
-  _screenEl.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
+  _screenEl.style.transition = 'transform 200ms cubic-bezier(0.16,1,0.3,1)';
   _screenEl.style.transform = 'translateX(0)';
-  setTimeout(() => { _screenEl.style.transition = ''; }, 280);
+  setTimeout(() => { _screenEl.style.transition = ''; }, 200);
 }
 
 function resetGesture() {
