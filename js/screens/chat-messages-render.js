@@ -248,6 +248,7 @@ function formatMsgTime(dateStr) {
 // ── Экспорты ───────────────────────────
 
 window.renderChatHead = renderChatHead;
+window.hexToRgb = hexToRgb;
 window.buildBubble = buildBubble;
 window.buildMeta = buildMeta;
 window.buildTicksSVG = buildTicksSVG;
