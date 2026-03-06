@@ -3,25 +3,6 @@
 // Отделено от chat-messages.js
 // ═══════════════════════════════════════
 
-let _ctxLongPress = null;
-
-// ===== Long press =====
-function initMessageLongPress(el, msg, isOwn) {
-  el.addEventListener('touchstart', function(e) {
-    _ctxLongPress = setTimeout(function() {
-      showMsgContextMenu(msg, isOwn, e.touches[0]);
-    }, 400);
-  }, { passive: true });
-
-  el.addEventListener('touchend', function() {
-    clearTimeout(_ctxLongPress);
-  });
-
-  el.addEventListener('touchmove', function() {
-    clearTimeout(_ctxLongPress);
-  });
-}
-
 // ===== Reactions row =====
 function buildReactionsRow() {
   const rxRow = document.createElement('div');
@@ -133,6 +114,5 @@ function closeMsgContextMenu() {
 
 // ── Экспорты ───────────────────────────
 
-window.initMessageLongPress = initMessageLongPress;
 window.showMsgContextMenu = showMsgContextMenu;
 window.closeMsgContextMenu = closeMsgContextMenu;
