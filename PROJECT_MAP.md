@@ -1,6 +1,6 @@
 # PROJECT MAP — TRAFIQO
 
-> Полная карта проекта. Обновлено: 27 февраля 2026
+> Полная карта проекта. Обновлено: 6 марта 2026
 
 ---
 
@@ -24,13 +24,13 @@ trafiqo/
 ├── WORKFLOW.md             ← Процессы работы
 │
 ├── templates/              ← HTML-экраны (49 файлов, ~2714 строк)
-├── js/                     ← JavaScript (60 файлов, ~13692 строк)
+├── js/                     ← JavaScript (71 файл, ~15531 строк)
 │   ├── api/                ← API-модули (5 файлов)
 │   ├── core/               ← Ядро: events, state, push, splash, telegram (5 файлов)
 │   ├── utils/              ← Утилиты: dna, format, gamification, xp-animations, legacy (5 файлов)
-│   ├── screens/            ← Логика экранов (17 файлов)
+│   ├── screens/            ← Логика экранов (28 файлов)
 │   └── (root js/)          ← Feed, DNA, auth, admin, router и др. (28 файлов)
-├── css/                    ← Стили (28 файлов, ~8949 строк)
+├── css/                    ← Стили (29 файлов, ~9419 строк)
 ├── assets/                 ← Изображения
 ├── supabase/
 │   ├── functions/          ← Edge Functions (15 функций + _shared)
@@ -40,7 +40,7 @@ trafiqo/
 
 ---
 
-## TEMPLATES — HTML-экраны (49 файлов, ~2714 строк)
+## TEMPLATES — HTML-экраны (49 файлов, ~2810 строк)
 
 | Файл | Строк | Описание |
 |------|-------|----------|
@@ -72,8 +72,8 @@ trafiqo/
 | `forum-topic.html` | 41 | Тема форума |
 | `deal-list.html` | 41 | Список сделок |
 | `chat-info.html` | 41 | Информация о чате |
-| `chat.html` | 40 | Экран чата |
-| `chat-list.html` | 40 | Список чатов |
+| `chat.html` | 123 | Экран чата |
+| `chat-list.html` | 53 | Список чатов |
 | `academy.html` | 39 | Академия |
 | `welcome.html` | 37 | Экран приветствия после регистрации |
 | `setup3.html` | 37 | Онбординг шаг 3 — выбор интересов |
@@ -96,7 +96,7 @@ trafiqo/
 
 ---
 
-## JS — JavaScript (60 файлов, ~13692 строк)
+## JS — JavaScript (71 файл, ~15531 строк)
 
 ### Core — Ядро (js/core/, 5 файлов)
 
@@ -159,12 +159,23 @@ trafiqo/
 | `feed.js` | 116 | Лента: FAB, поповеры, фильтры |
 | `feed-cases.js` | 9 | Кейсы в ленте (заглушка) |
 
-### Screens — Экраны (js/screens/, 17 файлов)
+### Screens — Экраны (js/screens/, 28 файлов)
 
 | Файл | Строк | Описание |
 |------|-------|----------|
 | `screens/match.js` | 402 | Матч-система: свайпы, подключения |
-| `screens/chat.js` | 398 | Чат: сообщения, подписки, отправка |
+| `screens/chat.js` | 127 | Чат: точка входа, initChat, findOrCreateConversation |
+| `screens/chat-context.js` | 145 | Контекстное меню сообщений |
+| `screens/chat-info.js` | 56 | Экран информации о чате |
+| `screens/chat-realtime.js` | 281 | Подписки, обновления в реальном времени |
+| `screens/chat-list-render.js` | 330 | buildClItem, buildClDealItem, хелперы рендеринга |
+| `screens/chat-list-new.js` | 250 | initChatList, список чатов |
+| `screens/chat-messages.js` | 255 | loadMessages, renderMessages, destroyChat |
+| `screens/chat-messages-pagination.js` | 65 | loadOlderMessages |
+| `screens/chat-messages-render.js` | 260 | buildBubble, рендер пузырей |
+| `screens/chat-input.js` | 186 | chatSend, ввод, resize |
+| `screens/chat-reactions.js` | 24 | Реакции на сообщения |
+| `screens/chat-gestures.js` | 58 | Свайпы |
 | `screens/deals.js` | 388 | Сделки: список, создание, детали |
 | `screens/shop.js` | 373 | Магазин: товары, покупки |
 | `screens/academy.js` | 364 | Академия: курсы, уроки |
@@ -205,7 +216,7 @@ trafiqo/
 
 ---
 
-## CSS — Стили (28 файлов, ~8949 строк)
+## CSS — Стили (29 файлов, ~9419 строк)
 
 | Файл | Строк | Описание |
 |------|-------|----------|
@@ -214,7 +225,8 @@ trafiqo/
 | `dna.css` | 621 | ДНК-тест + результат + экран «Моё ДНК» |
 | `feed.css` | 530 | Лента: посты, FAB, поповеры, создание, компании |
 | `shop.css` | 460 | Магазин: товары, карточки, создание |
-| `chat.css` | 459 | Чат: сообщения, список, инфо |
+| `chat-list.css` | 335 | Список чатов |
+| `chat-dialog.css` | 594 | Экран диалога |
 | `profile.css` | 458 | Профиль: карточка, звёзды, редактирование, настройки |
 | `deals.css` | 390 | Сделки: список, создание, детали |
 | `tasks.css` | 381 | Задания: список, детали |
@@ -310,13 +322,13 @@ trafiqo/
 
 | Категория | Файлов | Строк |
 |-----------|--------|-------|
-| HTML шаблоны | 49 | ~2714 |
-| JavaScript | 60 | ~13692 |
-| CSS стили | 28 | ~8949 |
+| HTML шаблоны | 49 | ~2810 |
+| JavaScript | 71 | ~15531 |
+| CSS стили | 29 | ~9419 |
 | Root HTML + конфиги | 9 | ~574 |
 | Edge Functions | 16 | ~2163 |
 | SQL миграции | 12 | ~2326 |
-| **ИТОГО свой код** | **174** | **~30418** |
+| **ИТОГО свой код** | **186** | **~32823** |
 | node_modules | 1000+ | НЕ СЧИТАЕМ |
 
 ---
@@ -339,7 +351,7 @@ trafiqo/
 | Онбординг | `js/onboarding.js` + `css/onboarding.css` |
 | Компании | `templates/companies.html` + `js/api/companies.js` + `css/feed.css` |
 | Профиль | `js/screens/profile.js` + `css/profile.css` |
-| Чат | `js/screens/chat.js` + `css/chat.css` |
+| Чат | `js/screens/chat*.js` (12 файлов) + `css/chat-list.css` + `css/chat-dialog.css` |
 | Сделки | `js/screens/deals.js` + `css/deals.css` |
 | Магазин | `js/screens/shop.js` + `css/shop.css` |
 | Форум | `js/screens/forum.js` + `css/forum.css` |
@@ -379,7 +391,7 @@ trafiqo/
 
 ## ПОРЯДОК ЗАГРУЗКИ СКРИПТОВ
 
-### index.html (основное приложение — 55 скриптов)
+### index.html (основное приложение — 67 скриптов)
 
 ```
 1.  supabase-js (CDN)
@@ -422,22 +434,33 @@ trafiqo/
 38. js/feed-polls.js           ← опросы
 39. js/feed-cases.js           ← кейсы
 40. js/screens/profile.js      ← профиль
-41. js/screens/chat.js         ← чат
-42. js/screens/deals.js        ← сделки
-43. js/screens/shop.js         ← магазин
-44. js/screens/forum.js        ← форум
-45. js/screens/tasks.js        ← задания
-46. js/screens/contests.js     ← конкурсы
-47. js/screens/experts.js      ← эксперты
-48. js/screens/match.js        ← матч
-49. js/screens/academy.js      ← академия
-50. js/screens/webinars.js     ← вебинары
-51. js/screens/alliances.js    ← альянсы
-52. js/screens/wallet.js       ← кошелёк
-53. js/screens/verification.js ← верификация
-54. js/screens/notifications.js ← уведомления
-55. js/screens/quest.js        ← квесты
-56. js/screens/more.js         ← меню «Ещё»
+41. js/screens/chat.js              ← чат (точка входа)
+42. js/screens/chat-context.js      ← контекстное меню
+43. js/screens/chat-info.js         ← инфо о чате
+44. js/screens/chat-realtime.js     ← realtime-подписки
+45. js/screens/chat-list-render.js  ← рендер списка чатов
+46. js/screens/chat-list-new.js     ← initChatList
+47. js/screens/chat-messages.js     ← загрузка/рендер сообщений
+48. js/screens/chat-messages-pagination.js ← пагинация
+49. js/screens/chat-messages-render.js     ← buildBubble
+50. js/screens/chat-input.js        ← ввод и отправка
+51. js/screens/chat-reactions.js    ← реакции
+52. js/screens/chat-gestures.js     ← свайпы
+53. js/screens/deals.js             ← сделки
+54. js/screens/shop.js              ← магазин
+55. js/screens/forum.js             ← форум
+56. js/screens/tasks.js             ← задания
+57. js/screens/contests.js          ← конкурсы
+58. js/screens/experts.js           ← эксперты
+59. js/screens/match.js             ← матч
+60. js/screens/academy.js           ← академия
+61. js/screens/webinars.js          ← вебинары
+62. js/screens/alliances.js         ← альянсы
+63. js/screens/wallet.js            ← кошелёк
+64. js/screens/verification.js      ← верификация
+65. js/screens/notifications.js     ← уведомления
+66. js/screens/quest.js             ← квесты
+67. js/screens/more.js              ← меню «Ещё»
 ```
 
 ### admin.html (админ-панель — 8 скриптов)
