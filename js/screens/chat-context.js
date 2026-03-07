@@ -21,14 +21,18 @@ function close() {
   setTimeout(() => { ov.remove(); ct.remove(); }, 220);
 }
 
-function buildReactions(msgId) {
+function buildReactions(msgId, msgEl) {
   const bubble = document.createElement('div');
   bubble.className = 'msg-ctx-bubble';
   REACTIONS.forEach(emoji => {
     const btn = document.createElement('span');
     btn.className = 'msg-ctx-emoji';
     btn.textContent = emoji;
-    btn.addEventListener('click', () => { sendReaction(msgId, emoji); close(); });
+    btn.addEventListener('click', () => {
+      flyEmoji(emoji, btn, msgEl);
+      sendReaction(msgId, emoji);
+      close();
+    });
     bubble.appendChild(btn);
   });
   const more = document.createElement('button');
@@ -36,6 +40,40 @@ function buildReactions(msgId) {
   more.textContent = '▾';
   bubble.appendChild(more);
   return bubble;
+}
+
+function flyEmoji(emoji, fromEl, toEl) {
+  const from = fromEl.getBoundingClientRect();
+  const to = (toEl.closest('.msg') || toEl).getBoundingClientRect();
+  const el = document.createElement('span');
+  el.className = 'emoji-fly';
+  el.textContent = emoji;
+  el.style.left = (from.left + from.width / 2) + 'px';
+  el.style.top  = (from.top  + from.height / 2) + 'px';
+  document.body.appendChild(el);
+  requestAnimationFrame(() => {
+    el.style.setProperty('--tx', (to.left + to.width / 2 - from.left - from.width / 2) + 'px');
+    el.style.setProperty('--ty', (to.top  + to.height / 2 - from.top  - from.height / 2) + 'px');
+    el.classList.add('fly');
+  });
+  setTimeout(() => {
+    el.remove();
+    showReactionBadge(toEl, emoji);
+  }, 550);
+}
+
+function showReactionBadge(msgEl, emoji) {
+  const row = msgEl.closest('.msg') || msgEl.parentElement;
+  if (!row) return;
+  let badge = row.querySelector('.reaction-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.className = 'reaction-badge';
+    row.appendChild(badge);
+  }
+  badge.textContent = emoji;
+  badge.classList.remove('pop');
+  requestAnimationFrame(() => badge.classList.add('pop'));
 }
 
 function buildMenu(msgId, isOwn, createdAt) {
@@ -92,7 +130,7 @@ window.showCtx = function(msgEl, msgId, isOwn, createdAt) {
   container = document.createElement('div');
   container.className = 'msg-ctx-container';
 
-  container.appendChild(buildReactions(msgId));
+  container.appendChild(buildReactions(msgId, msgEl));
   container.appendChild(buildMsgClone(msgEl));
   container.appendChild(buildMenu(msgId, isOwn, createdAt));
 
