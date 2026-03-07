@@ -1,3 +1,5 @@
+(function() {
+'use strict';
 // ═══════════════════════════════════════
 // CHAT — КОНТЕКСТНОЕ МЕНЮ + РЕАКЦИИ
 // Telegram-стиль: emoji bubble + action menu
@@ -157,3 +159,4 @@ window.closeCtx = close;
 window.showMsgContextMenu = showCtx;
 window.closeMsgContextMenu = close;
 window._ctxReady = true;
+})();
