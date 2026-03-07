@@ -9,7 +9,15 @@
   flex-direction: column;
   height: var(--tg-viewport-height, 100dvh);
   overflow: hidden;
-  background: #06060b;
+  background:
+    linear-gradient(
+      160deg,
+      #0d0820 0%,
+      #080618 35%,
+      #060514 65%,
+      #06060b 100%
+    );
+  background-attachment: fixed;
 }
 
 /* ── Шапка ── */
@@ -161,9 +169,9 @@
   min-width: 80px;
   max-width: 100%;
   padding: 7px 12px 7px 12px;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.45;
-  color: #f1f1f5;
+  color: #ffffff;
   position: relative;
   cursor: pointer;
   transition: transform 80ms;
@@ -185,6 +193,7 @@
   border: 1px solid rgba(var(--msg-dna-rgb, 255,255,255), 0.09);
   border-radius: 14px 14px 14px 4px;
   box-shadow: none;
+  color: rgba(255,255,255,0.93);
 }
 .msg-in.grp .bbl { border-radius: 4px 14px 14px 4px; }
 .msg-out .bbl {
