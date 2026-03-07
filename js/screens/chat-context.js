@@ -72,9 +72,14 @@ function buildMenu(msgId, isOwn, createdAt) {
 }
 
 function buildMsgClone(msgEl) {
+  const msgRow = msgEl.closest('.msg') || msgEl.parentElement;
+  const source = msgRow || msgEl;
   const clone = document.createElement('div');
   clone.className = 'msg-ctx-clone';
-  clone.innerHTML = msgEl.outerHTML;
+  const inner = source.cloneNode(true);
+  inner.style.maxWidth = '100%';
+  inner.style.pointerEvents = 'none';
+  clone.appendChild(inner);
   return clone;
 }
 
