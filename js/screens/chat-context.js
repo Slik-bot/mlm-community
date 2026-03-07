@@ -67,16 +67,21 @@ function buildMenu(msgId, isOwn, createdAt) {
 
 function position(el) {
   const r = el.getBoundingClientRect();
-  const wh = window.innerHeight;
-  const spaceBelow = wh - r.bottom;
-  wrap.style.left = Math.min(r.left, window.innerWidth - 240) + 'px';
-  if (spaceBelow > 280) {
-    wrap.style.top = (r.bottom + 8) + 'px';
-    wrap.style.bottom = 'auto';
-  } else {
-    wrap.style.bottom = (wh - r.top + 8) + 'px';
-    wrap.style.top = 'auto';
-  }
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const menuW = 240;
+  const menuH = 320;
+  let left = r.left;
+  let top = r.bottom + 8;
+  if (left + menuW > vw - 8) left = vw - menuW - 8;
+  if (left < 8) left = 8;
+  if (top + menuH > vh - 8) top = r.top - menuH - 8;
+  if (top < 8) top = 8;
+  wrap.style.left = left + 'px';
+  wrap.style.top = top + 'px';
+  wrap.style.bottom = 'auto';
+  wrap.style.right = 'auto';
+  wrap.style.width = menuW + 'px';
 }
 
 function showCtx(msgEl, msgId, isOwn, createdAt) {

@@ -435,34 +435,7 @@
 }
 .ch-send:active { transform: scale(0.87) !important; }
 
-/* ── Контекстное меню ── */
-.ctx-ov {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0);
-  backdrop-filter: blur(0px);
-  -webkit-backdrop-filter: blur(0px);
-  transition: all 230ms;
-  pointer-events: none;
-  display: flex; align-items: center; justify-content: center;
-}
-.ctx-ov.on {
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  pointer-events: all;
-}
-.ctx-box {
-  width: 192px;
-  background: #181828;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 18px; overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.75);
-  opacity: 0; transform: scale(0.8) translateY(12px);
-  transition: all 220ms cubic-bezier(.16,1,.3,1);
-}
-.ctx-ov.on .ctx-box {
-  opacity: 1; transform: scale(1) translateY(0);
-}
+
 
 /* ── TF Modal ── */
 .tf-ov {
@@ -560,59 +533,7 @@
 .msg-sending { opacity: 0.6; }
 .msg-error { opacity: 0.8; border: 1px solid #f43f5e; }
 
-/* Контекстное меню */
-.chat-ctx-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-  z-index: 100;
-}
-.chat-ctx-box {
-  position: fixed;
-  width: auto; max-width: 280px;
-  background: rgba(20,20,40,0.97);
-  border: 1px solid rgba(139,92,246,0.3);
-  border-radius: 14px;
-  backdrop-filter: blur(24px);
-  z-index: 101;
-  padding: 8px;
-}
-.chat-ctx-reactions {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.chat-ctx-rx {
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  transition: transform 0.15s, background 0.15s;
-  cursor: pointer;
-}
-.chat-ctx-rx:active {
-  transform: scale(1.25);
-  background: rgba(139,92,246,0.25);
-}
-.chat-ctx-row {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; padding: 14px 8px; cursor: pointer;
-  background: none; border: none;
-  border-radius: 10px;
-  font-family: inherit; font-size: 15px; color: #e2e8f0;
-  text-align: left;
-  transition: background 150ms;
-}
-.chat-ctx-row:active { background: rgba(255,255,255,0.06); }
-.chat-ctx-row svg { opacity: 0.7; flex-shrink: 0; }
-.chat-ctx-row--danger { color: #f43f5e; }
+
 
 /* ── ДНК-тема диалога ── */
 #scrChat {
