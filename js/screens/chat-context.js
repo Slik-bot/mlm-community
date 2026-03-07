@@ -74,28 +74,30 @@ function flyEmoji(emoji, fromEl, msgEl) {
 }
 
 function showReactionBadge(msgEl, emoji) {
-  let badge = msgEl.querySelector(`.bbl-rx[data-emoji="${emoji}"]`);
-  if (!badge) {
-    badge = document.createElement('div');
-    badge.className = 'bbl-rx';
-    badge.dataset.emoji = emoji;
-    const emojiSpan = document.createElement('span');
-    emojiSpan.textContent = emoji;
-    const cnt = document.createElement('span');
-    cnt.className = 'rx-cnt';
-    cnt.textContent = '1';
-    badge.appendChild(emojiSpan);
-    badge.appendChild(cnt);
-    const meta = msgEl.querySelector('.bbl-meta');
-    if (meta) msgEl.insertBefore(badge, meta);
-    else msgEl.appendChild(badge);
-    requestAnimationFrame(() => badge.classList.add('pop'));
+  const msgRow = msgEl.closest('.msg') || msgEl.parentElement;
+  if (!msgRow) return;
+  let rxRow = msgRow.querySelector('.bbl-reactions');
+  if (!rxRow) {
+    rxRow = document.createElement('div');
+    rxRow.className = 'bbl-reactions';
+    msgRow.appendChild(rxRow);
+  }
+  let pill = rxRow.querySelector(`[data-emoji="${emoji}"]`);
+  if (!pill) {
+    pill = document.createElement('span');
+    pill.className = 'rx-pill';
+    pill.dataset.emoji = emoji;
+    pill.dataset.count = '1';
+    pill.innerHTML = `${emoji} <span class="rx-cnt">1</span>`;
+    rxRow.appendChild(pill);
+    requestAnimationFrame(() => pill.classList.add('pop'));
   } else {
-    const cnt = badge.querySelector('.rx-cnt');
-    const count = parseInt(cnt?.textContent || '1') + 1;
+    const cnt = pill.querySelector('.rx-cnt');
+    const count = parseInt(pill.dataset.count || '1') + 1;
+    pill.dataset.count = String(count);
     if (cnt) cnt.textContent = String(count);
-    badge.classList.remove('pop');
-    requestAnimationFrame(() => badge.classList.add('pop'));
+    pill.classList.remove('pop');
+    requestAnimationFrame(() => pill.classList.add('pop'));
   }
 }
 
