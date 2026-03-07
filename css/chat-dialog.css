@@ -160,7 +160,7 @@
   display: inline-block;
   min-width: 80px;
   max-width: 100%;
-  padding: 7px 12px 22px 12px;
+  padding: 7px 12px 7px 12px;
   font-size: 15px;
   line-height: 1.45;
   color: #f1f1f5;
@@ -172,6 +172,13 @@
 .bbl-text {
   overflow-wrap: break-word;
   word-break: normal;
+}
+.bbl-text::after {
+  content: '';
+  display: inline-block;
+  width: 58px;
+  height: 1px;
+  vertical-align: bottom;
 }
 .msg-in .bbl {
   background: rgba(var(--msg-dna-rgb, 255,255,255), 0.07);
@@ -205,11 +212,12 @@
 /* ── Мета (время + галочки) ── */
 .bbl-meta {
   position: absolute;
-  bottom: 4px;
-  right: 8px;
+  bottom: 5px;
+  right: 9px;
   display: flex;
   align-items: center;
   gap: 3px;
+  line-height: 1;
 }
 .bbl-t {
   font-size: 11px;
