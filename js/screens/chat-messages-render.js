@@ -59,7 +59,8 @@ function buildBubble(msg, isGrp) {
   wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + (isGrp ? ' grp' : '');
   wrapper.dataset.msgId = msg.id;
   wrapper.dataset.createdAt = msg.created_at;
-  if (!isOut) {
+  const convType = window._chatConvType?.() || 'personal';
+  if (!isOut && convType !== 'personal') {
     const av = document.createElement('div');
     av.className = 'msg-av-w';
     if (dnaColor) {
