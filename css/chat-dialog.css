@@ -708,35 +708,52 @@
   width: 100%;
 }
 
-/* ── Emoji fly animation ── */
-.emoji-fly {
+/* ── Emoji burst animation ── */
+.emoji-burst {
   position: fixed;
-  font-size: 28px;
+  font-size: 22px;
   pointer-events: none;
   z-index: 2000;
-  transform: translate(0, 0) scale(1);
+  transform: translate(-50%, -50%) scale(1);
+  animation: emojiBurst 0.7s cubic-bezier(0.34,1.56,0.64,1)
+             var(--delay, 0ms) forwards;
   line-height: 1;
 }
-.emoji-fly.fly {
-  transform: translate(var(--tx), var(--ty)) scale(1.6);
-  opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1),
-              opacity 0.5s ease 0.3s;
+.emoji-burst.main {
+  font-size: 28px;
+  animation: emojiMain 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes emojiBurst {
+  0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  60%  { transform: translate(calc(-50% + var(--tx)),
+                              calc(-50% + var(--ty))) scale(1.4);
+         opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx) * 1.5),
+                              calc(-50% + var(--ty) * 1.5)) scale(0.3);
+         opacity: 0; }
+}
+@keyframes emojiMain {
+  0%   { transform: translate(-50%,-50%) scale(0.8); opacity: 1; }
+  60%  { transform: translate(calc(-50% + var(--tx) * 0.6),
+                              calc(-50% + var(--ty) * 0.6)) scale(1.6);
+         opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)),
+                              calc(-50% + var(--ty))) scale(0.9);
+         opacity: 0; }
 }
 .reaction-badge {
   position: absolute;
-  bottom: -10px;
-  right: 4px;
-  font-size: 18px;
-  background: rgba(20,16,40,0.9);
-  border: 1px solid rgba(255,255,255,0.15);
+  bottom: -12px;
+  right: 6px;
+  font-size: 16px;
+  background: rgba(20,16,40,0.92);
+  border: 1px solid rgba(139,92,246,0.35);
   border-radius: 12px;
-  padding: 2px 6px;
+  padding: 2px 7px;
   z-index: 5;
   transform: scale(0);
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  line-height: 1.4;
 }
-.reaction-badge.pop {
-  transform: scale(1);
-}
+.reaction-badge.pop { transform: scale(1); }
 .msg { position: relative; }

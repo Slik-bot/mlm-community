@@ -35,31 +35,42 @@ function buildReactions(msgId, msgEl) {
     });
     bubble.appendChild(btn);
   });
-  const more = document.createElement('button');
-  more.className = 'msg-ctx-more';
-  more.textContent = '▾';
-  bubble.appendChild(more);
   return bubble;
 }
 
-function flyEmoji(emoji, fromEl, toEl) {
+function flyEmoji(emoji, fromEl, msgEl) {
   const from = fromEl.getBoundingClientRect();
-  const to = (toEl.closest('.msg') || toEl).getBoundingClientRect();
-  const el = document.createElement('span');
-  el.className = 'emoji-fly';
-  el.textContent = emoji;
-  el.style.left = (from.left + from.width / 2) + 'px';
-  el.style.top  = (from.top  + from.height / 2) + 'px';
-  document.body.appendChild(el);
-  requestAnimationFrame(() => {
-    el.style.setProperty('--tx', (to.left + to.width / 2 - from.left - from.width / 2) + 'px');
-    el.style.setProperty('--ty', (to.top  + to.height / 2 - from.top  - from.height / 2) + 'px');
-    el.classList.add('fly');
-  });
+  const row = msgEl.closest('.msg') || msgEl.parentElement;
+  const to = row ? row.getBoundingClientRect() : from;
+  const cx = from.left + from.width / 2;
+  const cy = from.top + from.height / 2;
+  const count = 8;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'emoji-burst';
+    el.textContent = emoji;
+    const angle = (360 / count) * i;
+    const dist = 40 + Math.random() * 30;
+    const tx = Math.cos((angle * Math.PI) / 180) * dist;
+    const ty = Math.sin((angle * Math.PI) / 180) * dist;
+    el.style.cssText = `left:${cx}px;top:${cy}px;
+      --tx:${tx}px;--ty:${ty}px;
+      --delay:${i * 20}ms`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 800);
+  }
+  const main = document.createElement('span');
+  main.className = 'emoji-burst main';
+  main.textContent = emoji;
+  main.style.cssText = `left:${cx}px;top:${cy}px;
+    --tx:${to.left + to.width/2 - cx}px;
+    --ty:${to.top + to.height/2 - cy}px;
+    --delay:0ms`;
+  document.body.appendChild(main);
   setTimeout(() => {
-    el.remove();
-    showReactionBadge(toEl, emoji);
-  }, 550);
+    main.remove();
+    showReactionBadge(msgEl, emoji);
+  }, 600);
 }
 
 function showReactionBadge(msgEl, emoji) {
