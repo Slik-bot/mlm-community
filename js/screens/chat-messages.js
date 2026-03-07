@@ -217,6 +217,13 @@ function destroyChat() {
   _msgMap = {};
 }
 
+// ── Ответ из контекстного меню ─────────
+
+document.addEventListener('chat:reply', (e) => {
+  const msg = _msgMap[e.detail.msgId];
+  if (msg) window.startReply?.(msg);
+});
+
 // ── Доступ к состоянию ─────────────────
 
 window.getChatReplyTo = () => _replyTo;
