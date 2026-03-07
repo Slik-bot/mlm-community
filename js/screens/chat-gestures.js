@@ -143,28 +143,10 @@ function resetGesture() {
   _hintShown = false;
 }
 
-// ── События пузыря (только long-press) ─
+// ── События пузыря (long-press перенесён в chat-messages-render.js) ─
 
 function bindBubbleEvents(wrapper, bbl, msg) {
   bbl._msg = msg;
-  const isOut = wrapper.classList.contains('msg-out');
-  let pressTimer = null;
-  let lastTouch = null;
-  bbl.addEventListener('touchstart', (e) => {
-    lastTouch = e.touches[0];
-    pressTimer = setTimeout(() => {
-      window.showMsgContextMenu(msg, isOut, lastTouch);
-    }, 420);
-  }, { passive: true });
-  bbl.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
-  bbl.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
-  bbl.addEventListener('mousedown', (e) => {
-    lastTouch = { clientX: e.clientX, clientY: e.clientY };
-    pressTimer = setTimeout(() => {
-      window.showMsgContextMenu(msg, isOut, lastTouch);
-    }, 420);
-  });
-  bbl.addEventListener('mouseup', () => clearTimeout(pressTimer));
 }
 
 // ── Reply hint (иконка при свайпе) ─────
