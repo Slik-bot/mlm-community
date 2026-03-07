@@ -19,9 +19,9 @@
   background-image: url('/assets/images/hex-bg.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.09;
-  filter: hue-rotate(var(--dna-hue, 0deg)) saturate(0.5);
-  mix-blend-mode: screen;
+  opacity: 0.18;
+  filter: hue-rotate(var(--dna-hue, 0deg)) saturate(0.6) brightness(1.4);
+  mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 0;
   transition: filter 0.6s ease;
