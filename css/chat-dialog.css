@@ -658,12 +658,21 @@
 .msg-ctx-clone {
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   pointer-events: none;
 }
-.msg-ctx-clone .msg-in,
+.msg-ctx-clone .msg-in {
+  align-self: flex-start;
+}
 .msg-ctx-clone .msg-out {
-  max-width: 100% !important;
+  align-self: flex-end;
+}
+.msg-ctx-clone .msg-in .bbl {
+  background: rgba(40,32,70,0.95) !important;
+  border: 1px solid rgba(139,92,246,0.3) !important;
+}
+.msg-ctx-clone .msg-out .bbl {
+  background: linear-gradient(160deg,#9333EA,#2563EB) !important;
 }
 .msg-ctx-menu {
   background: rgba(22,18,42,0.98);
