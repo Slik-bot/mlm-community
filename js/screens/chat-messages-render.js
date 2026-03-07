@@ -90,7 +90,8 @@ function buildBubble(msg, isGrp) {
     replyDiv.addEventListener('click', () => window.scrollToMsg?.(msg.reply_to.id));
     bbl.appendChild(replyDiv);
   }
-  const content = document.createElement('div');
+  const content = document.createElement('span');
+  content.className = 'bbl-text';
   content.textContent = msg.content || '';
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
