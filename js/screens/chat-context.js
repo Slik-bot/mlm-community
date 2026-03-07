@@ -1,5 +1,3 @@
-if (window._ctxLoaded) { console.warn('[CTX] already loaded, skip'); }
-else { window._ctxLoaded = true;
 // ═══════════════════════════════════════
 // CHAT — КОНТЕКСТНОЕ МЕНЮ + РЕАКЦИИ
 // Telegram-стиль: emoji bubble + action menu
@@ -158,4 +156,4 @@ window.showCtx = showCtx;
 window.closeCtx = close;
 window.showMsgContextMenu = showCtx;
 window.closeMsgContextMenu = close;
-} // end _ctxLoaded guard
+window._ctxReady = true;
