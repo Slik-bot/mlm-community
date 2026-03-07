@@ -741,19 +741,24 @@
                               calc(-50% + var(--ty))) scale(0.9);
          opacity: 0; }
 }
+.reactions-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 8px 2px;
+}
 .reaction-badge {
-  position: absolute;
-  bottom: -12px;
-  right: 6px;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
   background: rgba(20,16,40,0.92);
   border: 1px solid rgba(139,92,246,0.35);
   border-radius: 12px;
-  padding: 2px 7px;
-  z-index: 5;
+  padding: 2px 8px;
+  cursor: pointer;
   transform: scale(0);
   transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 .reaction-badge.pop { transform: scale(1); }
 .msg { position: relative; }

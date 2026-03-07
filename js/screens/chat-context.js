@@ -74,17 +74,31 @@ function flyEmoji(emoji, fromEl, msgEl) {
 }
 
 function showReactionBadge(msgEl, emoji) {
-  const row = msgEl.closest('.msg') || msgEl.parentElement;
+  const row = msgEl.closest('[data-msg-id]')
+           || msgEl.closest('.msg')
+           || msgEl.parentElement;
   if (!row) return;
-  let badge = row.querySelector('.reaction-badge');
-  if (!badge) {
-    badge = document.createElement('div');
-    badge.className = 'reaction-badge';
-    row.appendChild(badge);
+  let wrap = row.querySelector('.reactions-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.className = 'reactions-wrap';
+    row.appendChild(wrap);
   }
-  badge.textContent = emoji;
-  badge.classList.remove('pop');
-  requestAnimationFrame(() => badge.classList.add('pop'));
+  let badge = wrap.querySelector(`[data-emoji="${emoji}"]`);
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'reaction-badge';
+    badge.dataset.emoji = emoji;
+    badge.textContent = emoji + ' 1';
+    wrap.appendChild(badge);
+    requestAnimationFrame(() => badge.classList.add('pop'));
+  } else {
+    const count = parseInt(badge.dataset.count || '1') + 1;
+    badge.dataset.count = count;
+    badge.textContent = emoji + ' ' + count;
+    badge.classList.remove('pop');
+    requestAnimationFrame(() => badge.classList.add('pop'));
+  }
 }
 
 function buildMenu(msgId, isOwn, createdAt) {
