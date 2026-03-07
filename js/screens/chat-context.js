@@ -74,13 +74,11 @@ function flyEmoji(emoji, fromEl, msgEl) {
 }
 
 function showReactionBadge(msgEl, emoji) {
-  const msgRow = msgEl.closest('.msg') || msgEl.parentElement;
-  if (!msgRow) return;
-  let rxRow = msgRow.querySelector('.bbl-reactions');
+  let rxRow = msgEl.querySelector('.bbl-reactions');
   if (!rxRow) {
     rxRow = document.createElement('div');
     rxRow.className = 'bbl-reactions';
-    msgRow.appendChild(rxRow);
+    msgEl.appendChild(rxRow);
   }
   let pill = rxRow.querySelector(`[data-emoji="${emoji}"]`);
   if (!pill) {
