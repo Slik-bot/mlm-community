@@ -88,14 +88,14 @@ function showReactionBadge(msgEl, emoji) {
     pill.dataset.count = '1';
     pill.innerHTML = `${emoji} <span class="rx-cnt">1</span>`;
     rxRow.appendChild(pill);
-    requestAnimationFrame(() => pill.classList.add('pop'));
+    setTimeout(() => pill.classList.add('pop'), 50);
   } else {
     const cnt = pill.querySelector('.rx-cnt');
     const count = parseInt(pill.dataset.count || '1') + 1;
     pill.dataset.count = String(count);
     if (cnt) cnt.textContent = String(count);
     pill.classList.remove('pop');
-    requestAnimationFrame(() => pill.classList.add('pop'));
+    setTimeout(() => pill.classList.add('pop'), 50);
   }
 }
 
@@ -172,9 +172,12 @@ window.closeMsgContextMenu = close;
 window._ctxReady = true;
 
 async function sendReaction(msgId, emoji) {
-  await window.sb?.from?.('reactions')
-    .upsert({ message_id: msgId, user_id: getMyId(), emoji },
-             { onConflict: 'message_id,user_id' });
+  const uid = getMyId();
+  if (!uid || !window.sb) return;
+  await window.sb.from('reactions').upsert(
+    { message_id: msgId, user_id: uid, emoji, updated_at: new Date().toISOString() },
+    { onConflict: 'message_id,user_id' }
+  ).catch(() => {});
 }
 
 function copyText(msgId) {
