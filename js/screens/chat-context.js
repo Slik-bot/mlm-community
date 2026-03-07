@@ -74,26 +74,26 @@ function flyEmoji(emoji, fromEl, msgEl) {
 }
 
 function showReactionBadge(msgEl, emoji) {
-  let rxWrap = msgEl.querySelector('.bbl-rx');
-  if (!rxWrap) {
-    rxWrap = document.createElement('div');
-    rxWrap.className = 'bbl-rx';
-    const meta = msgEl.querySelector('.bbl-meta');
-    if (meta) msgEl.insertBefore(rxWrap, meta);
-    else msgEl.appendChild(rxWrap);
-  }
-  let badge = rxWrap.querySelector(`[data-emoji="${emoji}"]`);
+  let badge = msgEl.querySelector(`.bbl-rx[data-emoji="${emoji}"]`);
   if (!badge) {
-    badge = document.createElement('span');
-    badge.className = 'bbl-rx-item pop';
+    badge = document.createElement('div');
+    badge.className = 'bbl-rx';
     badge.dataset.emoji = emoji;
-    badge.dataset.count = '1';
-    badge.textContent = emoji + '\u00A01';
-    rxWrap.appendChild(badge);
+    const emojiSpan = document.createElement('span');
+    emojiSpan.textContent = emoji;
+    const cnt = document.createElement('span');
+    cnt.className = 'rx-cnt';
+    cnt.textContent = '1';
+    badge.appendChild(emojiSpan);
+    badge.appendChild(cnt);
+    const meta = msgEl.querySelector('.bbl-meta');
+    if (meta) msgEl.insertBefore(badge, meta);
+    else msgEl.appendChild(badge);
+    requestAnimationFrame(() => badge.classList.add('pop'));
   } else {
-    const count = parseInt(badge.dataset.count || '1') + 1;
-    badge.dataset.count = String(count);
-    badge.textContent = emoji + '\u00A0' + count;
+    const cnt = badge.querySelector('.rx-cnt');
+    const count = parseInt(cnt?.textContent || '1') + 1;
+    if (cnt) cnt.textContent = String(count);
     badge.classList.remove('pop');
     requestAnimationFrame(() => badge.classList.add('pop'));
   }
