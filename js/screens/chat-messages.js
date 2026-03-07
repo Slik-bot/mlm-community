@@ -128,8 +128,29 @@ async function loadMessages() {
     const msgs = (msgRes.data || []);
     _hasMore = msgs.length > MSG_PAGE;
     const page = _hasMore ? msgs.slice(0, MSG_PAGE) : msgs;
-    const messages = page.reverse();
+    let messages = page.reverse();
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
+    const msgIds = messages.map(m => m.id);
+    let reactionsMap = {};
+    if (msgIds.length) {
+      const { data: rxData } = await window.sb
+        .from('reactions')
+        .select('message_id, emoji, user_id')
+        .in('message_id', msgIds);
+      if (rxData) {
+        rxData.forEach(r => {
+          if (!reactionsMap[r.message_id]) reactionsMap[r.message_id] = {};
+          if (!reactionsMap[r.message_id][r.emoji])
+            reactionsMap[r.message_id][r.emoji] = { count: 0, users: [] };
+          reactionsMap[r.message_id][r.emoji].count++;
+          reactionsMap[r.message_id][r.emoji].users.push(r.user_id);
+        });
+      }
+      messages = messages.map(m => ({
+        ...m,
+        reactions: reactionsMap[m.id] || {}
+      }));
+    }
     renderMessages(messages, lastReadAt, box);
     applyDnaFallback(box);
     await window.markAsRead();

@@ -55,6 +55,19 @@ function subscribeChatRealtime(convId, myId, onNewMessage) {
       if (!data) return;
       if (typeof onNewMessage === 'function') onNewMessage(data);
     })
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'reactions'
+    }, (payload) => {
+      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+        const { message_id, emoji } = payload.new;
+        const msgEl = document.querySelector(
+          '[data-msg-id="' + message_id + '"] .bbl'
+        );
+        if (msgEl) window.showReactionBadge?.(msgEl, emoji);
+      }
+    })
     .subscribe((status) => {
       if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
         setTimeout(() => subscribeChatRealtime(convId, myId, onNewMessage), 3000);

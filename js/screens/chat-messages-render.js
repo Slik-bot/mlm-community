@@ -108,6 +108,19 @@ function buildBubble(msg, isGrp) {
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
   bbl.appendChild(meta);
+  if (msg.reactions && Object.keys(msg.reactions).length) {
+    const rxRow = document.createElement('div');
+    rxRow.className = 'bbl-reactions';
+    Object.entries(msg.reactions).forEach(([emoji, data]) => {
+      const pill = document.createElement('span');
+      pill.className = 'rx-pill pop';
+      pill.dataset.emoji = emoji;
+      pill.dataset.count = String(data.count);
+      pill.innerHTML = `${emoji} <span class="rx-cnt">${data.count}</span>`;
+      rxRow.appendChild(pill);
+    });
+    bbl.appendChild(rxRow);
+  }
   wrapper.appendChild(bbl);
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
