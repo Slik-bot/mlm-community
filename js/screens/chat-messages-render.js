@@ -90,7 +90,11 @@ function buildBubble(msg, isGrp) {
     analyst: '0deg'
   };
   const resolvedDna = dnaType || window._chatPartner?.()?.dna_type || 'analyst';
-  bbl.style.setProperty('--dna-hue', dnaHueMap[resolvedDna] || '0deg');
+  const scrChat = document.getElementById('scrChat');
+  if (scrChat) {
+    scrChat.style.setProperty('--msg-dna-rgb', dnaColor ? hexToRgb(dnaColor) : '139,92,246');
+    scrChat.style.setProperty('--dna-hue', dnaHueMap[resolvedDna] || '0deg');
+  }
   if (msg.reply_to?.content) {
     const replyDiv = document.createElement('div');
     replyDiv.className = 'bbl-reply';
