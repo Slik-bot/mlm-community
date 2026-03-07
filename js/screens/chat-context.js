@@ -42,14 +42,14 @@ function buildMenu(msgId, isOwn, createdAt) {
   menu.className = 'msg-ctx-menu';
   const canEdit = isOwn && (Date.now() - new Date(createdAt).getTime() < EDIT_LIMIT_MS);
   const items = [
-    { icon: '\u21A9', label: '\u041E\u0442\u0432\u0435\u0442\u0438\u0442\u044C', action: () => triggerReply(msgId) },
-    { icon: '\u2A09', label: '\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C', action: () => copyText(msgId) },
-    ...(canEdit ? [{ icon: '\u270F\uFE0F', label: '\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C', action: () => triggerEdit(msgId) }] : []),
-    { icon: '\u{1F4CC}', label: '\u0417\u0430\u043A\u0440\u0435\u043F\u0438\u0442\u044C', action: () => pinMsg(msgId) },
-    { icon: '\u2197', label: '\u041F\u0435\u0440\u0435\u0441\u043B\u0430\u0442\u044C', action: () => forwardMsg(msgId) },
+    { label: 'Ответить', action: () => triggerReply(msgId) },
+    { label: 'Скопировать', action: () => copyText(msgId) },
+    ...(canEdit ? [{ label: 'Изменить', action: () => triggerEdit(msgId) }] : []),
+    { label: 'Закрепить', action: () => pinMsg(msgId) },
+    { label: 'Переслать', action: () => forwardMsg(msgId) },
     { divider: true },
-    ...(isOwn ? [{ icon: '\u{1F5D1}', label: '\u0423\u0434\u0430\u043B\u0438\u0442\u044C', danger: true, action: () => deleteMsg(msgId) }] : []),
-    { icon: '\u25CE', label: '\u0412\u044B\u0431\u0440\u0430\u0442\u044C', action: () => selectMsg(msgId) },
+    ...(isOwn ? [{ label: 'Удалить', danger: true, action: () => deleteMsg(msgId) }] : []),
+    { label: 'Выбрать', action: () => selectMsg(msgId) },
   ];
   items.forEach(item => {
     if (item.divider) {
@@ -58,7 +58,7 @@ function buildMenu(msgId, isOwn, createdAt) {
     }
     const btn = document.createElement('button');
     btn.className = 'msg-ctx-item' + (item.danger ? ' danger' : '');
-    btn.innerHTML = '<span style="font-size:18px;width:20px;text-align:center">' + item.icon + '</span>' + item.label;
+    btn.innerHTML = '<span>' + item.label + '</span>';
     btn.addEventListener('click', () => { item.action(); close(); });
     menu.appendChild(btn);
   });
@@ -97,8 +97,14 @@ function showCtx(msgEl, msgId, isOwn, createdAt) {
 }
 
 function close() {
-  overlay?.classList.remove('active');
-  wrap?.classList.remove('active');
+  if (!overlay) return;
+  overlay.classList.remove('active');
+  wrap.classList.remove('active');
+  overlay.style.pointerEvents = 'none';
+  setTimeout(() => {
+    if (overlay) overlay.style.pointerEvents = '';
+    if (wrap) wrap.innerHTML = '';
+  }, 200);
 }
 
 async function sendReaction(msgId, emoji) {
