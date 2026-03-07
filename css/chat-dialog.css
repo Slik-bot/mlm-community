@@ -160,9 +160,9 @@
   display: inline-block;
   min-width: 72px;
   max-width: 75%;
-  padding: 7px 11px 22px 11px;
-  word-break: break-word;
-  font-size: 15px; line-height: 1.45;
+  padding: 6px 10px 20px 10px;
+  font-size: 14px;
+  line-height: 1.4;
   color: #f1f1f5;
   position: relative;
   cursor: pointer;
@@ -170,14 +170,14 @@
 }
 .bbl:active { transform: scale(0.975); }
 .bbl-text {
-  white-space: pre-wrap;
   overflow-wrap: break-word;
+  word-break: normal;
 }
 .msg-in .bbl {
   background: rgba(var(--msg-dna-rgb, 255,255,255), 0.07);
-  border: 1px solid rgba(var(--msg-dna-rgb, 255,255,255), 0.1);
+  border: 1px solid rgba(var(--msg-dna-rgb, 255,255,255), 0.09);
   border-radius: 14px 14px 14px 4px;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  box-shadow: none;
 }
 .msg-in.grp .bbl { border-radius: 4px 14px 14px 4px; }
 .msg-out .bbl {
@@ -205,8 +205,8 @@
 /* ── Мета (время + галочки) ── */
 .bbl-meta {
   position: absolute;
-  bottom: 5px;
-  right: 9px;
+  bottom: 4px;
+  right: 8px;
   display: flex;
   align-items: center;
   gap: 3px;
