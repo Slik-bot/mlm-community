@@ -160,9 +160,9 @@
   display: inline-block;
   min-width: 80px;
   max-width: 100%;
-  padding: 6px 10px 20px 10px;
-  font-size: 14px;
-  line-height: 1.4;
+  padding: 7px 12px 22px 12px;
+  font-size: 15px;
+  line-height: 1.45;
   color: #f1f1f5;
   position: relative;
   cursor: pointer;
@@ -212,7 +212,7 @@
   gap: 3px;
 }
 .bbl-t {
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.2px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
