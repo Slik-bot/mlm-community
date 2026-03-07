@@ -71,6 +71,13 @@ function buildMenu(msgId, isOwn, createdAt) {
   return menu;
 }
 
+function buildMsgClone(msgEl) {
+  const clone = document.createElement('div');
+  clone.className = 'msg-ctx-clone';
+  clone.innerHTML = msgEl.outerHTML;
+  return clone;
+}
+
 window.showCtx = function(msgEl, msgId, isOwn, createdAt) {
   if (overlay) close();
 
@@ -81,35 +88,9 @@ window.showCtx = function(msgEl, msgId, isOwn, createdAt) {
   container = document.createElement('div');
   container.className = 'msg-ctx-container';
 
-  const r = msgEl.closest('.msg')?.getBoundingClientRect()
-            || msgEl.getBoundingClientRect();
-  const vh = window.innerHeight;
-  const vw = window.innerWidth;
-  const menuW = Math.min(280, vw - 32);
-  const left = (vw - menuW) / 2;
-
-  const reactions = buildReactions(msgId);
-  const menu = buildMenu(msgId, isOwn, createdAt);
-
-  const spaceBelow = vh - r.bottom;
-  const spaceAbove = r.top;
-
-  if (spaceBelow >= 280) {
-    container.appendChild(reactions);
-    container.appendChild(menu);
-    container.style.top = (r.bottom + 8) + 'px';
-  } else if (spaceAbove >= 280) {
-    container.appendChild(reactions);
-    container.appendChild(menu);
-    container.style.bottom = (vh - r.top + 8) + 'px';
-    container.style.top = 'auto';
-  } else {
-    container.appendChild(reactions);
-    container.appendChild(menu);
-    container.style.top = Math.max(60, r.top - 260) + 'px';
-  }
-  container.style.left = left + 'px';
-  container.style.width = menuW + 'px';
+  container.appendChild(buildReactions(msgId));
+  container.appendChild(buildMsgClone(msgEl));
+  container.appendChild(buildMenu(msgId, isOwn, createdAt));
 
   document.body.appendChild(overlay);
   document.body.appendChild(container);
