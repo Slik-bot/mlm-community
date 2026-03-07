@@ -28,11 +28,18 @@ function buildReactions(msgId, msgEl) {
     const btn = document.createElement('span');
     btn.className = 'msg-ctx-emoji';
     btn.textContent = emoji;
-    btn.addEventListener('click', () => {
+    const onReact = (e) => {
+      e.stopPropagation();
       flyEmoji(emoji, btn, msgEl);
       sendReaction(msgId, emoji);
       close();
-    });
+    };
+    btn.addEventListener('click', onReact);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onReact(e);
+    }, { passive: false });
     bubble.appendChild(btn);
   });
   return bubble;
@@ -148,7 +155,9 @@ window.showCtx = function(msgEl, msgId, isOwn, createdAt) {
 
   overlay = document.createElement('div');
   overlay.className = 'msg-ctx-overlay';
-  overlay.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
 
   container = document.createElement('div');
   container.className = 'msg-ctx-container';
