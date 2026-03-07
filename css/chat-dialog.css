@@ -157,7 +157,9 @@
 
 /* ── Пузырь ── */
 .bbl {
-  min-width: 80px; max-width: 78%; padding: 7px 11px;
+  display: inline-block;
+  width: fit-content;
+  min-width: 60px; max-width: 78%; padding: 10px 12px;
   word-break: break-word;
   font-size: 15px; line-height: 1.4;
   color: #f1f1f5; position: relative;
