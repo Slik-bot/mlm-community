@@ -170,6 +170,7 @@ window.closeCtx = close;
 window.showMsgContextMenu = window.showCtx;
 window.closeMsgContextMenu = close;
 window._ctxReady = true;
+window.showReactionBadge = showReactionBadge;
 
 async function sendReaction(msgId, emoji) {
   const uid = getMyId();
