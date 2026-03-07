@@ -83,6 +83,14 @@ function buildBubble(msg, isGrp) {
   if (!isOut && dnaColor) {
     bbl.style.setProperty('--msg-dna-rgb', hexToRgb(dnaColor));
   }
+  const dnaHueMap = {
+    strategist: '200deg',
+    communicator: '270deg',
+    creator: '330deg',
+    analyst: '0deg'
+  };
+  const resolvedDna = dnaType || window._chatPartner?.()?.dna_type || 'analyst';
+  bbl.style.setProperty('--dna-hue', dnaHueMap[resolvedDna] || '0deg');
   if (msg.reply_to?.content) {
     const replyDiv = document.createElement('div');
     replyDiv.className = 'bbl-reply';
