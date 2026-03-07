@@ -66,17 +66,20 @@ function buildMenu(msgId, isOwn, createdAt) {
 }
 
 function position(el) {
-  const r = el.getBoundingClientRect();
-  const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const menuW = 240;
-  const menuH = 320;
-  let left = r.left;
-  let top = r.bottom + 8;
-  if (left + menuW > vw - 8) left = vw - menuW - 8;
-  if (left < 8) left = 8;
-  if (top + menuH > vh - 8) top = r.top - menuH - 8;
-  if (top < 8) top = 8;
+  const vw = window.innerWidth;
+  const menuW = Math.min(260, vw - 32);
+  const left = (vw - menuW) / 2;
+  const r = el.getBoundingClientRect();
+  const spaceBelow = vh - r.bottom;
+  let top;
+  if (spaceBelow > 320) {
+    top = r.bottom + 10;
+  } else {
+    top = r.top - 320;
+  }
+  if (top < 60) top = 60;
+  if (top + 320 > vh - 10) top = vh - 330;
   wrap.style.left = left + 'px';
   wrap.style.top = top + 'px';
   wrap.style.bottom = 'auto';
