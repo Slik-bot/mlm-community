@@ -158,14 +158,21 @@
 /* ── Пузырь ── */
 .bbl {
   display: inline-block;
-  width: fit-content;
-  max-width: 75%; padding: 8px 10px 8px 12px;
+  max-width: 75%;
+  padding: 8px 10px 8px 12px;
   word-break: break-word;
   font-size: 15px; line-height: 1.45;
   color: #f1f1f5; position: relative;
   cursor: pointer;
   transition: transform 80ms;
-  overflow: hidden;
+}
+.bbl::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.bbl > div:not([class]) {
+  display: inline;
 }
 .bbl:active { transform: scale(0.975); }
 .msg-in .bbl {
@@ -199,15 +206,14 @@
 
 /* ── Мета (время + галочки) ── */
 .bbl-meta {
-  display: inline-flex;
+  float: right;
+  display: flex;
   align-items: center;
   gap: 3px;
-  float: right;
-  margin-left: 6px;
-  margin-top: 4px;
-  margin-bottom: -2px;
+  margin-left: 8px;
+  margin-top: 2px;
   position: relative;
-  bottom: -1px;
+  bottom: -2px;
 }
 .bbl-t {
   font-size: 11px;
