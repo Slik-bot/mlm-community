@@ -98,12 +98,15 @@ function showCtx(msgEl, msgId, isOwn, createdAt) {
 
 function close() {
   if (!overlay) return;
-  overlay.classList.remove('active');
-  wrap.classList.remove('active');
+  const ov = overlay;
+  const wr = wrap;
+  overlay = null;
+  wrap = null;
+  ov.classList.remove('active');
+  wr.classList.remove('active');
   setTimeout(() => {
-    if (wrap) wrap.innerHTML = '';
-    overlay = null;
-    wrap = null;
+    ov.remove();
+    wr.remove();
   }, 220);
 }
 
