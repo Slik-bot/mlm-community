@@ -85,7 +85,6 @@ function position(el) {
 }
 
 function showCtx(msgEl, msgId, isOwn, createdAt) {
-  console.log('[CTX] showCtx called', msgId, isOwn);
   getOrCreate();
   currentMsgEl = msgEl;
   currentMsgId = msgId;
@@ -93,8 +92,6 @@ function showCtx(msgEl, msgId, isOwn, createdAt) {
   wrap.appendChild(buildReactions(msgId));
   wrap.appendChild(buildMenu(msgId, isOwn, createdAt));
   position(msgEl);
-  console.log('[CTX] overlay active:', overlay.classList.contains('active'));
-  console.log('[CTX] wrap style:', wrap.style.cssText);
   overlay.classList.add('active');
   wrap.classList.add('active');
 }
