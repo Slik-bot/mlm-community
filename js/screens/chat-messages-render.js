@@ -112,16 +112,23 @@ function buildBubble(msg, isGrp) {
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
   bbl.addEventListener('contextmenu', (e) => e.preventDefault());
-  bbl.addEventListener('touchstart', () => {
+  const startPress = () => {
     pressTimer = setTimeout(() => {
       window.haptic?.('medium');
       const own = msg.sender_id === window._chatMyId?.();
-      if (window.showCtx) window.showCtx(bbl, msg.id, own, msg.created_at);
+      const ctx = window.showCtx || window.showMsgContextMenu;
+      if (ctx) ctx(bbl, msg.id, own, msg.created_at);
+      else console.warn('[CTX] showCtx not found on window');
     }, 480);
-  }, { passive: true });
-  bbl.addEventListener('touchend', () => clearTimeout(pressTimer));
-  bbl.addEventListener('touchmove', () => clearTimeout(pressTimer));
-  bbl.addEventListener('touchcancel', () => clearTimeout(pressTimer));
+  };
+  const cancelPress = () => clearTimeout(pressTimer);
+  bbl.addEventListener('touchstart', startPress, { passive: true });
+  bbl.addEventListener('touchend', cancelPress);
+  bbl.addEventListener('touchmove', cancelPress);
+  bbl.addEventListener('touchcancel', cancelPress);
+  bbl.addEventListener('mousedown', (e) => { if (e.button === 0) startPress(); });
+  bbl.addEventListener('mouseup', cancelPress);
+  bbl.addEventListener('mouseleave', cancelPress);
   return wrapper;
 }
 
