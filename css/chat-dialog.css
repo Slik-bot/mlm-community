@@ -159,19 +159,18 @@
 .bbl {
   display: inline-block;
   max-width: 75%;
-  padding: 7px 10px 7px 11px;
+  padding: 7px 11px 24px 11px;
   word-break: break-word;
   font-size: 15px; line-height: 1.45;
-  color: #f1f1f5; position: relative;
+  color: #f1f1f5;
+  position: relative;
   cursor: pointer;
   transition: transform 80ms;
 }
 .bbl:active { transform: scale(0.975); }
 .bbl-text {
-  display: inline;
-  word-break: break-word;
-  overflow-wrap: break-word;
   white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 .msg-in .bbl {
   background: rgba(var(--msg-dna-rgb, 255,255,255), 0.07);
@@ -204,17 +203,15 @@
 
 /* ── Мета (время + галочки) ── */
 .bbl-meta {
-  display: inline-flex;
+  position: absolute;
+  bottom: 5px;
+  right: 9px;
+  display: flex;
   align-items: center;
   gap: 3px;
-  margin-left: 6px;
-  vertical-align: bottom;
-  position: relative;
-  bottom: 0px;
-  white-space: nowrap;
 }
 .bbl-t {
-  font-size: 11px;
+  font-size: 10.5px;
   letter-spacing: 0.2px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
