@@ -100,11 +100,11 @@ function close() {
   if (!overlay) return;
   overlay.classList.remove('active');
   wrap.classList.remove('active');
-  overlay.style.pointerEvents = 'none';
   setTimeout(() => {
-    if (overlay) overlay.style.pointerEvents = '';
     if (wrap) wrap.innerHTML = '';
-  }, 200);
+    overlay = null;
+    wrap = null;
+  }, 220);
 }
 
 async function sendReaction(msgId, emoji) {
