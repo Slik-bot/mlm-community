@@ -176,8 +176,13 @@ async function sendReaction(msgId, emoji) {
   const uid = getMyId();
   if (!uid || !window.sb) return;
   await window.sb.from('reactions').upsert(
-    { message_id: msgId, user_id: uid, emoji, updated_at: new Date().toISOString() },
-    { onConflict: 'message_id,user_id' }
+    {
+      user_id: uid,
+      target_type: 'message',
+      target_id: msgId,
+      reaction_type: emoji
+    },
+    { onConflict: 'user_id,target_id,target_type' }
   ).catch(() => {});
 }
 

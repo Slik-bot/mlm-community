@@ -61,11 +61,11 @@ function subscribeChatRealtime(convId, myId, onNewMessage) {
       table: 'reactions'
     }, (payload) => {
       if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-        const { message_id, emoji } = payload.new;
+        const { target_id, reaction_type } = payload.new;
         const msgEl = document.querySelector(
-          '[data-msg-id="' + message_id + '"] .bbl'
+          '[data-msg-id="' + target_id + '"] .bbl'
         );
-        if (msgEl) window.showReactionBadge?.(msgEl, emoji);
+        if (msgEl) window.showReactionBadge?.(msgEl, reaction_type);
       }
     })
     .subscribe((status) => {

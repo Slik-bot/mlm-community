@@ -135,15 +135,16 @@ async function loadMessages() {
     if (msgIds.length) {
       const { data: rxData } = await window.sb
         .from('reactions')
-        .select('message_id, emoji, user_id')
-        .in('message_id', msgIds);
+        .select('target_id, reaction_type, user_id')
+        .eq('target_type', 'message')
+        .in('target_id', msgIds);
       if (rxData) {
         rxData.forEach(r => {
-          if (!reactionsMap[r.message_id]) reactionsMap[r.message_id] = {};
-          if (!reactionsMap[r.message_id][r.emoji])
-            reactionsMap[r.message_id][r.emoji] = { count: 0, users: [] };
-          reactionsMap[r.message_id][r.emoji].count++;
-          reactionsMap[r.message_id][r.emoji].users.push(r.user_id);
+          if (!reactionsMap[r.target_id]) reactionsMap[r.target_id] = {};
+          if (!reactionsMap[r.target_id][r.reaction_type])
+            reactionsMap[r.target_id][r.reaction_type] = { count: 0, users: [] };
+          reactionsMap[r.target_id][r.reaction_type].count++;
+          reactionsMap[r.target_id][r.reaction_type].users.push(r.user_id);
         });
       }
       messages = messages.map(m => ({
