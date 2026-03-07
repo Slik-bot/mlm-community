@@ -110,6 +110,15 @@ function buildBubble(msg, isGrp) {
   bbl.appendChild(meta);
   wrapper.appendChild(bbl);
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
+  let pressTimer;
+  bbl.addEventListener('pointerdown', () => {
+    pressTimer = setTimeout(() => {
+      const own = msg.sender_id === window._chatMyId?.();
+      window.showCtx?.(bbl, msg.id, own, msg.created_at);
+    }, 450);
+  });
+  bbl.addEventListener('pointerup', () => clearTimeout(pressTimer));
+  bbl.addEventListener('pointercancel', () => clearTimeout(pressTimer));
   return wrapper;
 }
 
