@@ -111,14 +111,17 @@ function buildBubble(msg, isGrp) {
   wrapper.appendChild(bbl);
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
-  bbl.addEventListener('pointerdown', () => {
+  bbl.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
     pressTimer = setTimeout(() => {
       const own = msg.sender_id === window._chatMyId?.();
-      window.showCtx?.(bbl, msg.id, own, msg.created_at);
+      if (window.showCtx) window.showCtx(bbl, msg.id, own, msg.created_at);
     }, 450);
   });
   bbl.addEventListener('pointerup', () => clearTimeout(pressTimer));
+  bbl.addEventListener('pointermove', () => clearTimeout(pressTimer));
   bbl.addEventListener('pointercancel', () => clearTimeout(pressTimer));
+  bbl.addEventListener('contextmenu', (e) => e.preventDefault());
   return wrapper;
 }
 
