@@ -107,6 +107,12 @@ function buildBubble(msg, isGrp) {
   content.textContent = msg.content || '';
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
+  if (msg.edited_at) {
+    const editedMark = document.createElement('span');
+    editedMark.className = 'bbl-edited';
+    editedMark.textContent = 'изменено';
+    meta.prepend(editedMark);
+  }
   bbl.appendChild(meta);
   wrapper.appendChild(bbl);
   if (msg.reactions && Object.keys(msg.reactions).length) {
