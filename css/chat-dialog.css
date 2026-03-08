@@ -220,6 +220,9 @@
   height: 1px;
   vertical-align: bottom;
 }
+.bbl--edited .bbl-text::after {
+  width: 115px;
+}
 .msg-in .bbl {
   background: rgba(20, 16, 40, 0.75);
   border: 1px solid rgba(var(--msg-dna-rgb, 139,92,246), 0.25);
