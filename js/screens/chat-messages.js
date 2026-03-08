@@ -256,6 +256,7 @@ window._chatMyId = () => _myId;
 // ── Редактирование сообщения ─────────
 
 async function updateMessage(msgId, newText) {
+  console.error('[EDIT] updateMessage called, msgId:', msgId, 'text:', newText);
   if (!msgId || !newText.trim()) return false;
   try {
     const { error } = await window.sb.from('messages')
