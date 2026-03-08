@@ -28,18 +28,18 @@ function buildReactions(msgId, msgEl) {
     const btn = document.createElement('span');
     btn.className = 'msg-ctx-emoji';
     btn.textContent = emoji;
+    let reacted = false;
     const onReact = (e) => {
       e.stopPropagation();
+      e.preventDefault();
+      if (reacted) return;
+      reacted = true;
       flyEmoji(emoji, btn, msgEl);
       sendReaction(msgId, emoji);
       close();
     };
+    btn.addEventListener('touchend', onReact, { passive: false });
     btn.addEventListener('click', onReact);
-    btn.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onReact(e);
-    }, { passive: false });
     bubble.appendChild(btn);
   });
   return bubble;
@@ -95,7 +95,7 @@ function showReactionBadge(msgEl, emoji) {
     pill.dataset.count = '1';
     pill.innerHTML = `${emoji} <span class="rx-cnt">1</span>`;
     rxRow.appendChild(pill);
-    setTimeout(() => pill.classList.add('pop'), 50);
+    requestAnimationFrame(() => requestAnimationFrame(() => pill.classList.add('pop')));
   } else {
     const cnt = pill.querySelector('.rx-cnt');
     const count = parseInt(pill.dataset.count || '1') + 1;
