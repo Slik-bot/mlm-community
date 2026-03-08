@@ -252,10 +252,9 @@ function showPinBanner(msgId, text, senderName) {
     const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
     const box = document.getElementById('chatMessages');
     if (!msgEl || !box) return;
-    const boxRect = box.getBoundingClientRect();
-    const msgRect = msgEl.getBoundingClientRect();
-    const offset = msgRect.top - boxRect.top + box.scrollTop - (box.clientHeight / 2) + (msgRect.height / 2);
-    box.scrollTo({ top: offset, behavior: 'smooth' });
+    const msgTop = msgEl.offsetTop;
+    const targetScroll = msgTop - (box.clientHeight / 2) + (msgEl.offsetHeight / 2);
+    box.scrollTo({ top: targetScroll, behavior: 'smooth' });
     setTimeout(() => {
       msgEl.classList.add('msg-highlight');
       setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
