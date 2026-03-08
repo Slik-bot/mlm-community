@@ -205,11 +205,30 @@ async function sendReaction(msgId, emoji) {
   }
 }
 
+function showCopyHint(msgId) {
+  const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
+  if (!msgEl) return;
+  const rect = msgEl.getBoundingClientRect();
+  const hint = document.createElement('div');
+  hint.className = 'copy-hint';
+  hint.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Скопировано`;
+  document.body.appendChild(hint);
+  const hintW = 160;
+  const left = Math.min(rect.left + rect.width / 2 - hintW / 2, window.innerWidth - hintW - 16);
+  hint.style.left = Math.max(16, left) + 'px';
+  hint.style.top = (rect.top - 44 + window.scrollY) + 'px';
+  requestAnimationFrame(() => requestAnimationFrame(() => hint.classList.add('show')));
+  setTimeout(() => {
+    hint.classList.add('hide');
+    setTimeout(() => hint.remove(), 220);
+  }, 600);
+}
+
 function copyText(msgId) {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .bbl-text`);
   if (el) {
     navigator.clipboard?.writeText(el.textContent.trim());
-    window.showToast?.('Скопировано', 'ok', 500);
+    showCopyHint(msgId);
   }
 }
 
