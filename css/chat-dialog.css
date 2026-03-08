@@ -216,7 +216,7 @@
 .bbl-text::after {
   content: '';
   display: inline-block;
-  width: 58px;
+  width: 90px;
   height: 1px;
   vertical-align: bottom;
 }
@@ -772,9 +772,10 @@ body { overflow-x: hidden; }
   padding: 0 4px;
 }
 .bbl-edited {
+  display: inline-flex;
+  align-items: center;
   font-size: 10px;
   color: rgba(255,255,255,0.35);
   font-style: italic;
   margin-right: 3px;
-  vertical-align: middle;
 }
