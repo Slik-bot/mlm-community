@@ -184,15 +184,19 @@ window.showReactionBadge = showReactionBadge;
 async function sendReaction(msgId, emoji) {
   const uid = getMyId();
   if (!uid || !window.sb) return;
-  await window.sb.from('reactions').upsert(
-    {
-      user_id: uid,
-      target_type: 'message',
-      target_id: msgId,
-      reaction_type: emoji
-    },
-    { onConflict: 'user_id,target_id,target_type' }
-  ).catch(() => {});
+  try {
+    await window.sb.from('reactions').upsert(
+      {
+        user_id: uid,
+        target_type: 'message',
+        target_id: msgId,
+        reaction_type: emoji
+      },
+      { onConflict: 'user_id,target_id,target_type' }
+    );
+  } catch (err) {
+    console.error('[RX] sendReaction error:', err);
+  }
 }
 
 function copyText(msgId) {
