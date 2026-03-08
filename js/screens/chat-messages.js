@@ -253,10 +253,41 @@ window.setChatReplyTo = (v) => { _replyTo = v; };
 window._chatPartner = () => _partner;
 window._chatMyId = () => _myId;
 
+// ── Редактирование сообщения ─────────
+
+async function updateMessage(msgId, newText) {
+  if (!msgId || !newText.trim()) return false;
+  try {
+    const { error } = await window.sb.from('messages')
+      .update({ content: newText.trim(), edited_at: new Date().toISOString() })
+      .eq('id', msgId)
+      .eq('sender_id', _myId);
+    if (error) throw error;
+    const msgEl = document.querySelector(`[data-msg-id="${msgId}"] .bbl-text`);
+    if (msgEl) msgEl.textContent = newText.trim();
+    const editedEl = document.querySelector(`[data-msg-id="${msgId}"] .bbl-edited`);
+    if (editedEl) editedEl.style.display = 'inline';
+    else {
+      const meta = document.querySelector(`[data-msg-id="${msgId}"] .bbl-meta`);
+      if (meta) {
+        const span = document.createElement('span');
+        span.className = 'bbl-edited';
+        span.textContent = 'изменено';
+        meta.prepend(span);
+      }
+    }
+    return true;
+  } catch (err) {
+    console.error('updateMessage error:', err);
+    return false;
+  }
+}
+
 // ── Экспорты ───────────────────────────
 
 window.initChatMessages = initChatMessages;
 window.deleteMessage = deleteMessage;
+window.updateMessage = updateMessage;
 window.scrollToBottom = scrollToBottom;
 window.scrollToMsg = scrollToMsg;
 window.updateScrollBtn = updateScrollBtn;
