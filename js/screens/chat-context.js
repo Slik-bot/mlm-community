@@ -30,6 +30,7 @@ function buildReactions(msgId, msgEl) {
     btn.textContent = emoji;
     let reacted = false;
     const onReact = (e) => {
+      console.error('[RX] onReact fired, reacted:', reacted);
       e.stopPropagation();
       e.preventDefault();
       if (reacted) return;
@@ -46,6 +47,7 @@ function buildReactions(msgId, msgEl) {
 }
 
 function flyEmoji(emoji, fromEl, msgEl) {
+  console.error('[RX] flyEmoji called, msgEl:', msgEl?.className, 'in DOM:', document.body.contains(msgEl));
   const from = fromEl.getBoundingClientRect();
   const row = msgEl.closest('.msg') || msgEl.parentElement;
   const to = row ? row.getBoundingClientRect() : from;
@@ -75,6 +77,7 @@ function flyEmoji(emoji, fromEl, msgEl) {
     --delay:0ms`;
   document.body.appendChild(main);
   setTimeout(() => {
+    console.error('[RX] setTimeout 600ms fired');
     main.remove();
     showReactionBadge(msgEl, emoji);
   }, 600);
@@ -95,6 +98,8 @@ function showReactionBadge(msgEl, emoji) {
     pill.dataset.count = '1';
     pill.innerHTML = `${emoji} <span class="rx-cnt">1</span>`;
     rxRow.appendChild(pill);
+    console.error('[RX] pill appended, parent in DOM:', document.body.contains(msgEl), 'msgEl:', msgEl.className);
+    setTimeout(() => console.error('[RX] pill after 1s, exists:', document.body.contains(msgEl)), 1000);
     requestAnimationFrame(() => requestAnimationFrame(() => pill.classList.add('pop')));
   } else {
     const cnt = pill.querySelector('.rx-cnt');
