@@ -2,7 +2,7 @@
 'use strict';
 
 const REACTIONS = ['👍','🔥','🤝','❤️','🥰','👎','👏'];
-const EDIT_LIMIT_MS = 48 * 60 * 60 * 1000;
+const EDIT_LIMIT_MS = 15 * 60 * 1000; // 15 минут по ТЗ
 
 let overlay, container;
 
