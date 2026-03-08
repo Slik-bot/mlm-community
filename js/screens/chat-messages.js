@@ -45,6 +45,7 @@ async function initChatMessages(convId, partner) {
   if (!_convId || !_myId) return;
   window.renderChatHead();
   await loadMessages();
+  await loadPinnedMessage(_convId);
   window.bindChatInput();
   bindScrollWatch();
   window.initChatGestures(document.getElementById('scrChat'));
