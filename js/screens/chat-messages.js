@@ -274,6 +274,8 @@ async function updateMessage(msgId, newText) {
         span.className = 'bbl-edited';
         span.textContent = 'изменено';
         meta.prepend(span);
+        const bblEl = document.querySelector(`[data-msg-id="${msgId}"] .bbl`);
+        if (bblEl) bblEl.classList.add('bbl--edited');
       }
     }
     return true;
