@@ -73,6 +73,20 @@ function handleSendError(err, tempId, text, box) {
 // ── Отправка ───────────────────────────
 
 async function chatSend() {
+  const editState = window.getEditState?.();
+  if (editState) {
+    const input = document.getElementById('chatInput');
+    const newText = input?.value.trim();
+    if (!newText) return;
+    const ok = await window.updateMessage?.(editState.msgId, newText);
+    if (ok) {
+      window.closeEdit?.();
+      input.value = '';
+      chatToggleSend();
+      chatInputResize(input);
+    }
+    return;
+  }
   const input = document.getElementById('chatInput');
   const text = input?.value.trim();
   if (!text || text.length > CHAR_LIMIT) return;
