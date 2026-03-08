@@ -198,14 +198,9 @@ function scrollToMsg(msgId) {
   const el = document.querySelector('[data-msg-id="' + msgId + '"]');
   const box = document.getElementById('chatMessages');
   if (!el || !box) return;
-  let top = 0;
-  let node = el;
-  while (node && node !== box) {
-    top += node.offsetTop;
-    node = node.offsetParent;
-    if (!node || node === document.body) break;
-  }
-  const target = top - (box.clientHeight / 2) + (el.offsetHeight / 2);
+  const elRect = el.getBoundingClientRect();
+  const boxRect = box.getBoundingClientRect();
+  const target = box.scrollTop + (elRect.top - boxRect.top) - (box.clientHeight / 2) + (el.offsetHeight / 2);
   box.scrollTop = Math.max(0, target);
   el.classList.add('msg-highlight');
   setTimeout(() => el.classList.remove('msg-highlight'), 1500);
