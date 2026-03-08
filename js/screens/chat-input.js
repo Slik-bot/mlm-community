@@ -168,6 +168,15 @@ function chatInputKeydown(e) {
 function bindChatInput() {
   const btn = document.getElementById('chatSendBtn');
   if (btn) btn.classList.remove('visible');
+  if (btn) {
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      chatSend();
+    }, { passive: false });
+    btn.addEventListener('click', (e) => {
+      if (e.isTrusted && !('ontouchstart' in window)) chatSend();
+    });
+  }
   const input = document.getElementById('chatInput');
   if (input) {
     input.value = '';
