@@ -201,3 +201,38 @@ window.bindBubbleEvents = bindBubbleEvents;
 window.initChatGestures = initChatGestures;
 window.startReply = startReply;
 window.cancelReply = cancelReply;
+
+// ===== EDIT =====
+function startEdit(msgId) {
+  const msgEl = document.querySelector(`[data-msg-id="${msgId}"] .bbl-text`);
+  if (!msgEl) return;
+  const text = msgEl.textContent.trim();
+  const bar = document.getElementById('editBar');
+  const input = document.getElementById('chatInput');
+  const preview = document.getElementById('editPreview');
+  if (!bar || !input || !preview) return;
+  bar._editMsgId = msgId;
+  input.value = text;
+  preview.textContent = text.slice(0, 60) + (text.length > 60 ? '…' : '');
+  bar.classList.add('active');
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function closeEdit() {
+  const bar = document.getElementById('editBar');
+  const input = document.getElementById('chatInput');
+  if (!bar || !input) return;
+  bar.classList.remove('active');
+  bar._editMsgId = null;
+  input.value = '';
+}
+
+document.addEventListener('chat:edit', (e) => startEdit(e.detail.msgId));
+window.closeEdit = closeEdit;
+window.getEditState = () => {
+  const bar = document.getElementById('editBar');
+  const input = document.getElementById('chatInput');
+  if (!bar || !bar.classList.contains('active')) return null;
+  return { msgId: bar._editMsgId, text: input?.value.trim() };
+};
