@@ -285,11 +285,54 @@ async function updateMessage(msgId, newText) {
   }
 }
 
+// ── Закрепление сообщения ────────────
+
+async function pinMessage(msgId, convId) {
+  if (!msgId || !convId) return;
+  try {
+    const { data: conv } = await window.sb
+      .from('conversations').select('pinned_message_id').eq('id', convId).single();
+    const newPin = conv?.pinned_message_id === msgId ? null : msgId;
+    const { error } = await window.sb
+      .from('conversations').update({ pinned_message_id: newPin }).eq('id', convId);
+    if (error) throw error;
+    if (newPin) {
+      const { data: msg } = await window.sb
+        .from('messages').select('content,sender:users!sender_id(name)')
+        .eq('id', newPin).single();
+      window.showPinBanner?.(newPin, msg?.content || '', msg?.sender?.name || '');
+    } else {
+      window.hidePinBanner?.();
+    }
+    window.showToast?.(newPin ? 'Сообщение закреплено' : 'Сообщение откреплено', 'ok', 1500);
+  } catch (err) {
+    console.error('pinMessage error:', err);
+    window.showToast?.('Ошибка', 'err', 1500);
+  }
+}
+
+async function loadPinnedMessage(convId) {
+  if (!convId) return;
+  try {
+    const { data } = await window.sb
+      .from('conversations')
+      .select('pinned_message_id, pinned:messages!pinned_message_id(id,content,sender:users!sender_id(name))')
+      .eq('id', convId).single();
+    if (data?.pinned_message_id && data?.pinned) {
+      window.showPinBanner?.(data.pinned.id, data.pinned.content, data.pinned.sender?.name || '');
+    }
+  } catch (err) {
+    console.error('loadPinnedMessage error:', err);
+  }
+}
+
 // ── Экспорты ───────────────────────────
 
 window.initChatMessages = initChatMessages;
 window.deleteMessage = deleteMessage;
 window.updateMessage = updateMessage;
+window.pinMessage = pinMessage;
+window.loadPinnedMessage = loadPinnedMessage;
 window.scrollToBottom = scrollToBottom;
 window.scrollToMsg = scrollToMsg;
 window.updateScrollBtn = updateScrollBtn;
