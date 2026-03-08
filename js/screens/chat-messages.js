@@ -201,7 +201,7 @@ function scrollToMsg(msgId) {
   const elRect = el.getBoundingClientRect();
   const boxRect = box.getBoundingClientRect();
   const target = box.scrollTop + (elRect.top - boxRect.top) - (box.clientHeight / 2) + (el.offsetHeight / 2);
-  box.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+  box.scrollTo({ top: Math.max(0, target), behavior: 'instant' });
 }
 
 function bindScrollWatch() {
