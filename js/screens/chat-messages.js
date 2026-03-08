@@ -196,7 +196,12 @@ function scrollToBottom() {
 
 function scrollToMsg(msgId) {
   const el = document.querySelector('[data-msg-id="' + msgId + '"]');
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const box = document.getElementById('chatMessages');
+  if (!el || !box) return;
+  const elRect = el.getBoundingClientRect();
+  const boxRect = box.getBoundingClientRect();
+  const target = box.scrollTop + (elRect.top - boxRect.top) - (box.clientHeight / 2) + (el.offsetHeight / 2);
+  box.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
 }
 
 function bindScrollWatch() {
