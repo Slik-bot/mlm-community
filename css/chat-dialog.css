@@ -283,16 +283,13 @@
 /* ── Реакции под пузырём ── */
 .bbl-reactions {
   display: none !important;
-  /* display: flex; */
   flex-wrap: wrap;
   gap: 4px;
   padding: 2px 4px 0 4px;
   max-width: 82vw;
 }
-
 .msg-in .bbl-reactions { justify-content: flex-start; }
 .msg-out .bbl-reactions { justify-content: flex-end; align-self: flex-end; }
-
 .rx-pill {
   display: inline-flex;
   align-items: center;
@@ -314,7 +311,6 @@
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
-
 .msg-out .rx-pill { transform-origin: top right; }
 .rx-pill.pop { opacity: 1; transform: scale(1); }
 .rx-pill.own { border-color: rgba(139,92,246,0.75); background: rgba(139,92,246,0.18); }
@@ -461,8 +457,6 @@
 }
 .ch-send:active { transform: scale(0.87) !important; }
 
-
-
 /* ── TF Modal ── */
 .tf-ov {
   position: fixed; inset: 0; z-index: 300;
@@ -559,8 +553,6 @@
 .msg-sending { opacity: 0.6; }
 .msg-error { opacity: 0.8; border: 1px solid #f43f5e; }
 
-
-
 /* ── ДНК-тема диалога ── */
 #scrChat {
   --dna-color: #8b5cf6;
@@ -574,7 +566,6 @@
   vertical-align: middle;
   transition: transform 300ms ease;
 }
-
 .msg-status__spinner {
   width: 10px;
   height: 10px;
@@ -583,15 +574,12 @@
   border-radius: 50%;
   animation: msgSpin 600ms linear infinite;
 }
-
 @keyframes msgSpin {
   to { transform: rotate(360deg); }
 }
-
 .msg-status--read svg path {
   stroke: #8b5cf6;
 }
-
 /* ── Счётчик символов ── */
 .char-count {
   font-size: 11px;
