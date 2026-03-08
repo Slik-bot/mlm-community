@@ -773,6 +773,8 @@ body { overflow-x: hidden; }
 }
 .bbl-edited {
   font-size: 10px;
-  color: rgba(255,255,255,0.4);
-  margin-right: 4px;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  margin-right: 3px;
+  vertical-align: middle;
 }
