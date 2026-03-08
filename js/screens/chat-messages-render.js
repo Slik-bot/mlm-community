@@ -112,6 +112,7 @@ function buildBubble(msg, isGrp) {
     editedMark.className = 'bbl-edited';
     editedMark.textContent = 'изменено';
     meta.prepend(editedMark);
+    bbl.classList.add('bbl--edited');
   }
   bbl.appendChild(meta);
   wrapper.appendChild(bbl);
@@ -136,7 +137,7 @@ function buildBubble(msg, isGrp) {
       window.haptic?.('medium');
       const own = msg.sender_id === window._chatMyId?.();
       const ctx = window.showCtx || window.showMsgContextMenu;
-      if (ctx) ctx(bbl, msg.id, own, msg.created_at);
+      if (ctx) ctx(bbl, wrapper.dataset.msgId, own, msg.created_at);
       else console.warn('[CTX] showCtx not found on window');
     }, 480);
   };
