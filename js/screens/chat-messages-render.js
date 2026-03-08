@@ -107,7 +107,7 @@ function buildBubble(msg, isGrp) {
   content.textContent = msg.content || '';
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
-  if (msg.edited_at) {
+  if (msg.is_edited) {
     const editedMark = document.createElement('span');
     editedMark.className = 'bbl-edited';
     editedMark.textContent = 'изменено';

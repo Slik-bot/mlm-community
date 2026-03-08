@@ -74,14 +74,11 @@ function handleSendError(err, tempId, text, box) {
 
 async function chatSend() {
   const editState = window.getEditState?.();
-  console.error('[EDIT] editState:', JSON.stringify(editState));
   if (editState) {
     const input = document.getElementById('chatInput');
     const newText = input?.value.trim();
-    console.error('[EDIT] newText:', newText);
     if (!newText) return;
     const ok = await window.updateMessage?.(editState.msgId, newText);
-    console.error('[EDIT] updateMessage result:', ok);
     if (ok) {
       window.closeEdit?.();
       input.value = '';
