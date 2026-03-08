@@ -209,7 +209,7 @@ function copyText(msgId) {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .bbl-text`);
   if (el) {
     navigator.clipboard?.writeText(el.textContent.trim());
-    window.showToast?.('Скопировано', 'ok');
+    window.showToast?.('Скопировано', 'ok', 1200);
   }
 }
 
