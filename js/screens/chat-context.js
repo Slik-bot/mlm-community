@@ -207,7 +207,10 @@ async function sendReaction(msgId, emoji) {
 
 function copyText(msgId) {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .bbl-text`);
-  if (el) navigator.clipboard?.writeText(el.textContent.trim());
+  if (el) {
+    navigator.clipboard?.writeText(el.textContent.trim());
+    window.showToast?.('Скопировано', 'ok');
+  }
 }
 
 function triggerReply(msgId) {
