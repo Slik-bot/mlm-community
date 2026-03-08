@@ -84,11 +84,12 @@ function flyEmoji(emoji, fromEl, msgEl) {
 }
 
 function showReactionBadge(msgEl, emoji) {
-  let rxRow = msgEl.querySelector('.bbl-reactions');
+  const msgWrapper = msgEl.closest('.msg') || msgEl.parentElement;
+  let rxRow = msgWrapper.querySelector('.bbl-reactions');
   if (!rxRow) {
     rxRow = document.createElement('div');
     rxRow.className = 'bbl-reactions';
-    msgEl.appendChild(rxRow);
+    msgWrapper.appendChild(rxRow);
   }
   let pill = rxRow.querySelector(`[data-emoji="${emoji}"]`);
   if (!pill) {
