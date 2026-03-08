@@ -60,6 +60,7 @@ function subscribeChatRealtime(convId, myId, onNewMessage) {
       schema: 'public',
       table: 'reactions'
     }, (payload) => {
+      if (payload.new.user_id === myId) return;
       if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
         const { target_id, reaction_type } = payload.new;
         const msgEl = document.querySelector(
