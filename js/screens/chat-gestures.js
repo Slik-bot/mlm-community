@@ -265,16 +265,14 @@ function showPinBanner(msgId, text, senderName) {
 
   newBanner.onclick = () => {
     const targetId = newBanner.dataset.msgId;
+    window.scrollToMsg?.(targetId);
     const msgEl = document.querySelector(`[data-msg-id="${targetId}"]`);
-    const box = document.getElementById('chatMessages');
-    if (!msgEl || !box) return;
-    const boxTop = box.getBoundingClientRect().top;
-    const msgTop = msgEl.getBoundingClientRect().top;
-    const diff = msgTop - boxTop;
-    const target = box.scrollTop + diff - (box.clientHeight / 2) + (msgEl.offsetHeight / 2);
-    box.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-    msgEl.classList.add('msg-highlight');
-    setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
+    if (msgEl) {
+      setTimeout(() => {
+        msgEl.classList.add('msg-highlight');
+        setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
+      }, 400);
+    }
   };
 }
 
