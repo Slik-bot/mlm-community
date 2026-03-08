@@ -108,6 +108,7 @@ function buildBubble(msg, isGrp) {
   bbl.appendChild(content);
   const meta = buildMeta(msg, isOut);
   bbl.appendChild(meta);
+  wrapper.appendChild(bbl);
   if (msg.reactions && Object.keys(msg.reactions).length) {
     const rxRow = document.createElement('div');
     rxRow.className = 'bbl-reactions';
@@ -119,9 +120,8 @@ function buildBubble(msg, isGrp) {
       pill.innerHTML = `${emoji} <span class="rx-cnt">${data.count}</span>`;
       rxRow.appendChild(pill);
     });
-    bbl.appendChild(rxRow);
+    wrapper.appendChild(rxRow);
   }
-  wrapper.appendChild(bbl);
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
   bbl.addEventListener('contextmenu', (e) => e.preventDefault());
