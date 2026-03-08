@@ -248,25 +248,33 @@ function showPinBanner(msgId, text, senderName) {
   if (name) name.textContent = senderName;
   banner.dataset.msgId = msgId;
   banner.classList.add('active');
-  banner.onclick = () => {
-    const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
+
+  const newBanner = banner.cloneNode(true);
+  banner.parentNode.replaceChild(newBanner, banner);
+
+  newBanner.querySelector('.pin-preview').textContent =
+    text.slice(0, 80) + (text.length > 80 ? '…' : '');
+  newBanner.querySelector('.pin-name').textContent = senderName;
+  newBanner.dataset.msgId = msgId;
+  newBanner.classList.add('active');
+
+  newBanner.querySelector('.pin-close').onclick = (e) => {
+    e.stopPropagation();
+    window.hidePinBanner?.();
+  };
+
+  newBanner.onclick = () => {
+    const targetId = newBanner.dataset.msgId;
+    const msgEl = document.querySelector(`[data-msg-id="${targetId}"]`);
     const box = document.getElementById('chatMessages');
-    console.error('[PIN] msgId:', msgId);
-    console.error('[PIN] msgEl found:', !!msgEl);
     if (!msgEl || !box) return;
-    const boxRect = box.getBoundingClientRect();
-    const msgRect = msgEl.getBoundingClientRect();
-    const currentScroll = box.scrollTop;
-    const msgRelativeTop = msgRect.top - boxRect.top;
-    const targetScroll = currentScroll + msgRelativeTop - (box.clientHeight/2) + (msgEl.offsetHeight/2);
-    console.error('[PIN] currentScroll:', currentScroll);
-    console.error('[PIN] msgRelativeTop:', msgRelativeTop);
-    console.error('[PIN] targetScroll:', targetScroll);
-    box.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
-    setTimeout(() => {
-      msgEl.classList.add('msg-highlight');
-      setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
-    }, 500);
+    const boxTop = box.getBoundingClientRect().top;
+    const msgTop = msgEl.getBoundingClientRect().top;
+    const diff = msgTop - boxTop;
+    const target = box.scrollTop + diff - (box.clientHeight / 2) + (msgEl.offsetHeight / 2);
+    box.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+    msgEl.classList.add('msg-highlight');
+    setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
   };
 }
 
