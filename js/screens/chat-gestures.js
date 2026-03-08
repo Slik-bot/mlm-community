@@ -236,3 +236,36 @@ window.getEditState = () => {
   if (!bar || !bar.classList.contains('active')) return null;
   return { msgId: bar._editMsgId, text: input?.value.trim() };
 };
+
+// ===== PIN BANNER =====
+
+function showPinBanner(msgId, text, senderName) {
+  const banner = document.getElementById('pinBanner');
+  if (!banner) return;
+  const preview = banner.querySelector('.pin-preview');
+  const name = banner.querySelector('.pin-name');
+  if (preview) preview.textContent = text.slice(0, 80) + (text.length > 80 ? '…' : '');
+  if (name) name.textContent = senderName;
+  banner.dataset.msgId = msgId;
+  banner.classList.add('active');
+  banner.onclick = () => {
+    const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
+    if (!msgEl) return;
+    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgEl.classList.add('msg-highlight');
+    setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
+  };
+}
+
+function hidePinBanner() {
+  const banner = document.getElementById('pinBanner');
+  if (banner) banner.classList.remove('active');
+}
+
+document.addEventListener('chat:pin', (e) => {
+  const convId = window._chatPagination?.convId;
+  window.pinMessage?.(e.detail.msgId, convId);
+});
+
+window.showPinBanner = showPinBanner;
+window.hidePinBanner = hidePinBanner;
