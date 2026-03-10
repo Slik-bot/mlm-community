@@ -23,16 +23,6 @@ function getPlatform() {
 
 function isTelegram() { return getPlatform() === 'telegram'; }
 
-// Haptic feedback
-function haptic(type) {
-  if (!tg?.HapticFeedback) return;
-  if (type === 'light') tg.HapticFeedback.impactOccurred('light');
-  if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
-  if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-  if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-  if (type === 'warning') tg.HapticFeedback.notificationOccurred('warning');
-}
-
 // MainButton (кнопка внизу экрана)
 function showMainButton(text, onClick) {
   if (!tg?.MainButton) return;
@@ -75,7 +65,6 @@ function closeTelegramApp() {
 window.initTelegram = initTelegram;
 window.getPlatform = getPlatform;
 window.isTelegram = isTelegram;
-window.haptic = haptic;
 window.showMainButton = showMainButton;
 window.hideMainButton = hideMainButton;
 window.showBackButton = showBackButton;
