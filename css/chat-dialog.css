@@ -291,41 +291,68 @@
 .chk-sent { color: rgba(255,255,255,0.4); }
 .chk-read { color: #c4b5fd; }
 
-/* ── Реакции под пузырём ── */
+/* ── Реакции — overlap с пузырём ── */
 .bbl-reactions {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 2px 4px 0 4px;
-  max-width: 82vw;
+  margin-top: -8px;
+  padding: 0 8px 4px;
+  position: relative;
+  z-index: 1;
 }
-.msg-in .bbl-reactions { justify-content: flex-start; }
-.msg-out .bbl-reactions { justify-content: flex-end; align-self: flex-end; }
+
+.msg-out .bbl-reactions { justify-content: flex-end; }
+.msg-in  .bbl-reactions { justify-content: flex-start; }
+
+/* ── Pill — glass morphism ── */
 .rx-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(30,20,55,0.88);
-  border: 1px solid rgba(139,92,246,0.3);
+  padding: 3px 8px;
   border-radius: 20px;
-  padding: 3px 8px 3px 6px;
-  font-size: 12px;
-  line-height: 1.2;
-  color: rgba(255,255,255,0.92);
+  background: rgba(var(--rx-dna-rgb, 139,92,246), 0.12);
+  border: 1px solid rgba(var(--rx-dna-rgb, 139,92,246), 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-size: 13px;
+  line-height: 1;
   cursor: pointer;
-  opacity: 0;
-  transform: scale(0.7);
-  transform-origin: top left;
-  transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
-  white-space: nowrap;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: transform 150ms cubic-bezier(0.16,1,0.3,1),
+              background 150ms ease;
+  animation: rxPop 200ms cubic-bezier(0.16,1,0.3,1);
 }
-.msg-out .rx-pill { transform-origin: top right; }
-.rx-pill.pop { opacity: 1; transform: scale(1); }
-.rx-pill.own { border-color: rgba(139,92,246,0.75); background: rgba(139,92,246,0.18); }
-.rx-cnt { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); }
+
+.rx-pill:active { transform: scale(0.92); }
+
+.rx-pill.own {
+  background: rgba(var(--rx-dna-rgb, 139,92,246), 0.22);
+  border-color: rgba(var(--rx-dna-rgb, 139,92,246), 0.5);
+}
+
+/* Исходящие — фиолетовый */
+.msg-out .rx-pill {
+  background: rgba(139,92,246,0.15);
+  border-color: rgba(139,92,246,0.3);
+}
+
+.msg-out .rx-pill.own {
+  background: rgba(139,92,246,0.28);
+  border-color: rgba(139,92,246,0.55);
+}
+
+.rx-cnt {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  font-family: 'Outfit', sans-serif;
+}
+
+@keyframes rxPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
 
 /* ── TF пузырь ── */
 .tf-b { min-width: 165px; padding: 10px 12px; }
