@@ -8,7 +8,7 @@
 Vanilla HTML/CSS/JS, Supabase, Deno Edge Functions, Telegram WebApp SDK, Vercel, Vite
 
 ## СТАТУС ПРОЕКТА
-- Фронт: https://mlm-community.vercel.app
+- Фронт: https://trafiqo.vercel.app
 - Supabase: tydavmiamwdrfjbcgwny
 - Telegram бот: @trafiqo_bot
 - БД схема: v5.1 (54 таблицы)
