@@ -417,3 +417,60 @@
 .cl-item--typing .cl-typing {
   display: flex;
 }
+
+/* ── Мут чата ── */
+.cl-mute-icon {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.cl-item--muted .cl-name {
+  opacity: 0.6;
+}
+
+.cl-item--muted .cl-badge {
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+}
+
+/* Поповер меню чата */
+.ch-menu-pop {
+  display: none;
+  position: absolute;
+  top: 52px;
+  right: 12px;
+  background: #1e1b2e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 6px 0;
+  min-width: 180px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: fadeIn 0.15s ease;
+}
+
+.ch-menu-pop.visible {
+  display: block;
+}
+
+.ch-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ch-menu-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.ch-menu-item--danger {
+  color: #f43f5e;
+}
