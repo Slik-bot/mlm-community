@@ -155,15 +155,10 @@ function showReplyHint(wrapper, isOut) {
   if (wrapper.querySelector('.reply-hint')) return;
   const el = document.createElement('div');
   el.className = 'reply-hint';
-  el.style.cssText = 'position:absolute;top:50%;width:24px;height:24px;'
-    + 'border-radius:50%;background:rgba(139,92,246,0.15);'
-    + 'display:flex;align-items:center;justify-content:center;'
-    + 'transform:translateY(-50%) scale(0);transition:transform 150ms ease;'
-    + (isOut ? 'right:8px' : 'left:8px');
+  el.style[isOut ? 'right' : 'left'] = '8px';
   el.innerHTML = '<svg width="14" height="14" fill="none" stroke="#8b5cf6"'
     + ' stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">'
     + '<path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/></svg>';
-  wrapper.style.position = 'relative';
   wrapper.appendChild(el);
   requestAnimationFrame(() => {
     el.style.transform = 'translateY(-50%) scale(1)';
