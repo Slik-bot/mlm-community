@@ -249,8 +249,7 @@ function forwardMsg(msgId) {
 }
 
 async function deleteMsg(msgId) {
-  await window.sb?.from?.('messages').delete().eq('id', msgId);
-  document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
+  await window.deleteMessage?.(msgId);
 }
 
 function selectMsg(msgId) {
