@@ -4,3 +4,8 @@ dist
 .DS_Store
 *.backup.*
 .vercel
+
+# Документация — не в репозиторий
+*.pdf
+*.docx
+SYSTEM_PROMPT_v2.md
