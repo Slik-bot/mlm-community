@@ -241,8 +241,7 @@ async function markAsRead() {
   if (!convId || !myId) return;
   const div = document.getElementById('msgUnreadDivider');
   if (div) {
-    div.style.transition = 'opacity 400ms';
-    div.style.opacity = '0';
+    div.classList.add('msg-unread-divider--hide');
     setTimeout(() => div.remove(), 400);
   }
   try {

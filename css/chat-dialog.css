@@ -402,3 +402,9 @@
   transform: translateY(-50%) scale(0);
   transition: transform 150ms ease;
 }
+
+/* ── Unread divider fade-out (из chat-realtime.js) ── */
+.msg-unread-divider--hide {
+  opacity: 0;
+  transition: opacity 400ms;
+}
