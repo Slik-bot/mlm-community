@@ -49,12 +49,9 @@ function hexToRgb(hex) {
   return r + ',' + g + ',' + b;
 }
 
-// ── Построить пузырь ───────────────────
+// ── Построить пузырь — обёртка + аватар + bbl ───
 
-function buildBubble(msg, isGrp) {
-  const isOut = msg.sender_id === window._chatMyId?.();
-  const dnaType = !isOut ? (msg.sender?.dna_type || window._chatPartner?.()?.dna_type) : null;
-  const dnaColor = dnaType ? window.getDnaColor(dnaType) : null;
+function buildBubbleShell(msg, isGrp, isOut, dnaType, dnaColor) {
   const wrapper = document.createElement('div');
   wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + (isGrp ? ' grp' : '');
   wrapper.dataset.msgId = msg.id;
@@ -95,6 +92,13 @@ function buildBubble(msg, isGrp) {
     scrChat.style.setProperty('--msg-dna-rgb', dnaColor ? hexToRgb(dnaColor) : '139,92,246');
     scrChat.style.setProperty('--dna-hue', dnaHueMap[resolvedDna] || '0deg');
   }
+  wrapper.appendChild(bbl);
+  return { wrapper, bbl };
+}
+
+// ── Построить пузырь — контент ───────────
+
+function buildBubbleContent(bbl, msg, isOut) {
   if (msg.reply_to?.content) {
     const replyDiv = document.createElement('div');
     replyDiv.className = 'bbl-reply';
@@ -115,7 +119,11 @@ function buildBubble(msg, isGrp) {
     bbl.classList.add('bbl--edited');
   }
   bbl.appendChild(meta);
-  wrapper.appendChild(bbl);
+}
+
+// ── Построить пузырь — реакции + события ──
+
+function buildBubbleFooter(wrapper, bbl, msg) {
   if (msg.reactions && Object.keys(msg.reactions).length) {
     const rxRow = document.createElement('div');
     rxRow.className = 'bbl-reactions';
@@ -129,6 +137,7 @@ function buildBubble(msg, isGrp) {
     });
     wrapper.appendChild(rxRow);
   }
+  const isOut = msg.sender_id === window._chatMyId?.();
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
   bbl.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -148,6 +157,17 @@ function buildBubble(msg, isGrp) {
   bbl.addEventListener('mousedown', (e) => { if (e.button === 0) startPress(); });
   bbl.addEventListener('mouseup', cancelPress);
   bbl.addEventListener('mouseleave', cancelPress);
+}
+
+// ── Построить пузырь — оркестратор ────────
+
+function buildBubble(msg, isGrp) {
+  const isOut = msg.sender_id === window._chatMyId?.();
+  const dnaType = !isOut ? (msg.sender?.dna_type || window._chatPartner?.()?.dna_type) : null;
+  const dnaColor = dnaType ? window.getDnaColor(dnaType) : null;
+  const { wrapper, bbl } = buildBubbleShell(msg, isGrp, isOut, dnaType, dnaColor);
+  buildBubbleContent(bbl, msg, isOut);
+  buildBubbleFooter(wrapper, bbl, msg);
   return wrapper;
 }
 
