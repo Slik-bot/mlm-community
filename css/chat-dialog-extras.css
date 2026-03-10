@@ -170,7 +170,33 @@
 }
 
 /* Статусы отправки — перенесено из chat.css */
-.msg-sending { opacity: 0.6; }
+.msg-sending { opacity: 0.75; }
+
+.msg-sending .bbl {
+  position: relative;
+  overflow: hidden;
+}
+
+.msg-sending .bbl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.15) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: msgShimmer 1.2s infinite;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+@keyframes msgShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 .msg-error { opacity: 0.8; border: 1px solid #f43f5e; }
 /* ── Статусы сообщений ── */
 .msg-status {
