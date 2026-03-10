@@ -410,20 +410,28 @@ function clShowDeleteConfirm(conv, item) {
   card.appendChild(title);
   const btns = document.createElement('div');
   btns.className = 'cl-confirm-btns';
-  const confirmBtn = document.createElement('button');
-  confirmBtn.className = 'cl-confirm-btn cl-confirm-btn--danger';
-  confirmBtn.textContent = 'Удалить чат';
+  const delMeBtn = document.createElement('button');
+  delMeBtn.className = 'cl-confirm-btn cl-confirm-btn--danger';
+  delMeBtn.textContent = 'Удалить только у себя';
+  const delBothBtn = document.createElement('button');
+  delBothBtn.className = 'cl-confirm-btn cl-confirm-btn--danger';
+  delBothBtn.textContent = 'Удалить у меня и у ' + name;
   const cancelBtn = document.createElement('button');
   cancelBtn.className = 'cl-confirm-btn cl-confirm-btn--cancel';
   cancelBtn.textContent = 'Отмена';
-  btns.appendChild(confirmBtn);
+  btns.appendChild(delMeBtn);
+  btns.appendChild(delBothBtn);
   btns.appendChild(cancelBtn);
   card.appendChild(btns);
   overlay.appendChild(card);
   document.body.appendChild(overlay);
-  confirmBtn.addEventListener('click', function() {
+  delMeBtn.addEventListener('click', function() {
     overlay.remove();
-    clDeleteConversation(conv.id, item);
+    clDeleteConversation(conv.id, item, false);
+  });
+  delBothBtn.addEventListener('click', function() {
+    overlay.remove();
+    clDeleteConversation(conv.id, item, true);
   });
   cancelBtn.addEventListener('click', function() { overlay.remove(); });
   overlay.addEventListener('click', function(e) {
@@ -431,17 +439,15 @@ function clShowDeleteConfirm(conv, item) {
   });
 }
 
-async function clDeleteConversation(convId, item) {
+async function clDeleteConversation(convId, item, both) {
   item.style.transition = 'opacity 0.25s, transform 0.25s';
   item.style.opacity = '0';
   item.style.transform = 'translateX(40px)';
   try {
     const myId = window.getCurrentUser?.()?.id;
-    const { error } = await window.sb
-      .from('conversation_members')
-      .delete()
-      .eq('conversation_id', convId)
-      .eq('user_id', myId);
+    let q = window.sb.from('conversation_members').delete().eq('conversation_id', convId);
+    if (!both) q = q.eq('user_id', myId);
+    const { error } = await q;
     if (error) throw error;
     setTimeout(function() { item.remove(); }, 250);
     window.showToast?.('Чат удалён');
