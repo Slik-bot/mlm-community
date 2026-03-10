@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
     const fullName =
       (firstName + " " + lastName).trim() || username || "Telegram User";
 
-    const internalEmail = `tg_${telegramId}@telegram.mlm`;
+    const internalEmail = `tg_${telegramId}@telegram.trafiqo`;
     const internalPassword = await derivePassword(telegramId, botToken);
 
     // ═══ 3. Find existing user ═══

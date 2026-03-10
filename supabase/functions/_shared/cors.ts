@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════
-// SHARED CORS — MLM Community Edge Functions
+// SHARED CORS — TRAFIQO Edge Functions
 // ═══════════════════════════════════════
 
 const ALLOWED_ORIGINS = [
-  "https://mlm-community.vercel.app",
+  "https://trafiqo.vercel.app",
   "https://tydavmiamwdrfjbcgwny.supabase.co",
 ];
 
