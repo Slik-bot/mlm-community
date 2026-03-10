@@ -145,8 +145,7 @@ function buildMsgClone(msgEl) {
   const clone = document.createElement('div');
   clone.className = 'msg-ctx-clone';
   const inner = (msgRow || msgEl).cloneNode(true);
-  inner.style.pointerEvents = 'none';
-  inner.style.maxWidth = '100%';
+  inner.classList.add('msg-ctx-clone-inner');
   clone.appendChild(inner);
   return clone;
 }

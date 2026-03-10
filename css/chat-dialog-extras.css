@@ -411,3 +411,9 @@ body { overflow-x: hidden; }
 .pin-close { background: none; border: none; color: rgba(255,255,255,0.3); cursor: pointer; padding: 4px; flex-shrink: 0; }
 .msg-highlight { animation: msgHighlight 1.5s ease forwards; }
 @keyframes msgHighlight { 0%,100%{background:transparent} 20%,80%{background:rgba(234,179,8,0.15)} }
+
+/* ── Clone inner (из chat-context.js) ── */
+.msg-ctx-clone-inner {
+  pointer-events: none;
+  max-width: 100%;
+}
