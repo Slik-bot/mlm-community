@@ -163,7 +163,7 @@ window.showCtx = function(msgEl, msgId, isOwn, createdAt) {
   container = document.createElement('div');
   container.className = 'msg-ctx-container';
 
-  // container.appendChild(buildReactions(msgId, msgEl)); // temp: отключено до переработки
+  container.appendChild(buildReactions(msgId, msgEl));
   container.appendChild(buildMsgClone(msgEl));
   container.appendChild(buildMenu(msgId, isOwn, createdAt));
 
