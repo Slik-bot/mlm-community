@@ -235,7 +235,15 @@ function clBuildActions() {
   wrap.className = 'cl-actions';
   wrap.innerHTML = '<button class="cl-swipe-btn cl-swipe-mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18.36 19.36L5.64 6.64"/><path d="M12 2a10 10 0 000 20"/></svg></button>' +
     '<button class="cl-swipe-btn cl-swipe-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>';
-  wrap.querySelector('.cl-swipe-mute').onclick = function(e) {
+  var muteBtn = wrap.querySelector('.cl-swipe-mute');
+  var muteLabel = document.createElement('span');
+  muteLabel.textContent = 'Без звука';
+  muteBtn.appendChild(muteLabel);
+  var delBtn = wrap.querySelector('.cl-swipe-del');
+  var delLabel = document.createElement('span');
+  delLabel.textContent = 'Удалить';
+  delBtn.appendChild(delLabel);
+  muteBtn.onclick = function(e) {
     e.stopPropagation();
     const item = wrap.closest('.cl-item');
     if (!item) return;
