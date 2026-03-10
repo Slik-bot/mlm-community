@@ -53,7 +53,7 @@ function renderClList(convs, tab, query) {
 
 const CL_DNA_CLASS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna-r', analyst: 'dna-a' };
 
-function clWrapItem(convId, ava, body, meta, onClick, extraClass) {
+function clWrapItem(convId, ava, body, meta, onClick, extraClass, conv) {
   const item = document.createElement('div');
   item.className = 'cl-item' + (extraClass ? ' ' + extraClass : '');
   item.setAttribute('data-conv-id', convId);
@@ -64,7 +64,7 @@ function clWrapItem(convId, ava, body, meta, onClick, extraClass) {
   inner.appendChild(meta);
   inner.onclick = onClick;
   item.appendChild(inner);
-  item.appendChild(clBuildActions());
+  item.appendChild(clBuildActions(conv));
   clInitSwipe(item);
   return item;
 }
@@ -183,7 +183,7 @@ function buildClItem(conv) {
 
   const extraCls = conv.is_muted ? 'cl-item--muted' : '';
   return clWrapItem(conv.id, clBuildAvatar(o), body, meta,
-    function() { window.openChat(conv.id, o); }, extraCls || undefined);
+    function() { window.openChat(conv.id, o); }, extraCls || undefined, conv);
 }
 
 // ═══ Build deal item ═══
@@ -209,7 +209,7 @@ function buildClDealItem(conv) {
 
   return clWrapItem(conv.id, ava, clBuildDealBody(d, st), meta,
     function() { window.openDeal ? window.openDeal(conv.deal_id) : window.openChat(conv.id); },
-    'cl-item--deal');
+    'cl-item--deal', conv);
 }
 
 // ═══ Format time ═══
@@ -230,17 +230,17 @@ function clFormatTime(dateStr) {
 
 // ═══ Swipe actions ═══
 
-function clBuildActions() {
+function clBuildActions(conv) {
   const wrap = document.createElement('div');
   wrap.className = 'cl-actions';
   wrap.innerHTML = '<button class="cl-swipe-btn cl-swipe-mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18.36 19.36L5.64 6.64"/><path d="M12 2a10 10 0 000 20"/></svg></button>' +
     '<button class="cl-swipe-btn cl-swipe-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>';
-  var muteBtn = wrap.querySelector('.cl-swipe-mute');
-  var muteLabel = document.createElement('span');
+  const muteBtn = wrap.querySelector('.cl-swipe-mute');
+  const muteLabel = document.createElement('span');
   muteLabel.textContent = 'Без звука';
   muteBtn.appendChild(muteLabel);
-  var delBtn = wrap.querySelector('.cl-swipe-del');
-  var delLabel = document.createElement('span');
+  const delBtn = wrap.querySelector('.cl-swipe-del');
+  const delLabel = document.createElement('span');
   delLabel.textContent = 'Удалить';
   delBtn.appendChild(delLabel);
   muteBtn.onclick = function(e) {
@@ -250,10 +250,12 @@ function clBuildActions() {
     const convId = item.getAttribute('data-conv-id');
     window.toggleClMute?.(convId, item);
   };
-  wrap.querySelector('.cl-swipe-del').onclick = function(e) {
+  delBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    window.showToast('Скоро: удаление');
-  };
+    const item = wrap.closest('.cl-item');
+    if (!item) return;
+    clShowDeleteConfirm(conv, item);
+  });
   return wrap;
 }
 
@@ -371,6 +373,86 @@ async function toggleClMute(convId, item) {
   }
 }
 
+// ═══ Delete confirm ═══
+
+function clShowDeleteConfirm(conv, item) {
+  const other = conv.other || {};
+  const name = other.name || 'Собеседник';
+  const avatar = other.avatar_url;
+  const overlay = document.createElement('div');
+  overlay.className = 'cl-confirm-overlay';
+  const card = document.createElement('div');
+  card.className = 'cl-confirm';
+  if (avatar) {
+    const img = document.createElement('img');
+    img.className = 'cl-confirm-ava';
+    img.src = avatar;
+    img.alt = name;
+    card.appendChild(img);
+  } else {
+    const ph = document.createElement('div');
+    ph.className = 'cl-confirm-ava-placeholder';
+    ph.textContent = name[0].toUpperCase();
+    card.appendChild(ph);
+  }
+  const title = document.createElement('div');
+  title.className = 'cl-confirm-title';
+  const b = document.createElement('b');
+  b.textContent = name;
+  title.appendChild(document.createTextNode('Удалить чат с '));
+  title.appendChild(b);
+  title.appendChild(document.createTextNode('?'));
+  title.appendChild(document.createElement('br'));
+  const small = document.createElement('small');
+  small.style.cssText = 'opacity:.6;font-size:12px';
+  small.textContent = 'Без возможности восстановления';
+  title.appendChild(small);
+  card.appendChild(title);
+  const btns = document.createElement('div');
+  btns.className = 'cl-confirm-btns';
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'cl-confirm-btn cl-confirm-btn--danger';
+  confirmBtn.textContent = 'Удалить чат';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'cl-confirm-btn cl-confirm-btn--cancel';
+  cancelBtn.textContent = 'Отмена';
+  btns.appendChild(confirmBtn);
+  btns.appendChild(cancelBtn);
+  card.appendChild(btns);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+  confirmBtn.addEventListener('click', function() {
+    overlay.remove();
+    clDeleteConversation(conv.id, item);
+  });
+  cancelBtn.addEventListener('click', function() { overlay.remove(); });
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+async function clDeleteConversation(convId, item) {
+  item.style.transition = 'opacity 0.25s, transform 0.25s';
+  item.style.opacity = '0';
+  item.style.transform = 'translateX(40px)';
+  try {
+    const myId = window.getCurrentUser?.()?.id;
+    const { error } = await window.sb
+      .from('conversation_members')
+      .delete()
+      .eq('conversation_id', convId)
+      .eq('user_id', myId);
+    if (error) throw error;
+    setTimeout(function() { item.remove(); }, 250);
+    window.showToast?.('Чат удалён');
+  } catch (err) {
+    console.error('deleteConv:', err);
+    item.style.opacity = '1';
+    item.style.transform = '';
+    window.showToast?.('Ошибка удаления');
+  }
+}
+
 // ═══ Exports ═══
 
 window.renderClList = renderClList;
@@ -382,3 +464,5 @@ window.clInitSwipe = clInitSwipe;
 window.clCloseSwipe = clCloseSwipe;
 window.buildDnaRing = buildDnaRing;
 window.toggleClMute = toggleClMute;
+window.clShowDeleteConfirm = clShowDeleteConfirm;
+window.clDeleteConversation = clDeleteConversation;
