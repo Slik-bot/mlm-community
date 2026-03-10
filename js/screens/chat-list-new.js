@@ -10,6 +10,7 @@ let _clDebounce = null;
 let _clSub = null;
 let _clSwipeOpen = null;
 let _clBound = false;
+let _clTypingChannels = {};
 
 // ═══ 1. Init ═══
 
@@ -53,6 +54,7 @@ function initChatList() {
     if (list) list.classList.remove('hidden');
     const q = document.getElementById('clSearch');
     window.renderClList?.(convs, _clTab, q ? q.value.trim() : '');
+    clSubscribeTyping(convs, user.id);
   });
 }
 
@@ -241,11 +243,58 @@ function clBindSearch() {
   });
 }
 
+// ═══ Typing presence в списке чатов ═══
+
+function clShowTyping(convId) {
+  const item = document.querySelector(
+    '.cl-item[data-conv-id="' + convId + '"]'
+  );
+  if (!item) return;
+  item.classList.add('cl-item--typing');
+}
+
+function clHideTyping(convId) {
+  const item = document.querySelector(
+    '.cl-item[data-conv-id="' + convId + '"]'
+  );
+  if (!item) return;
+  item.classList.remove('cl-item--typing');
+}
+
+function clSubscribeTyping(convs, myId) {
+  Object.values(_clTypingChannels).forEach(function(ch) {
+    window.sb.removeChannel(ch);
+  });
+  _clTypingChannels = {};
+  convs.forEach(function(conv) {
+    const ch = window.sb.channel(
+      'presence:' + conv.id,
+      { config: { presence: { key: myId } } }
+    );
+    ch.on('presence', { event: 'sync' }, function() {
+      const state = ch.presenceState();
+      const isTyping = Object.entries(state)
+        .some(function(entry) {
+          return entry[0] !== myId &&
+            entry[1].some(function(p) { return p.typing === true; });
+        });
+      if (isTyping) clShowTyping(conv.id);
+      else clHideTyping(conv.id);
+    })
+    .subscribe();
+    _clTypingChannels[conv.id] = ch;
+  });
+}
+
 // ═══ Destroy ═══
 
 function destroyChatList() {
   if (_clSub) { _clSub.unsubscribe(); _clSub = null; }
   if (_clDebounce) clearTimeout(_clDebounce);
+  Object.values(_clTypingChannels).forEach(function(ch) {
+    window.sb.removeChannel(ch);
+  });
+  _clTypingChannels = {};
   _clCache = null;
   _clData = [];
   _clSwipeOpen = null;
