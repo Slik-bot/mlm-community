@@ -29,7 +29,7 @@ const STATIC_ASSETS = [
   '/css/notifications.css',
   '/css/quest.css',
   '/css/admin.css',
-  '/assets/logo.png'
+  '/assets/trafiqo-avatar-512.png'
 ];
 
 self.addEventListener('install', function(event) {
@@ -95,8 +95,8 @@ self.addEventListener('push', function(event) {
 
   const options = {
     body: data.body || '',
-    icon: '/assets/logo.png',
-    badge: '/assets/logo.png',
+    icon: '/assets/trafiqo-avatar-512.png',
+    badge: '/assets/trafiqo-avatar-512.png',
     tag: data.tag || 'trafiqo-notification',
     data: { url: data.url || '/' },
     vibrate: [100, 50, 100]
