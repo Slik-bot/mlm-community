@@ -80,6 +80,7 @@ function buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor) {
   bbl.className = 'bbl';
   if (!isOut && dnaColor) {
     bbl.style.setProperty('--msg-dna-rgb', hexToRgb(dnaColor));
+    wrapper.style.setProperty('--rx-dna-rgb', hexToRgb(dnaColor));
   }
   const dnaHueMap = {
     strategist: '200deg',
