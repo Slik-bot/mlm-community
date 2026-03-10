@@ -240,7 +240,7 @@ function clInitSwipe(item) {
   inner.addEventListener('touchend', function(e) {
     const dx = startX - e.changedTouches[0].clientX;
     if (dx > 50) {
-      inner.style.transform = 'translateX(-80px)';
+      inner.classList.add('cl-inner--swiped');
       actions.classList.add('cl-actions--open');
       window._clSwipeOpen = item;
     } else if (dx < -30) {
@@ -253,7 +253,7 @@ function clCloseSwipe(item) {
   if (!item) return;
   const inner = item.querySelector('.cl-inner');
   const actions = item.querySelector('.cl-actions');
-  if (inner) inner.style.transform = '';
+  if (inner) inner.classList.remove('cl-inner--swiped');
   if (actions) actions.classList.remove('cl-actions--open');
   if (window._clSwipeOpen === item) window._clSwipeOpen = null;
 }

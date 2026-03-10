@@ -113,6 +113,7 @@
   gap: 11px;
   flex: 1;
   min-width: 0;
+  transition: transform 200ms ease;
 }
 .cl-item + .cl-item::before {
   content: '';
@@ -353,4 +354,9 @@
 @keyframes clShimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* ── Swipe state (из chat-list-render.js) ── */
+.cl-inner--swiped {
+  transform: translateX(-80px);
 }
