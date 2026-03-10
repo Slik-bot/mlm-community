@@ -136,6 +136,26 @@ async function loadMessages() {
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
     renderMessages(messages, lastReadAt, box);
     applyDnaFallback(box);
+
+    const undeliveredIds = messages
+      .filter(m => m.sender_id !== _myId
+        && !m.delivered_at)
+      .map(m => m.id);
+
+    if (undeliveredIds.length > 0) {
+      window.sb
+        .from('messages')
+        .update({
+          delivered_at: new Date().toISOString()
+        })
+        .in('id', undeliveredIds)
+        .then(({ error }) => {
+          if (error) {
+            console.error('bulkDelivered:', error);
+          }
+        });
+    }
+
     await window.markAsRead();
   } catch (err) {
     console.error('loadMessages:', err);
