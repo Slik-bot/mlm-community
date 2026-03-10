@@ -242,7 +242,7 @@
   width: 0;
   transition: width 280ms cubic-bezier(.16,1,.3,1);
 }
-.cl-actions.open { width: 130px; }
+.cl-actions--open { width: 130px; }
 .cl-swipe-btn {
   height: 100%;
   padding: 0 18px;
