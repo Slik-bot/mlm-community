@@ -3,7 +3,6 @@
 // ═══════════════════════════════════════
 
 const VE_EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1/verify-email';
-const VE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGF2bWlhbXdkcmZqYmNnd255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTUxNTUsImV4cCI6MjA4MzQzMTE1NX0.Wyhhvdy-EnzazbFywr5Nk3d0F3JknWVXz1Sgvz3x67g';
 const VE_RESEND_INTERVAL = 60;
 
 let veTimerInterval = null;
@@ -112,7 +111,7 @@ async function callSendCode(userId, email) {
   try {
     const res = await fetch(VE_EDGE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + VE_ANON_KEY, 'apikey': VE_ANON_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY, 'apikey': window.SUPABASE_ANON_KEY },
       body: JSON.stringify({ action: 'send-code', user_id: userId, email }),
     });
     const data = await res.json();
@@ -126,7 +125,7 @@ async function callSendCode(userId, email) {
 async function callVerifyCode(userId, email, code) {
   const res = await fetch(VE_EDGE_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + VE_ANON_KEY, 'apikey': VE_ANON_KEY },
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY, 'apikey': window.SUPABASE_ANON_KEY },
     body: JSON.stringify({ action: 'verify-code', user_id: userId, email, code }),
   });
   return await res.json();
