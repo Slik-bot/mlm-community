@@ -106,6 +106,7 @@ async function initChat() {
     if (window.initChatMessages) {
       await window.initChatMessages(convId, partner);
     }
+    window.initChatSearch?.();
   } catch (err) {
     console.error('initChat:', err);
   }
