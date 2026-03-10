@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <filter id="dot-glow"
+      x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <text
+    x="50%" y="52"
+    text-anchor="middle"
+    font-family="Outfit, -apple-system, sans-serif"
+    font-size="32"
+    font-weight="200"
+    letter-spacing="12"
+    fill="#ffffff"
+    dominant-baseline="middle"
+  >TRAFIQO</text>
+  <circle
+    cx="278" cy="22" r="4"
+    fill="#8b5cf6"
+    filter="url(#dot-glow)"
+  />
+</svg>
