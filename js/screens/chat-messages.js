@@ -134,28 +134,6 @@ async function loadMessages() {
     const page = _hasMore ? msgs.slice(0, MSG_PAGE) : msgs;
     let messages = page.reverse();
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
-    const msgIds = messages.map(m => m.id);
-    let reactionsMap = {};
-    if (msgIds.length) {
-      const { data: rxData } = await window.sb
-        .from('reactions')
-        .select('target_id, reaction_type, user_id')
-        .eq('target_type', 'message')
-        .in('target_id', msgIds);
-      if (rxData) {
-        rxData.forEach(r => {
-          if (!reactionsMap[r.target_id]) reactionsMap[r.target_id] = {};
-          if (!reactionsMap[r.target_id][r.reaction_type])
-            reactionsMap[r.target_id][r.reaction_type] = { count: 0, users: [] };
-          reactionsMap[r.target_id][r.reaction_type].count++;
-          reactionsMap[r.target_id][r.reaction_type].users.push(r.user_id);
-        });
-      }
-      messages = messages.map(m => ({
-        ...m,
-        reactions: reactionsMap[m.id] || {}
-      }));
-    }
     renderMessages(messages, lastReadAt, box);
     applyDnaFallback(box);
     await window.markAsRead();
