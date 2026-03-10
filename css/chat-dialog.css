@@ -203,7 +203,8 @@
   color: #ffffff;
   position: relative;
   cursor: pointer;
-  transition: transform 80ms;
+  transition: transform 80ms,
+    border-radius 200ms cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -226,23 +227,30 @@
 .msg-in .bbl {
   background: rgba(20, 16, 40, 0.75);
   border: 1px solid rgba(var(--msg-dna-rgb, 139,92,246), 0.25);
-  border-radius: 14px 14px 14px 4px;
+  border-radius: 18px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.07),
               0 2px 12px rgba(0,0,0,0.4);
   color: rgba(255,255,255,0.93);
   backdrop-filter: blur(12px);
 }
-.msg-in.grp .bbl { border-radius: 4px 14px 14px 4px; }
 .msg-out .bbl {
   background: linear-gradient(160deg,
     #9333EA 0%,
     #7C3AED 35%,
     #4F46E5 65%,
     #2563EB 100%);
-  border-radius: 14px 14px 4px 14px;
+  border-radius: 18px;
   box-shadow: 0 2px 12px rgba(99,102,241,0.25);
 }
-.msg-out.grp .bbl { border-radius: 14px 4px 4px 14px; }
+/* ── Морфинг пузырей по позиции в группе ── */
+.msg-in.msg--single .bbl,
+.msg-out.msg--single .bbl { border-radius: 18px; }
+.msg-in.msg--first .bbl  { border-radius: 18px 18px 18px 4px; }
+.msg-in.msg--mid .bbl    { border-radius: 4px 18px 18px 4px; }
+.msg-in.msg--last .bbl   { border-radius: 4px 18px 18px 18px; }
+.msg-out.msg--first .bbl { border-radius: 18px 18px 4px 18px; }
+.msg-out.msg--mid .bbl   { border-radius: 18px 4px 4px 18px; }
+.msg-out.msg--last .bbl  { border-radius: 18px 4px 18px 18px; }
 
 /* ── Reply цитата внутри пузыря ── */
 .bbl-reply {
