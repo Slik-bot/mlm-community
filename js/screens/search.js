@@ -14,7 +14,7 @@ let _searchQuery = '';
 let _debounceTimer = null;
 
 const POPULAR_TAGS = [
-  { name: 'MLM', icon: 'fire' },
+  { name: 'Сетевой бизнес', icon: 'fire' },
   { name: 'Бизнес', icon: 'chart' },
   { name: 'Маркетинг', icon: 'trend' },
   { name: 'Инвестиции', icon: 'dollar' },

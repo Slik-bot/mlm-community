@@ -2,7 +2,7 @@
 // BIZCARD — Моя визитка
 // ═══════════════════════════════════════
 
-const BC_APP_URL = 'https://mlm-community.vercel.app';
+const BC_APP_URL = 'https://trafiqo.vercel.app';
 const BC_QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
 
 const BC_DNA_LABELS = {

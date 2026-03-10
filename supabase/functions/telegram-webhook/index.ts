@@ -16,9 +16,9 @@ serve(async (req) => {
     const text = message.text || '';
     const firstName = message.from?.first_name || 'друг';
 
-    const appUrl = 'https://mlm-community.vercel.app';
+    const appUrl = 'https://trafiqo.vercel.app';
     const replyText = text.startsWith('/start')
-      ? `Привет, ${firstName}! 👋\n\nДобро пожаловать в MLM Community.\n\nНажми кнопку, чтобы открыть приложение:`
+      ? `Привет, ${firstName}! 👋\n\nДобро пожаловать в TRAFIQO.\n\nНажми кнопку, чтобы открыть приложение:`
       : `Нажми /start или кнопку ниже 👇`;
 
     await fetch(`${TELEGRAM_API}${botToken}/sendMessage`, {
