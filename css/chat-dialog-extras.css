@@ -443,3 +443,90 @@ body { overflow-x: hidden; }
   pointer-events: none;
   max-width: 100%;
 }
+
+/* ── Поиск в диалоге ── */
+.ch-search {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  animation: slideDown 0.2s ease;
+}
+
+.ch-search.visible {
+  display: flex;
+}
+
+.ch-search-input {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+}
+
+.ch-search-input::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+.ch-search-input:focus {
+  border-color: rgba(139,92,246,0.5);
+}
+
+.ch-search-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ch-search-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: color 0.15s;
+}
+
+.ch-search-btn:hover {
+  color: #fff;
+}
+
+.ch-search-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.ch-search-close:hover {
+  color: #fff;
+}
+
+/* Подсветка найденного текста */
+.bbl-text mark {
+  background: rgba(250,204,21,0.4);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.bbl-text mark.mark-current {
+  background: rgba(250,204,21,0.8);
+}
