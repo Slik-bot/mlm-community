@@ -80,7 +80,6 @@ function buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor) {
   bbl.className = 'bbl';
   if (!isOut && dnaColor) {
     bbl.style.setProperty('--msg-dna-rgb', hexToRgb(dnaColor));
-    wrapper.style.setProperty('--rx-dna-rgb', hexToRgb(dnaColor));
   }
   const dnaHueMap = {
     strategist: '200deg',
@@ -123,22 +122,9 @@ function buildBubbleContent(bbl, msg, isOut) {
   bbl.appendChild(meta);
 }
 
-// ── Построить пузырь — реакции + события ──
+// ── Построить пузырь — события ──
 
 function buildBubbleFooter(wrapper, bbl, msg) {
-  if (msg.reactions && Object.keys(msg.reactions).length) {
-    const rxRow = document.createElement('div');
-    rxRow.className = 'bbl-reactions';
-    Object.entries(msg.reactions).forEach(([emoji, data]) => {
-      const pill = document.createElement('span');
-      pill.className = 'rx-pill pop';
-      pill.dataset.emoji = emoji;
-      pill.dataset.count = String(data.count);
-      pill.innerHTML = `${emoji} <span class="rx-cnt">${data.count}</span>`;
-      rxRow.appendChild(pill);
-    });
-    wrapper.appendChild(rxRow);
-  }
   const isOut = msg.sender_id === window._chatMyId?.();
   window.bindBubbleEvents(wrapper, bbl, msg, isOut);
   let pressTimer;
@@ -172,37 +158,6 @@ function buildBubble(msg, grpPos) {
   buildBubbleFooter(wrapper, bbl, msg);
   return wrapper;
 }
-
-// ── Таблетки реакций на пузыре ────────────
-
-window.addReactionToBubble = function(msgId, emoji, count) {
-  const bubble = document.querySelector('[data-msg-id="' + msgId + '"] .bbl');
-  if (!bubble) return;
-  let pill = bubble.querySelector('.bbl-rx[data-emoji="' + CSS.escape(emoji) + '"]');
-  if (pill) {
-    const cnt = pill.querySelector('.rx-cnt');
-    if (count !== null) cnt.textContent = count;
-    else cnt.textContent = parseInt(cnt.textContent || '0') + 1;
-  } else {
-    pill = document.createElement('div');
-    pill.className = 'bbl-rx';
-    pill.dataset.emoji = emoji;
-    const displayCount = count !== null ? count : 1;
-    pill.innerHTML = emoji + ' <span class="rx-cnt">' + displayCount + '</span>';
-    bubble.appendChild(pill);
-  }
-};
-
-window.removeReactionFromBubble = function(msgId, emoji, userId) {
-  const bubble = document.querySelector('[data-msg-id="' + msgId + '"] .bbl');
-  if (!bubble) return;
-  const pill = bubble.querySelector('.bbl-rx[data-emoji="' + emoji + '"]');
-  if (!pill) return;
-  const cnt = pill.querySelector('.rx-cnt');
-  const count = parseInt(cnt.textContent || '1') - 1;
-  if (count <= 0) pill.remove();
-  else cnt.textContent = count;
-};
 
 // ── SVG галочек ──────────────────────────
 
