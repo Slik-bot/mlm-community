@@ -55,20 +55,6 @@ function subscribeChatRealtime(convId, myId, onNewMessage) {
       if (!data) return;
       if (typeof onNewMessage === 'function') onNewMessage(data);
     })
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'reactions'
-    }, (payload) => {
-      if (payload.new.user_id === myId) return;
-      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-        const { target_id, reaction_type } = payload.new;
-        const msgEl = document.querySelector(
-          '[data-msg-id="' + target_id + '"] .bbl'
-        );
-        if (msgEl) window.showReactionBadge?.(msgEl, reaction_type);
-      }
-    })
     .subscribe((status) => {
       if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
         setTimeout(() => subscribeChatRealtime(convId, myId, onNewMessage), 3000);
