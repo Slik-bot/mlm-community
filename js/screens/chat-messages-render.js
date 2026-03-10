@@ -138,7 +138,6 @@ function buildBubble(msg, isGrp) {
       const own = msg.sender_id === window._chatMyId?.();
       const ctx = window.showCtx || window.showMsgContextMenu;
       if (ctx) ctx(bbl, wrapper.dataset.msgId, own, msg.created_at);
-      else console.warn('[CTX] showCtx not found on window');
     }, 480);
   };
   const cancelPress = () => clearTimeout(pressTimer);
