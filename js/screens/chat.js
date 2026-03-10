@@ -112,8 +112,71 @@ async function initChat() {
   }
 }
 
+let _chatMenuPop = null;
+
 function chatShowMenu() {
-  window.showToast?.('Скоро: меню чата');
+  if (_chatMenuPop) { closeChatMenu(); return; }
+  const head = document.getElementById('chHead');
+  if (!head) return;
+  const pop = document.createElement('div');
+  pop.className = 'ch-menu-pop visible';
+  const convId = _pendingConvId;
+  const userId = window.getCurrentUser?.()?.id;
+  loadMuteState(convId, userId).then(function(muted) {
+    pop.innerHTML = '';
+    const muteItem = document.createElement('div');
+    muteItem.className = 'ch-menu-item';
+    muteItem.textContent = muted ? '\uD83D\uDD14 Размьютить' : '\uD83D\uDD07 Замьютить';
+    muteItem.onclick = function() { toggleChatMute(convId, userId, muted); };
+    pop.appendChild(muteItem);
+  });
+  head.appendChild(pop);
+  _chatMenuPop = pop;
+  setTimeout(function() {
+    document.addEventListener('click', closeChatMenuOnClick);
+  }, 10);
+}
+
+function closeChatMenu() {
+  if (_chatMenuPop) { _chatMenuPop.remove(); _chatMenuPop = null; }
+  document.removeEventListener('click', closeChatMenuOnClick);
+}
+
+function closeChatMenuOnClick(e) {
+  if (_chatMenuPop && !_chatMenuPop.contains(e.target)) closeChatMenu();
+}
+
+async function loadMuteState(convId, userId) {
+  if (!convId || !userId) return false;
+  try {
+    const { data } = await window.sb
+      .from('conversation_members')
+      .select('is_muted')
+      .eq('conversation_id', convId)
+      .eq('user_id', userId)
+      .single();
+    return !!data?.is_muted;
+  } catch (err) {
+    console.error('loadMuteState:', err);
+    return false;
+  }
+}
+
+async function toggleChatMute(convId, userId, wasMuted) {
+  closeChatMenu();
+  const newVal = !wasMuted;
+  try {
+    const { error } = await window.sb
+      .from('conversation_members')
+      .update({ is_muted: newVal })
+      .eq('conversation_id', convId)
+      .eq('user_id', userId);
+    if (error) throw error;
+    window.showToast?.(newVal ? 'Чат замьючен' : 'Уведомления включены');
+  } catch (err) {
+    console.error('toggleChatMute:', err);
+    window.showToast?.('Ошибка');
+  }
 }
 
 function chatAttachFile() {

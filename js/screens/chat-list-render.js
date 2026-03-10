@@ -148,10 +148,19 @@ function buildClItem(conv) {
 
   const body = document.createElement('div');
   body.className = 'cl-body';
+  const nameRow = document.createElement('div');
+  nameRow.style.cssText = 'display:flex;align-items:center';
   const nameEl = document.createElement('div');
   nameEl.className = 'cl-name';
   nameEl.textContent = o.name || 'Пользователь';
-  body.appendChild(nameEl);
+  nameRow.appendChild(nameEl);
+  if (conv.is_muted) {
+    const muteIcon = document.createElement('span');
+    muteIcon.className = 'cl-mute-icon';
+    muteIcon.textContent = '\uD83D\uDD07';
+    nameRow.appendChild(muteIcon);
+  }
+  body.appendChild(nameRow);
   body.appendChild(clBuildPreview(conv));
 
   const typingEl = document.createElement('div');
@@ -172,8 +181,9 @@ function buildClItem(conv) {
   const badge = clBuildBadge(conv.unread);
   if (badge) meta.appendChild(badge);
 
+  const extraCls = conv.is_muted ? 'cl-item--muted' : '';
   return clWrapItem(conv.id, clBuildAvatar(o), body, meta,
-    function() { window.openChat(conv.id, o); });
+    function() { window.openChat(conv.id, o); }, extraCls || undefined);
 }
 
 // ═══ Build deal item ═══
@@ -227,7 +237,10 @@ function clBuildActions() {
     '<button class="cl-swipe-btn cl-swipe-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>';
   wrap.querySelector('.cl-swipe-mute').onclick = function(e) {
     e.stopPropagation();
-    window.showToast('Уведомления обновлены');
+    const item = wrap.closest('.cl-item');
+    if (!item) return;
+    const convId = item.getAttribute('data-conv-id');
+    window.toggleClMute?.(convId, item);
   };
   wrap.querySelector('.cl-swipe-del').onclick = function(e) {
     e.stopPropagation();
@@ -327,6 +340,29 @@ function buildDnaRing(dnaType, size) {
   return svg;
 }
 
+// ═══ Mute toggle ═══
+
+async function toggleClMute(convId, item) {
+  const user = window.getCurrentUser?.();
+  if (!user || !convId) return;
+  const isMuted = item.classList.contains('cl-item--muted');
+  const newVal = !isMuted;
+  item.classList.toggle('cl-item--muted', newVal);
+  try {
+    const { error } = await window.sb
+      .from('conversation_members')
+      .update({ is_muted: newVal })
+      .eq('conversation_id', convId)
+      .eq('user_id', user.id);
+    if (error) throw error;
+    window.showToast?.(newVal ? 'Чат замьючен' : 'Уведомления включены');
+  } catch (err) {
+    console.error('toggleClMute:', err);
+    item.classList.toggle('cl-item--muted', isMuted);
+    window.showToast?.('Ошибка');
+  }
+}
+
 // ═══ Exports ═══
 
 window.renderClList = renderClList;
@@ -337,3 +373,4 @@ window.clBuildActions = clBuildActions;
 window.clInitSwipe = clInitSwipe;
 window.clCloseSwipe = clCloseSwipe;
 window.buildDnaRing = buildDnaRing;
+window.toggleClMute = toggleClMute;

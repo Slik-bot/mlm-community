@@ -64,14 +64,18 @@ async function loadClData(userId) {
   try {
     const { data: mems, error: e1 } = await window.sb
       .from('conversation_members')
-      .select('conversation_id, last_read_at')
+      .select('conversation_id, last_read_at, is_muted')
       .eq('user_id', userId);
     if (e1) throw e1;
     if (!mems || !mems.length) return [];
 
     const convIds = mems.map(function(m) { return m.conversation_id; });
     const readMap = {};
-    mems.forEach(function(m) { readMap[m.conversation_id] = m.last_read_at; });
+    const muteMap = {};
+    mems.forEach(function(m) {
+      readMap[m.conversation_id] = m.last_read_at;
+      muteMap[m.conversation_id] = !!m.is_muted;
+    });
 
     const [r1, r2, r3] = await Promise.all([
       window.sb.from('conversations')
@@ -102,14 +106,14 @@ async function loadClData(userId) {
     if (r4.error) throw r4.error;
     if (r5.error) throw r5.error;
 
-    return clAssemble(convRows, readMap, otherMems, r3.data || [], r4.data || [], r5.data || []);
+    return clAssemble(convRows, readMap, muteMap, otherMems, r3.data || [], r4.data || [], r5.data || []);
   } catch (err) {
     console.error('loadClData:', err);
     return [];
   }
 }
 
-function clAssemble(convRows, readMap, otherMems, msgs, users, deals) {
+function clAssemble(convRows, readMap, muteMap, otherMems, msgs, users, deals) {
   const uMap = {};
   users.forEach(function(u) { uMap[u.id] = u; });
   const dMap = {};
@@ -137,7 +141,8 @@ function clAssemble(convRows, readMap, otherMems, msgs, users, deals) {
       deal_id: c.deal_id, last_message_at: c.last_message_at,
       other: others[0] || null, lastMsg: lastMsg,
       deal: c.deal_id ? (dMap[c.deal_id] || null) : null,
-      unread: unread
+      unread: unread,
+      is_muted: !!muteMap[c.id]
     };
   });
 }
