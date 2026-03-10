@@ -60,12 +60,18 @@ async function initChatMessages(convId, partner) {
 
 // ── Загрузка: хелперы ─────────────────
 
+function isSameGroup(a, b) {
+  if (!a || !b) return false;
+  if (a.sender_id !== b.sender_id) return false;
+  if (new Date(a.created_at).toDateString() !== new Date(b.created_at).toDateString()) return false;
+  return Math.abs(new Date(b.created_at) - new Date(a.created_at)) < 5 * 60 * 1000;
+}
+
 function renderMessages(messages, lastReadAt, box) {
   let lastDate = null;
-  let lastSender = null;
-  let lastTimestamp = null;
   let dividerInserted = false;
-  messages.forEach(function(msg) {
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
     _msgMap[msg.id] = msg;
     if (!dividerInserted && lastReadAt && msg.sender_id !== _myId && msg.created_at > lastReadAt) {
       box.appendChild(window.buildUnreadDivider());
@@ -75,15 +81,12 @@ function renderMessages(messages, lastReadAt, box) {
     if (msgDate !== lastDate) {
       box.appendChild(window.buildDateDivider(msg.created_at));
       lastDate = msgDate;
-      lastSender = null;
-      lastTimestamp = null;
     }
-    const timeDiff = lastTimestamp ? (new Date(msg.created_at) - new Date(lastTimestamp)) : Infinity;
-    const isGrp = lastSender === msg.sender_id && timeDiff < 5 * 60 * 1000;
-    box.appendChild(window.buildBubble(msg, isGrp));
-    lastSender = msg.sender_id;
-    lastTimestamp = msg.created_at;
-  });
+    const prev = isSameGroup(messages[i - 1], msg);
+    const next = isSameGroup(msg, messages[i + 1]);
+    const grpPos = prev ? (next ? 'mid' : 'last') : (next ? 'first' : 'single');
+    box.appendChild(window.buildBubble(msg, grpPos));
+  }
 }
 
 function applyDnaFallback(box) {

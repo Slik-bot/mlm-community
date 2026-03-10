@@ -51,9 +51,10 @@ function hexToRgb(hex) {
 
 // ── Построить пузырь — обёртка + аватар + bbl ───
 
-function buildBubbleShell(msg, isGrp, isOut, dnaType, dnaColor) {
+function buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor) {
   const wrapper = document.createElement('div');
-  wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + (isGrp ? ' grp' : '');
+  wrapper.className = 'msg ' + (isOut ? 'msg-out' : 'msg-in') + ' msg--' + grpPos;
+  if (grpPos === 'mid' || grpPos === 'last') wrapper.classList.add('grp');
   wrapper.dataset.msgId = msg.id;
   wrapper.dataset.createdAt = msg.created_at;
   const convType = window._chatConvType?.() || 'personal';
@@ -161,11 +162,11 @@ function buildBubbleFooter(wrapper, bbl, msg) {
 
 // ── Построить пузырь — оркестратор ────────
 
-function buildBubble(msg, isGrp) {
+function buildBubble(msg, grpPos) {
   const isOut = msg.sender_id === window._chatMyId?.();
   const dnaType = !isOut ? (msg.sender?.dna_type || window._chatPartner?.()?.dna_type) : null;
   const dnaColor = dnaType ? window.getDnaColor(dnaType) : null;
-  const { wrapper, bbl } = buildBubbleShell(msg, isGrp, isOut, dnaType, dnaColor);
+  const { wrapper, bbl } = buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor);
   buildBubbleContent(bbl, msg, isOut);
   buildBubbleFooter(wrapper, bbl, msg);
   return wrapper;
