@@ -1,7 +1,6 @@
 // ═══ Auth API — регистрация, вход, сессия (БД v5.1) ═══
 
 const EDGE_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co/functions/v1';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGF2bWlhbXdkcmZqYmNnd255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTUxNTUsImV4cCI6MjA4MzQzMTE1NX0.Wyhhvdy-EnzazbFywr5Nk3d0F3JknWVXz1Sgvz3x67g';
 
 // ═══ detectPlatform ═══
 
@@ -25,8 +24,8 @@ async function authRegister(email, password, name) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-      'apikey': SUPABASE_ANON_KEY
+      'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY,
+      'apikey': window.SUPABASE_ANON_KEY
     },
     body: JSON.stringify({ action: 'register', email: email, password: password, name: name })
   });
@@ -57,8 +56,8 @@ async function authLogin(email, password) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-      'apikey': SUPABASE_ANON_KEY
+      'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY,
+      'apikey': window.SUPABASE_ANON_KEY
     },
     body: JSON.stringify({ action: 'login', email: email, password: password })
   });
@@ -128,8 +127,8 @@ async function authTelegram() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-      'apikey': SUPABASE_ANON_KEY
+      'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY,
+      'apikey': window.SUPABASE_ANON_KEY
     },
     body: JSON.stringify({ initData: initData })
   });
