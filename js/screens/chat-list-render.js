@@ -154,6 +154,15 @@ function buildClItem(conv) {
   body.appendChild(nameEl);
   body.appendChild(clBuildPreview(conv));
 
+  const typingEl = document.createElement('div');
+  typingEl.className = 'cl-typing';
+  typingEl.innerHTML =
+    '<span class="cl-typing-text">печатает</span>' +
+    '<span class="cl-typing-dots">' +
+    '<span></span><span></span><span></span>' +
+    '</span>';
+  body.appendChild(typingEl);
+
   const meta = document.createElement('div');
   meta.className = 'cl-meta';
   const time = document.createElement('div');
