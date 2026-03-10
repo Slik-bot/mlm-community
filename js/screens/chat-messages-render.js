@@ -24,7 +24,7 @@ function renderChatHead() {
     const img = document.createElement('img');
     img.src = p.avatar_url;
     img.alt = '';
-    img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+    img.className = 'ch-av-img';
     ph.appendChild(img);
   } else {
     ph.textContent = (p.name || 'П')[0].toUpperCase();
