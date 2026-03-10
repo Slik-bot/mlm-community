@@ -1,8 +1,6 @@
 // ===== ADMIN CORE — Auth, Navigation, Dashboard, Users =====
 
-const SB_URL = 'https://tydavmiamwdrfjbcgwny.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGF2bWlhbXdkcmZqYmNnd255Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTUxNTUsImV4cCI6MjA4MzQzMTE1NX0.Wyhhvdy-EnzazbFywr5Nk3d0F3JknWVXz1Sgvz3x67g';
-const sb = supabase.createClient(SB_URL, SB_KEY);
+const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
 let adminUser = null;
 let adminProfile = null;
