@@ -196,14 +196,31 @@ function scrollToBottom() {
 }
 
 async function scrollToMsg(msgId) {
+  if (!msgId) return;
   let el = document.querySelector('[data-msg-id="' + msgId + '"]');
   if (!el) {
-    window.showToast?.('Загрузка...');
-    let attempts = 0;
-    while (!el && attempts < 5) {
-      await window.loadOlderMessages?.();
-      el = document.querySelector('[data-msg-id="' + msgId + '"]');
-      attempts++;
+    window.showToast?.('Поиск сообщения...');
+    try {
+      const { data } = await window.sb
+        .from('messages')
+        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type)')
+        .eq('id', msgId).single();
+      if (data) {
+        const box = document.getElementById('chatMessages');
+        if (!box) return;
+        const firstMsg = box.querySelector('.msg');
+        const tempWrapper = document.createElement('div');
+        tempWrapper.id = 'pin-temp-msg';
+        const bubble = window.buildBubble?.(data);
+        if (bubble) {
+          tempWrapper.appendChild(bubble);
+          if (firstMsg) box.insertBefore(tempWrapper, firstMsg);
+          else box.appendChild(tempWrapper);
+          el = tempWrapper.querySelector('[data-msg-id="' + msgId + '"]');
+        }
+      }
+    } catch (err) {
+      console.error('scrollToMsg:', err);
     }
   }
   if (!el) {
@@ -214,7 +231,11 @@ async function scrollToMsg(msgId) {
   el.classList.remove('msg-highlight');
   void el.offsetWidth;
   el.classList.add('msg-highlight');
-  setTimeout(() => el.classList.remove('msg-highlight'), 1500);
+  setTimeout(() => {
+    el.classList.remove('msg-highlight');
+    const temp = document.getElementById('pin-temp-msg');
+    if (temp) temp.remove();
+  }, 2000);
 }
 
 function bindScrollWatch() {
