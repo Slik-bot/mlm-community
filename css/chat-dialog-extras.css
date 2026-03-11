@@ -6,10 +6,12 @@
   left: 0;
   right: 0;
   z-index: 10;
-  background: rgba(6,5,14,0.2);
+  background: rgba(10,10,20,0.45);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: none;
+  box-sizing: border-box;
+  max-width: 100%;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .reply-bar {
