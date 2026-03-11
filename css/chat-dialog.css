@@ -46,7 +46,9 @@
   align-items: center;
   gap: 10px;
   padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 10px;
-  background: transparent;
+  background: rgba(6,5,14,0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   flex-shrink: 0;
   z-index: 2;
   position: relative;
@@ -150,20 +152,6 @@
   gap: 2px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0px,
-    rgba(0,0,0,0.3) 20px,
-    rgba(0,0,0,0.8) 50px,
-    black 80px
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0px,
-    rgba(0,0,0,0.3) 20px,
-    rgba(0,0,0,0.8) 50px,
-    black 80px
-  );
 }
 .msg-date {
   text-align: center; margin: 7px 0 4px;
