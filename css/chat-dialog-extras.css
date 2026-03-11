@@ -680,3 +680,90 @@ body { overflow-x: hidden; }
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
 }
+
+/* ── Мультиселект ── */
+.sel-head {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #1a1726;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.sel-head__cancel {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.sel-head__count {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+.sel-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 0 24px;
+  background: #1a1726;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.sel-bar__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: background 0.15s;
+  font-size: 11px;
+}
+.sel-bar__btn:hover {
+  background: rgba(255,255,255,0.07);
+}
+.sel-bar__btn--red { color: #f87171; }
+#scrChat.selecting .ch-head { display: none; }
+#scrChat.selecting .ch-foot { display: none; }
+#scrChat.selecting .sel-head { display: flex; }
+#scrChat.selecting .sel-bar { display: flex; }
+#scrChat.selecting .msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#scrChat.selecting .msg::before {
+  content: '';
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: transparent;
+  transition: all 0.15s;
+  order: -1;
+}
+#scrChat.selecting .msg.selected::before {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#scrChat.selecting .msg.selected {
+  background: rgba(124,58,237,0.08);
+  border-radius: 8px;
+}
