@@ -6,9 +6,9 @@
   left: 0;
   right: 0;
   z-index: 10;
-  background: rgba(10,10,20,0.55);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(15,15,30,0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: none;
   box-sizing: border-box;
   max-width: 100%;
