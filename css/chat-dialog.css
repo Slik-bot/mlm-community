@@ -9,7 +9,7 @@
   flex-direction: column;
   height: var(--tg-viewport-height, 100dvh);
   max-width: 100vw;
-  overflow: hidden;
+  overflow: visible;
   background: #06050e;
   position: relative;
 }
