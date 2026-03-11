@@ -6,10 +6,11 @@ let _pendingConvId = null;
 let _pendingPartner = null;
 const _creatingConv = new Map();
 
-window.Telegram?.WebApp?.onEvent('viewportChanged', () => {
-  const h = window.Telegram.WebApp.viewportStableHeight;
-  document.getElementById('scrChat')
-    ?.style.setProperty('height', h + 'px');
+window.Telegram?.WebApp?.onEvent('viewportChanged', (e) => {
+  const tg = window.Telegram.WebApp;
+  const h = e?.isStateStable ? tg.viewportStableHeight : tg.viewportHeight;
+  const scr = document.getElementById('scrChat');
+  if (scr) scr.style.height = h + 'px';
 });
 
 async function findExistingConversation(myId, partnerId) {
