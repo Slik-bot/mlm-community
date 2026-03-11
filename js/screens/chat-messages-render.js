@@ -101,16 +101,15 @@ function buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor) {
 
 function buildBubbleContent(bbl, msg, isOut) {
   if (msg.forwarded_from_id) {
+    const name = msg.forwarded?.sender?.name
+      ?? 'Неизвестно';
     const fwd = document.createElement('div');
     fwd.className = 'bbl-forward';
-    const icon = document.createElement('span');
-    icon.className = 'bbl-forward__icon';
-    icon.textContent = '\u21AA';
-    const txt = document.createElement('span');
-    txt.className = 'bbl-forward__text';
-    txt.textContent = 'Пересланное сообщение';
-    fwd.appendChild(icon);
-    fwd.appendChild(txt);
+    fwd.dataset.origId = msg.forwarded_from_id;
+    fwd.innerHTML =
+      '<span class="bbl-forward__icon">\u21AA</span>' +
+      '<span class="bbl-forward__text">' +
+      'Переслано от <b>' + name + '</b></span>';
     bbl.appendChild(fwd);
   }
   if (msg.reply_to?.content) {

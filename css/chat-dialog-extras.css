@@ -737,7 +737,7 @@ body { overflow-x: hidden; }
 #scrChat.selecting .sel-bar  { display: flex; }
 /* ── Кружки слева — через padding контейнера ── */
 #scrChat.selecting #chatMessages {
-  padding-left: 40px;
+  padding-left: 44px;
   position: relative;
 }
 #scrChat.selecting .msg {
@@ -747,7 +747,7 @@ body { overflow-x: hidden; }
 #scrChat.selecting .msg::before {
   content: '';
   position: absolute;
-  left: -32px;
+  left: -36px;
   top: 50%;
   transform: translateY(-50%);
   width: 22px;
@@ -756,6 +756,7 @@ body { overflow-x: hidden; }
   border: 2px solid rgba(255,255,255,0.3);
   background: transparent;
   transition: all 0.2s;
+  z-index: 2;
 }
 #scrChat.selecting .msg.selected::before {
   background: #7c3aed;
@@ -765,7 +766,7 @@ body { overflow-x: hidden; }
   background-position: center;
 }
 #scrChat.selecting .msg.selected .bbl {
-  outline: 1.5px solid rgba(124,58,237,0.5);
+  outline: 1.5px solid rgba(124,58,237,0.4);
   border-radius: 14px;
 }
 @keyframes msgHighlight {

@@ -111,7 +111,7 @@ async function loadMessages() {
     const [msgRes, memberRes] = await Promise.all([
       window.sb
         .from('messages')
-        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id)')
+        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type), reply_to:messages!reply_to_id(id,content,sender_id), forwarded:messages!forwarded_from_id(id,content,sender:users!sender_id(id,name))')
         .eq('conversation_id', _convId)
         .eq('is_deleted', false)
         .order('created_at', { ascending: false })
@@ -209,7 +209,9 @@ async function scrollToMsg(msgId) {
         .from('messages')
         .select(
           '*, sender:users!sender_id' +
-          '(id,name,avatar_url,dna_type)'
+          '(id,name,avatar_url,dna_type),' +
+          'forwarded:messages!forwarded_from_id' +
+          '(id,content,sender:users!sender_id(id,name))'
         )
         .eq('id', msgId)
         .single();
