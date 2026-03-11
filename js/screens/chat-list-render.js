@@ -278,30 +278,29 @@ function clInitSwipe(item) {
   const actions = item.querySelector('.cl-actions');
   const actionsLeft = item.querySelector('.cl-actions-left');
   let startX = 0;
-
   inner.addEventListener('touchstart', function(e) {
     startX = e.touches[0].clientX;
     if (window._clSwipeOpen && window._clSwipeOpen !== item) clCloseSwipe(window._clSwipeOpen);
   }, { passive: true });
-
   inner.addEventListener('touchend', function(e) {
     const dx = startX - e.changedTouches[0].clientX;
+    const isOpenRight = inner.classList.contains('cl-inner--swiped');
+    const isOpenLeft = inner.classList.contains('cl-inner--swiped-right');
+    if (isOpenRight) { if (dx < -20) clCloseSwipe(item); return; }
+    if (isOpenLeft) { if (dx > 20) clCloseSwipe(item); return; }
     if (dx > 50) {
       inner.classList.add('cl-inner--swiped');
-      inner.classList.remove('cl-inner--swiped-right');
       actions.classList.add('cl-actions--open');
-      if (actionsLeft) actionsLeft.classList.remove('cl-actions-left--open');
       window._clSwipeOpen = item;
     } else if (dx < -50) {
       inner.classList.add('cl-inner--swiped-right');
-      inner.classList.remove('cl-inner--swiped');
       if (actionsLeft) actionsLeft.classList.add('cl-actions-left--open');
-      actions.classList.remove('cl-actions--open');
       window._clSwipeOpen = item;
-    } else {
-      clCloseSwipe(item);
-    }
+    } else { clCloseSwipe(item); }
   }, { passive: true });
+  inner.addEventListener('click', function(e) {
+    if (window._clSwipeOpen === item) { e.stopPropagation(); clCloseSwipe(item); }
+  });
 }
 
 function clCloseSwipe(item) {
