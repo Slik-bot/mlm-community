@@ -1,23 +1,62 @@
 // ═══════════════════════════════════════
 // ПЕРЕСЛАТЬ СООБЩЕНИЕ
 // ═══════════════════════════════════════
-
 let _fwdMsgId = null;
 let _fwdConvs = [];
 
-function showFwdSheet(msgId) {
+async function showFwdSheet(msgId) {
   _fwdMsgId = msgId;
   const sheet = document.getElementById('fwdSheet');
   if (!sheet) return;
   sheet.classList.add('visible');
-
-  const convs = window._clCache ?? [];
-  _fwdConvs = convs
-    .filter(c => c.type !== 'deal' && c.other)
-    .map(c => ({
-      convId: c.id,
-      name: c.other.name || 'Без имени',
-      avatar: c.other.avatar_url
+  const list = document.getElementById('fwdList');
+  if (list) list.innerHTML =
+    '<div style="padding:20px;text-align:center;' +
+    'color:rgba(255,255,255,0.4)">Загрузка...</div>';
+  // 1. Попробовать кеш
+  if (window._clCache?.length) {
+    _fwdConvs = window._clCache
+      .filter(c => c.type !== 'deal' && c.other)
+      .map(c => ({
+        convId: c.id,
+        name: c.other.name || 'Без имени',
+        avatar: c.other.avatar_url
+      }));
+    renderFwdList(_fwdConvs, '');
+    return;
+  }
+  // 2. Фоллбэк — загрузить из Supabase
+  const user = window.getCurrentUser?.();
+  if (!user) return;
+  const [{ data: myConvs }, { data: others }] =
+    await Promise.all([
+      window.sb.from('conversation_members')
+        .select('conversation_id')
+        .eq('user_id', user.id),
+      window.sb.from('conversation_members')
+        .select(
+          'conversation_id,' +
+          'users!inner(id,name,avatar_url),' +
+          'conversations!inner(type)'
+        )
+        .eq('conversations.type', 'personal')
+        .neq('user_id', user.id)
+    ]);
+  if (!myConvs?.length) {
+    if (list) list.innerHTML =
+      '<div style="padding:20px;text-align:center;' +
+      'color:rgba(255,255,255,0.4)">Нет чатов</div>';
+    return;
+  }
+  const myIds = new Set(
+    myConvs.map(r => r.conversation_id)
+  );
+  _fwdConvs = (others ?? [])
+    .filter(r => myIds.has(r.conversation_id))
+    .map(r => ({
+      convId: r.conversation_id,
+      name: r.users.name || 'Без имени',
+      avatar: r.users.avatar_url
     }));
   renderFwdList(_fwdConvs, '');
 }
@@ -38,12 +77,10 @@ function renderFwdList(convs, query) {
   const filtered = q
     ? convs.filter(c => c.name.toLowerCase().includes(q))
     : convs;
-
   for (const c of filtered) {
     const item = document.createElement('div');
     item.className = 'fwd-item';
     item.onclick = () => sendForward(c.convId);
-
     if (c.avatar) {
       const img = document.createElement('img');
       img.className = 'fwd-item__ava';
@@ -56,7 +93,6 @@ function renderFwdList(convs, query) {
       ph.textContent = c.name.charAt(0).toUpperCase();
       item.appendChild(ph);
     }
-
     const name = document.createElement('span');
     name.className = 'fwd-item__name';
     name.textContent = c.name;
@@ -69,7 +105,6 @@ async function sendForward(toConvId) {
   if (!_fwdMsgId || !toConvId) return;
   const user = window.getCurrentUser();
   if (!user) return;
-
   const msgMap = window._chatPagination?.msgMap;
   const original = msgMap?.[_fwdMsgId];
   if (!original) {
@@ -77,7 +112,6 @@ async function sendForward(toConvId) {
     hideFwdSheet();
     return;
   }
-
   try {
     const { error } = await window.sb
       .from('messages')
@@ -97,8 +131,6 @@ async function sendForward(toConvId) {
   hideFwdSheet();
 }
 
-// ── Слушатели ──────────────────────────
-
 document.addEventListener('click', (e) => {
   if (e.target.id === 'fwdBackdrop' || e.target.id === 'fwdClose') {
     hideFwdSheet();
@@ -110,8 +142,6 @@ document.addEventListener('input', (e) => {
     renderFwdList(_fwdConvs, e.target.value);
   }
 });
-
-// ── Экспорты ───────────────────────────
 
 window.showFwdSheet = showFwdSheet;
 window.hideFwdSheet = hideFwdSheet;
