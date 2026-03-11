@@ -229,11 +229,15 @@ async function scrollToMsg(msgId) {
   }
   const box = document.getElementById('chatMessages');
   if (box) {
-    const elTop = el.offsetTop;
-    const boxHeight = box.clientHeight;
-    const elHeight = el.clientHeight;
+    const boxRect = box.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const scrollTop = box.scrollTop
+      + elRect.top
+      - boxRect.top
+      - (box.clientHeight / 2)
+      + (el.clientHeight / 2);
     box.scrollTo({
-      top: elTop - (boxHeight / 2) + (elHeight / 2),
+      top: scrollTop,
       behavior: 'smooth'
     });
   } else {
