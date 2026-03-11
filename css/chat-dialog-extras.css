@@ -781,13 +781,3 @@ body { overflow-x: hidden; }
   outline: 1.5px solid rgba(124,58,237,0.4);
   border-radius: 14px;
 }
-@keyframes msgHighlight {
-  0%, 100% { background-color: transparent; }
-  20%, 80% { background-color: rgba(167,139,250,0.25); }
-}
-.msg-highlight .bbl {
-  animation: msgHighlight 1.5s ease;
-}
-
-/* ── Скрыть кнопку скролла вниз ── */
-.ch-scroll-btn { display: none !important; }
