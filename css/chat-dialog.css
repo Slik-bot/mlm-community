@@ -150,6 +150,20 @@
   gap: 2px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    rgba(0,0,0,0.3) 20px,
+    rgba(0,0,0,0.8) 50px,
+    black 80px
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    rgba(0,0,0,0.3) 20px,
+    rgba(0,0,0,0.8) 50px,
+    black 80px
+  );
 }
 .msg-date {
   text-align: center; margin: 7px 0 4px;
