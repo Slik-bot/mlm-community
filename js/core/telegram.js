@@ -10,6 +10,7 @@ function initTelegram() {
   if (!tg) return;
   tg.ready();
   tg.expand();
+  tg.disableVerticalSwipes?.();
   tg.setHeaderColor('#06060b');
   tg.setBackgroundColor('#06060b');
 }

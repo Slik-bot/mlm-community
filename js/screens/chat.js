@@ -6,6 +6,12 @@ let _pendingConvId = null;
 let _pendingPartner = null;
 const _creatingConv = new Map();
 
+window.Telegram?.WebApp?.onEvent('viewportChanged', () => {
+  const h = window.Telegram.WebApp.viewportStableHeight;
+  document.getElementById('scrChat')
+    ?.style.setProperty('height', h + 'px');
+});
+
 async function findExistingConversation(myId, partnerId) {
   const { data: mine } = await window.sb
     .from('conversation_members')
