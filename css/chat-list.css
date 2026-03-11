@@ -562,3 +562,35 @@
 .cl-confirm-btn--cancel:active {
   background: rgba(255,255,255,0.05);
 }
+
+/* ── Свайп вправо ── */
+.cl-actions-left {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  width: 0;
+  transition: width 280ms cubic-bezier(.16,1,.3,1);
+}
+.cl-actions-left--open { width: 156px; }
+.cl-swipe-read {
+  background: #3b82f6;
+  color: #fff;
+}
+.cl-swipe-pin {
+  background: #22c55e;
+  color: #fff;
+}
+.cl-inner--swiped-right {
+  transform: translateX(156px);
+}
+.cl-pin-icon {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+.cl-item--pinned {
+  order: -1;
+}

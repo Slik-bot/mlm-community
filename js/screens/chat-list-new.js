@@ -64,7 +64,7 @@ async function loadClData(userId) {
   try {
     const { data: mems, error: e1 } = await window.sb
       .from('conversation_members')
-      .select('conversation_id, last_read_at, is_muted')
+      .select('conversation_id, last_read_at, is_muted, is_pinned')
       .eq('user_id', userId);
     if (e1) throw e1;
     if (!mems || !mems.length) return [];
@@ -72,9 +72,11 @@ async function loadClData(userId) {
     const convIds = mems.map(function(m) { return m.conversation_id; });
     const readMap = {};
     const muteMap = {};
+    const pinMap = {};
     mems.forEach(function(m) {
       readMap[m.conversation_id] = m.last_read_at;
       muteMap[m.conversation_id] = !!m.is_muted;
+      pinMap[m.conversation_id] = !!m.is_pinned;
     });
 
     const [r1, r2, r3] = await Promise.all([
@@ -106,14 +108,14 @@ async function loadClData(userId) {
     if (r4.error) throw r4.error;
     if (r5.error) throw r5.error;
 
-    return clAssemble(convRows, readMap, muteMap, otherMems, r3.data || [], r4.data || [], r5.data || []);
+    return clAssemble(convRows, readMap, muteMap, pinMap, otherMems, r3.data || [], r4.data || [], r5.data || []);
   } catch (err) {
     console.error('loadClData:', err);
     return [];
   }
 }
 
-function clAssemble(convRows, readMap, muteMap, otherMems, msgs, users, deals) {
+function clAssemble(convRows, readMap, muteMap, pinMap, otherMems, msgs, users, deals) {
   const uMap = {};
   users.forEach(function(u) { uMap[u.id] = u; });
   const dMap = {};
@@ -142,8 +144,13 @@ function clAssemble(convRows, readMap, muteMap, otherMems, msgs, users, deals) {
       other: others[0] || null, lastMsg: lastMsg,
       deal: c.deal_id ? (dMap[c.deal_id] || null) : null,
       unread: unread,
-      is_muted: !!muteMap[c.id]
+      is_muted: !!muteMap[c.id],
+      is_pinned: !!pinMap[c.id]
     };
+  }).sort(function(a, b) {
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    return 0;
   });
 }
 
@@ -313,8 +320,57 @@ function chatStartNew() {
   window.showToast('Выберите пользователя для начала диалога');
 }
 
+// ═══ Mark as read ═══
+
+async function clMarkAsRead(conv, item) {
+  const user = window.getCurrentUser?.();
+  if (!user || !conv) return;
+  try {
+    const { error } = await window.sb
+      .from('conversation_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('conversation_id', conv.id)
+      .eq('user_id', user.id);
+    if (error) throw error;
+    const badge = item.querySelector('.cl-badge');
+    if (badge) badge.remove();
+    window.clCloseSwipe?.(item);
+    window.showToast?.('Прочитано');
+  } catch (err) {
+    console.error('clMarkAsRead:', err);
+    window.showToast?.('Ошибка');
+  }
+}
+
+// ═══ Toggle pin ═══
+
+async function clTogglePin(conv, item, pinBtn) {
+  const user = window.getCurrentUser?.();
+  if (!user || !conv) return;
+  const newVal = !conv.is_pinned;
+  try {
+    const { error } = await window.sb
+      .from('conversation_members')
+      .update({ is_pinned: newVal })
+      .eq('conversation_id', conv.id)
+      .eq('user_id', user.id);
+    if (error) throw error;
+    conv.is_pinned = newVal;
+    item.classList.toggle('cl-item--pinned', newVal);
+    const label = pinBtn.querySelector('span');
+    if (label) label.textContent = newVal ? 'Открепить' : 'Закрепить';
+    window.clCloseSwipe?.(item);
+    window.showToast?.(newVal ? 'Чат закреплён' : 'Чат откреплён');
+  } catch (err) {
+    console.error('clTogglePin:', err);
+    window.showToast?.('Ошибка');
+  }
+}
+
 // ═══ Exports ═══
 
 window.initChatList = initChatList;
 window.destroyChatList = destroyChatList;
 window.chatStartNew = chatStartNew;
+window.clMarkAsRead = clMarkAsRead;
+window.clTogglePin = clTogglePin;

@@ -55,7 +55,8 @@ const CL_DNA_CLASS = { strategist: 'dna-s', communicator: 'dna-c', creator: 'dna
 
 function clWrapItem(convId, ava, body, meta, onClick, extraClass, conv) {
   const item = document.createElement('div');
-  item.className = 'cl-item' + (extraClass ? ' ' + extraClass : '');
+  const cls = 'cl-item' + (extraClass ? ' ' + extraClass : '') + (conv.is_pinned ? ' cl-item--pinned' : '');
+  item.className = cls;
   item.setAttribute('data-conv-id', convId);
   const inner = document.createElement('div');
   inner.className = 'cl-inner';
@@ -63,9 +64,13 @@ function clWrapItem(convId, ava, body, meta, onClick, extraClass, conv) {
   inner.appendChild(body);
   inner.appendChild(meta);
   inner.onclick = onClick;
+  const left = clBuildActionsLeft(conv);
+  item.appendChild(left.el);
   item.appendChild(inner);
   item.appendChild(clBuildActions(conv));
   clInitSwipe(item);
+  left.readBtn.onclick = function(e) { e.stopPropagation(); window.clMarkAsRead?.(conv, item); };
+  left.pinBtn.onclick = function(e) { e.stopPropagation(); window.clTogglePin?.(conv, item, left.pinBtn); };
   return item;
 }
 
@@ -160,6 +165,7 @@ function buildClItem(conv) {
     muteIcon.textContent = '\uD83D\uDD07';
     nameRow.appendChild(muteIcon);
   }
+  if (conv.is_pinned) nameRow.insertAdjacentHTML('beforeend', '<span class="cl-pin-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z"/></svg></span>');
   body.appendChild(nameRow);
   body.appendChild(clBuildPreview(conv));
 
@@ -259,9 +265,18 @@ function clBuildActions(conv) {
   return wrap;
 }
 
+function clBuildActionsLeft(conv) {
+  const wrap = document.createElement('div');
+  wrap.className = 'cl-actions-left';
+  wrap.innerHTML = '<button class="cl-swipe-btn cl-swipe-read"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span>Прочитать</span></button>' +
+    '<button class="cl-swipe-btn cl-swipe-pin"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z"/></svg><span>' + (conv.is_pinned ? 'Открепить' : 'Закрепить') + '</span></button>';
+  return { el: wrap, readBtn: wrap.querySelector('.cl-swipe-read'), pinBtn: wrap.querySelector('.cl-swipe-pin') };
+}
+
 function clInitSwipe(item) {
   const inner = item.querySelector('.cl-inner');
   const actions = item.querySelector('.cl-actions');
+  const actionsLeft = item.querySelector('.cl-actions-left');
   let startX = 0;
 
   inner.addEventListener('touchstart', function(e) {
@@ -273,9 +288,17 @@ function clInitSwipe(item) {
     const dx = startX - e.changedTouches[0].clientX;
     if (dx > 50) {
       inner.classList.add('cl-inner--swiped');
+      inner.classList.remove('cl-inner--swiped-right');
       actions.classList.add('cl-actions--open');
+      if (actionsLeft) actionsLeft.classList.remove('cl-actions-left--open');
       window._clSwipeOpen = item;
-    } else if (dx < -30) {
+    } else if (dx < -50) {
+      inner.classList.add('cl-inner--swiped-right');
+      inner.classList.remove('cl-inner--swiped');
+      if (actionsLeft) actionsLeft.classList.add('cl-actions-left--open');
+      actions.classList.remove('cl-actions--open');
+      window._clSwipeOpen = item;
+    } else {
       clCloseSwipe(item);
     }
   }, { passive: true });
@@ -285,8 +308,10 @@ function clCloseSwipe(item) {
   if (!item) return;
   const inner = item.querySelector('.cl-inner');
   const actions = item.querySelector('.cl-actions');
-  if (inner) inner.classList.remove('cl-inner--swiped');
+  const actionsLeft = item.querySelector('.cl-actions-left');
+  if (inner) { inner.classList.remove('cl-inner--swiped'); inner.classList.remove('cl-inner--swiped-right'); }
   if (actions) actions.classList.remove('cl-actions--open');
+  if (actionsLeft) actionsLeft.classList.remove('cl-actions-left--open');
   if (window._clSwipeOpen === item) window._clSwipeOpen = null;
 }
 
@@ -466,6 +491,7 @@ window.buildClItem = buildClItem;
 window.buildClDealItem = buildClDealItem;
 window.clFormatTime = clFormatTime;
 window.clBuildActions = clBuildActions;
+window.clBuildActionsLeft = clBuildActionsLeft;
 window.clInitSwipe = clInitSwipe;
 window.clCloseSwipe = clCloseSwipe;
 window.buildDnaRing = buildDnaRing;
