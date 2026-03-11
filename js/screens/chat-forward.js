@@ -118,11 +118,14 @@ async function sendForward(convId) {
       if (!content && msg.id) {
         const { data: orig } = await window.sb
           .from('messages')
-          .select('content,type')
+          .select('content,type,sender:users!sender_id(name)')
           .eq('id', msg.id)
           .single();
         content = orig?.content;
         type = orig?.type ?? 'text';
+        if (!msg.sender_name) {
+          msg.sender_name = orig?.sender?.name ?? 'Неизвестно';
+        }
       }
       if (!content) continue;
       await window.sb.from('messages').insert({
@@ -130,7 +133,8 @@ async function sendForward(convId) {
         sender_id: user.id,
         content,
         type,
-        forwarded_from_id: msg.id
+        forwarded_from_id: msg.id,
+        forwarded_sender_name: msg.sender_name ?? 'Неизвестно'
       });
     }
     window.showToast?.('Переслано', 'ok', 1500);

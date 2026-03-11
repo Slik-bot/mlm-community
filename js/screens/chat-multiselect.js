@@ -73,11 +73,14 @@ async function _onForward() {
   if (!user) return;
   const { data: msgs } = await window.sb
     .from('messages')
-    .select('id,content,type')
+    .select('id,content,type,sender:users!sender_id(name)')
     .in('id', ids);
   exitSelectMode();
   if (!msgs?.length) return;
-  window.showFwdSheet?.(null, msgs);
+  window.showFwdSheet?.(null, msgs.map(m => ({
+    ...m,
+    sender_name: m.sender?.name ?? 'Неизвестно'
+  })));
 }
 
 function _onCopy() {

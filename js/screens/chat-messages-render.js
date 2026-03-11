@@ -101,7 +101,7 @@ function buildBubbleShell(msg, grpPos, isOut, dnaType, dnaColor) {
 
 function buildBubbleContent(bbl, msg, isOut) {
   if (msg.forwarded_from_id) {
-    const name = msg.forwarded?.sender?.name
+    const name = msg.forwarded_sender_name
       ?? 'Неизвестно';
     const fwd = document.createElement('div');
     fwd.className = 'bbl-forward';
