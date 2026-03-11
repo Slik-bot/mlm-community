@@ -93,6 +93,7 @@
 .cl-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 11px;
 }
 .cl-item {
@@ -102,7 +103,7 @@
   padding: 11px 18px;
   cursor: pointer;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   transition: background 160ms;
   user-select: none;
 }
