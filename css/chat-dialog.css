@@ -17,9 +17,10 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('/assets/images/hex-bg.png');
-  background-size: cover;
-  background-position: center;
+  background-image: url('/assets/images/chat-bg.png');
+  background-size: 600px auto;
+  background-repeat: repeat;
+  background-position: top left;
   opacity: 0.22;
   filter: hue-rotate(var(--dna-hue, 0deg)) saturate(1.2) brightness(1.1);
   pointer-events: none;
