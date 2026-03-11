@@ -253,10 +253,7 @@ async function scrollToMsg(msgId) {
 
   const box = document.getElementById('chatMessages');
   if (box) {
-    const boxRect = box.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    box.scrollTop = box.scrollTop
-      + elRect.top - boxRect.top
+    box.scrollTop = el.offsetTop
       - (box.clientHeight / 2)
       + (el.clientHeight / 2);
   }
@@ -301,6 +298,7 @@ function updateScrollBtn() {
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
+  document.getElementById('pin-temp-msg')?.remove();
   window.hidePinBanner?.();
   const wrap = document.getElementById('scrChat');
   if (wrap) wrap.style.removeProperty('--dna-color');
