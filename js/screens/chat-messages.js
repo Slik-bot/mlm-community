@@ -205,10 +205,12 @@ async function scrollToMsg(msgId) {
   if (el) {
     const box = document.getElementById('chatMessages');
     if (box) {
-      const top = el.offsetTop
+      const elRect = el.getBoundingClientRect();
+      const boxRect = box.getBoundingClientRect();
+      box.scrollTop = box.scrollTop
+        + elRect.top - boxRect.top
         - (box.clientHeight / 2)
-        + (el.offsetHeight / 2);
-      box.scrollTop = top;
+        + (el.clientHeight / 2);
     }
     el.classList.remove('msg-highlight');
     void el.offsetWidth;
@@ -254,6 +256,7 @@ function updateScrollBtn() {
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
+  window.hidePinBanner?.();
   const wrap = document.getElementById('scrChat');
   if (wrap) wrap.style.removeProperty('--dna-color');
   window.unsubscribeRealtime();
