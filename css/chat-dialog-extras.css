@@ -421,22 +421,50 @@ body { overflow-x: hidden; }
 }
 /* ===== PIN BANNER ===== */
 #pinBanner {
-  display: none; align-items: center; gap: 10px;
-  padding: 8px 14px; cursor: pointer;
-  background: rgba(139,92,246,0.08);
-  border-bottom: 1px solid rgba(139,92,246,0.2);
-  border-left: 3px solid #7C3AED;
-  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.28s ease;
-  transform: translateY(-100%); opacity: 0;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 16px;
+  cursor: pointer;
+  background: rgba(124,58,237,0.12);
+  border-bottom: 1px solid rgba(124,58,237,0.25);
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.25s, transform 0.25s;
+  transform: translateY(-100%);
+  opacity: 0;
 }
-#pinBanner.active { display: flex; transform: translateY(0); opacity: 1; }
-#pinBanner svg { color: #a78bfa; flex-shrink: 0; }
-.pin-info { flex: 1; overflow: hidden; }
-.pin-name { display: block; font-size: 11px; color: #a78bfa; font-weight: 600; }
-.pin-preview { display: block; font-size: 13px; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pin-close { background: none; border: none; color: rgba(255,255,255,0.3); cursor: pointer; padding: 4px; flex-shrink: 0; }
-.msg-highlight { animation: msgHighlight 1.5s ease forwards; }
-@keyframes msgHighlight { 0%,100%{background:transparent} 20%,80%{background:rgba(234,179,8,0.15)} }
+#pinBanner::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg,#a78bfa,#7c3aed);
+}
+#pinBanner.active {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+.pin-icon { font-size: 16px; opacity: 0.7; flex-shrink: 0; }
+.pin-icon svg { color: #a78bfa; }
+.pin-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pin-name { font-size: 11px; color: #a78bfa; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+.pin-preview { font-size: 13px; color: rgba(255,255,255,0.75); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin-close {
+  background: none; border: none;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer; padding: 4px 6px;
+  font-size: 18px; border-radius: 6px;
+  transition: color 0.15s;
+  flex-shrink: 0; line-height: 1;
+}
+.pin-close:hover { color: rgba(255,255,255,0.7); }
+@keyframes msgHighlight {
+  0%, 100% { background: transparent; }
+  20%, 80% { background: rgba(167,139,250,0.15); }
+}
+.msg-highlight { animation: msgHighlight 1.5s ease; border-radius: 8px; }
 
 /* ── Clone inner (из chat-context.js) ── */
 .msg-ctx-clone-inner {

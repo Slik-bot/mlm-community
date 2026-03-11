@@ -195,14 +195,24 @@ function scrollToBottom() {
   updateScrollBtn();
 }
 
-function scrollToMsg(msgId) {
-  const el = document.querySelector('[data-msg-id="' + msgId + '"]');
-  const box = document.getElementById('chatMessages');
-  if (!el || !box) return;
-  const elRect = el.getBoundingClientRect();
-  const boxRect = box.getBoundingClientRect();
-  const target = box.scrollTop + (elRect.top - boxRect.top) - (box.clientHeight / 2) + (el.offsetHeight / 2);
-  box.scrollTop = Math.max(0, target);
+async function scrollToMsg(msgId) {
+  let el = document.querySelector('[data-msg-id="' + msgId + '"]');
+  if (!el) {
+    window.showToast?.('Загрузка...');
+    let attempts = 0;
+    while (!el && attempts < 5) {
+      await window.loadOlderMessages?.();
+      el = document.querySelector('[data-msg-id="' + msgId + '"]');
+      attempts++;
+    }
+  }
+  if (!el) {
+    window.showToast?.('Сообщение не найдено');
+    return;
+  }
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.remove('msg-highlight');
+  void el.offsetWidth;
   el.classList.add('msg-highlight');
   setTimeout(() => el.classList.remove('msg-highlight'), 1500);
 }
@@ -309,7 +319,7 @@ async function pinMessage(msgId, convId) {
       const { data: msg } = await window.sb
         .from('messages').select('content,sender:users!sender_id(name)')
         .eq('id', newPin).single();
-      window.showPinBanner?.(newPin, msg?.content || '', msg?.sender?.name || '');
+      window.showPinBanner?.(newPin, msg?.content || '');
     } else {
       window.hidePinBanner?.();
     }
@@ -325,10 +335,10 @@ async function loadPinnedMessage(convId) {
   try {
     const { data } = await window.sb
       .from('conversations')
-      .select('pinned_message_id, pinned:messages!pinned_message_id(id,content,sender:users!sender_id(name))')
+      .select('pinned_message_id, pinned:messages!pinned_message_id(id,content)')
       .eq('id', convId).single();
     if (data?.pinned_message_id && data?.pinned) {
-      window.showPinBanner?.(data.pinned.id, data.pinned.content, data.pinned.sender?.name || '');
+      window.showPinBanner?.(data.pinned.id, data.pinned.content);
     }
   } catch (err) {
     console.error('loadPinnedMessage error:', err);

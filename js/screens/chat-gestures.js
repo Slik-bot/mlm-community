@@ -234,41 +234,25 @@ window.getEditState = () => {
 
 // ===== PIN BANNER =====
 
-function showPinBanner(msgId, text, senderName) {
+function showPinBanner(msgId, text) {
   const banner = document.getElementById('pinBanner');
   if (!banner) return;
-  const preview = banner.querySelector('.pin-preview');
-  const name = banner.querySelector('.pin-name');
-  if (preview) preview.textContent = text.slice(0, 80) + (text.length > 80 ? '…' : '');
-  if (name) name.textContent = senderName;
+  const preview = document.getElementById('pinPreview');
+  const shortText = text.slice(0, 80) + (text.length > 80 ? '…' : '');
+  if (preview) preview.textContent = shortText;
   banner.dataset.msgId = msgId;
   banner.classList.add('active');
-
-  const newBanner = banner.cloneNode(true);
-  banner.parentNode.replaceChild(newBanner, banner);
-
-  newBanner.querySelector('.pin-preview').textContent =
-    text.slice(0, 80) + (text.length > 80 ? '…' : '');
-  newBanner.querySelector('.pin-name').textContent = senderName;
-  newBanner.dataset.msgId = msgId;
-  newBanner.classList.add('active');
-
-  newBanner.querySelector('.pin-close').onclick = (e) => {
-    e.stopPropagation();
-    window.hidePinBanner?.();
+  banner.onclick = (e) => {
+    if (e.target.id === 'pinClose') return;
+    window.scrollToMsg?.(banner.dataset.msgId);
   };
-
-  newBanner.onclick = () => {
-    const targetId = newBanner.dataset.msgId;
-    window.scrollToMsg?.(targetId);
-    const msgEl = document.querySelector(`[data-msg-id="${targetId}"]`);
-    if (msgEl) {
-      setTimeout(() => {
-        msgEl.classList.add('msg-highlight');
-        setTimeout(() => msgEl.classList.remove('msg-highlight'), 1500);
-      }, 400);
-    }
-  };
+  const closeBtn = document.getElementById('pinClose');
+  if (closeBtn) {
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      hidePinBanner();
+    };
+  }
 }
 
 function hidePinBanner() {
