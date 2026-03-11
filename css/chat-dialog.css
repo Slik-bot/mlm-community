@@ -145,7 +145,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px 8px 16px;
+  padding: 10px 8px 70px;
   position: relative;
   z-index: 2;
   display: flex;
@@ -153,16 +153,6 @@
   gap: 2px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black calc(100% - 60px),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black calc(100% - 60px),
-    transparent 100%
-  );
 }
 .msg-date {
   text-align: center; margin: 7px 0 4px;
