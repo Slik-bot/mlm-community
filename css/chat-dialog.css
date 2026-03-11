@@ -145,7 +145,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px 8px 120px;
+  padding: 10px 8px 16px;
   position: relative;
   z-index: 2;
   display: flex;
