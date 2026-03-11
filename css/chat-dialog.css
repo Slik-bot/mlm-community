@@ -153,16 +153,6 @@
   gap: 2px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 70%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black 70%,
-    transparent 100%
-  );
 }
 .msg-date {
   text-align: center; margin: 7px 0 4px;
