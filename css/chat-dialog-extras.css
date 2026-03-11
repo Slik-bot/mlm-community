@@ -343,7 +343,7 @@ body { overflow-x: hidden; }
   display: flex;
   transform: translateY(0);
   opacity: 1;
-  margin-top: 56px;
+  margin-top: calc(env(safe-area-inset-top, 0px) + 56px);
 }
 .ch-search.visible ~ #pinBanner.active {
   margin-top: 0;
@@ -377,7 +377,7 @@ body { overflow-x: hidden; }
   background: rgba(255,255,255,0.04);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   animation: slideDown 0.2s ease;
-  margin-top: 56px;
+  margin-top: calc(env(safe-area-inset-top, 0px) + 56px);
 }
 
 .ch-search.visible {
