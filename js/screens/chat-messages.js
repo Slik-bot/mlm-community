@@ -197,60 +197,24 @@ function scrollToBottom() {
 
 async function scrollToMsg(msgId) {
   if (!msgId) return;
-  let el = document.querySelector('[data-msg-id="' + msgId + '"]');
-  if (!el) {
-    window.showToast?.('Поиск сообщения...');
-    try {
-      const { data } = await window.sb
-        .from('messages')
-        .select('*, sender:users!sender_id(id,name,avatar_url,dna_type)')
-        .eq('id', msgId).single();
-      if (data) {
-        const box = document.getElementById('chatMessages');
-        if (!box) return;
-        const firstMsg = box.querySelector('.msg');
-        const tempWrapper = document.createElement('div');
-        tempWrapper.id = 'pin-temp-msg';
-        const bubble = window.buildBubble?.(data);
-        if (bubble) {
-          tempWrapper.appendChild(bubble);
-          if (firstMsg) box.insertBefore(tempWrapper, firstMsg);
-          else box.appendChild(tempWrapper);
-          el = tempWrapper.querySelector('[data-msg-id="' + msgId + '"]');
-        }
-      }
-    } catch (err) {
-      console.error('scrollToMsg:', err);
-    }
-  }
-  if (!el) {
-    window.showToast?.('Сообщение не найдено');
+
+  const el = document.querySelector(
+    '[data-msg-id="' + msgId + '"]'
+  );
+
+  if (el) {
+    el.scrollIntoView({ block: 'center' });
+    el.classList.remove('msg-highlight');
+    void el.offsetWidth;
+    el.classList.add('msg-highlight');
+    setTimeout(
+      () => el.classList.remove('msg-highlight'),
+      1500
+    );
     return;
   }
-  const box = document.getElementById('chatMessages');
-  if (box) {
-    const boxRect = box.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const scrollTop = box.scrollTop
-      + elRect.top
-      - boxRect.top
-      - (box.clientHeight / 2)
-      + (el.clientHeight / 2);
-    box.scrollTo({
-      top: scrollTop,
-      behavior: 'smooth'
-    });
-  } else {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  el.classList.remove('msg-highlight');
-  void el.offsetWidth;
-  el.classList.add('msg-highlight');
-  setTimeout(() => {
-    el.classList.remove('msg-highlight');
-    const temp = document.getElementById('pin-temp-msg');
-    if (temp) temp.remove();
-  }, 2000);
+
+  window.showToast?.('Сообщение не найдено');
 }
 
 function bindScrollWatch() {
