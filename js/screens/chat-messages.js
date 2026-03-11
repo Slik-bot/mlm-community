@@ -203,7 +203,13 @@ async function scrollToMsg(msgId) {
   );
 
   if (el) {
-    el.scrollIntoView({ block: 'center' });
+    const box = document.getElementById('chatMessages');
+    if (box) {
+      const top = el.offsetTop
+        - (box.clientHeight / 2)
+        + (el.offsetHeight / 2);
+      box.scrollTop = top;
+    }
     el.classList.remove('msg-highlight');
     void el.offsetWidth;
     el.classList.add('msg-highlight');
