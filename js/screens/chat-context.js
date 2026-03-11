@@ -127,7 +127,7 @@ function pinMsg(msgId) {
 }
 
 function forwardMsg(msgId) {
-  document.dispatchEvent(new CustomEvent('chat:forward', { detail: { msgId } }));
+  window.showFwdSheet?.(msgId);
 }
 
 async function deleteMsg(msgId) {
