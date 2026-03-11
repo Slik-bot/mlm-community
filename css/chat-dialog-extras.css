@@ -735,19 +735,23 @@ body { overflow-x: hidden; }
 #scrChat.selecting .ch-foot { display: none; }
 #scrChat.selecting .sel-head { display: flex; }
 #scrChat.selecting .sel-bar  { display: flex; }
-/* ── Кружки слева — через padding контейнера ── */
+/* ── Кружки справа у стенки ── */
 #scrChat.selecting #chatMessages {
-  padding-left: 44px;
+  padding-right: 44px;
+  padding-left: 0;
   position: relative;
 }
+
 #scrChat.selecting .msg {
   position: relative;
   cursor: pointer;
 }
-#scrChat.selecting .msg::before {
+
+/* Кружок справа у каждого сообщения */
+#scrChat.selecting .msg::after {
   content: '';
   position: absolute;
-  left: -36px;
+  right: -36px;
   top: 50%;
   transform: translateY(-50%);
   width: 22px;
@@ -757,14 +761,22 @@ body { overflow-x: hidden; }
   background: transparent;
   transition: all 0.2s;
   z-index: 2;
+  pointer-events: none;
 }
-#scrChat.selecting .msg.selected::before {
+
+/* Убрать ::before если был */
+#scrChat.selecting .msg::before {
+  display: none !important;
+}
+
+#scrChat.selecting .msg.selected::after {
   background: #7c3aed;
   border-color: #7c3aed;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
 }
+
 #scrChat.selecting .msg.selected .bbl {
   outline: 1.5px solid rgba(124,58,237,0.4);
   border-radius: 14px;
