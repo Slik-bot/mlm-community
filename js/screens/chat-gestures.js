@@ -240,11 +240,11 @@ function showPinBanner(msgId, text) {
   const preview = document.getElementById('pinPreview');
   const shortText = text.slice(0, 80) + (text.length > 80 ? '…' : '');
   if (preview) preview.textContent = shortText;
-  banner.dataset.msgId = msgId;
+  banner.dataset.pinnedId = msgId;
   banner.classList.add('active');
   banner.onclick = (e) => {
     if (e.target.id === 'pinClose') return;
-    window.scrollToMsg?.(banner.dataset.msgId);
+    window.scrollToMsg?.(banner.dataset.pinnedId);
   };
   const closeBtn = document.getElementById('pinClose');
   if (closeBtn) {

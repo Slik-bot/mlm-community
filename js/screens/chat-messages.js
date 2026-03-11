@@ -199,7 +199,7 @@ async function scrollToMsg(msgId) {
   if (!msgId) return;
 
   const el = document.querySelector(
-    '[data-msg-id="' + msgId + '"]'
+    '.msg[data-msg-id="' + msgId + '"]'
   );
 
   if (el) {
