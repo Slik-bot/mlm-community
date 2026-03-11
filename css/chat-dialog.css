@@ -44,35 +44,50 @@
 .ch-head {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: calc(env(safe-area-inset-top, 0px) + 12px) 13px 10px;
-  background: rgba(6,6,11,0.93);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border-bottom: 1px solid rgba(255,255,255,0.055);
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 10px;
+  background: rgba(6,5,14,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
-  position: relative;
   z-index: 2;
 }
 .ch-back {
-  width: 30px; height: 30px;
+  width: 36px; height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  border: none; cursor: pointer;
+  background: rgba(255,255,255,0.08);
+  border: none; color: #fff;
   display: flex; align-items: center; justify-content: center;
-  color: rgba(241,241,245,0.5);
-  flex-shrink: 0;
-  transition: all 140ms;
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s;
 }
-.ch-back:active { background: rgba(255,255,255,0.1); }
-.ch-av { position: relative; flex-shrink: 0; }
-.ch-av-ph {
-  position: relative;
-  width: 35px; height: 35px;
+.ch-back:active { background: rgba(255,255,255,0.14); }
+.ch-center { flex: 1; min-width: 0; cursor: pointer; }
+.ch-name {
+  font-size: 15px; font-weight: 600; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ch-status { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+.ch-status.typing { color: rgba(241,241,245,0.5); }
+.ch-status.offline { color: rgba(255,255,255,0.35); }
+.ch-hbtns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ch-icon-btn {
+  width: 36px; height: 36px;
   border-radius: 50%;
-  overflow: visible;
+  background: rgba(255,255,255,0.08);
+  border: none; color: rgba(255,255,255,0.8);
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: white;
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s;
+}
+.ch-icon-btn:active { background: rgba(255,255,255,0.14); }
+.ch-av { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; cursor: pointer; flex-shrink: 0; position: relative; }
+.ch-av-ph {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff;
   background: rgba(255,255,255,0.06);
   border: 2px solid rgba(255,255,255,0.15);
 }
@@ -81,33 +96,12 @@
 .ch-av-ph.dna-r { border-color: #f59e0b; }
 .ch-av-ph.dna-a { border-color: #a78bfa; }
 .ch-av-dot {
-  position: absolute; bottom: 0; right: 0;
+  position: absolute; bottom: 1px; right: 1px;
   width: 9px; height: 9px;
   border-radius: 50%;
   background: #22c55e;
-  border: 2px solid #06060b;
+  border: 2px solid #06050e;
 }
-.ch-info { flex: 1; min-width: 0; }
-.ch-name {
-  font-size: 15px; font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.ch-status { font-size: 11px; color: #22c55e; margin-top: 1px; }
-.ch-status.typing { color: rgba(241,241,245,0.5); }
-.ch-status.offline { color: rgba(255, 255, 255, 0.35); }
-.ch-hbtns { display: flex; gap: 5px; }
-.ch-hbtn {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(241,241,245,0.5);
-  transition: all 140ms;
-}
-.ch-hbtn:active { background: rgba(255,255,255,0.1); }
-.gold-btn { color: #fbbf24 !important; }
 
 /* ── Deal banner ── */
 .deal-top {
