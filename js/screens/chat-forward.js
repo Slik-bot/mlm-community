@@ -5,41 +5,21 @@
 let _fwdMsgId = null;
 let _fwdConvs = [];
 
-async function showFwdSheet(msgId) {
+function showFwdSheet(msgId) {
   _fwdMsgId = msgId;
   const sheet = document.getElementById('fwdSheet');
   if (!sheet) return;
   sheet.classList.add('visible');
 
-  const user = window.getCurrentUser();
-  if (!user) return;
-
-  try {
-    const { data } = await window.sb
-      .from('conversation_members')
-      .select('conversation_id, conversations!inner(id, type), users!inner(id, name, avatar_url)')
-      .eq('user_id', user.id)
-      .neq('conversations.type', 'deal');
-
-    if (!data) { _fwdConvs = []; return; }
-
-    const seen = new Set();
-    _fwdConvs = [];
-    for (const row of data) {
-      const cId = row.conversation_id;
-      if (seen.has(cId) || !row.users) continue;
-      if (row.users.id === user.id) continue;
-      seen.add(cId);
-      _fwdConvs.push({
-        convId: cId,
-        name: row.users.name || 'Без имени',
-        avatar: row.users.avatar_url
-      });
-    }
-    renderFwdList(_fwdConvs, '');
-  } catch (err) {
-    console.error('showFwdSheet:', err);
-  }
+  const convs = window._clCache ?? [];
+  _fwdConvs = convs
+    .filter(c => c.type !== 'deal' && c.other)
+    .map(c => ({
+      convId: c.id,
+      name: c.other.name || 'Без имени',
+      avatar: c.other.avatar_url
+    }));
+  renderFwdList(_fwdConvs, '');
 }
 
 function hideFwdSheet() {

@@ -49,6 +49,7 @@ function initChatList() {
   // Фоном загрузить актуальные данные
   loadClData(user.id).then(function(convs) {
     _clCache = convs;
+    window._clCache = convs;
     _clData = convs;
     if (skel) skel.classList.add('hidden');
     if (list) list.classList.remove('hidden');
@@ -308,6 +309,7 @@ function destroyChatList() {
   });
   _clTypingChannels = {};
   _clCache = null;
+  window._clCache = null;
   _clData = [];
   _clSwipeOpen = null;
   window._clSwipeOpen = null;
