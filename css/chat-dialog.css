@@ -46,12 +46,10 @@
   align-items: center;
   gap: 10px;
   padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 10px;
-  background: rgba(6,5,14,0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: transparent;
   flex-shrink: 0;
   z-index: 2;
+  position: relative;
 }
 .ch-back {
   width: 36px; height: 36px;
@@ -63,7 +61,16 @@
   transition: background 0.15s;
 }
 .ch-back:active { background: rgba(255,255,255,0.14); }
-.ch-center { flex: 1; min-width: 0; cursor: pointer; }
+/* Имя по центру */
+.ch-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+/* Кнопка назад и правые кнопки остаются по краям через flex */
+.ch-back { flex-shrink: 0; }
 .ch-name {
   font-size: 15px; font-weight: 600; color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -71,7 +78,7 @@
 .ch-status { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 1px; }
 .ch-status.typing { color: rgba(241,241,245,0.5); }
 .ch-status.offline { color: rgba(255,255,255,0.35); }
-.ch-hbtns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ch-hbtns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto; }
 .ch-icon-btn {
   width: 36px; height: 36px;
   border-radius: 50%;
