@@ -242,10 +242,8 @@ function showPinBanner(msgId, text) {
   if (preview) preview.textContent = shortText;
   banner.dataset.msgId = msgId;
   banner.classList.add('active');
-  console.error('DEBUG pin onclick set, msgId:', msgId, typeof window.scrollToMsg);
   banner.onclick = (e) => {
     if (e.target.id === 'pinClose') return;
-    console.error('DEBUG pin clicked, dataset.msgId:', banner.dataset.msgId);
     window.scrollToMsg?.(banner.dataset.msgId);
   };
   const closeBtn = document.getElementById('pinClose');

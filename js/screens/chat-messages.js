@@ -227,7 +227,18 @@ async function scrollToMsg(msgId) {
     window.showToast?.('Сообщение не найдено');
     return;
   }
-  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const box = document.getElementById('chatMessages');
+  if (box) {
+    const elTop = el.offsetTop;
+    const boxHeight = box.clientHeight;
+    const elHeight = el.clientHeight;
+    box.scrollTo({
+      top: elTop - (boxHeight / 2) + (elHeight / 2),
+      behavior: 'smooth'
+    });
+  } else {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
   el.classList.remove('msg-highlight');
   void el.offsetWidth;
   el.classList.add('msg-highlight');
