@@ -66,10 +66,18 @@ function _onMsgClick(e) {
   _toggleMsg(msg.dataset.msgId);
 }
 
-function _onForward() {
+async function _onForward() {
+  if (!_selected.size) return;
   const ids = [..._selected];
+  const user = window.getCurrentUser?.();
+  if (!user) return;
+  const { data: msgs } = await window.sb
+    .from('messages')
+    .select('id,content,type')
+    .in('id', ids);
   exitSelectMode();
-  window.showFwdSheet?.(ids[0]);
+  if (!msgs?.length) return;
+  window.showFwdSheet?.(null, msgs);
 }
 
 function _onCopy() {

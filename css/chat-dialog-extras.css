@@ -738,12 +738,15 @@ body { overflow-x: hidden; }
 #scrChat.selecting .sel-head { display: flex; }
 #scrChat.selecting .sel-bar { display: flex; }
 #scrChat.selecting .msg {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   gap: 10px;
   padding-left: 8px;
   cursor: pointer;
-  transition: background 0.15s;
+  width: 100%;
+  min-height: 44px;
 }
 #scrChat.selecting .msg::before {
   content: '';
@@ -754,7 +757,13 @@ body { overflow-x: hidden; }
   border: 2px solid rgba(255,255,255,0.3);
   background: transparent;
   transition: all 0.15s;
-  order: -1;
+  order: 0 !important;
+}
+#scrChat.selecting .msg .bbl {
+  order: 1 !important;
+}
+#scrChat.selecting #chatMessages {
+  width: 100%;
 }
 #scrChat.selecting .msg.selected::before {
   background: #7c3aed;

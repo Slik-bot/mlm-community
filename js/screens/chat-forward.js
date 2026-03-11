@@ -2,10 +2,12 @@
 // ПЕРЕСЛАТЬ СООБЩЕНИЕ
 // ═══════════════════════════════════════
 let _fwdMsgId = null;
+let _fwdMsgs = null;
 let _fwdConvs = [];
 
-async function showFwdSheet(msgId) {
+async function showFwdSheet(msgId, msgs) {
   _fwdMsgId = msgId;
+  _fwdMsgs = msgs ?? null;
   const sheet = document.getElementById('fwdSheet');
   if (!sheet) return;
   sheet.classList.add('visible');
@@ -101,34 +103,41 @@ function renderFwdList(convs, query) {
   }
 }
 
-async function sendForward(toConvId) {
-  if (!_fwdMsgId || !toConvId) return;
-  const user = window.getCurrentUser();
-  if (!user) return;
-  const msgMap = window._chatPagination?.msgMap;
-  const original = msgMap?.[_fwdMsgId];
-  if (!original) {
-    window.showToast?.('Сообщение не найдено');
-    hideFwdSheet();
-    return;
-  }
+async function sendForward(convId) {
+  const user = window.getCurrentUser?.();
+  if (!user || !convId) return;
+  hideFwdSheet();
+  const toSend = _fwdMsgs
+    ?? (_fwdMsgId ? [{ id: _fwdMsgId,
+        content: null, type: 'text' }] : []);
+  if (!toSend.length) return;
   try {
-    const { error } = await window.sb
-      .from('messages')
-      .insert({
-        conversation_id: toConvId,
+    for (const msg of toSend) {
+      let content = msg.content;
+      let type = msg.type ?? 'text';
+      if (!content && msg.id) {
+        const { data: orig } = await window.sb
+          .from('messages')
+          .select('content,type')
+          .eq('id', msg.id)
+          .single();
+        content = orig?.content;
+        type = orig?.type ?? 'text';
+      }
+      if (!content) continue;
+      await window.sb.from('messages').insert({
+        conversation_id: convId,
         sender_id: user.id,
-        content: original.content,
-        type: 'text',
-        forwarded_from_id: _fwdMsgId
+        content,
+        type,
+        forwarded_from_id: msg.id
       });
-    if (error) throw error;
-    window.showToast?.('Сообщение переслано', 'ok', 1500);
+    }
+    window.showToast?.('Переслано', 'ok', 1500);
   } catch (err) {
     console.error('sendForward:', err);
     window.showToast?.('Ошибка пересылки', 'err', 1500);
   }
-  hideFwdSheet();
 }
 
 document.addEventListener('click', (e) => {
