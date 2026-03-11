@@ -3,9 +3,9 @@
   flex-shrink: 0;
   position: relative;
   z-index: 2;
-  background: rgba(6,6,11,0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-top: none;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -789,3 +789,6 @@ body { overflow-x: hidden; }
 .msg-highlight .bbl {
   animation: msgHighlight 1.5s ease;
 }
+
+/* ── Скрыть кнопку скролла вниз ── */
+.ch-scroll-btn { display: none !important; }
