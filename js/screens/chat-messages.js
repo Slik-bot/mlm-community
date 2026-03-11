@@ -198,31 +198,76 @@ function scrollToBottom() {
 async function scrollToMsg(msgId) {
   if (!msgId) return;
 
-  const el = document.querySelector(
+  let el = document.querySelector(
     '.msg[data-msg-id="' + msgId + '"]'
   );
 
-  if (el) {
-    const box = document.getElementById('chatMessages');
-    if (box) {
-      const elRect = el.getBoundingClientRect();
-      const boxRect = box.getBoundingClientRect();
-      box.scrollTop = box.scrollTop
-        + elRect.top - boxRect.top
-        - (box.clientHeight / 2)
-        + (el.clientHeight / 2);
+  if (!el) {
+    window.showToast?.('Загрузка...');
+    try {
+      const { data } = await window.sb
+        .from('messages')
+        .select(
+          '*, sender:users!sender_id' +
+          '(id,name,avatar_url,dna_type)'
+        )
+        .eq('id', msgId)
+        .single();
+
+      if (data) {
+        const box = document.getElementById(
+          'chatMessages'
+        );
+        if (!box) return;
+
+        const bubble = window.buildBubble?.(data);
+        if (!bubble) {
+          window.showToast?.('Не удалось загрузить');
+          return;
+        }
+
+        const temp = document.createElement('div');
+        temp.id = 'pin-temp-msg';
+        temp.appendChild(bubble);
+        box.insertBefore(temp, box.firstChild);
+
+        el = temp.querySelector(
+          '.msg[data-msg-id="' + msgId + '"]'
+        );
+
+        setTimeout(() => {
+          document.getElementById(
+            'pin-temp-msg'
+          )?.remove();
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('scrollToMsg:', err);
     }
-    el.classList.remove('msg-highlight');
-    void el.offsetWidth;
-    el.classList.add('msg-highlight');
-    setTimeout(
-      () => el.classList.remove('msg-highlight'),
-      1500
-    );
+  }
+
+  if (!el) {
+    window.showToast?.('Сообщение не найдено');
     return;
   }
 
-  window.showToast?.('Сообщение не найдено');
+  const box = document.getElementById('chatMessages');
+  if (box) {
+    const boxRect = box.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    box.scrollTop = box.scrollTop
+      + elRect.top - boxRect.top
+      - (box.clientHeight / 2)
+      + (el.clientHeight / 2);
+  }
+
+  el.classList.remove('msg-highlight');
+  void el.offsetWidth;
+  el.classList.add('msg-highlight');
+  setTimeout(
+    () => el.classList.remove('msg-highlight'),
+    1500
+  );
 }
 
 function bindScrollWatch() {
@@ -346,6 +391,7 @@ async function loadPinnedMessage(convId) {
       .from('conversations')
       .select('pinned_message_id, pinned:messages!pinned_message_id(id,content)')
       .eq('id', convId).single();
+    if (_convId !== convId) return;
     if (data?.pinned_message_id && data?.pinned) {
       window.showPinBanner?.(data.pinned.id, data.pinned.content);
     }

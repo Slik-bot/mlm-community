@@ -461,10 +461,10 @@ body { overflow-x: hidden; }
 }
 .pin-close:hover { color: rgba(255,255,255,0.7); }
 @keyframes msgHighlight {
-  0%, 100% { background: transparent; }
-  20%, 80% { background: rgba(167,139,250,0.15); }
+  0%, 100% { background-color: transparent; }
+  20%, 80% { background-color: rgba(167,139,250,0.25); }
 }
-.msg-highlight { animation: msgHighlight 1.5s ease; border-radius: 8px; }
+.msg-highlight .bbl { animation: msgHighlight 1.5s ease; }
 
 /* ── Clone inner (из chat-context.js) ── */
 .msg-ctx-clone-inner {
