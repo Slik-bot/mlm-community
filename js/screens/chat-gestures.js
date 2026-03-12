@@ -250,7 +250,14 @@ function showPinBanner(msgId, text) {
   if (closeBtn) {
     closeBtn.onclick = (e) => {
       e.stopPropagation();
-      hidePinBanner();
+      const banner = document.getElementById('pinBanner');
+      const convId = window._chatPagination?.convId;
+      const msgId = banner?.dataset?.pinnedId;
+      if (convId && msgId) {
+        window.pinMessage?.(msgId, convId);
+      } else {
+        hidePinBanner();
+      }
     };
   }
 }
