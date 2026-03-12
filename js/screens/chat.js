@@ -78,7 +78,6 @@ async function openChat(convId, partner) {
   }
   _pendingConvId = convId;
   _pendingPartner = partner || null;
-  console.error('[FLOW] openChat convId:', convId);
   window.destroyChat?.();
   window.goTo('scrChat');
 }
