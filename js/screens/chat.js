@@ -116,7 +116,6 @@ async function initChat() {
       await window.initChatMessages(convId, partner);
     }
     window.initChatSearch?.();
-    window.loadPinnedMessage?.(convId);
   } catch (err) {
     console.error('initChat:', err);
   }
