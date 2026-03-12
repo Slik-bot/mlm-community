@@ -264,7 +264,12 @@ function showPinBanner(msgId, text) {
 
 function hidePinBanner() {
   const banner = document.getElementById('pinBanner');
-  if (banner) banner.classList.remove('active');
+  if (!banner) return;
+  banner.style.transition = 'none';
+  banner.classList.remove('active');
+  requestAnimationFrame(() => {
+    banner.style.transition = '';
+  });
 }
 
 document.addEventListener('chat:pin', (e) => {
