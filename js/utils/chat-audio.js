@@ -5,59 +5,71 @@
 
 (function() {
   let _ctx = null;
-  let _unlocked = false;
 
   function getCtx() {
-    if (!_ctx) {
-      _ctx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (_ctx.state === 'suspended') _ctx.resume();
     return _ctx;
   }
 
-  // Разблокировать AudioContext при первом касании
-  function unlock() {
-    if (_unlocked) return;
-    _unlocked = true;
-    const ctx = getCtx();
-    const buf = ctx.createBuffer(1, 1, 22050);
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(ctx.destination);
-    src.start(0);
-  }
+  document.addEventListener('touchstart', () => getCtx(), { once: true });
+  document.addEventListener('click', () => getCtx(), { once: true });
 
-  document.addEventListener('touchstart', unlock, { once: true });
-  document.addEventListener('click', unlock, { once: true });
-
-  function playTone(freq, type, duration, gain, fadeOut) {
+  function playSend() {
     try {
       const ctx = getCtx();
-      const osc = ctx.createOscillator();
-      const vol = ctx.createGain();
-      osc.connect(vol);
-      vol.connect(ctx.destination);
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      vol.gain.setValueAtTime(gain, ctx.currentTime);
-      if (fadeOut) {
-        vol.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-      }
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + duration);
+      const t = ctx.currentTime;
+
+      // Основной тон — мягкий удар
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1); gain1.connect(ctx.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(1000, t);
+      osc1.frequency.exponentialRampToValueAtTime(400, t + 0.08);
+      gain1.gain.setValueAtTime(0.3, t);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc1.start(t); osc1.stop(t + 0.12);
+
+      // Щелчок — шум
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      const src = ctx.createBufferSource();
+      const gain2 = ctx.createGain();
+      src.buffer = buf;
+      src.connect(gain2); gain2.connect(ctx.destination);
+      gain2.gain.setValueAtTime(0.08, t);
+      src.start(t);
     } catch(e) {}
   }
 
-  // Отправка — Telegram-стиль: высокий короткий свист
-  function playSend() {
-    playTone(1200, 'sine', 0.06, 0.2, true);
-    setTimeout(() => playTone(1400, 'sine', 0.05, 0.12, true), 30);
-  }
-
-  // Входящее — мягкий нисходящий тон
   function playReceive() {
-    playTone(880, 'sine', 0.15, 0.15, true);
-    setTimeout(() => playTone(660, 'sine', 0.12, 0.10, true), 100);
+    try {
+      const ctx = getCtx();
+      const t = ctx.currentTime;
+
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1); gain1.connect(ctx.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(700, t);
+      osc1.frequency.exponentialRampToValueAtTime(900, t + 0.06);
+      gain1.gain.setValueAtTime(0.001, t);
+      gain1.gain.linearRampToValueAtTime(0.2, t + 0.03);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      osc1.start(t); osc1.stop(t + 0.18);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1050, t + 0.1);
+      gain2.gain.setValueAtTime(0.001, t + 0.1);
+      gain2.gain.linearRampToValueAtTime(0.15, t + 0.13);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc2.start(t + 0.1); osc2.stop(t + 0.25);
+    } catch(e) {}
   }
 
   window.chatAudio = { playSend, playReceive };
