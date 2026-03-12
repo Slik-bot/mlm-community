@@ -34,10 +34,6 @@ async function initChatMessages(convId, partner) {
   _partner = partner;
   applyChatDnaTheme(partner?.dna_type);
   _myId = window.getCurrentUser()?.id;
-  if (!_myId) {
-    await new Promise(r => setTimeout(r, 500));
-    _myId = window.getCurrentUser()?.id;
-  }
   _replyTo = null;
   _msgMap = {};
   _atBottom = true;
