@@ -13,6 +13,8 @@ let _msgMap = {};
 let _atBottom = true;
 let _unreadCount = 0;
 let _hasMore = false;
+let _pins = [];
+let _pinIndex = 0;
 let _loadingMore = false;
 let _oldestTs = null;
 
@@ -359,43 +361,63 @@ async function updateMessage(msgId, newText) {
 async function pinMessage(msgId, convId) {
   if (!msgId || !convId) return;
   try {
-    const { data: conv } = await window.sb
-      .from('conversations').select('pinned_message_id').eq('id', convId).single();
-    const newPin = conv?.pinned_message_id === msgId ? null : msgId;
-    const { error } = await window.sb
-      .from('conversations').update({ pinned_message_id: newPin }).eq('id', convId);
-    if (error) throw error;
-    if (newPin) {
-      const { data: msg } = await window.sb
-        .from('messages').select('content,sender:users!sender_id(name)')
-        .eq('id', newPin).single();
-      window.showPinBanner?.(newPin, msg?.content || '');
+    const { data: existing } = await window.sb
+      .from('pinned_messages')
+      .select('id')
+      .eq('conversation_id', convId)
+      .eq('message_id', msgId)
+      .single();
+    if (existing) {
+      const { error } = await window.sb
+        .from('pinned_messages')
+        .delete()
+        .eq('conversation_id', convId)
+        .eq('message_id', msgId);
+      if (error) throw error;
+      window.showToast?.('Сообщение откреплено', 'ok', 1500);
     } else {
-      window.hidePinBanner?.();
+      const { error } = await window.sb
+        .from('pinned_messages')
+        .insert({
+          conversation_id: convId,
+          message_id: msgId,
+          pinned_by: _myId,
+          position: _pins.length
+        });
+      if (error) throw error;
+      window.showToast?.('Сообщение закреплено', 'ok', 1500);
     }
-    window.showToast?.(newPin ? 'Сообщение закреплено' : 'Сообщение откреплено', 'ok', 1500);
+    await loadPinnedMessage(convId);
   } catch (err) {
-    console.error('pinMessage error:', err);
+    console.error('pinMessage:', err);
     window.showToast?.('Ошибка', 'err', 1500);
   }
 }
 
 async function loadPinnedMessage(convId) {
   if (!convId) return;
-  try {
-    const { data } = await window.sb
-      .from('conversations')
-      .select('pinned_message_id, pinned:messages!pinned_message_id(id,content)')
-      .eq('id', convId).single();
-    if (_convId !== convId) return;
-    if (data?.pinned_message_id && data?.pinned) {
-      window.showPinBanner?.(data.pinned.id, data.pinned.content);
-    } else {
-      window.hidePinBanner?.();
-    }
-  } catch (err) {
-    console.error('loadPinnedMessage error:', err);
+  const { data } = await window.sb
+    .from('pinned_messages')
+    .select('message_id, msg:messages!message_id(id, content)')
+    .eq('conversation_id', convId)
+    .order('position', { ascending: true });
+  if (_convId !== convId) return;
+  _pins = (data || []).filter(p => p.msg);
+  _pinIndex = 0;
+  if (_pins.length > 0) {
+    const p = _pins[0];
+    window.showPinBanner?.(p.msg.id, p.msg.content, 1, _pins.length);
+  } else {
+    window.hidePinBanner?.();
   }
+}
+
+function nextPin() {
+  if (_pins.length === 0) return;
+  _pinIndex = (_pinIndex + 1) % _pins.length;
+  const p = _pins[_pinIndex];
+  window.showPinBanner?.(p.msg.id, p.msg.content, _pinIndex + 1, _pins.length);
+  window.scrollToMsg?.(p.msg.id);
 }
 
 // ── Экспорты ───────────────────────────
@@ -405,6 +427,7 @@ window.deleteMessage = deleteMessage;
 window.updateMessage = updateMessage;
 window.pinMessage = pinMessage;
 window.loadPinnedMessage = loadPinnedMessage;
+window.nextPin = nextPin;
 window.scrollToBottom = scrollToBottom;
 window.scrollToMsg = scrollToMsg;
 window.updateScrollBtn = updateScrollBtn;
