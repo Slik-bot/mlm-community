@@ -334,9 +334,9 @@ function getDnaSegments(dnaType) {
   const GAP = 8;
   const patterns = {
     strategist: [82, 82, 82, 82],
-    communicator: [37, 37, 37, 37, 37, 37, 37, 37],
-    creator: [70, 45, 60, 35, 50],
-    analyst: [52, 52, 52, 52, 52, 52]
+    communicator: [82, 82, 82, 82],
+    creator: [82, 82, 82, 82],
+    analyst: [82, 82, 82, 82]
   };
   const arcs = patterns[type];
   if (!arcs) return [[0, 355]];
@@ -360,7 +360,7 @@ function buildDnaRing(dnaType, size) {
   svg.setAttribute('viewBox', '0 0 ' + full + ' ' + full);
   svg.setAttribute('width', full);
   svg.setAttribute('height', full);
-  svg.setAttribute('class', 'dna-ring dna-ring--animated');
+  svg.setAttribute('class', 'dna-ring');
   const segments = getDnaSegments(dnaType);
   segments.forEach(function(seg) {
     const path = document.createElementNS(ns, 'path');
