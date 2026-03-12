@@ -270,10 +270,7 @@ function buildDateDivider(dateStr) {
   const s = document.createElement('span');
   const date = new Date(dateStr);
   const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
   if (date.toDateString() === today.toDateString()) s.textContent = 'Сегодня';
-  else if (date.toDateString() === yesterday.toDateString()) s.textContent = 'Вчера';
   else s.textContent = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   d.appendChild(s);
   return d;
