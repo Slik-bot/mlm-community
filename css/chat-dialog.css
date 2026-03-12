@@ -109,12 +109,12 @@
   transition: background 0.15s;
 }
 .ch-icon-btn:active { background: rgba(255,255,255,0.14); }
-.ch-av { width: 36px; height: 36px; border-radius: 50%; overflow: visible; cursor: pointer; flex-shrink: 0; position: relative; }
+.ch-av { width: 42px; height: 42px; border-radius: 50%; overflow: visible; cursor: pointer; flex-shrink: 0; position: relative; }
 .ch-av-ph {
   width: 100%; height: 100%;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; color: #fff;
+  font-size: 16px; font-weight: 700; color: #fff;
   background: rgba(255,255,255,0.06);
   border: 2px solid rgba(255,255,255,0.15);
 }
@@ -122,10 +122,6 @@
 .ch-av-ph.dna-c { border-color: #22c55e; }
 .ch-av-ph.dna-r { border-color: #f59e0b; }
 .ch-av-ph.dna-a { border-color: #a78bfa; }
-.ch-av-ph.dna-s,
-.ch-av-ph.dna-c,
-.ch-av-ph.dna-r,
-.ch-av-ph.dna-a { border-color: transparent; }
 .ch-av-dot {
   position: absolute; bottom: 1px; right: 1px;
   width: 9px; height: 9px;
@@ -234,10 +230,10 @@
 .msg:not(.grp) { margin-top: 6px; }
 .msg.grp { margin-top: 2px; }
 .msg-av-w {
-  width: 28px; height: 28px; min-width: 28px;
+  width: 32px; height: 32px; min-width: 32px;
   border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600;
+  font-size: 12px; font-weight: 600;
   color: #8b5cf6;
   background: rgba(139,92,246,0.2);
   border: 1px solid rgba(139,92,246,0.4);
