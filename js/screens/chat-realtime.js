@@ -172,6 +172,7 @@ async function onIncomingMessage(data) {
   const el = window.buildBubble(data, false);
   el.classList.add('msg-new');
   box?.appendChild(el);
+  window.chatAudio?.playReceive();
   markAsDelivered(data.id);
   if (window._chatPagination.atBottom) { window.scrollToBottom(); await markAsRead(); }
   else { window._chatPagination.unreadCount++; window.updateScrollBtn(); }

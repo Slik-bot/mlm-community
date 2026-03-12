@@ -31,6 +31,7 @@ function insertOptimisticBubble(tempMsg, box) {
   if (window.Telegram?.WebApp?.HapticFeedback) {
     window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
   }
+  window.chatAudio?.playSend();
 }
 
 function handleSendSuccess(data, tempId, convId, box) {
