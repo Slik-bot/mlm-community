@@ -43,7 +43,8 @@ function renderChatHead() {
     const oldRing = av.querySelector('.dna-ring');
     if (oldRing) oldRing.remove();
     if (p.dna_type && window.buildDnaRing) {
-      const ring = window.buildDnaRing(p.dna_type, 36);
+      const ring = window.buildDnaRing(p.dna_type, 42);
+      ring.classList.add('dna-ring--animated');
       const color = window.getDnaColor?.(p.dna_type) || '#8b5cf6';
       ring.style.filter = `drop-shadow(0 0 5px ${color}99)`;
       av.appendChild(ring);

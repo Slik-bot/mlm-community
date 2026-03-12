@@ -118,10 +118,10 @@
   background: rgba(255,255,255,0.06);
   border: 2px solid rgba(255,255,255,0.15);
 }
-.ch-av-ph.dna-s { border-color: #3b82f6; }
-.ch-av-ph.dna-c { border-color: #22c55e; }
-.ch-av-ph.dna-r { border-color: #f59e0b; }
-.ch-av-ph.dna-a { border-color: #a78bfa; }
+.ch-av-ph.dna-s,
+.ch-av-ph.dna-c,
+.ch-av-ph.dna-r,
+.ch-av-ph.dna-a { border-color: transparent; }
 .ch-av-dot {
   position: absolute; bottom: 1px; right: 1px;
   width: 9px; height: 9px;
