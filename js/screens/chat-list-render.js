@@ -94,20 +94,6 @@ function clBuildAvatar(user, conv) {
     dot.className = 'cl-online';
     ava.appendChild(dot);
   }
-  const temp = document.createElement('div');
-  temp.className = 'cl-temp';
-  const hasActiveDeal = conv?.deal?.status === 'active';
-  const lastMsg = conv?.last_message_at;
-  const age = lastMsg ? Date.now() - new Date(lastMsg).getTime() : Infinity;
-  const HOURS_48 = 48 * 60 * 60 * 1000;
-  if (hasActiveDeal) {
-    temp.classList.add('cl-temp--deal');
-  } else if (age < HOURS_48) {
-    temp.classList.add('cl-temp--active');
-  } else {
-    temp.classList.add('cl-temp--cold');
-  }
-  ava.appendChild(temp);
   return ava;
 }
 
