@@ -82,6 +82,7 @@ async function openChat(convId, partner) {
 }
 
 async function initChat() {
+  window.hidePinBanner?.();
   let convId = _pendingConvId;
   if (!convId) {
     await new Promise(r => setTimeout(r, 300));
