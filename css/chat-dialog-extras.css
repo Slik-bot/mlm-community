@@ -358,6 +358,13 @@ body { overflow-x: hidden; }
   flex-shrink: 0; line-height: 1;
 }
 .pin-close:hover { color: rgba(255,255,255,0.7); }
+.pin-counter {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
 @keyframes msgHighlight {
   0%, 100% { background-color: transparent; }
   20%, 80% { background-color: rgba(167,139,250,0.25); }
