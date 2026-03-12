@@ -201,6 +201,30 @@
   border: 1px solid rgba(255,255,255,0.055);
   border-radius: 20px;
 }
+.ch-float-date {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 64px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  z-index: 20;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(241,241,245,0.75);
+  padding: 4px 14px;
+  background: rgba(20,18,35,0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.ch-float-date.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 .msg {
   display: flex; align-items: flex-end;
   gap: 6px; max-width: 100%;
