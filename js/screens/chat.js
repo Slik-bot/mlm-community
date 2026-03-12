@@ -78,7 +78,7 @@ async function openChat(convId, partner) {
   }
   _pendingConvId = convId;
   _pendingPartner = partner || null;
-  window.hidePinBanner?.();
+  window.destroyChat?.();
   window.goTo('scrChat');
 }
 
