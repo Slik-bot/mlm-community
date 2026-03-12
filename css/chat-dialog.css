@@ -226,11 +226,11 @@
   transform: translateX(-50%) translateY(0);
 }
 .msg {
-  display: flex; align-items: flex-end;
+  display: flex; align-items: flex-start;
   gap: 6px; max-width: 100%;
 }
-.msg-in { align-self: flex-start; max-width: 82vw; }
-.msg-out { align-self: flex-end; flex-direction: row-reverse; max-width: 82vw; }
+.msg-in { align-self: flex-start; max-width: 82vw; width: fit-content; }
+.msg-out { align-self: flex-end; flex-direction: row-reverse; max-width: 82vw; width: fit-content; }
 .msg:not(.grp) { margin-top: 6px; }
 .msg.grp { margin-top: 2px; }
 .msg-av-w {
