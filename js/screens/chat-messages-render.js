@@ -38,6 +38,15 @@ function renderChatHead() {
   }
   if (dot) { isOnline ? dot.classList.remove('hidden') : dot.classList.add('hidden'); }
   if (tfRecipient) tfRecipient.textContent = p.name || '';
+  const av = document.getElementById('chAvPh')?.parentElement;
+  if (av) {
+    const oldRing = av.querySelector('.dna-ring');
+    if (oldRing) oldRing.remove();
+    if (p.dna_type && window.buildDnaRing) {
+      const ring = window.buildDnaRing(p.dna_type, 36);
+      av.appendChild(ring);
+    }
+  }
 }
 
 // ── HEX → R,G,B ─────────────────────
