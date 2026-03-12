@@ -394,6 +394,8 @@ async function loadPinnedMessage(convId) {
     if (_convId !== convId) return;
     if (data?.pinned_message_id && data?.pinned) {
       window.showPinBanner?.(data.pinned.id, data.pinned.content);
+    } else {
+      window.hidePinBanner?.();
     }
   } catch (err) {
     console.error('loadPinnedMessage error:', err);
