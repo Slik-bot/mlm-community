@@ -435,3 +435,29 @@
   opacity: 0;
   transition: opacity 400ms;
 }
+
+/* ── Меню ··· в шапке ── */
+.ch-more-menu {
+  display: none;
+  position: absolute;
+  top: 56px; right: 8px;
+  background: rgba(20,18,40,0.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 6px;
+  min-width: 200px;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.ch-more-menu.open { display: block; }
+.ch-more-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 12px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.9);
+  font-size: 15px; text-align: left;
+  border-radius: 10px; cursor: pointer;
+}
+.ch-more-item:active { background: rgba(255,255,255,0.08); }
+.ch-more-item--danger { color: #ff4d4d; }

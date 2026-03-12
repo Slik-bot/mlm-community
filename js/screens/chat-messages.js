@@ -55,6 +55,39 @@ async function initChatMessages(convId, partner) {
   const divider = document.getElementById('msgUnreadDivider');
   if (divider) divider.scrollIntoView({ block: 'center' });
   else scrollToBottom();
+
+  // Меню ···
+  const moreBtn = document.getElementById('chatMoreBtn');
+  const moreMenu = document.getElementById('chatMoreMenu');
+  if (moreBtn && moreMenu) {
+    moreBtn.onclick = (e) => {
+      e.stopPropagation();
+      moreMenu.classList.toggle('open');
+    };
+    document.addEventListener('click', () => {
+      moreMenu.classList.remove('open');
+    });
+    document.getElementById('chMenuSearch')?.addEventListener('click', () => {
+      document.getElementById('chatSearchBtn')?.click();
+    });
+    document.getElementById('chMenuClear')?.addEventListener('click', () => {
+      if (confirm('Очистить историю чата?')) {
+        const box = document.getElementById('chatMessages');
+        if (box) box.innerHTML = '';
+      }
+    });
+    document.getElementById('chMenuMute')?.addEventListener('click', () => {
+      haptic('light');
+      alert('Уведомления отключены');
+    });
+    document.getElementById('chMenuBlock')?.addEventListener('click', () => {
+      if (confirm('Заблокировать пользователя?')) haptic('warning');
+    });
+    document.getElementById('chMenuReport')?.addEventListener('click', () => {
+      haptic('warning');
+      alert('Жалоба отправлена');
+    });
+  }
 }
 
 // ── Загрузка: хелперы ─────────────────
