@@ -141,11 +141,45 @@
 .tf-btn:active { transform: scale(0.98); }
 
 /* ── Анимация появления сообщений ── */
-@keyframes msgIn {
-  from { opacity: 0; transform: translateY(13px) scale(0.95); }
-  to { opacity: 1; transform: none; }
+@keyframes msgIncoming {
+  0%   {
+    opacity: 0;
+    transform: translateX(-12px) translateY(8px) scale(0.7);
+    filter: blur(4px);
+  }
+  60%  {
+    opacity: 1;
+    transform: translateX(2px) translateY(-2px) scale(1.03);
+    filter: blur(0);
+  }
+  80%  { transform: translateX(-1px) translateY(1px) scale(0.99); }
+  100% { transform: none; opacity: 1; filter: blur(0); }
 }
-.msg-new { animation: msgIn 220ms cubic-bezier(.16,1,.3,1); }
+
+@keyframes msgOutgoing {
+  0%   {
+    opacity: 0;
+    transform: translateX(12px) translateY(8px) scale(0.7);
+    filter: blur(4px);
+  }
+  60%  {
+    opacity: 1;
+    transform: translateX(-2px) translateY(-2px) scale(1.03);
+    filter: blur(0);
+  }
+  80%  { transform: translateX(1px) translateY(1px) scale(0.99); }
+  100% { transform: none; opacity: 1; filter: blur(0); }
+}
+
+.msg-new.msg-in .bbl {
+  animation: msgIncoming 320ms cubic-bezier(.16,1,.3,1) forwards;
+}
+.msg-new.msg-out .bbl {
+  animation: msgOutgoing 320ms cubic-bezier(.16,1,.3,1) forwards;
+}
+.msg-new {
+  animation: none;
+}
 
 /* ── Разделитель непрочитанных ── */
 .msg-unread-divider {
