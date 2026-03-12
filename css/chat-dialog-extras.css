@@ -3,11 +3,9 @@
   flex-shrink: 0;
   position: absolute; bottom: 0; left: 0; right: 0;
   z-index: 10;
-  background: rgba(6,5,14,0.5);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border: none; box-shadow: none;
-  padding: 6px 12px; box-sizing: border-box;
-  padding-bottom: env(safe-area-inset-bottom, 8px);
+  background: transparent;
+  padding: 8px 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
 .reply-bar {
   display: flex; align-items: center;
@@ -30,31 +28,33 @@
   color: rgba(241,241,245,0.5);
 }
 .ch-row {
-  display: flex; align-items: center; gap: 10px;
-  border-radius: 22px; padding: 4px 6px 4px 12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 8px;
+  border-radius: 24px;
+  padding: 6px 6px 6px 8px;
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.10);
 }
 .ch-att {
-  width: 36px; height: 36px; border-radius: 50%;
-  flex-shrink: 0;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.075);
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: rgba(241,241,245,0.5);
-  transition: all 160ms;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
 }
 .ch-att:active { background: rgba(255,255,255,0.1); }
 .ch-ta {
-  flex: 1; min-height: 32px; max-height: 96px;
-  padding: 6px 8px;
+  flex: 1;
+  min-height: 28px; max-height: 96px;
+  padding: 4px 4px;
   background: transparent;
-  backdrop-filter: none; -webkit-backdrop-filter: none;
-  border-radius: 0; border: none;
-  color: #f1f1f5; font-family: 'Outfit', sans-serif;
+  border: none; outline: none;
   font-size: 15px; line-height: 1.4;
-  resize: none; outline: none;
-  transition: all 200ms;
+  color: #f1f1f5;
+  resize: none;
 }
 .ch-ta:focus {
   border-color: rgba(139,92,246,0.4);
