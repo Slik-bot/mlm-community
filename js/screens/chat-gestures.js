@@ -253,6 +253,7 @@ function showPinBanner(msgId, text) {
       const banner = document.getElementById('pinBanner');
       const convId = window._chatPagination?.convId;
       const msgId = banner?.dataset?.pinnedId;
+      console.error('[PINCLOSE] convId:', convId, 'msgId:', msgId);
       if (convId && msgId) {
         window.pinMessage?.(msgId, convId);
       } else {
