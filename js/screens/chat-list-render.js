@@ -74,7 +74,7 @@ function clWrapItem(convId, ava, body, meta, onClick, extraClass, conv) {
   return item;
 }
 
-function clBuildAvatar(user) {
+function clBuildAvatar(user, conv) {
   const dnaClass = CL_DNA_CLASS[user.dna_type] || '';
   const ava = document.createElement('div');
   ava.className = 'cl-ava' + (dnaClass ? ' ' + dnaClass : '');
@@ -94,6 +94,20 @@ function clBuildAvatar(user) {
     dot.className = 'cl-online';
     ava.appendChild(dot);
   }
+  const temp = document.createElement('div');
+  temp.className = 'cl-temp';
+  const hasActiveDeal = conv?.deal?.status === 'active';
+  const lastMsg = conv?.last_message_at;
+  const age = lastMsg ? Date.now() - new Date(lastMsg).getTime() : Infinity;
+  const HOURS_48 = 48 * 60 * 60 * 1000;
+  if (hasActiveDeal) {
+    temp.classList.add('cl-temp--deal');
+  } else if (age < HOURS_48) {
+    temp.classList.add('cl-temp--active');
+  } else {
+    temp.classList.add('cl-temp--cold');
+  }
+  ava.appendChild(temp);
   return ava;
 }
 
@@ -188,7 +202,7 @@ function buildClItem(conv) {
   if (badge) meta.appendChild(badge);
 
   const extraCls = conv.is_muted ? 'cl-item--muted' : '';
-  return clWrapItem(conv.id, clBuildAvatar(o), body, meta,
+  return clWrapItem(conv.id, clBuildAvatar(o, conv), body, meta,
     function() { window.openChat(conv.id, o); }, extraCls || undefined, conv);
 }
 
