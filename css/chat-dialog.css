@@ -276,12 +276,12 @@
 .bbl-text::after {
   content: '';
   display: inline-block;
-  width: 90px;
+  width: 60px;
   height: 1px;
   vertical-align: bottom;
 }
 .bbl--edited .bbl-text::after {
-  width: 115px;
+  width: 80px;
 }
 .msg-in .bbl {
   background: rgba(20, 16, 40, 0.75);
