@@ -188,10 +188,13 @@ async function deleteMessage(msgId) {
 
 function scrollToBottom() {
   const box = document.getElementById('chatMessages');
-  if (box) box.scrollTop = box.scrollHeight;
-  _atBottom = true;
-  _unreadCount = 0;
-  updateScrollBtn();
+  if (!box) return;
+  requestAnimationFrame(() => {
+    box.scrollTop = box.scrollHeight;
+    _atBottom = true;
+    _unreadCount = 0;
+    updateScrollBtn();
+  });
 }
 
 async function scrollToMsg(msgId) {
