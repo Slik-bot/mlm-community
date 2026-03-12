@@ -280,12 +280,16 @@ function updateFloatDate() {
   let current = null;
   for (const d of dividers) {
     const rect = d.getBoundingClientRect();
-    if (rect.top <= 120) current = d.querySelector('span')?.textContent;
-    else break;
+    if (rect.top < box.getBoundingClientRect().bottom) {
+      current = d.querySelector('span')?.textContent;
+    }
   }
   if (current) {
     pill.textContent = current;
     pill.classList.add('visible');
+  } else {
+    pill.classList.remove('visible');
+    return;
   }
   clearTimeout(_floatDateTimer);
   _floatDateTimer = setTimeout(() => {
