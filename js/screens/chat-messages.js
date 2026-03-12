@@ -361,20 +361,14 @@ async function updateMessage(msgId, newText) {
 // ── Закрепление сообщения ────────────
 
 async function pinMessage(msgId, convId) {
-  console.error('[PIN] msgId:', msgId, 'convId:', convId);
   if (!msgId || !convId) return;
   try {
     const { data: conv } = await window.sb
       .from('conversations').select('pinned_message_id').eq('id', convId).single();
     const newPin = conv?.pinned_message_id === msgId ? null : msgId;
-    console.error('[PIN] current:', conv?.pinned_message_id, 'newPin:', newPin);
     const { error } = await window.sb
       .from('conversations').update({ pinned_message_id: newPin }).eq('id', convId);
-    if (error) {
-      console.error('[PIN] update error:', error);
-      throw error;
-    }
-    console.error('[PIN] update OK, newPin:', newPin);
+    if (error) throw error;
     if (newPin) {
       const { data: msg } = await window.sb
         .from('messages').select('content,sender:users!sender_id(name)')
