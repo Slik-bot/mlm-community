@@ -13,6 +13,7 @@ let _msgMap = {};
 let _atBottom = true;
 let _unreadCount = 0;
 let _hasMore = false;
+let _floatDateTimer = null;
 let _pins = [];
 let _pinIndex = 0;
 let _loadingMore = false;
@@ -267,10 +268,33 @@ async function scrollToMsg(msgId) {
   );
 }
 
+function updateFloatDate() {
+  const pill = document.getElementById('chatFloatDate');
+  if (!pill) return;
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+  const dividers = box.querySelectorAll('.msg-date');
+  let current = null;
+  for (const d of dividers) {
+    const rect = d.getBoundingClientRect();
+    if (rect.top <= 120) current = d.querySelector('span')?.textContent;
+    else break;
+  }
+  if (current) {
+    pill.textContent = current;
+    pill.classList.add('visible');
+  }
+  clearTimeout(_floatDateTimer);
+  _floatDateTimer = setTimeout(() => {
+    pill.classList.remove('visible');
+  }, 1500);
+}
+
 function bindScrollWatch() {
   const box = document.getElementById('chatMessages');
   if (!box) return;
   box.addEventListener('scroll', () => {
+    updateFloatDate();
     if (box.scrollTop < 80 && _hasMore && !_loadingMore) {
       window.loadOlderMessages?.();
     }
