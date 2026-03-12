@@ -182,11 +182,22 @@ async function onIncomingMessage(data) {
 
 function showTyping() {
   document.getElementById('chatTyping')?.classList.remove('hidden');
-  window.scrollToBottom();
+  window.scrollToBottom?.();
+  const status = document.getElementById('chStatus');
+  if (status) {
+    status.dataset.prev = status.textContent;
+    status.textContent = 'печатает...';
+    status.classList.add('typing');
+  }
 }
 
 function hideTyping() {
   document.getElementById('chatTyping')?.classList.add('hidden');
+  const status = document.getElementById('chStatus');
+  if (status) {
+    status.textContent = status.dataset.prev || '';
+    status.classList.remove('typing');
+  }
 }
 
 // ── Подписка на статусы сообщений ────────
