@@ -86,7 +86,6 @@ function clBuildAvatar(user, conv) {
   } else {
     ava.textContent = (user.name || 'U').charAt(0).toUpperCase();
   }
-  ava.appendChild(buildDnaRing(user.dna_type, 48));
   const isOnline = user.last_active_at &&
     (Date.now() - new Date(user.last_active_at).getTime()) < 5 * 60 * 1000;
   if (isOnline) {
