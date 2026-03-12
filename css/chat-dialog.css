@@ -109,7 +109,7 @@
   transition: background 0.15s;
 }
 .ch-icon-btn:active { background: rgba(255,255,255,0.14); }
-.ch-av { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; cursor: pointer; flex-shrink: 0; position: relative; }
+.ch-av { width: 36px; height: 36px; border-radius: 50%; overflow: visible; cursor: pointer; flex-shrink: 0; position: relative; }
 .ch-av-ph {
   width: 100%; height: 100%;
   border-radius: 50%;
@@ -122,12 +122,27 @@
 .ch-av-ph.dna-c { border-color: #22c55e; }
 .ch-av-ph.dna-r { border-color: #f59e0b; }
 .ch-av-ph.dna-a { border-color: #a78bfa; }
+.ch-av-ph.dna-s,
+.ch-av-ph.dna-c,
+.ch-av-ph.dna-r,
+.ch-av-ph.dna-a { border-color: transparent; }
 .ch-av-dot {
   position: absolute; bottom: 1px; right: 1px;
   width: 9px; height: 9px;
   border-radius: 50%;
   background: #22c55e;
   border: 2px solid #06050e;
+  z-index: 10;
+}
+.ch-av .dna-ring {
+  position: absolute;
+  top: -4px; left: -4px;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 0 4px rgba(167,139,250,0.6));
+}
+.ch-av .dna-ring--animated {
+  animation: dnaRotate 6s linear infinite;
 }
 
 /* ── Deal banner ── */
