@@ -235,6 +235,7 @@ window.getEditState = () => {
 // ===== PIN BANNER =====
 
 function showPinBanner(msgId, text) {
+  console.error('[FLOW] showPinBanner msgId:', msgId);
   const banner = document.getElementById('pinBanner');
   if (!banner) return;
   const preview = document.getElementById('pinPreview');
@@ -263,6 +264,7 @@ function showPinBanner(msgId, text) {
 }
 
 function hidePinBanner() {
+  console.error('[FLOW] hidePinBanner called');
   const banner = document.getElementById('pinBanner');
   if (!banner) return;
   banner.style.transition = 'none';

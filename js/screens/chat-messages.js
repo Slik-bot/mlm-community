@@ -296,6 +296,7 @@ function updateScrollBtn() {
 // ── Уничтожение ────────────────────────
 
 function destroyChat() {
+  console.error('[FLOW] destroyChat called');
   document.getElementById('pin-temp-msg')?.remove();
   window.hidePinBanner?.();
   const wrap = document.getElementById('scrChat');
@@ -381,12 +382,14 @@ async function pinMessage(msgId, convId) {
 }
 
 async function loadPinnedMessage(convId) {
+  console.error('[FLOW] loadPinnedMessage convId:', convId);
   if (!convId) return;
   try {
     const { data } = await window.sb
       .from('conversations')
       .select('pinned_message_id, pinned:messages!pinned_message_id(id,content)')
       .eq('id', convId).single();
+    console.error('[FLOW] pin result:', data?.pinned_message_id);
     if (_convId !== convId) return;
     if (data?.pinned_message_id && data?.pinned) {
       window.showPinBanner?.(data.pinned.id, data.pinned.content);
