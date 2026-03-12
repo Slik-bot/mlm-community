@@ -234,32 +234,30 @@ window.getEditState = () => {
 
 // ===== PIN BANNER =====
 
-function showPinBanner(msgId, text) {
+function showPinBanner(msgId, text, current, total) {
   const banner = document.getElementById('pinBanner');
   if (!banner) return;
-  const preview = document.getElementById('pinPreview');
-  const shortText = text.slice(0, 80) + (text.length > 80 ? '…' : '');
-  if (preview) preview.textContent = shortText;
   banner.dataset.pinnedId = msgId;
+  document.getElementById('pinPreview').textContent = text || '';
+  const counter = document.getElementById('pinCounter');
+  if (counter) {
+    counter.textContent = total > 1 ? `${current}/${total}` : '';
+  }
   banner.classList.add('active');
   banner.onclick = (e) => {
-    if (e.target.id === 'pinClose') return;
-    window.scrollToMsg?.(banner.dataset.pinnedId);
+    if (e.target.closest('.pin-close')) return;
+    if (total > 1) window.nextPin?.();
+    else window.scrollToMsg?.(msgId);
   };
   const closeBtn = document.getElementById('pinClose');
-  if (closeBtn) {
-    closeBtn.onclick = (e) => {
-      e.stopPropagation();
-      const banner = document.getElementById('pinBanner');
-      const convId = window._chatPagination?.convId;
-      const msgId = banner?.dataset?.pinnedId;
-      if (convId && msgId) {
-        window.pinMessage?.(msgId, convId);
-      } else {
-        hidePinBanner();
-      }
-    };
-  }
+  if (closeBtn) closeBtn.onclick = (e) => {
+    e.stopPropagation();
+    const b = document.getElementById('pinBanner');
+    const cId = window._chatPagination?.convId;
+    const mId = b?.dataset?.pinnedId;
+    if (cId && mId) window.pinMessage?.(mId, cId);
+    else hidePinBanner();
+  };
 }
 
 function hidePinBanner() {
