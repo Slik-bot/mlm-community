@@ -9,7 +9,7 @@
   </div>
 
   <!-- Topic header -->
-  <div class="topic-header glass-card">
+  <div class="topic-header">
     <div class="topic-cat-badge" id="topicCatBadge"></div>
     <div class="topic-title" id="topicTitle"></div>
     <div class="topic-meta">
@@ -41,7 +41,9 @@
 
   <!-- Reply form -->
   <div class="topic-reply-form">
-    <textarea class="reply-input glass-input" id="replyInput" placeholder="Написать ответ..." rows="3"></textarea>
-    <button class="btn-primary" onclick="forumSubmitReply()">Ответить</button>
+    <textarea class="reply-input" id="replyInput" placeholder="Написать ответ..." rows="1"></textarea>
+    <button class="reply-send-btn" onclick="forumSubmitReply()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
   </div>
 </div>

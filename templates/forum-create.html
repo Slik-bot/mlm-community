@@ -11,7 +11,7 @@
   <div class="forum-form">
     <div class="form-field">
       <label class="form-label">Категория</label>
-      <select class="glass-input" id="fcCategory">
+      <select id="fcCategory">
         <option value="business">Бизнес</option>
         <option value="marketing">Маркетинг</option>
         <option value="tools">Инструменты</option>
@@ -24,14 +24,14 @@
 
     <div class="form-field">
       <label class="form-label">Заголовок</label>
-      <input class="glass-input" id="fcTitle" type="text" maxlength="150" placeholder="Тема обсуждения">
+      <input id="fcTitle" type="text" maxlength="150" placeholder="Тема обсуждения">
     </div>
 
     <div class="form-field">
-      <label class="form-label">Текст</label>
-      <textarea class="glass-input" id="fcBody" maxlength="5000" placeholder="Подробно опишите вопрос или тему..." rows="6"></textarea>
+      <label class="form-label">Текст темы</label>
+      <textarea id="fcBody" maxlength="5000" placeholder="Подробно опишите вопрос или тему..." rows="6"></textarea>
     </div>
 
-    <button class="btn-primary" onclick="forumCreateTopic()">Опубликовать</button>
+    <button class="forum-submit-btn" onclick="forumCreateTopic()">Опубликовать тему</button>
   </div>
 </div>

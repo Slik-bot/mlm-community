@@ -3,9 +3,7 @@
   <div class="scr-head">
     <div style="width:36px"></div>
     <span class="scr-head-title">Форум</span>
-    <button class="icon-btn" onclick="goTo('scrForumCreate')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    </button>
+    <button class="forum-create-btn" onclick="goTo('scrForumCreate')">+</button>
   </div>
 
   <!-- Search -->
@@ -40,10 +38,8 @@
 
   <!-- Empty state -->
   <div class="forum-empty hidden" id="forumEmpty">
-    <div class="empty-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    </div>
+    <div class="forum-empty-icon">💬</div>
     <div class="empty-title">Тем пока нет</div>
-    <div class="empty-desc">Создайте первую тему</div>
+    <div class="empty-desc">Создайте первую тему<br>и начните обсуждение</div>
   </div>
 </div>
