@@ -1,4 +1,29 @@
-/* ===== FORUM — TRAFIQO PREMIUM STYLE ===== */
+/* ===== FORUM — TRAFIQO PREMIUM DARK GLASS ===== */
+
+/* --- Animations --- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bubbleIn {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes likePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+@keyframes toastUp {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+}
 
 /* --- Screen layout --- */
 #scrForum, #scrForumTopic, #scrForumCreate {
@@ -7,39 +32,6 @@
   display: flex;
   flex-direction: column;
 }
-
-/* --- Header --- */
-.forum-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 16px 8px;
-  background: rgba(6,5,14,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.forum-head-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
-.forum-create-btn {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  border: none;
-  color: #fff;
-  font-size: 22px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(139,92,246,0.4);
-  transition: transform 200ms cubic-bezier(0.16,1,0.3,1);
-}
-.forum-create-btn:active { transform: scale(0.92); }
 
 /* --- Search --- */
 .forum-search-wrap {
@@ -58,37 +50,35 @@
   width: 100%;
   padding: 10px 14px 10px 38px;
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   color: #fff;
   font-size: 14px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   outline: none;
   transition: border-color 200ms;
 }
-.forum-search:focus {
-  border-color: rgba(139,92,246,0.5);
-}
+.forum-search:focus { border-color: rgba(139,92,246,0.5); }
 .forum-search::placeholder { color: rgba(255,255,255,0.3); }
 
-/* --- Categories --- */
+/* --- Categories pills --- */
 .forum-cats {
   display: flex;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: 6px;
+  padding: 10px 16px;
   overflow-x: auto;
   scrollbar-width: none;
 }
 .forum-cats::-webkit-scrollbar { display: none; }
 .forum-cat {
   flex-shrink: 0;
-  padding: 6px 16px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.55);
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.16,1,0.3,1);
@@ -96,10 +86,10 @@
 }
 .forum-cat:active { transform: scale(0.95); }
 .forum-cat.active {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  border-color: transparent;
+  background: #8b5cf6;
+  border-color: #8b5cf6;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+  font-weight: 600;
 }
 
 /* --- Sort --- */
@@ -108,15 +98,33 @@
   width: 100%;
   padding: 8px 12px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.08);
   border-radius: 10px;
   color: rgba(255,255,255,0.7);
   font-size: 13px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   outline: none;
 }
+.forum-sort-tabs {
+  display: flex;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+.forum-sort-tab {
+  padding: 10px 14px 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  border-bottom: 2px solid transparent;
+  font-family: Outfit, sans-serif;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.forum-sort-tab.active {
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
+  font-weight: 600;
+}
 
-/* --- Topic List --- */
+/* --- Topic list --- */
 .forum-list {
   display: flex;
   flex-direction: column;
@@ -124,33 +132,23 @@
   gap: 10px;
 }
 
-/* --- Topic Card --- */
+/* --- Topic card --- */
 .forum-topic-card {
   background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.07);
+  border: 0.5px solid rgba(255,255,255,0.07);
   border-radius: 16px;
   padding: 14px;
+  margin-bottom: 8px;
   cursor: pointer;
-  transition: all 200ms cubic-bezier(0.16,1,0.3,1);
+  transition: background 200ms cubic-bezier(0.16,1,0.3,1);
   position: relative;
   overflow: hidden;
-}
-.forum-topic-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 3px; height: 100%;
-  background: linear-gradient(180deg, #8b5cf6, #6366f1);
-  border-radius: 3px 0 0 3px;
-  opacity: 0;
-  transition: opacity 200ms;
+  animation: fadeInUp 350ms cubic-bezier(0.16,1,0.3,1) both;
 }
 .forum-topic-card:active {
-  transform: scale(0.98);
   background: rgba(255,255,255,0.055);
+  transform: scale(0.98);
 }
-.forum-topic-card:active::before { opacity: 1; }
-
 .ftc-top {
   display: flex;
   align-items: center;
@@ -158,17 +156,16 @@
   margin-bottom: 8px;
 }
 .ftc-cat {
-  padding: 2px 10px;
-  border-radius: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
 }
 .ftc-pinned { color: #f59e0b; font-size: 14px; }
 .ftc-solved { color: #22c55e; font-size: 14px; }
-
 .ftc-title {
   font-size: 15px;
   font-weight: 600;
@@ -230,19 +227,58 @@
   gap: 4px;
 }
 
-/* DNA Badge Mini */
+/* --- DNA avatar ring --- */
+.forum-av { border-radius: 50%; border: 2px solid; }
+.forum-av-s { border-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.5); background: rgba(59,130,246,0.15); color: #3b82f6; }
+.forum-av-c { border-color: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); background: rgba(34,197,94,0.15); color: #22c55e; }
+.forum-av-r { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.5); background: rgba(245,158,11,0.15); color: #f59e0b; }
+.forum-av-a { border-color: #a78bfa; box-shadow: 0 0 8px rgba(167,139,250,0.5); background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+/* --- DNA badge --- */
 .dna-badge-mini {
   display: inline-block;
-  padding: 1px 6px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: Outfit;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: Outfit, sans-serif;
   letter-spacing: 0.3px;
   vertical-align: middle;
 }
+.dna-badge-s { background: rgba(59,130,246,0.2); color: #3b82f6; }
+.dna-badge-c { background: rgba(34,197,94,0.2); color: #22c55e; }
+.dna-badge-r { background: rgba(245,158,11,0.2); color: #f59e0b; }
+.dna-badge-a { background: rgba(167,139,250,0.2); color: #a78bfa; }
 
-/* --- Empty State --- */
+/* --- Heat badge --- */
+.heat-badge {
+  background: rgba(245,158,11,0.12);
+  border: 0.5px solid rgba(245,158,11,0.3);
+  color: #f59e0b;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-family: Outfit, sans-serif;
+}
+
+/* --- Category tags --- */
+.cat-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.ct-biz  { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+.ct-mkt  { background: rgba(34,197,94,0.15); color: #22c55e; }
+.ct-tool { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.ct-edu  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.ct-new  { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.ct-case { background: rgba(239,68,68,0.15); color: #ef4444; }
+.ct-off  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+
+/* --- Empty state --- */
 .forum-empty {
   display: flex;
   flex-direction: column;
@@ -251,10 +287,7 @@
   padding: 80px 20px;
   gap: 12px;
 }
-.forum-empty-icon {
-  font-size: 48px;
-  opacity: 0.4;
-}
+.forum-empty-icon { font-size: 48px; opacity: 0.4; }
 .empty-title {
   font-size: 17px;
   font-weight: 600;
@@ -268,14 +301,22 @@
   line-height: 1.5;
 }
 
+/* --- Skeleton loader --- */
+.forum-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: shimmer 1.5s infinite;
+}
+
 /* ===== TOPIC DETAIL ===== */
 
 .topic-header {
   margin: 12px 16px;
   padding: 16px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.035);
+  border: 0.5px solid rgba(255,255,255,0.07);
 }
 .topic-cat-badge {
   display: inline-block;
@@ -286,6 +327,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
+  font-family: Outfit, sans-serif;
 }
 .topic-title {
   font-size: 18px;
@@ -312,6 +354,11 @@
   font-weight: 600;
   color: rgba(255,255,255,0.9);
 }
+.topic-author-dna { display: flex; align-items: center; }
+.topic-author-level {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
 .topic-time {
   font-size: 12px;
   color: rgba(255,255,255,0.35);
@@ -322,6 +369,7 @@
   line-height: 1.7;
   color: rgba(255,255,255,0.82);
   white-space: pre-wrap;
+  word-break: break-word;
 }
 .topic-stats {
   display: flex;
@@ -330,9 +378,18 @@
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid rgba(255,255,255,0.06);
+}
+.topic-stat {
   font-size: 13px;
   color: rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: Outfit, sans-serif;
 }
+.topic-stat svg { opacity: 0.5; }
+
+/* Like button */
 .topic-like-btn {
   margin-left: auto;
   background: rgba(139,92,246,0.1);
@@ -341,7 +398,7 @@
   border-radius: 10px;
   padding: 6px 14px;
   font-size: 13px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   cursor: pointer;
   transition: all 200ms;
   display: flex; align-items: center; gap: 6px;
@@ -364,30 +421,24 @@
   gap: 10px;
   padding-bottom: 100px;
 }
-.replies-header {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 8px 0 4px;
-}
 .replies-empty {
   text-align: center;
   padding: 32px 0;
   font-size: 14px;
   color: rgba(255,255,255,0.3);
 }
+
+/* Reply bubble */
 .reply-card {
-  padding: 14px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.06);
-  transition: all 200ms;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(255,255,255,0.07);
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 12px;
+  animation: bubbleIn 250ms cubic-bezier(0.16,1,0.3,1) both;
 }
 .reply-card.reply-best {
-  border-color: rgba(34,197,94,0.35);
-  background: rgba(34,197,94,0.06);
+  background: rgba(251,191,36,0.07);
+  border-color: rgba(251,191,36,0.3);
 }
 .reply-best-badge {
   display: inline-flex;
@@ -395,17 +446,22 @@
   gap: 4px;
   padding: 2px 8px;
   border-radius: 6px;
-  background: rgba(34,197,94,0.15);
-  color: #22c55e;
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-family: Outfit, sans-serif;
 }
 .reply-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
+}
+.reply-info {
+  display: flex;
+  flex-direction: column;
 }
 .reply-avatar {
   width: 34px; height: 34px;
@@ -433,6 +489,7 @@
   line-height: 1.6;
   color: rgba(255,255,255,0.82);
   white-space: pre-wrap;
+  word-break: break-word;
   margin-bottom: 10px;
 }
 .reply-actions {
@@ -440,14 +497,22 @@
   align-items: center;
   gap: 8px;
 }
+
+/* Nested replies */
+.forum-reply-nested {
+  margin-left: 86px;
+  border-radius: 4px 12px 12px 12px;
+}
+
+/* Reply like */
 .reply-like-btn {
   display: flex; align-items: center; gap: 5px;
   padding: 5px 12px;
   border-radius: 8px;
   font-size: 12px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.5);
   cursor: pointer;
   transition: all 200ms;
@@ -462,59 +527,96 @@
   padding: 5px 12px;
   border-radius: 8px;
   font-size: 11px;
-  font-family: Outfit;
+  font-weight: 600;
+  font-family: Outfit, sans-serif;
   background: rgba(34,197,94,0.08);
-  border: 1px solid rgba(34,197,94,0.2);
+  border: 0.5px solid rgba(34,197,94,0.2);
   color: #22c55e;
   cursor: pointer;
   transition: all 200ms;
 }
+.reply-mark-best:active { background: rgba(34,197,94,0.15); }
 
-/* --- Reply Form --- */
+/* Like animation */
+.forum-like-btn.liked { animation: likePop 250ms ease-out; }
+.forum-like-btn.liked svg { stroke: #ef4444; fill: #ef4444; }
+
+/* --- Reply bar (fixed) --- */
 .topic-reply-form {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  padding: 12px 16px;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-  background: rgba(6,5,14,0.9);
+  bottom: 56px; left: 0; right: 0;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: rgba(6,6,11,0.92);
   backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 0.5px solid rgba(255,255,255,0.07);
   display: flex;
-  gap: 10px;
-  align-items: flex-end;
+  align-items: center;
+  gap: 8px;
   z-index: 10;
 }
 .reply-input {
   flex: 1;
   min-height: 40px;
   max-height: 120px;
-  padding: 10px 14px;
+  padding: 8px 14px;
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
   color: #fff;
-  font-size: 14px;
-  font-family: Outfit;
+  font-size: 13px;
+  font-family: Outfit, sans-serif;
   outline: none;
   resize: none;
   transition: border-color 200ms;
 }
 .reply-input:focus { border-color: rgba(139,92,246,0.5); }
-.reply-input::placeholder { color: rgba(255,255,255,0.3); }
+.reply-input::placeholder { color: rgba(255,255,255,0.35); }
 .reply-send-btn {
-  width: 40px; height: 40px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  border: none;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 200ms;
+}
+.reply-send-btn:active { transform: scale(0.9); }
+
+/* --- FAB --- */
+.forum-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(56px + 16px + env(safe-area-inset-bottom, 0px));
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.45);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 200ms cubic-bezier(0.16,1,0.3,1);
+}
+.forum-fab:active { transform: scale(0.9); }
+
+/* --- Create button (header) --- */
+.forum-create-btn {
+  width: 36px; height: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   border: none;
   color: #fff;
-  font-size: 18px;
+  font-size: 22px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(139,92,246,0.4);
-  transition: transform 200ms;
+  box-shadow: 0 4px 16px rgba(139,92,246,0.4);
+  transition: transform 200ms cubic-bezier(0.16,1,0.3,1);
 }
-.reply-send-btn:active { transform: scale(0.9); }
+.forum-create-btn:active { transform: scale(0.92); }
 
 /* ===== FORUM CREATE ===== */
 
@@ -524,32 +626,33 @@
   flex-direction: column;
   gap: 16px;
 }
-.form-label {
+.forum-form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.forum-form .form-label {
   font-size: 13px;
   font-weight: 600;
   color: rgba(255,255,255,0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
-  display: block;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
+  font-family: Outfit, sans-serif;
 }
 .forum-form select,
 .forum-form input,
 .forum-form textarea {
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   color: #fff;
   font-size: 14px;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   padding: 12px 14px;
   outline: none;
   transition: border-color 200ms;
   width: 100%;
+  box-sizing: border-box;
 }
 .forum-form select:focus,
 .forum-form input:focus,
@@ -570,22 +673,30 @@
   color: #fff;
   font-size: 15px;
   font-weight: 600;
-  font-family: Outfit;
+  font-family: Outfit, sans-serif;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(139,92,246,0.4);
   transition: all 200ms cubic-bezier(0.16,1,0.3,1);
-  letter-spacing: -0.01em;
 }
 .forum-submit-btn:active {
   transform: scale(0.97);
   box-shadow: 0 2px 8px rgba(139,92,246,0.3);
 }
 
-/* Category colors */
-.cat-business  { background: rgba(59,130,246,0.15);  color: #3b82f6; }
-.cat-marketing { background: rgba(239,68,68,0.15);   color: #ef4444; }
-.cat-tools     { background: rgba(245,158,11,0.15);  color: #f59e0b; }
-.cat-education { background: rgba(34,197,94,0.15);   color: #22c55e; }
-.cat-newbies   { background: rgba(167,139,250,0.15); color: #a78bfa; }
-.cat-cases     { background: rgba(236,72,153,0.15);  color: #ec4899; }
-.cat-offtopic  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+/* --- XP toast --- */
+.forum-xp-toast {
+  position: fixed;
+  bottom: 120px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(34,197,94,0.15);
+  border: 0.5px solid rgba(34,197,94,0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #22c55e;
+  font-family: Outfit, sans-serif;
+  z-index: 100;
+  animation: toastUp 3s ease forwards;
+  pointer-events: none;
+}
