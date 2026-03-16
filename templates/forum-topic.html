@@ -1,49 +1,76 @@
 <!-- =============== SCREEN: FORUM TOPIC =============== -->
 <div class="scr hidden" id="scrForumTopic">
+
+  <!-- ХЕДЕР -->
   <div class="scr-head">
-    <button class="icon-btn" onclick="goBack()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    <button class="forum-back-btn" id="forumTopicBack" aria-label="Назад">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <span class="scr-head-title">Обсуждение</span>
-    <div style="width:36px"></div>
-  </div>
-
-  <!-- Topic header -->
-  <div class="topic-header">
-    <div class="topic-cat-badge" id="topicCatBadge"></div>
-    <div class="topic-title" id="topicTitle"></div>
-    <div class="topic-meta">
-      <img class="topic-author-avatar" id="topicAuthorAvatar" alt="">
-      <span class="topic-author-name" id="topicAuthorName"></span>
-      <span class="topic-author-dna" id="topicAuthorDna"></span>
-      <span class="topic-author-level" id="topicAuthorLevel"></span>
-      <span class="topic-time" id="topicTime"></span>
-    </div>
-    <div class="topic-body" id="topicBody"></div>
-    <div class="topic-stats">
-      <span class="topic-stat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        <span id="topicViews">0</span>
-      </span>
-      <span class="topic-stat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <span id="topicRepliesCount">0</span>
-      </span>
-      <button class="topic-like-btn" onclick="forumLikeTopic()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        <span id="topicLikesCount">0</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Replies -->
-  <div class="topic-replies" id="topicReplies"></div>
-
-  <!-- Reply form -->
-  <div class="topic-reply-form">
-    <textarea class="reply-input" id="replyInput" placeholder="Написать ответ..." rows="1"></textarea>
-    <button class="reply-send-btn" onclick="forumSubmitReply()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <span class="scr-head-title forum-topic-title-h" id="forumTopicTitle">Тема</span>
+    <button class="forum-icon-btn" id="forumTopicMoreBtn" aria-label="Меню">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
     </button>
   </div>
+
+  <!-- FLOATING DATE (показывается при скролле) -->
+  <div class="forum-float-date hidden" id="forumFloatDate"></div>
+
+  <!-- ТЕЛО: ОП + ОТВЕТЫ -->
+  <div class="scr-body forum-topic-body" id="forumTopicBody">
+
+    <!-- ОРИГИНАЛЬНЫЙ ПОСТ — JS рендерит сюда -->
+    <div id="forumOpBlock"></div>
+
+    <!-- РАЗДЕЛИТЕЛЬ ОТВЕТОВ -->
+    <div class="forum-replies-div" id="forumRepliesDiv">
+      <div class="forum-replies-line"></div>
+      <span class="forum-replies-count" id="forumRepliesCount">0 ответов</span>
+      <div class="forum-replies-line"></div>
+    </div>
+
+    <!-- СПИСОК ОТВЕТОВ — JS рендерит сюда -->
+    <div id="forumRepliesList"></div>
+
+    <!-- ПУСТОЕ СОСТОЯНИЕ ОТВЕТОВ -->
+    <div class="forum-no-replies hidden" id="forumNoReplies">
+      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>Будьте первым кто ответит</p>
+    </div>
+
+    <!-- ОТСТУП ПОД REPLY BAR -->
+    <div class="forum-body-spacer"></div>
+
+  </div>
+
+  <!-- КОНТЕКСТ ОТВЕТА НА ОТВЕТ (скрыт по умолчанию) -->
+  <div class="forum-reply-context hidden" id="forumReplyContext">
+    <span class="forum-reply-context-text" id="forumReplyContextText"></span>
+    <button class="forum-reply-context-close" id="forumReplyContextClose">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- REPLY BAR (fixed снизу) -->
+  <div class="forum-reply-bar" id="forumReplyBar">
+    <div class="forum-reply-bar-av" id="forumReplyBarAv"></div>
+    <input class="forum-reply-input" id="forumReplyInput"
+           type="text" placeholder="Написать ответ...">
+    <button class="forum-reply-send" id="forumReplySend" aria-label="Отправить">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </div>
+
+  <!-- МЕНЮ (···) — bottom sheet -->
+  <div class="forum-more-overlay hidden" id="forumMoreOverlay"></div>
+  <div class="forum-more-menu hidden" id="forumMoreMenu">
+    <button class="forum-more-item" id="forumShareBtn">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Поделиться
+    </button>
+    <button class="forum-more-item forum-more-item-danger" id="forumReportBtn">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Пожаловаться
+    </button>
+  </div>
+
 </div>
