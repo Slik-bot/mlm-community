@@ -133,7 +133,7 @@ async function loadTemplate(id) {
   const path = TEMPLATES[id];
   if (!path) return null;
   try {
-    const response = await fetch(path);
+    const response = await fetch(path + '?v=' + Date.now());
     if (!response.ok) throw new Error('Failed to load ' + path);
     const html = await response.text();
     loadedTemplates[id] = html;
