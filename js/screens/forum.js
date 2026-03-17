@@ -158,8 +158,10 @@ function openForumTopic(topicId) {
 
 function initForumTopic() {
   if (!currentTopic) { goBack(); return; }
-  const titleEl = document.getElementById('forumTopicTitle');
-  if (titleEl) titleEl.textContent = currentTopic.title;
+  requestAnimationFrame(function() {
+    const titleEl = document.getElementById('forumTopicTitle');
+    if (titleEl) titleEl.textContent = currentTopic.title || 'Тема';
+  });
   const opEl = document.getElementById('forumOpBlock');
   if (opEl) opEl.innerHTML = window.buildOpBlock(currentTopic);
   bindOpActions();
