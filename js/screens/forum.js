@@ -244,10 +244,9 @@ function renderForumReplies(replies) {
     const bestLabel = r.is_best ? '<div class="best-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Лучший ответ</div>' : '';
     const user = window.currentUser;
     const isAuthor = currentTopic && user && currentTopic.author_id === user.id;
-    const markBest = (isAuthor && !r.is_best) ? '<button class="reply-mark-best" onclick="event.stopPropagation();markBestReply(\'' + r.id + '\')">Лучший</button>' : '';
     return '<div class="forum-reply-row">' +
       buildForumAv(author, 34) +
-      '<div class="forum-reply' + bestClass + '" style="animation-delay:' + (i * 30) + 'ms">' +
+      '<div class="forum-reply' + bestClass + ' dna-' + suffix + '" style="animation-delay:' + (i * 30) + 'ms">' +
         bestLabel +
         '<div class="reply-top">' +
           '<span class="reply-name">' + fEsc(author.name || 'Аноним') + '</span>' +
@@ -255,16 +254,16 @@ function renderForumReplies(replies) {
           '<span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' +
         '</div>' +
         '<div class="reply-text">' + fEsc(r.content) + '</div>' +
-        '<div class="reply-actions">' +
-          '<div class="ftc-stat forum-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
-            '<svg viewBox="0 0 24 24" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+        '<div class="reply-reactions">' +
+          '<div class="reaction' + (localStorage.getItem('liked_reply_' + r.id) ? ' active' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
+            '<svg viewBox="0 0 24 24" width="12" height="12" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
             '<span>' + (r.likes_count || 0) + '</span>' +
           '</div>' +
           '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\')">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>' +
             ' Ответить' +
           '</button>' +
-          markBest +
+          (isAuthor && !r.is_best ? '<button class="reply-mark-best" onclick="event.stopPropagation();markBestReply(\'' + r.id + '\')">Лучший</button>' : '') +
         '</div>' +
       '</div>' +
     '</div>';
@@ -345,8 +344,32 @@ async function sendForumReply() {
   if (inp) inp.value = '';
   cancelForumReply();
   if (btn) btn.disabled = false;
-  loadForumReplies(currentTopic.id);
-  fEl('forumTopicReplyCount', function(el) { el.textContent = (currentTopic.replies_count || 0) + 1; });
+  var suffix = fDnaSuffix(user.dna_type);
+  var newBubble = document.createElement('div');
+  newBubble.className = 'reply-row new-reply';
+  newBubble.style.cssText = 'display:flex;gap:7px;margin:0 10px 10px;align-items:flex-start;animation:bubbleIn 300ms cubic-bezier(0.34,1.56,0.64,1) both';
+  newBubble.innerHTML = buildForumAv(user, 32) +
+    '<div class="forum-reply dna-' + suffix + '" style="flex:1;min-width:0">' +
+      '<div class="reply-top">' +
+        '<span class="reply-name">' + fEsc(user.name || user.full_name || 'Вы') + '</span>' +
+        '<span class="reply-time">только что</span>' +
+      '</div>' +
+      '<div class="reply-text">' + fEsc(content) + '</div>' +
+      '<div class="reply-reactions"></div>' +
+    '</div>';
+  var container = document.getElementById('forumReplies');
+  if (container) {
+    container.appendChild(newBubble);
+    newBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+  var countEl = document.getElementById('forumTopicReplyCount');
+  if (countEl) countEl.textContent = (currentTopic.replies_count || 0) + 1;
+  var labelEl = document.getElementById('forumRepliesCountLabel');
+  if (labelEl) {
+    var n = (currentTopic.replies_count || 0) + 1;
+    labelEl.textContent = n + ' ' + (n === 1 ? 'ответ' : n < 5 ? 'ответа' : 'ответов');
+  }
+  showXpToast('+5 XP — Ответ отправлен!');
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
 }
 
@@ -448,6 +471,14 @@ async function publishForumTopic() {
   goBack();
 }
 
+function showXpToast(text) {
+  var t = document.createElement('div');
+  t.className = 'forum-xp-toast';
+  t.textContent = text;
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 2500);
+}
+
 // ===== EXPORTS =====
 window.initForum = initForum;
 window.initForumTopic = initForumTopic;
@@ -472,3 +503,4 @@ window.closeForumCatSheet = closeForumCatSheet;
 window.selectForumCat = selectForumCat;
 window.onForumFormInput = onForumFormInput;
 window.publishForumTopic = publishForumTopic;
+window.showXpToast = showXpToast;
