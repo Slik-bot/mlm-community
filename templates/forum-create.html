@@ -1,0 +1,62 @@
+<!-- =============== SCREEN: FORUM CREATE =============== -->
+<div class="scr hidden" id="scrForumCreate">
+  <div class="scr-head">
+    <button class="forum-back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="scr-head-title">Новая тема</span>
+    <button class="forum-publish-btn disabled" id="forumPublishBtn" onclick="publishForumTopic()">Создать</button>
+  </div>
+
+  <div class="forum-create-body">
+    <!-- Category -->
+    <div class="forum-form-field">
+      <div class="forum-form-label">Категория <span class="forum-form-required">обязательно</span></div>
+      <button class="forum-cat-select" id="forumCatSelect" onclick="openForumCatSheet()">
+        <span id="forumCatSelectText">Выберите категорию</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Title -->
+    <div class="forum-form-field">
+      <div class="forum-form-label">Заголовок <span class="forum-char-count" id="forumTitleCount">0/120</span></div>
+      <input class="forum-text-input" id="forumTitleInput" placeholder="О чём хотите спросить?" maxlength="120" oninput="onForumFormInput()">
+    </div>
+
+    <!-- Content -->
+    <div class="forum-form-field">
+      <div class="forum-form-label">Описание <span class="forum-char-count" id="forumContentCount">0/3000</span></div>
+      <textarea class="forum-text-area" id="forumContentInput" placeholder="Подробнее опишите вопрос или тему..." maxlength="3000" oninput="onForumFormInput()"></textarea>
+    </div>
+
+    <!-- XP hint -->
+    <div class="forum-xp-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Создание темы: <strong>+10 XP</strong></span>
+    </div>
+
+    <!-- Preview -->
+    <div class="forum-preview-block hidden" id="forumPreview">
+      <div class="forum-preview-label">Предпросмотр</div>
+      <div class="forum-preview-title" id="forumPreviewTitle"></div>
+      <div class="forum-preview-text" id="forumPreviewText"></div>
+      <div class="forum-preview-footer" id="forumPreviewFooter"></div>
+    </div>
+  </div>
+
+  <!-- Category sheet -->
+  <div class="forum-cat-sheet hidden" id="forumCatSheet">
+    <div class="forum-cat-sheet-overlay" onclick="closeForumCatSheet()"></div>
+    <div class="forum-cat-sheet-content">
+      <div class="forum-cat-sheet-title">Выберите категорию</div>
+      <button class="forum-cat-option" onclick="selectForumCat('business','Бизнес')"><div class="forum-cat-dot ct-biz-dot"></div>Бизнес</button>
+      <button class="forum-cat-option" onclick="selectForumCat('marketing','Маркетинг')"><div class="forum-cat-dot ct-mkt-dot"></div>Маркетинг</button>
+      <button class="forum-cat-option" onclick="selectForumCat('tools','Инструменты')"><div class="forum-cat-dot ct-tool-dot"></div>Инструменты</button>
+      <button class="forum-cat-option" onclick="selectForumCat('education','Обучение')"><div class="forum-cat-dot ct-edu-dot"></div>Обучение</button>
+      <button class="forum-cat-option" onclick="selectForumCat('newbies','Новичкам')"><div class="forum-cat-dot ct-new-dot"></div>Новичкам</button>
+      <button class="forum-cat-option" onclick="selectForumCat('cases','Кейсы')"><div class="forum-cat-dot ct-case-dot"></div>Кейсы</button>
+      <button class="forum-cat-option" onclick="selectForumCat('offtopic','Оффтоп')"><div class="forum-cat-dot ct-off-dot"></div>Оффтоп</button>
+    </div>
+  </div>
+</div>
