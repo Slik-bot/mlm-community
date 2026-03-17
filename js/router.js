@@ -205,7 +205,7 @@ async function ensureTemplate(id) {
 }
 
 function updateChrome(id){
-  const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop'||id==='scrMore';
+  const show = id==='scrFeed'||id==='scrCompanies'||id==='scrSearch'||id==='scrDetail'||id==='scrCreate'||id==='scrProfile'||id==='scrChatList'||id==='scrShop'||id==='scrMore'||id==='scrForum';
   document.querySelector('.nav').style.display=show?'':'none';
   document.getElementById('fabBtn').style.display=show?'':'none';
 }
