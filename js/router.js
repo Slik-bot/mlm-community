@@ -1,4 +1,9 @@
 // ===== NAVIGATION =====
+if (window.Telegram && window.Telegram.WebApp) {
+  window.Telegram.WebApp.expand();
+  window.Telegram.WebApp.disableVerticalSwipes();
+}
+
 let navHistory = ['scrLanding'];
 let isTransitioning = false;
 
