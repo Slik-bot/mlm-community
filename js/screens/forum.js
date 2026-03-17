@@ -46,6 +46,16 @@ function fTimeAgo(dateStr) {
 function fInitials(name) { return (name || '?')[0].toUpperCase(); }
 function fEl(id, fn) { const el = document.getElementById(id); if (el) fn(el); }
 
+function buildForumAv(author, size) {
+  const suffix = fDnaSuffix(author.dna_type);
+  const cls = 'forum-av forum-av-' + suffix;
+  const fs = Math.round(size * 0.4);
+  if (author.avatar_url) {
+    return '<img class="' + cls + '" src="' + fEsc(author.avatar_url) + '" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;flex-shrink:0" alt="">';
+  }
+  return '<div class="' + cls + '" style="width:' + size + 'px;height:' + size + 'px;font-size:' + fs + 'px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + fInitials(author.name) + '</div>';
+}
+
 // ===== FORUM LIST =====
 function initForum() {
   forumCat = 'all';
@@ -235,12 +245,29 @@ function renderForumReplies(replies) {
     const user = window.currentUser;
     const isAuthor = currentTopic && user && currentTopic.author_id === user.id;
     const markBest = (isAuthor && !r.is_best) ? '<button class="reply-mark-best" onclick="event.stopPropagation();markBestReply(\'' + r.id + '\')">Лучший</button>' : '';
-    return '<div class="forum-reply' + bestClass + '" style="animation-delay:' + (i * 30) + 'ms">' + bestLabel +
-      '<div class="reply-header"><div class="forum-av forum-av-' + suffix + '" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">' + fInitials(author.name) + '</div>' +
-      '<div class="reply-info"><span class="reply-name">' + fEsc(author.name) + '</span><span class="reply-level">' + (author.level || '') + '</span></div><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
-      '<div class="reply-text">' + fEsc(r.content) + '</div>' +
-      '<div class="reply-actions"><div class="ftc-stat forum-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (r.likes_count || 0) + '</span></div>' +
-      '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg></button>' + markBest + '</div></div>';
+    return '<div class="forum-reply-row">' +
+      buildForumAv(author, 34) +
+      '<div class="forum-reply' + bestClass + '" style="animation-delay:' + (i * 30) + 'ms">' +
+        bestLabel +
+        '<div class="reply-top">' +
+          '<span class="reply-name">' + fEsc(author.name || 'Аноним') + '</span>' +
+          (author.level ? '<span class="reply-level">Ур. ' + author.level + '</span>' : '') +
+          '<span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' +
+        '</div>' +
+        '<div class="reply-text">' + fEsc(r.content) + '</div>' +
+        '<div class="reply-actions">' +
+          '<div class="ftc-stat forum-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
+            '<svg viewBox="0 0 24 24" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+            '<span>' + (r.likes_count || 0) + '</span>' +
+          '</div>' +
+          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\')">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>' +
+            ' Ответить' +
+          '</button>' +
+          markBest +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }).join('');
 }
 
