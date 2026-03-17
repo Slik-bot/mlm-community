@@ -193,6 +193,10 @@ function renderTopicHeader(t) {
   fEl('forumTopicViews', function(el) { el.textContent = (t.views_count || 0) + 1; });
   fEl('forumTopicReplyCount', function(el) { el.textContent = t.replies_count || 0; });
   fEl('forumTopicLikeCount', function(el) { el.textContent = t.likes_count || 0; });
+  const likeBtn = document.getElementById('forumTopicLike');
+  if (likeBtn && currentTopic && localStorage.getItem('liked_topic_' + currentTopic.id)) {
+    likeBtn.classList.add('liked');
+  }
 }
 
 async function loadForumReplies(topicId) {
@@ -235,25 +239,39 @@ function renderForumReplies(replies) {
       '<div class="reply-header"><div class="forum-av forum-av-' + suffix + '" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">' + fInitials(author.name) + '</div>' +
       '<div class="reply-info"><span class="reply-name">' + fEsc(author.name) + '</span><span class="reply-level">' + (author.level || '') + '</span></div><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
       '<div class="reply-text">' + fEsc(r.content) + '</div>' +
-      '<div class="reply-actions"><div class="ftc-stat forum-like-btn" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (r.likes_count || 0) + '</span></div>' +
+      '<div class="reply-actions"><div class="ftc-stat forum-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (r.likes_count || 0) + '</span></div>' +
       '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name) + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg></button>' + markBest + '</div></div>';
   }).join('');
 }
 
-async function forumLikeTopic() {
+function forumLikeTopic() {
   if (!currentTopic) return;
-  fEl('forumTopicLike', function(el) { el.classList.add('liked'); });
+  const key = 'liked_topic_' + currentTopic.id;
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  const el = document.getElementById('forumTopicLike');
+  if (el) el.classList.add('liked');
   const countEl = document.getElementById('forumTopicLikeCount');
-  const cur = parseInt(countEl?.textContent || '0');
+  const cur = parseInt(countEl ? countEl.textContent : '0') || 0;
   if (countEl) countEl.textContent = cur + 1;
+  window.sb.from('forum_topics')
+    .update({ likes_count: cur + 1 })
+    .eq('id', currentTopic.id)
+    .then(function(r) { if (r.error) console.error(r.error); });
 }
 
-async function likeForumReply(replyId, btn) {
+function likeForumReply(replyId, btn) {
+  const key = 'liked_reply_' + replyId;
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
   if (btn) btn.classList.add('liked');
   const span = btn ? btn.querySelector('span') : null;
-  const cur = parseInt(span?.textContent || '0');
+  const cur = parseInt(span ? span.textContent : '0') || 0;
   if (span) span.textContent = cur + 1;
-  await window.sb.from('forum_replies').update({ likes_count: cur + 1 }).eq('id', replyId);
+  window.sb.from('forum_replies')
+    .update({ likes_count: cur + 1 })
+    .eq('id', replyId)
+    .then(function(r) { if (r.error) console.error(r.error); });
 }
 
 async function markBestReply(replyId) {
