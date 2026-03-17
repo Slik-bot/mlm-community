@@ -28,7 +28,6 @@
 /* --- Screen layout --- */
 #scrForum, #scrForumTopic, #scrForumCreate {
   background: #06060b;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
