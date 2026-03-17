@@ -49,6 +49,7 @@ window.forumUtils = { formatTimeAgo: formatTimeAgo, getDnaSuffix: getDnaSuffix, 
 
 // ===== FORUM LIST =====
 function initForum() {
+  if (window.clearTemplateCache) window.clearTemplateCache(['scrForum','scrForumTopic','scrForumCreate']);
   currentCat = 'all';
   currentSort = 'created_at';
   searchQuery = '';

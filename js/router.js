@@ -353,3 +353,7 @@ if (window.Telegram && window.Telegram.WebApp) {
     }
   });
 }
+
+window.clearTemplateCache = function(ids) {
+  ids.forEach(function(id) { delete loadedTemplates[id]; });
+};
