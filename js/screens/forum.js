@@ -7,7 +7,6 @@ let currentTopic = null;
 let currentTopicReplies = [];
 let forumReplyToId = null;
 let forumSelectedCat = '';
-
 const FORUM_CATS = {
   business: { label: 'Бизнес', css: 'ct-biz' },
   marketing: { label: 'Маркетинг', css: 'ct-mkt' },
@@ -129,7 +128,6 @@ function renderForumList(topics) {
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' + (t.replies_count || 0) + '</div></div></div>';
   }).join('');
 }
-
 function forumFilterCat(cat) {
   forumCat = cat;
   updateForumCatUI();
@@ -159,7 +157,6 @@ function forumSearch(val) {
   forumQuery = (val || '').toLowerCase().trim();
   renderForumList(applyForumFilters());
 }
-
 // ===== FORUM TOPIC DETAIL =====
 function openForumTopic(topicId) {
   currentTopic = allForumTopics.find(function(t) { return t.id === topicId; });
@@ -181,6 +178,9 @@ async function initForumTopic() {
     .eq('id', topicId).then(function() {});
   requestAnimationFrame(function() { renderTopicHeader(currentTopic); });
   loadForumReplies(topicId);
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.onEvent('viewportChanged', adjustReplyBar);
+  }
 }
 function renderTopicHeader(t) {
   const author = t.author || {};
@@ -201,7 +201,6 @@ function renderTopicHeader(t) {
     likeBtn.classList.add('liked');
   }
 }
-
 async function loadForumReplies(topicId) {
   const res = await window.sb.from('forum_replies')
     .select('*, author:users(id, name, avatar_url, dna_type, level)')
@@ -211,7 +210,6 @@ async function loadForumReplies(topicId) {
   currentTopicReplies = res.data || [];
   renderForumReplies(currentTopicReplies);
 }
-
 function renderForumReplies(replies) {
   const container = document.getElementById('forumReplies');
   const noReplies = document.getElementById('forumNoReplies');
@@ -305,19 +303,16 @@ async function markBestReply(replyId) {
   if (window.showToast) showToast('Лучший ответ выбран');
   loadForumReplies(currentTopic.id);
 }
-
 function replyToForumReply(replyId, authorName) {
   forumReplyToId = replyId;
   fEl('forumReplyContext', function(el) { el.classList.remove('hidden'); });
   fEl('forumReplyContextText', function(el) { el.textContent = 'Ответ для ' + authorName; });
   fEl('forumReplyInput', function(el) { el.focus(); });
 }
-
 function cancelForumReply() {
   forumReplyToId = null;
   fEl('forumReplyContext', function(el) { el.classList.add('hidden'); });
 }
-
 async function sendForumReply() {
   const user = window.currentUser;
   if (!user) { if (window.showToast) showToast('Войдите в аккаунт'); return; }
@@ -369,7 +364,6 @@ async function sendForumReply() {
   }
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
 }
-
 // ===== FORUM MORE MENU =====
 function openForumMore() {
   const user = window.currentUser;
@@ -436,7 +430,6 @@ function onForumFormInput() {
     if (preview) preview.classList.add('hidden');
   }
 }
-
 function openForumCatSheet() { fEl('forumCatSheet', function(el) { el.classList.remove('hidden'); }); }
 function closeForumCatSheet() { fEl('forumCatSheet', function(el) { el.classList.add('hidden'); }); }
 function selectForumCat(cat, label) {
@@ -445,7 +438,6 @@ function selectForumCat(cat, label) {
   closeForumCatSheet();
   onForumFormInput();
 }
-
 async function publishForumTopic() {
   const user = window.currentUser;
   if (!user) { if (window.showToast) showToast('Войдите в аккаунт'); return; }
@@ -465,13 +457,21 @@ async function publishForumTopic() {
   if (window.showToast) showToast('Тема создана!');
   goBack();
 }
-
 function showXpToast(text) {
   var t = document.createElement('div');
   t.className = 'forum-xp-toast';
   t.textContent = text;
   document.body.appendChild(t);
   setTimeout(function() { t.remove(); }, 2500);
+}
+function adjustReplyBar() {
+  const bar = document.getElementById('forumReplyBar');
+  if (!bar || !window.Telegram || !window.Telegram.WebApp) return;
+  const vh = window.Telegram.WebApp.viewportStableHeight || window.innerHeight;
+  const bottom = window.innerHeight - vh;
+  bar.style.bottom = bottom + 'px';
+  const ctx = document.getElementById('forumReplyContext');
+  if (ctx) ctx.style.bottom = (bottom + 50) + 'px';
 }
 // ===== EXPORTS =====
 window.initForum = initForum;
