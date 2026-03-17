@@ -98,7 +98,6 @@ function renderMatchCard(user, index) {
     card.style.transform = 'scale(0.90) translateY(20px)';
   }
 
-  const avatar = user.avatar_url || 'assets/default-avatar.png';
   const dna = user.dna_type || 'strategist';
   const dnaColor = window.DNA_COLORS[dna] || '#8b5cf6';
   const dnaLabel = DNA_LABELS[dna] || dna;
@@ -106,7 +105,9 @@ function renderMatchCard(user, index) {
   if (bio.length > 80) bio = bio.substring(0, 80) + '...';
 
   card.innerHTML =
-    '<img class="match-card-img" src="' + avatar + '" alt="">' +
+    (user.avatar_url
+      ? '<img class="match-card-img" src="' + user.avatar_url + '" alt="">'
+      : '<div class="match-card-img" style="display:flex;align-items:center;justify-content:center;background:' + dnaColor + ';font-size:72px;color:#fff;font-weight:700">' + escHtml((user.name || '?')[0].toUpperCase()) + '</div>') +
     '<div class="match-card-gradient"></div>' +
     '<div class="match-card-info">' +
       '<div class="match-dna-badge" style="background:' + dnaColor + '20;color:' + dnaColor + ';border:1px solid ' + dnaColor + '40">' + dnaLabel + '</div>' +
@@ -268,9 +269,6 @@ function showMatchModal(user, conversationId) {
   const existing = document.getElementById('matchModalOverlay');
   if (existing) existing.remove();
 
-  const avatar = user.avatar_url || 'assets/default-avatar.png';
-  const myAvatar = (window.currentUser && window.currentUser.avatar_url) || 'assets/default-avatar.png';
-
   const overlay = document.createElement('div');
   overlay.className = 'match-modal';
   overlay.id = 'matchModalOverlay';
@@ -278,8 +276,8 @@ function showMatchModal(user, conversationId) {
     '<div class="match-modal-title">Это мэтч!</div>' +
     '<div class="match-modal-subtitle">Вы понравились друг другу</div>' +
     '<div class="match-modal-avatars">' +
-      '<img class="match-modal-avatar" src="' + myAvatar + '" alt="">' +
-      '<img class="match-modal-avatar" src="' + avatar + '" alt="">' +
+      buildAvatar(window.currentUser || {}, 'match-modal-avatar', 80) +
+      buildAvatar(user, 'match-modal-avatar', 80) +
     '</div>' +
     '<div class="match-modal-name">' + (user.name || 'Участник') + '</div>' +
     '<div class="match-modal-btns">' +
@@ -354,14 +352,13 @@ function renderMatchList(matches) {
   list.innerHTML = matches.map(function(m) {
     const p = m.partner || {};
     matchPartners[p.id] = p;
-    const avatar = p.avatar_url || 'assets/default-avatar.png';
     const dna = p.dna_type || 'strategist';
     const dnaColor = window.DNA_COLORS[dna] || '#8b5cf6';
     let bio = p.bio || '';
     if (bio.length > 50) bio = bio.substring(0, 50) + '...';
 
     return '<div class="ml-item">' +
-      '<img class="ml-avatar" src="' + avatar + '" alt="">' +
+      buildAvatar(p, 'ml-avatar', 52) +
       '<div class="ml-info">' +
         '<div class="ml-name">' + (p.name || 'Участник') + ' <span class="ml-dna-dot" style="background:' + dnaColor + '"></span></div>' +
         (bio ? '<div class="ml-bio">' + bio + '</div>' : '') +

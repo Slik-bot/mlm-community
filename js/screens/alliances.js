@@ -48,7 +48,7 @@ function buildAllianceCard(a, myId) {
   return '<div class="al-card glass-card"><div class="al-card-top">' +
     '<div class="al-card-logo" style="border-color:' + dnaColor + '40">' + logoHtml + '</div>' +
     '<div class="al-card-info"><div class="al-card-name">' + escHtml(a.name) + '</div>' +
-    '<div class="al-card-leader"><img class="al-card-leader-ava" src="' + (leader.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+    '<div class="al-card-leader">' + buildAvatar(leader, 'al-card-leader-ava', 18) +
     '<span>' + escHtml(leader.name || 'Лидер') + '</span></div></div></div>' +
     '<div class="al-card-desc">' + escHtml(a.description || '') + '</div>' +
     '<div class="al-card-footer"><span class="al-card-members">' +

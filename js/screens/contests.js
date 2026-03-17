@@ -198,7 +198,7 @@ function renderLeaderboard(entries) {
 
     return '<div class="lb-row' + meClass + '">' +
       '<span class="lb-place" style="color:' + placeColor + '">' + place + '</span>' +
-      '<img class="lb-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+      buildAvatar(user, 'lb-avatar', 36) +
       '<span class="lb-name">' + escHtml(user.name || 'Участник') + '</span>' +
       '<span class="lb-score">#' + (e.ticket_number || 0) + '</span>' +
     '</div>';

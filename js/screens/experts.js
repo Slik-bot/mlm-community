@@ -103,7 +103,7 @@ function renderExpertsList(experts) {
   list.innerHTML = experts.map(function(e) {
     const user = e.user || {};
     return '<div class="expert-card glass-card" onclick="openExpert(\'' + e.id + '\')">' +
-      '<img class="expert-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+      buildAvatar(user, 'expert-avatar', 56) +
       '<div class="expert-info">' +
         '<div class="expert-name">' + escHtml(user.name || 'Эксперт') + '</div>' +
         '<div class="expert-spec">' + getSpecLabel(e.title) + '</div>' +
@@ -154,7 +154,7 @@ function initExpertDetail() {
   const user = currentExpert.user || {};
 
   const avatarEl = document.getElementById('edAvatar');
-  if (avatarEl) avatarEl.src = user.avatar_url || 'assets/default-avatar.svg';
+  if (avatarEl) avatarEl.outerHTML = buildAvatar(user, 'ed-avatar', 80);
 
   const nameEl = document.getElementById('edName');
   if (nameEl) nameEl.textContent = user.name || 'Эксперт';
@@ -213,7 +213,7 @@ function renderExpertReviews(reviews) {
     const date = r.created_at ? new Date(r.created_at).toLocaleDateString('ru-RU') : '';
     return '<div class="review-card glass-card">' +
       '<div class="review-header">' +
-        '<img class="review-avatar" src="' + (author.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+        buildAvatar(author, 'review-avatar', 28) +
         '<span class="review-name">' + escHtml(author.name || 'Участник') + '</span>' +
         '<span class="review-date">' + date + '</span>' +
       '</div>' +

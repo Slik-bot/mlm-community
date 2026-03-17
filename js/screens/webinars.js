@@ -85,7 +85,7 @@ function renderWebinarsList(webinars) {
       '</div>' +
       '<div class="wbn-card-title">' + escHtml(w.title) + '</div>' +
       '<div class="wbn-card-host">' +
-        '<img class="wbn-card-avatar" src="' + (host.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+        buildAvatar(host, 'wbn-card-avatar', 24) +
         '<span class="wbn-card-host-name">' + escHtml(host.name || 'Спикер') + '</span>' +
       '</div>' +
       '<div class="wbn-card-footer">' +
@@ -187,7 +187,7 @@ function startWebinarTimer(startsAt) {
 function renderWebinarHost() {
   const host = currentWebinar.host || {};
   const avatarEl = document.getElementById('wdHostAvatar');
-  if (avatarEl) avatarEl.src = host.avatar_url || 'assets/default-avatar.svg';
+  if (avatarEl) avatarEl.outerHTML = buildAvatar(host, 'wd-host-avatar', 44);
 
   const nameEl = document.getElementById('wdHostName');
   if (nameEl) nameEl.textContent = host.name || 'Спикер';
@@ -240,7 +240,7 @@ function renderWebinarParticipants(participants) {
   el.innerHTML = participants.map(function(p) {
     const user = p.user || {};
     return '<div class="wd-part-row">' +
-      '<img class="wd-part-avatar" src="' + (user.avatar_url || 'assets/default-avatar.svg') + '" alt="">' +
+      buildAvatar(user, 'wd-part-avatar', 32) +
       '<span class="wd-part-name">' + escHtml(user.name || 'Участник') + '</span>' +
       '<span class="wd-part-level">Ур. ' + (user.level || 1) + '</span>' +
     '</div>';

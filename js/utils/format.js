@@ -26,6 +26,22 @@ function escHtml(s) {
     : '';
 }
 
+// ===== AVATAR =====
+function buildAvatar(user, cls, size) {
+  var u = user || {};
+  if (u.avatar_url) {
+    return '<img class="' + cls + '" width="' + size + '" height="' + size +
+      '" src="' + u.avatar_url + '" alt="">';
+  }
+  var ini = escHtml((u.name || u.full_name || '?')[0].toUpperCase());
+  var fs = Math.round(size * 0.42);
+  var bg = (window.getDnaColor ? window.getDnaColor(u.dna_type) : null) || '#8b5cf6';
+  return '<div class="' + cls + '" style="width:' + size + 'px;height:' + size +
+    'px;font-size:' + fs + 'px;background:' + bg +
+    ';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;border-radius:50%">' + ini + '</div>';
+}
+
 // ===== EXPORTS =====
 window.showToast = showToast;
 window.escHtml = escHtml;
+window.buildAvatar = buildAvatar;
