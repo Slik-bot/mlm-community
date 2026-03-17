@@ -161,14 +161,14 @@ function initForumTopic() {
   requestAnimationFrame(function() {
     const titleEl = document.getElementById('forumTopicTitle');
     if (titleEl) titleEl.textContent = currentTopic.title || 'Тема';
+    const opEl = document.getElementById('forumOpBlock');
+    if (opEl) opEl.innerHTML = window.buildOpBlock(currentTopic);
+    bindOpActions();
+    bindTopicEvents();
+    setReplyBarAvatar();
+    loadReplies(currentTopic.id);
+    incrementViews(currentTopic);
   });
-  const opEl = document.getElementById('forumOpBlock');
-  if (opEl) opEl.innerHTML = window.buildOpBlock(currentTopic);
-  bindOpActions();
-  bindTopicEvents();
-  loadReplies(currentTopic.id);
-  incrementViews(currentTopic);
-  setReplyBarAvatar();
 }
 
 function setReplyBarAvatar() {
