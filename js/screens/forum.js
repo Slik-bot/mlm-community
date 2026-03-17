@@ -44,7 +44,6 @@ function isLiked(type, id) { return localStorage.getItem('trafiqo_liked_' + type
 function setLiked(type, id) { localStorage.setItem('trafiqo_liked_' + type + '_' + id, '1'); }
 function removeLiked(type, id) { localStorage.removeItem('trafiqo_liked_' + type + '_' + id); }
 
-// Экспорт утилит для forum-render.js
 window.forumUtils = { formatTimeAgo: formatTimeAgo, getDnaSuffix: getDnaSuffix, getCatInfo: getCatInfo, isLiked: isLiked };
 
 // ===== FORUM LIST =====
@@ -155,7 +154,6 @@ function openForumTopic(topicId) {
 }
 
 // ===== FORUM TOPIC =====
-
 function initForumTopic() {
   if (!currentTopic) { goBack(); return; }
   requestAnimationFrame(function() {
@@ -273,7 +271,6 @@ function setReplyTo(replyId, authorName) {
 }
 
 // ===== ACTIONS =====
-
 async function toggleLike(type, id, btn) {
   if (!window.currentUser) return;
   const countEl = btn ? btn.querySelector('span') : null;
@@ -342,7 +339,6 @@ async function forumMarkBest(replyId) {
 }
 
 // ===== FORUM CREATE =====
-
 function initForumCreate() {
   selectedCreateCat = '';
   const titleIn = document.getElementById('forumTitleInput');
