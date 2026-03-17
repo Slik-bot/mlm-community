@@ -418,7 +418,6 @@ function initForumCreate() {
   fEl('forumPreview', function(el) { el.classList.add('hidden'); });
   fEl('forumPublishBtn', function(el) { el.classList.add('disabled'); el.disabled = true; });
 }
-
 function onForumFormInput() {
   const title = (document.getElementById('forumTitleInput')?.value || '');
   const content = (document.getElementById('forumContentInput')?.value || '');
