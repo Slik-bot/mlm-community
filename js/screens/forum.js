@@ -64,7 +64,6 @@ function initForum() {
   updateForumSortUI();
   loadForumTopics();
 }
-
 async function loadForumTopics() {
   fEl('forumSkeletons', function(el) { el.classList.remove('hidden'); });
   fEl('forumList', function(el) { el.innerHTML = ''; });
@@ -77,7 +76,6 @@ async function loadForumTopics() {
   fEl('forumSkeletons', function(el) { el.classList.add('hidden'); });
   renderForumList(applyForumFilters());
 }
-
 function applyForumFilters() {
   let filtered = allForumTopics;
   if (forumCat !== 'all') {
@@ -92,7 +90,6 @@ function applyForumFilters() {
   }
   return sortForumTopics(filtered);
 }
-
 function sortForumTopics(arr) {
   const sorted = arr.slice();
   if (forumSortMethod === 'hot') {
@@ -104,7 +101,6 @@ function sortForumTopics(arr) {
   }
   return sorted;
 }
-
 function renderForumList(topics) {
   const list = document.getElementById('forumList');
   const empty = document.getElementById('forumEmpty');
@@ -171,7 +167,6 @@ function openForumTopic(topicId) {
   window._forumTopicId = topicId;
   goTo('scrForumTopic');
 }
-
 async function initForumTopic() {
   const topicId = window._forumTopicId;
   if (!topicId) { goBack(); return; }
@@ -267,37 +262,42 @@ function renderForumReplies(replies) {
     '</div>';
   }).join('');
 }
-
 function forumLikeTopic() {
   if (!currentTopic) return;
   const key = 'liked_topic_' + currentTopic.id;
-  if (localStorage.getItem(key)) return;
-  localStorage.setItem(key, '1');
+  const wasLiked = localStorage.getItem(key);
   const el = document.getElementById('forumTopicLike');
-  if (el) el.classList.add('liked');
   const countEl = document.getElementById('forumTopicLikeCount');
   const cur = parseInt(countEl ? countEl.textContent : '0') || 0;
-  if (countEl) countEl.textContent = cur + 1;
-  window.sb.from('forum_topics')
-    .update({ likes_count: cur + 1 })
-    .eq('id', currentTopic.id)
-    .then(function(r) { if (r.error) console.error(r.error); });
+  if (wasLiked) {
+    localStorage.removeItem(key);
+    if (el) el.classList.remove('liked');
+    if (countEl) countEl.textContent = Math.max(0, cur - 1);
+    window.sb.from('forum_topics').update({ likes_count: Math.max(0, cur - 1) }).eq('id', currentTopic.id).then(function(r) { if (r.error) console.error(r.error); });
+  } else {
+    localStorage.setItem(key, '1');
+    if (el) el.classList.add('liked');
+    if (countEl) countEl.textContent = cur + 1;
+    window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', currentTopic.id).then(function(r) { if (r.error) console.error(r.error); });
+  }
 }
-
 function likeForumReply(replyId, btn) {
   const key = 'liked_reply_' + replyId;
-  if (localStorage.getItem(key)) return;
-  localStorage.setItem(key, '1');
-  if (btn) btn.classList.add('liked');
+  const wasLiked = localStorage.getItem(key);
   const span = btn ? btn.querySelector('span') : null;
   const cur = parseInt(span ? span.textContent : '0') || 0;
-  if (span) span.textContent = cur + 1;
-  window.sb.from('forum_replies')
-    .update({ likes_count: cur + 1 })
-    .eq('id', replyId)
-    .then(function(r) { if (r.error) console.error(r.error); });
+  if (wasLiked) {
+    localStorage.removeItem(key);
+    if (btn) btn.classList.remove('liked');
+    if (span) span.textContent = Math.max(0, cur - 1);
+    window.sb.from('forum_replies').update({ likes_count: Math.max(0, cur - 1) }).eq('id', replyId).then(function(r) { if (r.error) console.error(r.error); });
+  } else {
+    localStorage.setItem(key, '1');
+    if (btn) btn.classList.add('liked');
+    if (span) span.textContent = cur + 1;
+    window.sb.from('forum_replies').update({ likes_count: cur + 1 }).eq('id', replyId).then(function(r) { if (r.error) console.error(r.error); });
+  }
 }
-
 async function markBestReply(replyId) {
   if (!currentTopic) return;
   await window.sb.from('forum_replies').update({ is_best: false }).eq('topic_id', currentTopic.id);
