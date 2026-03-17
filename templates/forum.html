@@ -1,0 +1,61 @@
+<!-- =============== SCREEN: FORUM =============== -->
+<div class="scr hidden" id="scrForum">
+  <div class="scr-head">
+    <div style="width:36px"></div>
+    <span class="scr-head-title">Форум</span>
+    <div class="forum-head-icons">
+      <button class="forum-icon-btn" onclick="toggleForumSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="forum-search-bar hidden" id="forumSearchBar">
+    <input class="forum-search-input" id="forumSearchInput" placeholder="Поиск тем..." oninput="forumSearch(this.value)" autocomplete="off">
+    <button class="forum-search-close" onclick="toggleForumSearch()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- Categories -->
+  <div class="forum-cats" id="forumCats">
+    <button class="forum-cat active" data-cat="all" onclick="forumFilterCat('all')">Все</button>
+    <button class="forum-cat" data-cat="business" onclick="forumFilterCat('business')">Бизнес</button>
+    <button class="forum-cat" data-cat="marketing" onclick="forumFilterCat('marketing')">Маркетинг</button>
+    <button class="forum-cat" data-cat="tools" onclick="forumFilterCat('tools')">Инструменты</button>
+    <button class="forum-cat" data-cat="education" onclick="forumFilterCat('education')">Обучение</button>
+    <button class="forum-cat" data-cat="newbies" onclick="forumFilterCat('newbies')">Новичкам</button>
+    <button class="forum-cat" data-cat="cases" onclick="forumFilterCat('cases')">Кейсы</button>
+    <button class="forum-cat" data-cat="offtopic" onclick="forumFilterCat('offtopic')">Оффтоп</button>
+  </div>
+
+  <!-- Sort tabs -->
+  <div class="forum-sort-tabs" id="forumSortTabs">
+    <button class="forum-sort-tab active" data-sort="new" onclick="forumSort('new')">Новые</button>
+    <button class="forum-sort-tab" data-sort="hot" onclick="forumSort('hot')">Горячие</button>
+    <button class="forum-sort-tab" data-sort="unanswered" onclick="forumSort('unanswered')">Без ответа</button>
+  </div>
+
+  <!-- Topic list -->
+  <div id="forumList" style="padding-top:6px;padding-bottom:80px;flex:1;overflow-y:auto"></div>
+
+  <!-- Skeletons -->
+  <div id="forumSkeletons" class="hidden">
+    <div class="forum-skeleton" style="height:120px"></div>
+    <div class="forum-skeleton" style="height:120px"></div>
+    <div class="forum-skeleton" style="height:120px"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="forum-empty hidden" id="forumEmpty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <div class="forum-empty-title">Нет тем</div>
+    <div class="forum-empty-sub">Создайте первую тему для обсуждения</div>
+  </div>
+
+  <!-- FAB -->
+  <button class="forum-fab" onclick="goTo('scrForumCreate')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+</div>
