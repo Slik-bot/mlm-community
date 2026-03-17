@@ -17,7 +17,6 @@ const FORUM_CATS = {
   cases: { label: 'Кейсы', css: 'ct-case' },
   offtopic: { label: 'Оффтоп', css: 'ct-off' }
 };
-
 function fEsc(s) {
   if (!s) return '';
   const d = document.createElement('div');
@@ -45,7 +44,6 @@ function fTimeAgo(dateStr) {
 }
 function fInitials(name) { return (name || '?')[0].toUpperCase(); }
 function fEl(id, fn) { const el = document.getElementById(id); if (el) fn(el); }
-
 function buildForumAv(author, size) {
   const suffix = fDnaSuffix(author.dna_type);
   const cls = 'forum-av forum-av-' + suffix;
@@ -55,7 +53,6 @@ function buildForumAv(author, size) {
   }
   return '<div class="' + cls + '" style="width:' + size + 'px;height:' + size + 'px;font-size:' + fs + 'px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + fInitials(author.name) + '</div>';
 }
-
 // ===== FORUM LIST =====
 function initForum() {
   forumCat = 'all';
@@ -188,7 +185,6 @@ async function initForumTopic() {
   requestAnimationFrame(function() { renderTopicHeader(currentTopic); });
   loadForumReplies(topicId);
 }
-
 function renderTopicHeader(t) {
   const author = t.author || {};
   const suffix = fDnaSuffix(author.dna_type);
@@ -410,7 +406,6 @@ async function deleteForumTopic() {
   if (window.showToast) showToast('Тема удалена');
   goBack();
 }
-
 // ===== FORUM CREATE =====
 function initForumCreate() {
   forumSelectedCat = '';
@@ -478,7 +473,6 @@ function showXpToast(text) {
   document.body.appendChild(t);
   setTimeout(function() { t.remove(); }, 2500);
 }
-
 // ===== EXPORTS =====
 window.initForum = initForum;
 window.initForumTopic = initForumTopic;
