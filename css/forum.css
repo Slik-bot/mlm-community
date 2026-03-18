@@ -1,5 +1,27 @@
 /* ===== FORUM — TRAFIQO DARK GLASS ===== */
 
+/* ── Фон форума ── */
+#scrForum {
+  background-image: url('../assets/images/chat-bg.png');
+  background-size: 500px auto;
+  background-repeat: repeat;
+  background-attachment: local;
+}
+#scrForum::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 11, 0.87);
+  pointer-events: none;
+  z-index: 0;
+}
+#scrForum .scr-head,
+#scrForum .scr-body,
+#scrForum .forum-fab {
+  position: relative;
+  z-index: 1;
+}
+
 /* --- Animations --- */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(16px); }
