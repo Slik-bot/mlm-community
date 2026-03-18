@@ -410,6 +410,8 @@
 .forum-reply.dna-c { border-left-color: #22c55e; }
 .forum-reply.dna-r { border-left-color: #f59e0b; }
 .forum-reply.dna-a { border-left-color: #a78bfa; }
+.forum-reply.is-mine { border-left-color: #8b5cf6; }
+.forum-reply.is-mine .reply-name { color: #8b5cf6; font-weight: 700; }
 .best-label {
   display: inline-flex;
   align-items: center;

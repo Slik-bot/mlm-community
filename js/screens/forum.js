@@ -224,6 +224,7 @@ function renderForumReplies(replies) {
 }
 function buildReplyBubble(r, i, replyMap) {
   var a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
+  var isMe = window.currentUser && a.id === window.currentUser.id;
   var bestCls = r.is_best ? ' is-best' : '', bestLabel = r.is_best ? '<div class="best-label">★ Лучший ответ</div>' : '';
   var liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
   var quoteHtml = '';
@@ -233,8 +234,8 @@ function buildReplyBubble(r, i, replyMap) {
   }
   return '<div class="forum-reply-row" style="animation-delay:' + (i*30) + 'ms">' +
     buildForumAv(a, 32) +
-    '<div class="forum-reply' + bestCls + ' dna-' + suffix + '">' + bestLabel + quoteHtml +
-      '<div class="reply-top"><span class="reply-name">' + fEsc(a.name||'Аноним') + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
+    '<div class="forum-reply' + bestCls + ' dna-' + suffix + (isMe ? ' is-mine' : '') + '">' + bestLabel + quoteHtml +
+      '<div class="reply-top"><span class="reply-name">' + (isMe ? 'Вы' : fEsc(a.name||'Аноним')) + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
       '<div class="reply-text">' + fEsc(r.content) + '</div>' +
       '<div class="reply-actions-row">' +
         '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
