@@ -420,13 +420,6 @@ async function publishForumTopic() {
   if (window.showToast) showToast('Тема создана!');
   goBack();
 }
-function showXpToast(text) {
-  var t = document.createElement('div');
-  t.className = 'forum-xp-toast';
-  t.textContent = text;
-  document.body.appendChild(t);
-  setTimeout(function() { t.remove(); }, 2500);
-}
 // ===== EXPORTS =====
 window.initForum = initForum;
 window.initForumTopic = initForumTopic;
@@ -465,4 +458,3 @@ window.closeForumCatSheet = closeForumCatSheet;
 window.selectForumCat = selectForumCat;
 window.onForumFormInput = onForumFormInput;
 window.publishForumTopic = publishForumTopic;
-window.showXpToast = showXpToast;
