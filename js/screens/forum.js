@@ -248,8 +248,7 @@ function renderForumReplies(replies) {
             '<span>' + (r.likes_count || 0) + '</span>' +
           '</div>' +
           '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>' +
-            ' Ответить' +
+            'Ответить' +
           '</button>' +
           (isAuthor && !r.is_best ? '<button class="reply-mark-best" onclick="event.stopPropagation();markBestReply(\'' + r.id + '\')">Лучший</button>' : '') +
         '</div>' +
