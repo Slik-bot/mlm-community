@@ -448,18 +448,18 @@
   gap: 10px;
 }
 .reply-reply-btn {
-  display: flex;
-  align-items: center;
-  gap: 3px;
   font-size: 11px;
-  color: rgba(255,255,255,0.3);
+  font-weight: 500;
+  color: rgba(255,255,255,0.28);
   background: none;
   border: none;
   cursor: pointer;
   font-family: Outfit, sans-serif;
   padding: 0;
+  letter-spacing: 0.2px;
+  transition: color 0.15s;
 }
-.reply-reply-btn:active { opacity: 0.6; }
+.reply-reply-btn:active { color: rgba(255,255,255,0.6); }
 .reply-mark-best {
   padding: 5px 12px;
   border-radius: 8px;
