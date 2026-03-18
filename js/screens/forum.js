@@ -241,14 +241,12 @@ function renderForumReplies(replies) {
           '<span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' +
         '</div>' +
         '<div class="reply-text">' + fEsc(r.content) + '</div>' +
-        '<div class="reply-reactions">' +
-          '<div class="reaction' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
-            '<svg viewBox="0 0 24 24" width="12" height="12" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+        '<div class="reply-actions-row">' +
+          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">Ответить</button>' +
+          '<div class="reply-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
+            '<svg viewBox="0 0 24 24" width="14" height="14" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
             '<span>' + (r.likes_count || 0) + '</span>' +
           '</div>' +
-          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">' +
-            'Ответить' +
-          '</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -343,7 +341,7 @@ async function sendForumReply() {
         '<span class="reply-time">только что</span>' +
       '</div>' +
       '<div class="reply-text">' + fEsc(content) + '</div>' +
-      '<div class="reply-reactions"></div>' +
+      '<div class="reply-actions-row"></div>' +
     '</div>';
   var container = document.getElementById('forumReplies');
   if (container) {
