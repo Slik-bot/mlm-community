@@ -321,7 +321,10 @@ async function sendForumReply() {
   cancelForumReply();
   if (btn) btn.disabled = false;
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
-  loadForumReplies(currentTopic.id);
+  loadForumReplies(currentTopic.id).then(function() {
+    var body = document.getElementById('forumTopicBody');
+    if (body) setTimeout(function() { body.scrollTop = body.scrollHeight; }, 100);
+  });
 }
 // ===== FORUM MORE MENU =====
 function openForumMore() {
