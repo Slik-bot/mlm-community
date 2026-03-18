@@ -178,9 +178,6 @@ async function initForumTopic() {
     .eq('id', topicId).then(function() {});
   requestAnimationFrame(function() { renderTopicHeader(currentTopic); });
   loadForumReplies(topicId);
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.onEvent('viewportChanged', adjustReplyBar);
-  }
 }
 function renderTopicHeader(t) {
   const author = t.author || {};
@@ -464,15 +461,6 @@ function showXpToast(text) {
   t.textContent = text;
   document.body.appendChild(t);
   setTimeout(function() { t.remove(); }, 2500);
-}
-function adjustReplyBar() {
-  const bar = document.getElementById('forumReplyBar');
-  if (!bar || !window.Telegram || !window.Telegram.WebApp) return;
-  const vh = window.Telegram.WebApp.viewportStableHeight || window.innerHeight;
-  const bottom = window.innerHeight - vh;
-  bar.style.bottom = bottom + 'px';
-  const ctx = document.getElementById('forumReplyContext');
-  if (ctx) ctx.style.bottom = (bottom + 50) + 'px';
 }
 // ===== EXPORTS =====
 window.initForum = initForum;
