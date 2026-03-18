@@ -250,7 +250,7 @@ function renderForumReplies(replies) {
             '<svg viewBox="0 0 24 24" width="12" height="12" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
             '<span>' + (r.likes_count || 0) + '</span>' +
           '</div>' +
-          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\')">' +
+          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>' +
             ' Ответить' +
           '</button>' +
@@ -303,10 +303,11 @@ async function markBestReply(replyId) {
   if (window.showToast) showToast('Лучший ответ выбран');
   loadForumReplies(currentTopic.id);
 }
-function replyToForumReply(replyId, authorName) {
+function replyToForumReply(replyId, authorName, replyText) {
   forumReplyToId = replyId;
   fEl('forumReplyContext', function(el) { el.classList.remove('hidden'); });
-  fEl('forumReplyContextText', function(el) { el.textContent = 'Ответ для ' + authorName; });
+  fEl('forumReplyContextName', function(el) { el.textContent = authorName; });
+  fEl('forumReplyContextText', function(el) { el.textContent = (replyText || '').slice(0, 60); });
   fEl('forumReplyInput', function(el) { el.focus(); });
 }
 function cancelForumReply() {
