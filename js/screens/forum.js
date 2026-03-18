@@ -8,6 +8,9 @@ let currentTopicReplies = [];
 let forumReplyToId = null;
 let likedReplyIds = new Set();
 let forumSelectedCat = '';
+let forumPage = 0;
+let forumHasMore = true;
+var FORUM_PAGE = 20;
 let _forumChannel = null;
 let _forumRepliesChannel = null;
 // ===== FORUM LIST =====
@@ -17,31 +20,38 @@ function initForum() {
   forumQuery = '';
   fEl('forumSearchBar', function(el) { el.classList.add('hidden'); });
   fEl('forumSearchInput', function(el) { el.value = ''; });
+  forumPage = 0; forumHasMore = true;
   updateForumCatUI();
   updateForumSortUI();
   loadForumTopics();
   if (_forumChannel) window.sb.removeChannel(_forumChannel);
   _forumChannel = window.sb.channel('forum-topics-rt')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forum_topics' }, function() { loadForumTopics(); })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forum_topics' }, function() { forumPage = 0; forumHasMore = true; loadForumTopics(); })
     .subscribe();
 }
-async function loadForumTopics() {
-  fEl('forumSkeletons', function(el) { el.classList.remove('hidden'); });
-  fEl('forumList', function(el) { el.innerHTML = ''; });
+async function loadForumTopics(append) {
+  if (!append) { fEl('forumSkeletons', function(el) { el.classList.remove('hidden'); }); fEl('forumList', function(el) { el.innerHTML = ''; }); }
   try {
+    var from = forumPage * FORUM_PAGE, to = from + FORUM_PAGE - 1;
     const result = await window.sb.from('forum_topics')
       .select('*, author:users(id, name, avatar_url, dna_type, level)')
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(from, to);
     if (result.error) throw result.error;
-    allForumTopics = result.data || [];
+    var rows = result.data || [];
+    forumHasMore = rows.length >= FORUM_PAGE;
+    allForumTopics = append ? allForumTopics.concat(rows) : rows;
     renderForumList(applyForumFilters());
   } catch (e) {
     console.error('Forum load error:', e);
     if (window.showToast) showToast('Ошибка загрузки тем');
   }
   fEl('forumSkeletons', function(el) { el.classList.add('hidden'); });
+}
+function forumLoadMore() {
+  forumPage++;
+  loadForumTopics(true);
 }
 function applyForumFilters() {
   let filtered = allForumTopics;
@@ -95,6 +105,7 @@ function renderForumList(topics) {
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + (t.views_count || 0) + '</div>' +
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' + (t.replies_count || 0) + '</div></div></div>';
   }).join('');
+  fEl('forumLoadMore', function(el) { el.classList.toggle('hidden', !forumHasMore); });
 }
 function forumFilterCat(cat) {
   forumCat = cat;
@@ -437,6 +448,7 @@ function scrollToReply(replyId) {
   }
 }
 window.scrollToReply = scrollToReply;
+window.forumLoadMore = forumLoadMore;
 window.forumSort = forumSort;
 window.forumSearch = forumSearch;
 window.toggleForumSearch = toggleForumSearch;
