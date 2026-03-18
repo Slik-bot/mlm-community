@@ -208,49 +208,58 @@ async function loadForumReplies(topicId) {
   renderForumReplies(currentTopicReplies);
 }
 function renderForumReplies(replies) {
-  const container = document.getElementById('forumReplies');
-  const noReplies = document.getElementById('forumNoReplies');
-  const countLabel = document.getElementById('forumRepliesCountLabel');
-  const divider = document.getElementById('forumRepliesDiv');
-  if (countLabel) {
-    const n = replies.length;
-    countLabel.textContent = n + ' ' + (n === 1 ? 'ответ' : (n < 5 ? 'ответа' : 'ответов'));
-  }
-  if (!replies.length) {
-    if (container) container.innerHTML = '';
-    if (noReplies) noReplies.classList.remove('hidden');
-    if (divider) divider.classList.add('hidden');
-    return;
-  }
-  if (noReplies) noReplies.classList.add('hidden');
-  if (divider) divider.classList.remove('hidden');
+  var container = document.getElementById('forumReplies'), noReplies = document.getElementById('forumNoReplies');
+  var countLabel = document.getElementById('forumRepliesCountLabel'), divider = document.getElementById('forumRepliesDiv');
+  var n = replies.length;
+  if (countLabel) countLabel.textContent = n + ' ' + (n===1?'ответ':n<5?'ответа':'ответов');
+  if (!n) { if (container) container.innerHTML = ''; if (noReplies) noReplies.classList.remove('hidden'); if (divider) divider.classList.add('hidden'); return; }
+  if (noReplies) noReplies.classList.add('hidden'); if (divider) divider.classList.remove('hidden');
   if (!container) return;
-  container.innerHTML = replies.map(function(r, i) {
-    const author = r.author || {};
-    const suffix = fDnaSuffix(author.dna_type);
-    const bestClass = r.is_best ? ' is-best' : '';
-    const bestLabel = r.is_best ? '<div class="best-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Лучший ответ</div>' : '';
-    const user = window.currentUser;
-    const isAuthor = currentTopic && user && currentTopic.author_id === user.id;
-    return '<div class="forum-reply-row">' +
-      buildForumAv(author, 34) +
-      '<div class="forum-reply' + bestClass + ' dna-' + suffix + '" style="animation-delay:' + (i * 30) + 'ms">' +
-        bestLabel +
-        '<div class="reply-top">' +
-          '<span class="reply-name">' + fEsc(author.name || 'Аноним') + '</span>' +
-          '<span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' +
-        '</div>' +
-        '<div class="reply-text">' + fEsc(r.content) + '</div>' +
+  var roots = replies.filter(function(r) { return !r.parent_id; });
+  var children = {};
+  replies.forEach(function(r) { if (r.parent_id) { if (!children[r.parent_id]) children[r.parent_id] = []; children[r.parent_id].push(r); } });
+  container.innerHTML = roots.map(function(r, i) { return buildRootReply(r, i) + buildNestedSection(r.id, children[r.id] || []); }).join('');
+}
+function buildRootReply(r, i) {
+  var a = r.author || {}, suffix = fDnaSuffix(a.dna_type), bestCls = r.is_best ? ' is-best' : '';
+  var bestLabel = r.is_best ? '<div class="best-label">★ Лучший ответ</div>' : '';
+  var liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
+  return '<div class="forum-reply-row" style="animation-delay:' + (i*30) + 'ms">' +
+    buildForumAv(a, 32) +
+    '<div class="forum-reply' + bestCls + ' dna-' + suffix + '">' + bestLabel +
+      '<div class="reply-top"><span class="reply-name">' + fEsc(a.name||'Аноним') + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
+      '<div class="reply-text">' + fEsc(r.content) + '</div>' +
+      '<div class="reply-actions-row">' +
+        '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
+        '<div class="reply-like-btn' + lc + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="' + lf + '" stroke="' + ls + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+          '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
+}
+function buildNestedSection(parentId, kids) {
+  if (!kids.length) return '';
+  var word = kids.length===1?'ответ':kids.length<5?'ответа':'ответов';
+  var nested = kids.map(function(r) {
+    var a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
+    var liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
+    return '<div class="forum-reply-row nested">' + buildForumAv(a, 24) +
+      '<div class="forum-reply dna-' + suffix + '">' +
+        '<div class="reply-top"><span class="reply-name" style="font-size:11px">' + fEsc(a.name||'Аноним') + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
+        '<div class="reply-text" style="font-size:12px">' + fEsc(r.content) + '</div>' +
         '<div class="reply-actions-row">' +
-          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">Ответить</button>' +
-          '<div class="reply-like-btn' + (localStorage.getItem('liked_reply_' + r.id) ? ' liked' : '') + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
-            '<svg viewBox="0 0 24 24" width="14" height="14" fill="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'none') + '" stroke="' + (localStorage.getItem('liked_reply_' + r.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
-            '<span>' + (r.likes_count || 0) + '</span>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
+          '<div class="reply-like-btn' + lc + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
+            '<svg viewBox="0 0 24 24" width="12" height="12" fill="' + lf + '" stroke="' + ls + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+            '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
   }).join('');
+  return '<div class="nested-section">' +
+    '<button class="show-nested-btn" onclick="toggleNested(this)"><div class="show-nested-line"></div>Посмотреть ' + kids.length + ' ' + word + '</button>' +
+    '<div class="nested-replies hidden">' + nested + '</div></div>';
+}
+function toggleNested(btn) {
+  var wrap = btn.nextElementSibling, isHidden = wrap.classList.contains('hidden');
+  wrap.classList.toggle('hidden', !isHidden);
+  var kids = wrap.querySelectorAll('.forum-reply-row').length, word = kids===1?'ответ':kids<5?'ответа':'ответов';
+  btn.innerHTML = isHidden ? '<div class="show-nested-line"></div>Скрыть ответы' : '<div class="show-nested-line"></div>Посмотреть ' + kids + ' ' + word;
 }
 function forumLikeTopic() {
   if (!currentTopic) return;
