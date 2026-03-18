@@ -754,7 +754,6 @@
 .forum-preview-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
 .forum-preview-text { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; margin-bottom: 8px; }
 .forum-preview-footer { font-size: 11px; color: rgba(255,255,255,0.35); }
-
 /* --- XP toast --- */
 .forum-xp-toast {
   position: fixed;
@@ -773,7 +772,6 @@
   pointer-events: none;
   white-space: nowrap;
 }
-
 /* --- Body spacer --- */
 .forum-body-spacer { height: 60px; }
 /* --- Float date (scroll) --- */
