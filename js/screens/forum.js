@@ -323,7 +323,7 @@ async function sendForumReply() {
   if (btn) btn.disabled = false;
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
   loadForumReplies(currentTopic.id).then(function() {
-    var scr = document.getElementById('forumTopicScroll') || document.querySelector('.scr-body');
+    var scr = document.querySelector('#scrForumTopic.scr') || document.getElementById('scrForumTopic');
     if (scr) setTimeout(function() { scr.scrollTop = scr.scrollHeight; }, 150);
   });
 }
