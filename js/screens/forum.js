@@ -334,14 +334,21 @@ async function sendForumReply() {
   var newBubble = document.createElement('div');
   newBubble.className = 'reply-row new-reply';
   newBubble.style.cssText = 'display:flex;gap:7px;margin:0 10px 10px;align-items:flex-start;animation:bubbleIn 300ms cubic-bezier(0.34,1.56,0.64,1) both';
+  var tempId = 'temp_' + Date.now();
   newBubble.innerHTML = buildForumAv(user, 32) +
-    '<div class="forum-reply dna-' + suffix + '" style="flex:1;min-width:0">' +
+    '<div class="forum-reply dna-' + suffix + '" style="width:fit-content;max-width:calc(100% - 44px);min-width:120px">' +
       '<div class="reply-top">' +
         '<span class="reply-name">' + fEsc(user.name || user.full_name || 'Вы') + '</span>' +
         '<span class="reply-time">только что</span>' +
       '</div>' +
       '<div class="reply-text">' + fEsc(content) + '</div>' +
-      '<div class="reply-actions-row"></div>' +
+      '<div class="reply-actions-row">' +
+        '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + tempId + '\',\'' + fEsc(user.name || user.full_name || 'Вы') + '\',\'' + fEsc(content.slice(0,60)) + '\')">Ответить</button>' +
+        '<div class="reply-like-btn" onclick="event.stopPropagation();likeForumReply(\'' + tempId + '\',this)">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+          '<span>0</span>' +
+        '</div>' +
+      '</div>' +
     '</div>';
   var container = document.getElementById('forumReplies');
   if (container) {
