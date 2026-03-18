@@ -159,9 +159,13 @@ function toggleForumSearch() {
   if (show && inp) { inp.value = ''; inp.focus(); }
   if (!show) { forumQuery = ''; renderForumList(applyForumFilters()); }
 }
+let _forumSearchTimer;
 function forumSearch(val) {
-  forumQuery = (val || '').toLowerCase().trim();
-  renderForumList(applyForumFilters());
+  clearTimeout(_forumSearchTimer);
+  _forumSearchTimer = setTimeout(function() {
+    forumQuery = (val || '').toLowerCase().trim();
+    renderForumList(applyForumFilters());
+  }, 300);
 }
 // ===== FORUM TOPIC DETAIL =====
 function openForumTopic(topicId) {
