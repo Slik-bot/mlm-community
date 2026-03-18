@@ -314,7 +314,7 @@
 #scrForumTopic .forum-fab { display: none; }
 
 /* ===== TOPIC DETAIL ===== */
-.forum-topic-body { padding-bottom: 60px; }
+.forum-topic-body { padding-bottom: 8px; }
 .topic-header {
   margin: 12px 16px;
   padding: 16px;
@@ -773,7 +773,7 @@
   white-space: nowrap;
 }
 /* --- Body spacer --- */
-.forum-body-spacer { height: 60px; }
+.forum-body-spacer { height: 8px; }
 /* --- Float date (scroll) --- */
 .forum-float-date {
   position: sticky;
