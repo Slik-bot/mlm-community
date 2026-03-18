@@ -230,7 +230,7 @@ function buildReplyBubble(r, i, replyMap) {
   var quoteHtml = '';
   if (r.parent_id && replyMap[r.parent_id]) {
     var p = replyMap[r.parent_id], pa = p.author || {};
-    quoteHtml = '<div class="reply-quote-block"><span class="reply-quote-author">' + fEsc(pa.name||'Аноним') + '</span><span class="reply-quote-text">' + fEsc((p.content||'').slice(0,60)) + '</span></div>';
+    quoteHtml = '<div class="reply-quote-block" onclick="event.stopPropagation();scrollToReply(\'' + r.parent_id + '\')"><span class="reply-quote-author">' + fEsc(pa.name||'Аноним') + '</span><span class="reply-quote-text">' + fEsc((p.content||'').slice(0,60)) + '</span></div>';
   }
   return '<div class="forum-reply-row" style="animation-delay:' + (i*30) + 'ms">' +
     buildForumAv(a, 32) +
@@ -432,6 +432,20 @@ window.initForum = initForum;
 window.initForumTopic = initForumTopic;
 window.initForumCreate = initForumCreate;
 window.forumFilterCat = forumFilterCat;
+function scrollToReply(replyId) {
+  var rows = document.querySelectorAll('.forum-reply-row');
+  for (var i = 0; i < rows.length; i++) {
+    var btn = rows[i].querySelector('[onclick*="' + replyId + '"]');
+    if (btn) {
+      rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      rows[i].style.transition = 'background 0.3s';
+      rows[i].style.background = 'rgba(139,92,246,0.1)';
+      setTimeout(function(el) { el.style.background = ''; }, 800, rows[i]);
+      return;
+    }
+  }
+}
+window.scrollToReply = scrollToReply;
 window.forumSort = forumSort;
 window.forumSearch = forumSearch;
 window.toggleForumSearch = toggleForumSearch;

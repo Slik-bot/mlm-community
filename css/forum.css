@@ -793,7 +793,7 @@
 .reaction-panel-item { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; background:rgba(255,255,255,0.05); transition:transform 0.15s; }
 .reaction-panel-item:active { transform:scale(1.3); }
 .reply-actions-row { display:flex; align-items:center; justify-content:space-between; margin-top:6px; } .reply-like-btn { display:flex; align-items:center; gap:3px; font-size:11px; color:rgba(255,255,255,0.3); cursor:pointer; } .reply-like-btn.liked { color:#ef4444; } .reply-like-btn.liked svg { fill:#ef4444; stroke:#ef4444; }
-.reply-quote-block { display:flex; flex-direction:column; gap:1px; padding:4px 8px; background:rgba(255,255,255,0.04); border-left:2px solid rgba(255,255,255,0.2); border-radius:0 4px 4px 0; margin-bottom:6px; } .reply-quote-author { font-size:10px; font-weight:700; color:rgba(255,255,255,0.5); } .reply-quote-text { font-size:10px; color:rgba(255,255,255,0.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.reply-quote-block { cursor:pointer; display:flex; flex-direction:column; gap:1px; padding:4px 8px; background:rgba(255,255,255,0.04); border-left:2px solid rgba(255,255,255,0.2); border-radius:0 4px 4px 0; margin-bottom:6px; } .reply-quote-author { font-size:10px; font-weight:700; color:rgba(255,255,255,0.5); } .reply-quote-text { font-size:10px; color:rgba(255,255,255,0.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 /* --- Quote block --- */
 .reply-quote { background:rgba(255,255,255,0.06); border-left:2px solid rgba(255,255,255,0.25); border-radius:0 6px 6px 0; padding:5px 8px; margin-bottom:7px; }
 .reply-quote-name { font-size:10px; font-weight:700; color:rgba(255,255,255,0.6); margin-bottom:2px; }
