@@ -1,6 +1,28 @@
 /* ===== FORUM TOPIC + CREATE — TRAFIQO DARK GLASS ===== */
 /* Выделено из forum.css */
 
+/* ── Фон темы форума ── */
+#scrForumTopic {
+  background-image: url('../assets/images/chat-bg.png');
+  background-size: 500px auto;
+  background-repeat: repeat;
+  background-attachment: local;
+}
+#scrForumTopic::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 11, 0.87);
+  pointer-events: none;
+  z-index: 0;
+}
+#scrForumTopic .scr-head,
+#scrForumTopic .scr-body,
+#scrForumTopic .forum-reply-bar {
+  position: relative;
+  z-index: 1;
+}
+
 /* ===== TOPIC DETAIL ===== */
 .forum-topic-body { padding-bottom: 8px; }
 .topic-header {
