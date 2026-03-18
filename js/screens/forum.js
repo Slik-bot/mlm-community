@@ -250,7 +250,6 @@ function renderForumReplies(replies) {
           '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(author.name || '') + '\',\'' + fEsc((r.content || '').slice(0,60)) + '\')">' +
             'Ответить' +
           '</button>' +
-          (isAuthor && !r.is_best ? '<button class="reply-mark-best" onclick="event.stopPropagation();markBestReply(\'' + r.id + '\')">Лучший</button>' : '') +
         '</div>' +
       '</div>' +
     '</div>';
