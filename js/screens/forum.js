@@ -246,7 +246,7 @@ function buildNestedSection(parentId, kids) {
         '<div class="reply-top"><span class="reply-name" style="font-size:11px">' + fEsc(a.name||'Аноним') + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
         '<div class="reply-text" style="font-size:12px">' + fEsc(r.content) + '</div>' +
         '<div class="reply-actions-row">' +
-          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
+          '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + parentId + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
           '<div class="reply-like-btn' + lc + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
             '<svg viewBox="0 0 24 24" width="12" height="12" fill="' + lf + '" stroke="' + ls + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
             '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
