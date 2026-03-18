@@ -238,7 +238,6 @@ function renderForumReplies(replies) {
         bestLabel +
         '<div class="reply-top">' +
           '<span class="reply-name">' + fEsc(author.name || 'Аноним') + '</span>' +
-          (author.level ? '<span class="reply-level">Ур. ' + author.level + '</span>' : '') +
           '<span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' +
         '</div>' +
         '<div class="reply-text">' + fEsc(r.content) + '</div>' +
