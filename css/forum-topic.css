@@ -30,6 +30,8 @@
 .forum-reply-bar {
   background: rgba(6, 6, 11, 0.90);
   backdrop-filter: blur(12px);
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
 }
 
 /* ===== TOPIC DETAIL ===== */
@@ -106,13 +108,17 @@
   color: rgba(255,255,255,0.4);
   font-family: Outfit, sans-serif;
   white-space: nowrap;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 .forum-replies-div {
   background: rgba(6, 6, 11, 0.75);
   backdrop-filter: blur(8px);
 }
 .forum-av {
-  box-shadow: 0 0 0 2px rgba(6, 6, 11, 0.8);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.12);
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 /* --- Reply bubble --- */
@@ -229,18 +235,19 @@
 }
 .forum-reply-input {
   flex: 1;
-  padding: 9px 14px;
-  background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  color: #fff;
-  font-size: 13px;
+  padding: 10px 50px 10px 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  color: #f4f4f6;
+  font-size: 14px;
   font-family: Outfit, sans-serif;
   outline: none;
+  width: 100%;
   transition: border-color 200ms;
 }
-.forum-reply-input:focus { border-color: rgba(139,92,246,0.5); }
-.forum-reply-input::placeholder { color: rgba(255,255,255,0.35); }
+.forum-reply-input:focus { border-color: rgba(139,92,246,0.6); background: rgba(255,255,255,0.09); }
+.forum-reply-input::placeholder { color: rgba(255,255,255,0.3); }
 .forum-reply-send {
   width: 34px; height: 34px;
   border-radius: 50%;
