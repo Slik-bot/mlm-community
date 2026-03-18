@@ -314,7 +314,7 @@
 #scrForumTopic .forum-fab { display: none; }
 
 /* ===== TOPIC DETAIL ===== */
-.forum-topic-body { padding-bottom: 80px; }
+.forum-topic-body { padding-bottom: 140px; }
 .topic-header {
   margin: 12px 16px;
   padding: 16px;
@@ -531,7 +531,7 @@
 /* --- Reply context --- */
 .forum-reply-context {
   position: fixed;
-  bottom: calc(var(--nav-h, 68px) + 50px);
+  bottom: 50px;
   left: 0; right: 0;
   padding: 6px 16px;
   background: rgba(139,92,246,0.1);
