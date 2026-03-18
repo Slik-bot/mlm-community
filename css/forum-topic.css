@@ -12,7 +12,7 @@
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(6, 6, 11, 0.87);
+  background: rgba(6, 6, 11, 0.72);
   pointer-events: none;
   z-index: 0;
 }
@@ -21,6 +21,15 @@
 #scrForumTopic .forum-reply-bar {
   position: relative;
   z-index: 1;
+}
+#scrForumTopic .scr-head {
+  background: rgba(6, 6, 11, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.forum-reply-bar {
+  background: rgba(6, 6, 11, 0.90);
+  backdrop-filter: blur(12px);
 }
 
 /* ===== TOPIC DETAIL ===== */
@@ -109,6 +118,9 @@
   padding: 0 0 0 10px;
   width: fit-content; max-width: calc(100% - 44px); min-width: 100px;
   animation: bubbleIn 250ms cubic-bezier(0.16,1,0.3,1) both;
+  background: rgba(14, 14, 22, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .forum-reply.is-best {
   background: rgba(251,191,36,0.06);
