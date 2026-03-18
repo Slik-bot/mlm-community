@@ -21,21 +21,12 @@ let _oldestTs = null;
 
 const MSG_PAGE = 30;
 
-// ── ДНК-тема диалога ─────────────────────
-
-function applyChatDnaTheme(dnaType) {
-  const color = window.getDnaColor(dnaType);
-  const wrap = document.getElementById('scrChat');
-  if (!wrap) return;
-  wrap.style.setProperty('--dna-color', color);
-}
-
 // ── Инициализация ──────────────────────
 
 async function initChatMessages(convId, partner) {
   _convId = convId;
   _partner = partner;
-  applyChatDnaTheme(partner?.dna_type);
+  window.applyChatDnaTheme(partner?.dna_type);
   _myId = window.getCurrentUser()?.id;
   _replyTo = null;
   _msgMap = {};
@@ -90,15 +81,6 @@ async function initChatMessages(convId, partner) {
   }
 }
 
-// ── Загрузка: хелперы ─────────────────
-
-function isSameGroup(a, b) {
-  if (!a || !b) return false;
-  if (a.sender_id !== b.sender_id) return false;
-  if (new Date(a.created_at).toDateString() !== new Date(b.created_at).toDateString()) return false;
-  return Math.abs(new Date(b.created_at) - new Date(a.created_at)) < 5 * 60 * 1000;
-}
-
 function renderMessages(messages, lastReadAt, box) {
   let lastDate = null;
   let dividerInserted = false;
@@ -114,23 +96,11 @@ function renderMessages(messages, lastReadAt, box) {
       box.appendChild(window.buildDateDivider(msg.created_at));
       lastDate = msgDate;
     }
-    const prev = isSameGroup(messages[i - 1], msg);
-    const next = isSameGroup(msg, messages[i + 1]);
+    const prev = window.isSameGroup(messages[i - 1], msg);
+    const next = window.isSameGroup(msg, messages[i + 1]);
     const grpPos = prev ? (next ? 'mid' : 'last') : (next ? 'first' : 'single');
     box.appendChild(window.buildBubble(msg, grpPos));
   }
-}
-
-function applyDnaFallback(box) {
-  const partnerDna = window._chatPartner?.()?.dna_type;
-  const fallbackColor = partnerDna ? window.getDnaColor(partnerDna) : null;
-  if (!fallbackColor) return;
-  const rgb = window.hexToRgb(fallbackColor);
-  box.querySelectorAll('.msg:not(.msg-out) .bbl').forEach(function(b) {
-    if (!b.style.getPropertyValue('--msg-dna-rgb')) {
-      b.style.setProperty('--msg-dna-rgb', rgb);
-    }
-  });
 }
 
 // ── Загрузка сообщений ─────────────────
@@ -167,7 +137,7 @@ async function loadMessages() {
     let messages = page.reverse();
     _oldestTs = messages.length > 0 ? messages[0].created_at : null;
     renderMessages(messages, lastReadAt, box);
-    applyDnaFallback(box);
+    window.applyDnaFallback(box);
 
     const undeliveredIds = messages
       .filter(m => m.sender_id !== _myId
