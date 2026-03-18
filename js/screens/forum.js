@@ -325,10 +325,10 @@ async function sendForumReply() {
   const btn = document.querySelector('.forum-reply-send');
   if (btn) btn.disabled = true;
   var payload = { topic_id: currentTopic.id, author_id: user.id, content: content };
-  if (forumReplyToId) payload.parent_id = forumReplyToId;
+  if (forumReplyToId && !forumReplyToId.toString().startsWith('temp_')) payload.parent_id = forumReplyToId;
   const result = await window.sb.from('forum_replies').insert(payload);
   if (result.error) {
-    if (window.showToast) showToast('Ошибка отправки');
+    console.error('sendForumReply:', result.error); if (window.showToast) showToast('Ошибка: ' + (result.error.message || 'отправка'));
     if (btn) btn.disabled = false;
     return;
   }
