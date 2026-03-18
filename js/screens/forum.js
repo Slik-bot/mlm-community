@@ -208,28 +208,28 @@ async function loadForumReplies(topicId) {
   renderForumReplies(currentTopicReplies);
 }
 function renderForumReplies(replies) {
-  var container = document.getElementById('forumReplies'), noReplies = document.getElementById('forumNoReplies');
-  var countLabel = document.getElementById('forumRepliesCountLabel'), divider = document.getElementById('forumRepliesDiv');
-  var n = replies.length;
+  const container = document.getElementById('forumReplies'), noReplies = document.getElementById('forumNoReplies');
+  const countLabel = document.getElementById('forumRepliesCountLabel'), divider = document.getElementById('forumRepliesDiv');
+  const n = replies.length;
   if (countLabel) countLabel.textContent = n + ' ' + (n===1?'ответ':n<5?'ответа':'ответов');
   if (!n) { if (container) container.innerHTML = ''; if (noReplies) noReplies.classList.remove('hidden'); if (divider) divider.classList.add('hidden'); return; }
   if (noReplies) noReplies.classList.add('hidden'); if (divider) divider.classList.remove('hidden');
   if (!container) return;
-  var replyMap = {}; replies.forEach(function(r) { replyMap[r.id] = r; });
-  var sorted = replies.slice().sort(function(a,b) {
+  const replyMap = {}; replies.forEach(function(r) { replyMap[r.id] = r; });
+  const sorted = replies.slice().sort(function(a,b) {
     if (a.is_best && !b.is_best) return -1; if (!a.is_best && b.is_best) return 1;
     return new Date(a.created_at) - new Date(b.created_at);
   });
   container.innerHTML = sorted.map(function(r, i) { return buildReplyBubble(r, i, replyMap); }).join('');
 }
 function buildReplyBubble(r, i, replyMap) {
-  var a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
-  var isMe = window.currentUser && a.id === window.currentUser.id;
-  var bestCls = r.is_best ? ' is-best' : '', bestLabel = r.is_best ? '<div class="best-label">★ Лучший ответ</div>' : '';
-  var liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
-  var quoteHtml = '';
+  const a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
+  const isMe = window.currentUser && a.id === window.currentUser.id;
+  const bestCls = r.is_best ? ' is-best' : '', bestLabel = r.is_best ? '<div class="best-label">★ Лучший ответ</div>' : '';
+  const liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
+  let quoteHtml = '';
   if (r.parent_id && replyMap[r.parent_id]) {
-    var p = replyMap[r.parent_id], pa = p.author || {};
+    const p = replyMap[r.parent_id], pa = p.author || {};
     quoteHtml = '<div class="reply-quote-block" onclick="event.stopPropagation();scrollToReply(\'' + r.parent_id + '\')"><span class="reply-quote-author">' + fEsc(pa.name||'Аноним') + '</span><span class="reply-quote-text">' + fEsc((p.content||'').slice(0,60)) + '</span></div>';
   }
   return '<div class="forum-reply-row" style="animation-delay:' + (i*30) + 'ms">' +
@@ -306,7 +306,7 @@ async function sendForumReply() {
   if (!content) return;
   const btn = document.querySelector('.forum-reply-send');
   if (btn) btn.disabled = true;
-  var payload = { topic_id: currentTopic.id, author_id: user.id, content: content };
+  const payload = { topic_id: currentTopic.id, author_id: user.id, content: content };
   if (forumReplyToId && !forumReplyToId.toString().startsWith('temp_')) payload.parent_id = forumReplyToId;
   const result = await window.sb.from('forum_replies').insert(payload);
   if (result.error) {
@@ -323,7 +323,7 @@ async function sendForumReply() {
   if (btn) btn.disabled = false;
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
   loadForumReplies(currentTopic.id).then(function() {
-    var scr = document.querySelector('#scrForumTopic.scr') || document.getElementById('scrForumTopic');
+    const scr = document.querySelector('#scrForumTopic.scr') || document.getElementById('scrForumTopic');
     if (scr) setTimeout(function() { scr.scrollTop = scr.scrollHeight; }, 150);
   });
 }
@@ -426,9 +426,9 @@ window.initForumTopic = initForumTopic;
 window.initForumCreate = initForumCreate;
 window.forumFilterCat = forumFilterCat;
 function scrollToReply(replyId) {
-  var rows = document.querySelectorAll('.forum-reply-row');
-  for (var i = 0; i < rows.length; i++) {
-    var btn = rows[i].querySelector('[onclick*="' + replyId + '"]');
+  const rows = document.querySelectorAll('.forum-reply-row');
+  for (let i = 0; i < rows.length; i++) {
+    const btn = rows[i].querySelector('[onclick*="' + replyId + '"]');
     if (btn) {
       rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
       rows[i].style.transition = 'background 0.3s';
