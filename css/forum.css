@@ -49,7 +49,7 @@
 
 /* --- Screen layout --- */
 #scrForum, #scrForumTopic, #scrForumCreate {
-  background: #06060b;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
 }
