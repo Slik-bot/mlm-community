@@ -66,14 +66,20 @@ function initForum() {
 async function loadForumTopics() {
   fEl('forumSkeletons', function(el) { el.classList.remove('hidden'); });
   fEl('forumList', function(el) { el.innerHTML = ''; });
-  const result = await window.sb.from('forum_topics')
-    .select('*, author:users(id, name, avatar_url, dna_type, level)')
-    .order('is_pinned', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(50);
-  allForumTopics = result.data || [];
+  try {
+    const result = await window.sb.from('forum_topics')
+      .select('*, author:users(id, name, avatar_url, dna_type, level)')
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (result.error) throw result.error;
+    allForumTopics = result.data || [];
+    renderForumList(applyForumFilters());
+  } catch (e) {
+    console.error('Forum load error:', e);
+    if (window.showToast) showToast('Ошибка загрузки тем');
+  }
   fEl('forumSkeletons', function(el) { el.classList.add('hidden'); });
-  renderForumList(applyForumFilters());
 }
 function applyForumFilters() {
   let filtered = allForumTopics;
@@ -199,13 +205,19 @@ function renderTopicHeader(t) {
   }
 }
 async function loadForumReplies(topicId) {
-  const res = await window.sb.from('forum_replies')
-    .select('*, author:users(id, name, avatar_url, dna_type, level)')
-    .eq('topic_id', topicId)
-    .order('is_best', { ascending: false })
-    .order('created_at', { ascending: true });
-  currentTopicReplies = res.data || [];
-  renderForumReplies(currentTopicReplies);
+  try {
+    const res = await window.sb.from('forum_replies')
+      .select('*, author:users(id, name, avatar_url, dna_type, level)')
+      .eq('topic_id', topicId)
+      .order('is_best', { ascending: false })
+      .order('created_at', { ascending: true });
+    if (res.error) throw res.error;
+    currentTopicReplies = res.data || [];
+    renderForumReplies(currentTopicReplies);
+  } catch (e) {
+    console.error('Forum replies load error:', e);
+    if (window.showToast) showToast('Ошибка загрузки ответов');
+  }
 }
 function renderForumReplies(replies) {
   const container = document.getElementById('forumReplies'), noReplies = document.getElementById('forumNoReplies');
