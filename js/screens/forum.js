@@ -6,6 +6,7 @@ let forumQuery = '';
 let currentTopic = null;
 let currentTopicReplies = [];
 let forumReplyToId = null;
+let likedReplyIds = new Set();
 let forumSelectedCat = '';
 const FORUM_CATS = {
   business: { label: 'Бизнес', css: 'ct-biz' },
@@ -204,8 +205,14 @@ function renderTopicHeader(t) {
   fEl('forumTopicReplyCount', function(el) { el.textContent = t.replies_count || 0; });
   fEl('forumTopicLikeCount', function(el) { el.textContent = t.likes_count || 0; });
   const likeBtn = document.getElementById('forumTopicLike');
-  if (likeBtn && currentTopic && localStorage.getItem('liked_topic_' + currentTopic.id)) {
-    likeBtn.classList.add('liked');
+  if (likeBtn) likeBtn.classList.remove('liked');
+  if (likeBtn && currentTopic && window.currentUser) {
+    window.sb.from('reactions').select('id')
+      .eq('user_id', window.currentUser.id)
+      .eq('target_type', 'forum_topic')
+      .eq('target_id', currentTopic.id)
+      .maybeSingle()
+      .then(function(res) { if (res.data) likeBtn.classList.add('liked'); });
   }
 }
 async function loadForumReplies(topicId) {
@@ -217,6 +224,15 @@ async function loadForumReplies(topicId) {
       .order('created_at', { ascending: true });
     if (res.error) throw res.error;
     currentTopicReplies = res.data || [];
+    likedReplyIds = new Set();
+    if (window.currentUser && currentTopicReplies.length) {
+      var ids = currentTopicReplies.map(function(r) { return r.id; });
+      var lr = await window.sb.from('reactions').select('target_id')
+        .eq('user_id', window.currentUser.id)
+        .eq('target_type', 'forum_reply')
+        .in('target_id', ids);
+      if (lr.data) lr.data.forEach(function(r) { likedReplyIds.add(r.target_id); });
+    }
     renderForumReplies(currentTopicReplies);
   } catch (e) {
     console.error('Forum replies load error:', e);
@@ -242,7 +258,7 @@ function buildReplyBubble(r, i, replyMap) {
   const a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
   const isMe = window.currentUser && a.id === window.currentUser.id;
   const bestCls = r.is_best ? ' is-best' : '', bestLabel = r.is_best ? '<div class="best-label">★ Лучший ответ</div>' : '';
-  const liked = localStorage.getItem('liked_reply_' + r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
+  const liked = likedReplyIds.has(r.id), lc = liked ? ' liked' : '', lf = liked ? '#ef4444' : 'none', ls = liked ? '#ef4444' : 'currentColor';
   let quoteHtml = '';
   if (r.parent_id && replyMap[r.parent_id]) {
     const p = replyMap[r.parent_id], pa = p.author || {};
@@ -260,39 +276,35 @@ function buildReplyBubble(r, i, replyMap) {
           '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
 }
 function forumLikeTopic() {
-  if (!currentTopic) return;
-  const key = 'liked_topic_' + currentTopic.id;
-  const wasLiked = localStorage.getItem(key);
-  const el = document.getElementById('forumTopicLike');
-  const countEl = document.getElementById('forumTopicLikeCount');
-  const cur = parseInt(countEl ? countEl.textContent : '0') || 0;
+  if (!currentTopic || !window.currentUser) return;
+  var el = document.getElementById('forumTopicLike'), countEl = document.getElementById('forumTopicLikeCount');
+  var cur = parseInt(countEl ? countEl.textContent : '0') || 0, wasLiked = el && el.classList.contains('liked');
+  var uid = window.currentUser.id, tid = currentTopic.id, eh = function(r) { if (r.error) console.error(r.error); };
   if (wasLiked) {
-    localStorage.removeItem(key);
-    if (el) el.classList.remove('liked');
-    if (countEl) countEl.textContent = Math.max(0, cur - 1);
-    window.sb.from('forum_topics').update({ likes_count: Math.max(0, cur - 1) }).eq('id', currentTopic.id).then(function(r) { if (r.error) console.error(r.error); });
+    if (el) el.classList.remove('liked'); if (countEl) countEl.textContent = Math.max(0, cur - 1);
+    window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_topic').eq('target_id', tid).then(eh);
+    window.sb.from('forum_topics').update({ likes_count: Math.max(0, cur - 1) }).eq('id', tid).then(eh);
   } else {
-    localStorage.setItem(key, '1');
-    if (el) el.classList.add('liked');
-    if (countEl) countEl.textContent = cur + 1;
-    window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', currentTopic.id).then(function(r) { if (r.error) console.error(r.error); });
+    if (el) el.classList.add('liked'); if (countEl) countEl.textContent = cur + 1;
+    window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
+    window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', tid).then(eh);
   }
 }
 function likeForumReply(replyId, btn) {
-  const key = 'liked_reply_' + replyId;
-  const wasLiked = localStorage.getItem(key);
-  const span = btn ? btn.querySelector('span') : null;
-  const cur = parseInt(span ? span.textContent : '0') || 0;
+  if (!window.currentUser) return;
+  var wasLiked = likedReplyIds.has(replyId), span = btn ? btn.querySelector('span') : null;
+  var cur = parseInt(span ? span.textContent : '0') || 0, uid = window.currentUser.id;
+  var eh = function(r) { if (r.error) console.error(r.error); };
   if (wasLiked) {
-    localStorage.removeItem(key);
-    if (btn) btn.classList.remove('liked');
-    if (span) span.textContent = Math.max(0, cur - 1);
-    window.sb.from('forum_replies').update({ likes_count: Math.max(0, cur - 1) }).eq('id', replyId).then(function(r) { if (r.error) console.error(r.error); });
+    likedReplyIds.delete(replyId);
+    if (btn) btn.classList.remove('liked'); if (span) span.textContent = Math.max(0, cur - 1);
+    window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_reply').eq('target_id', replyId).then(eh);
+    window.sb.from('forum_replies').update({ likes_count: Math.max(0, cur - 1) }).eq('id', replyId).then(eh);
   } else {
-    localStorage.setItem(key, '1');
-    if (btn) btn.classList.add('liked');
-    if (span) span.textContent = cur + 1;
-    window.sb.from('forum_replies').update({ likes_count: cur + 1 }).eq('id', replyId).then(function(r) { if (r.error) console.error(r.error); });
+    likedReplyIds.add(replyId);
+    if (btn) btn.classList.add('liked'); if (span) span.textContent = cur + 1;
+    window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_reply', target_id: replyId, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
+    window.sb.from('forum_replies').update({ likes_count: cur + 1 }).eq('id', replyId).then(eh);
   }
 }
 async function markBestReply(replyId) {
