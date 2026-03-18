@@ -323,8 +323,8 @@ async function sendForumReply() {
   if (btn) btn.disabled = false;
   currentTopic.replies_count = (currentTopic.replies_count || 0) + 1;
   loadForumReplies(currentTopic.id).then(function() {
-    var body = document.getElementById('forumTopicBody');
-    if (body) setTimeout(function() { body.scrollTop = body.scrollHeight; }, 100);
+    var scr = document.getElementById('forumTopicScroll') || document.querySelector('.scr-body');
+    if (scr) setTimeout(function() { scr.scrollTop = scr.scrollHeight; }, 150);
   });
 }
 // ===== FORUM MORE MENU =====
