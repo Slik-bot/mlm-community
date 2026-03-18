@@ -324,9 +324,9 @@ async function sendForumReply() {
   if (!content) return;
   const btn = document.querySelector('.forum-reply-send');
   if (btn) btn.disabled = true;
-  const result = await window.sb.from('forum_replies').insert({
-    topic_id: currentTopic.id, author_id: user.id, content: content
-  });
+  var payload = { topic_id: currentTopic.id, author_id: user.id, content: content };
+  if (forumReplyToId) payload.parent_id = forumReplyToId;
+  const result = await window.sb.from('forum_replies').insert(payload);
   if (result.error) {
     if (window.showToast) showToast('Ошибка отправки');
     if (btn) btn.disabled = false;
