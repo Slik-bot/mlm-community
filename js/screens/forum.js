@@ -263,58 +263,9 @@ function buildReplyBubble(r, i, replyMap) {
           '<svg viewBox="0 0 24 24" width="14" height="14" fill="' + lf + '" stroke="' + ls + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
           '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
 }
-async function forumLikeTopic() {
-  if (!currentTopic || !window.currentUser) return;
-  var el = document.getElementById('forumTopicLike'), countEl = document.getElementById('forumTopicLikeCount');
-  var cur = parseInt(countEl ? countEl.textContent : '0') || 0, wasLiked = el && el.classList.contains('liked');
-  var uid = window.currentUser.id, tid = currentTopic.id;
-  var newCount = wasLiked ? Math.max(0, cur - 1) : cur + 1;
-  if (wasLiked) {
-    likedTopicIds.delete(tid);
-    if (el) el.classList.remove('liked'); if (countEl) countEl.textContent = newCount;
-  } else {
-    likedTopicIds.add(tid);
-    if (el) el.classList.add('liked'); if (countEl) countEl.textContent = newCount;
-  }
-  var cached = allForumTopics.find(function(t) { return t.id === tid; });
-  if (cached) cached.likes_count = newCount;
-  if (currentTopic && currentTopic.id === tid) currentTopic.likes_count = newCount;
-  try {
-    if (wasLiked) {
-      await window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_topic').eq('target_id', tid);
-      await window.sb.from('forum_topics').update({ likes_count: newCount }).eq('id', tid);
-    } else {
-      await window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' });
-      await window.sb.from('forum_topics').update({ likes_count: newCount }).eq('id', tid);
-    }
-  } catch (e) {
-    console.error('forumLikeTopic error:', e);
-  }
-}
-function likeForumReply(replyId, btn) {
-  if (!window.currentUser) return;
-  var wasLiked = likedReplyIds.has(replyId), span = btn ? btn.querySelector('span') : null;
-  var cur = parseInt(span ? span.textContent : '0') || 0, uid = window.currentUser.id;
-  var eh = function(r) { if (r.error) console.error(r.error); };
-  if (wasLiked) {
-    likedReplyIds.delete(replyId);
-    if (btn) btn.classList.remove('liked'); if (span) span.textContent = Math.max(0, cur - 1);
-    window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_reply').eq('target_id', replyId).then(eh);
-    window.sb.from('forum_replies').update({ likes_count: Math.max(0, cur - 1) }).eq('id', replyId).then(eh);
-  } else {
-    likedReplyIds.add(replyId);
-    if (btn) btn.classList.add('liked'); if (span) span.textContent = cur + 1;
-    window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_reply', target_id: replyId, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
-    window.sb.from('forum_replies').update({ likes_count: cur + 1 }).eq('id', replyId).then(eh);
-  }
-}
-async function markBestReply(replyId) {
-  if (!currentTopic) return;
-  await window.sb.from('forum_replies').update({ is_best: false }).eq('topic_id', currentTopic.id);
-  await window.sb.from('forum_replies').update({ is_best: true }).eq('id', replyId);
-  if (window.showToast) showToast('Лучший ответ выбран');
-  loadForumReplies(currentTopic.id);
-}
+// ═══════════════════════════════════════
+// ЛАЙКИ, МЕНЮ, ШЕРИНГ, УДАЛЕНИЕ — см. forum-interactions.js
+// ═══════════════════════════════════════
 function replyToForumReply(replyId, authorName, replyText) {
   forumReplyToId = replyId;
   fEl('forumReplyContext', function(el) { el.classList.remove('hidden'); });
@@ -355,43 +306,6 @@ async function sendForumReply() {
     const scr = document.querySelector('#scrForumTopic.scr') || document.getElementById('scrForumTopic');
     if (scr) setTimeout(function() { scr.scrollTop = scr.scrollHeight; }, 150);
   });
-}
-// ===== FORUM MORE MENU =====
-function openForumMore() {
-  const user = window.currentUser;
-  if (!user || !currentTopic) return;
-  const isAuthor = currentTopic.author_id === user.id;
-  const overlay = document.createElement('div');
-  overlay.className = 'forum-more-overlay';
-  overlay.onclick = function() { closeForumMore(); };
-  const menu = document.createElement('div');
-  menu.className = 'forum-more-menu';
-  menu.id = 'forumMoreMenu';
-  let items = '<button class="forum-more-item" onclick="closeForumMore();shareForum()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Поделиться</button>';
-  if (isAuthor) {
-    items += '<button class="forum-more-item forum-more-item-danger" onclick="closeForumMore();deleteForumTopic()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>Удалить тему</button>';
-  }
-  menu.innerHTML = items;
-  document.body.appendChild(overlay);
-  document.body.appendChild(menu);
-}
-function closeForumMore() {
-  const overlay = document.querySelector('.forum-more-overlay');
-  const menu = document.getElementById('forumMoreMenu');
-  if (overlay) overlay.remove();
-  if (menu) menu.remove();
-}
-function shareForum() {
-  if (navigator.share && currentTopic) {
-    navigator.share({ title: currentTopic.title, text: currentTopic.title });
-  }
-}
-async function deleteForumTopic() {
-  if (!currentTopic) return;
-  await window.sb.from('forum_replies').delete().eq('topic_id', currentTopic.id);
-  await window.sb.from('forum_topics').delete().eq('id', currentTopic.id);
-  if (window.showToast) showToast('Тема удалена');
-  goBack();
 }
 // ===== FORUM CREATE =====
 function initForumCreate() {
@@ -478,16 +392,9 @@ window.forumSort = forumSort;
 window.forumSearch = forumSearch;
 window.toggleForumSearch = toggleForumSearch;
 window.openForumTopic = openForumTopic;
-window.forumLikeTopic = forumLikeTopic;
 window.sendForumReply = sendForumReply;
 window.cancelForumReply = cancelForumReply;
 window.replyToForumReply = replyToForumReply;
-window.likeForumReply = likeForumReply;
-window.markBestReply = markBestReply;
-window.openForumMore = openForumMore;
-window.closeForumMore = closeForumMore;
-window.shareForum = shareForum;
-window.deleteForumTopic = deleteForumTopic;
 window.openForumCatSheet = openForumCatSheet;
 window.closeForumCatSheet = closeForumCatSheet;
 window.selectForumCat = selectForumCat;
