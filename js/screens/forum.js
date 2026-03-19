@@ -110,7 +110,7 @@ function renderForumList(topics) {
       '<div class="ftc-top"><span class="cat-tag ' + cat.css + '">' + fEsc(cat.label) + '</span>' + (isHot ? '<span class="heat-badge">Hot</span>' : '') + pinIcon + '</div>' +
       '<div class="ftc-title">' + fEsc(t.title) + '</div>' +
       '<div class="ftc-preview">' + fEsc((t.content || '').slice(0, 120)) + '</div>' +
-      '<div class="ftc-meta">' + buildForumAv(author, 22) + '<span class="ftc-author">' + fEsc(author.name) + '</span><span class="ftc-time">' + fTimeAgo(t.created_at) + '</span></div>' +
+      '<div class="ftc-meta">' + buildForumAv(author, 22) + '<span class="ftc-author ftc-author-' + suffix + '">' + fEsc(author.name) + '</span><span class="ftc-time">' + fTimeAgo(t.created_at) + '</span></div>' +
       '<div class="ftc-stats">' +
       '<div class="ftc-stat' + (likedTopicIds.has(t.id) ? ' liked' : '') + '"><svg viewBox="0 0 24 24" fill="' + (likedTopicIds.has(t.id) ? '#ef4444' : 'none') + '" stroke="' + (likedTopicIds.has(t.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2" width="13" height="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (t.likes_count || 0) + '</span></div>' +
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + (t.views_count || 0) + '</div>' +
