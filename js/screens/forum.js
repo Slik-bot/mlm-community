@@ -162,13 +162,11 @@ function openForumTopic(topicId) {
 async function initForumTopic() {
   const topicId = window._forumTopicId;
   if (!topicId) { goBack(); return; }
-  if (!currentTopic || currentTopic.id !== topicId || !currentTopic.author) {
-    const res = await window.sb.from('forum_topics')
-      .select('*, author:users(id, name, avatar_url, dna_type, level)')
-      .eq('id', topicId).single();
-    currentTopic = res.data;
-  }
-  if (!currentTopic) { goBack(); return; }
+  const res = await window.sb.from('forum_topics')
+    .select('*, author:users(id, name, avatar_url, dna_type, level)')
+    .eq('id', topicId).single();
+  if (res.error || !res.data) { goBack(); return; }
+  currentTopic = res.data;
   window.sb.from('forum_topics').update({ views_count: (currentTopic.views_count || 0) + 1 })
     .eq('id', topicId).then(function() {});
   requestAnimationFrame(function() { renderTopicHeader(currentTopic); });
