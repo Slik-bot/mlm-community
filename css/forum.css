@@ -240,7 +240,9 @@
   gap: 4px;
   transition: color 150ms;
 }
+.ftc-stat svg { transition: fill 150ms, stroke 150ms; }
 .ftc-stat.liked { color: #ef4444; }
+.ftc-stat.liked svg { fill: #ef4444; stroke: #ef4444; }
 
 /* --- DNA avatar --- */
 .forum-av {
