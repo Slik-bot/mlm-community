@@ -30,6 +30,15 @@ async function forumLikeTopic() {
   } catch (e) {
     console.error('forumLikeTopic error:', e);
   }
+  const card = document.querySelector('.forum-card[onclick*="' + tid + '"]');
+  if (card) {
+    const cardStat = card.querySelector('.ftc-stat');
+    if (cardStat) {
+      wasLiked ? cardStat.classList.remove('liked') : cardStat.classList.add('liked');
+      const cardSpan = cardStat.querySelector('span');
+      if (cardSpan) cardSpan.textContent = newCount;
+    }
+  }
 }
 function likeForumReply(replyId, btn) {
   if (!window.currentUser) return;
@@ -123,6 +132,12 @@ async function likeTopicFromList(topicId, el) {
   }
   const cached = allForumTopics.find(function(t) { return t.id === topicId; });
   if (cached) cached.likes_count = wasLiked ? Math.max(0, cur - 1) : cur + 1;
+  const topicLikeBtn = document.getElementById('forumTopicLike');
+  const topicLikeCount = document.getElementById('forumTopicLikeCount');
+  if (topicLikeBtn && window.currentTopic && window.currentTopic.id === topicId) {
+    wasLiked ? topicLikeBtn.classList.remove('liked') : topicLikeBtn.classList.add('liked');
+    if (topicLikeCount) topicLikeCount.textContent = wasLiked ? Math.max(0, cur - 1) : cur + 1;
+  }
 }
 
 // ЭКСПОРТЫ
