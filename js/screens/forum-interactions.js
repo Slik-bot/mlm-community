@@ -92,7 +92,41 @@ async function deleteForumTopic() {
   goBack();
 }
 
+async function likeTopicFromList(topicId, el) {
+  if (!window.currentUser) return;
+  const wasLiked = likedTopicIds.has(topicId);
+  const span = el ? el.querySelector('span') : null;
+  const cur = parseInt(span ? span.textContent : '0') || 0;
+  const uid = window.currentUser.id;
+  const eh = function(r) { if (r.error) console.error(r.error); };
+  if (wasLiked) {
+    likedTopicIds.delete(topicId);
+    el.classList.remove('liked');
+    if (span) span.textContent = Math.max(0, cur - 1);
+    await window.sb.from('reactions').delete()
+      .eq('user_id', uid).eq('target_type', 'forum_topic')
+      .eq('target_id', topicId).then(eh);
+    await window.sb.from('forum_topics')
+      .update({ likes_count: Math.max(0, cur - 1) })
+      .eq('id', topicId).then(eh);
+  } else {
+    likedTopicIds.add(topicId);
+    el.classList.add('liked');
+    if (span) span.textContent = cur + 1;
+    await window.sb.from('reactions').upsert(
+      { user_id: uid, target_type: 'forum_topic', target_id: topicId, reaction_type: 'like' },
+      { onConflict: 'user_id,target_type,target_id' }
+    ).then(eh);
+    await window.sb.from('forum_topics')
+      .update({ likes_count: cur + 1 })
+      .eq('id', topicId).then(eh);
+  }
+  const cached = allForumTopics.find(function(t) { return t.id === topicId; });
+  if (cached) cached.likes_count = wasLiked ? Math.max(0, cur - 1) : cur + 1;
+}
+
 // ЭКСПОРТЫ
+window.likeTopicFromList = likeTopicFromList;
 window.forumLikeTopic = forumLikeTopic;
 window.likeForumReply = likeForumReply;
 window.markBestReply = markBestReply;
