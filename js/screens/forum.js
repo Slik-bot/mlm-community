@@ -237,7 +237,24 @@ function renderForumReplies(replies) {
     if (a.is_best && !b.is_best) return -1; if (!a.is_best && b.is_best) return 1;
     return new Date(a.created_at) - new Date(b.created_at);
   });
-  container.innerHTML = sorted.map(function(r, i) { return buildReplyBubble(r, i, replyMap); }).join('');
+  let html = '';
+  let lastDate = '';
+  sorted.forEach(function(r, i) {
+    const d = new Date(r.created_at);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    let label = '';
+    if (d.toDateString() === today.toDateString()) label = 'Сегодня';
+    else if (d.toDateString() === yesterday.toDateString()) label = 'Вчера';
+    else label = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+    if (label !== lastDate) {
+      html += '<div class="forum-date-divider"><span>' + label + '</span></div>';
+      lastDate = label;
+    }
+    html += buildReplyBubble(r, i, replyMap);
+  });
+  container.innerHTML = html;
   if (window.attachReplySwipe) attachReplySwipe();
 }
 function buildReplyBubble(r, i, replyMap) {
