@@ -278,6 +278,10 @@ function forumLikeTopic() {
     window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
     window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', tid).then(eh);
   }
+  var newCount = wasLiked ? Math.max(0, cur - 1) : cur + 1;
+  var cached = allForumTopics.find(function(t) { return t.id === tid; });
+  if (cached) cached.likes_count = newCount;
+  if (currentTopic && currentTopic.id === tid) currentTopic.likes_count = newCount;
 }
 function likeForumReply(replyId, btn) {
   if (!window.currentUser) return;
