@@ -171,6 +171,10 @@
   flex-wrap: wrap;
 }
 .reply-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+.reply-name-s { color: #3b82f6; }
+.reply-name-c { color: #22c55e; }
+.reply-name-r { color: #f59e0b; }
+.reply-name-a { color: #a78bfa; }
 .reply-level { font-size: 10px; color: rgba(255,255,255,0.3); }
 .reply-time { font-size: 10px; color: rgba(255,255,255,0.3); margin-left: auto; }
 .reply-text {
