@@ -177,6 +177,8 @@ function handleExistingTemplate(id) {
   if (id === 'scrChatList' && window.initChatList) window.initChatList();
   if (id === 'scrChat' && window.initChat) window.initChat();
   if (id === 'scrChatInfo' && window.initChatInfo) window.initChatInfo();
+  if (id === 'scrForumTopic' && window.initForumTopic) window.initForumTopic();
+  if (id === 'scrForumCreate' && window.initForumCreate) window.initForumCreate();
 }
 
 function initScreenModule(id) {
@@ -315,7 +317,7 @@ async function goBack() {
   if(isTransitioning) return;
   if(navHistory.length<=1) return;
   if (window.haptic) haptic('light');
-  let current = navHistory.pop();
+  const current = navHistory.pop();
   const prev = navHistory[navHistory.length-1];
   await ensureTemplate(prev);
   const currentEl = document.getElementById(current);
@@ -324,7 +326,6 @@ async function goBack() {
   updateChrome(prev);
   updateNavActive(prev);
   handleScreenTransition(currentEl, prevEl, 'back');
-  current = prev;
 }
 
 // Init: hide nav & FAB on landing
