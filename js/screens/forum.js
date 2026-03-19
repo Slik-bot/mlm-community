@@ -262,26 +262,33 @@ function buildReplyBubble(r, i, replyMap) {
           '<svg viewBox="0 0 24 24" width="14" height="14" fill="' + lf + '" stroke="' + ls + '" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
           '<span>' + (r.likes_count||0) + '</span></div></div></div></div>';
 }
-function forumLikeTopic() {
+async function forumLikeTopic() {
   if (!currentTopic || !window.currentUser) return;
   var el = document.getElementById('forumTopicLike'), countEl = document.getElementById('forumTopicLikeCount');
   var cur = parseInt(countEl ? countEl.textContent : '0') || 0, wasLiked = el && el.classList.contains('liked');
-  var uid = window.currentUser.id, tid = currentTopic.id, eh = function(r) { if (r.error) console.error(r.error); };
+  var uid = window.currentUser.id, tid = currentTopic.id;
+  var newCount = wasLiked ? Math.max(0, cur - 1) : cur + 1;
   if (wasLiked) {
     likedTopicIds.delete(tid);
-    if (el) el.classList.remove('liked'); if (countEl) countEl.textContent = Math.max(0, cur - 1);
-    window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_topic').eq('target_id', tid).then(eh);
-    window.sb.from('forum_topics').update({ likes_count: Math.max(0, cur - 1) }).eq('id', tid).then(eh);
+    if (el) el.classList.remove('liked'); if (countEl) countEl.textContent = newCount;
   } else {
     likedTopicIds.add(tid);
-    if (el) el.classList.add('liked'); if (countEl) countEl.textContent = cur + 1;
-    window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
-    window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', tid).then(eh);
+    if (el) el.classList.add('liked'); if (countEl) countEl.textContent = newCount;
   }
-  var newCount = wasLiked ? Math.max(0, cur - 1) : cur + 1;
   var cached = allForumTopics.find(function(t) { return t.id === tid; });
   if (cached) cached.likes_count = newCount;
   if (currentTopic && currentTopic.id === tid) currentTopic.likes_count = newCount;
+  try {
+    if (wasLiked) {
+      await window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_topic').eq('target_id', tid);
+      await window.sb.from('forum_topics').update({ likes_count: newCount }).eq('id', tid);
+    } else {
+      await window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' });
+      await window.sb.from('forum_topics').update({ likes_count: newCount }).eq('id', tid);
+    }
+  } catch (e) {
+    console.error('forumLikeTopic error:', e);
+  }
 }
 function likeForumReply(replyId, btn) {
   if (!window.currentUser) return;
