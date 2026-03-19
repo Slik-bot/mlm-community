@@ -176,6 +176,7 @@ async function initForumTopic() {
   _forumRepliesChannel = window.sb.channel('forum-replies-rt-' + topicId)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forum_replies', filter: 'topic_id=eq.' + topicId }, function() { loadForumReplies(topicId); })
     .subscribe();
+  if (window.initForumTopicSwipe) initForumTopicSwipe();
 }
 function renderTopicHeader(t) {
   const author = t.author || {};
@@ -240,6 +241,7 @@ function renderForumReplies(replies) {
     return new Date(a.created_at) - new Date(b.created_at);
   });
   container.innerHTML = sorted.map(function(r, i) { return buildReplyBubble(r, i, replyMap); }).join('');
+  if (window.attachReplySwipe) attachReplySwipe();
 }
 function buildReplyBubble(r, i, replyMap) {
   const a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
