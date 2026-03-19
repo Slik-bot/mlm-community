@@ -315,7 +315,7 @@ async function goBack() {
   if(isTransitioning) return;
   if(navHistory.length<=1) return;
   if (window.haptic) haptic('light');
-  const current = navHistory.pop();
+  let current = navHistory.pop();
   const prev = navHistory[navHistory.length-1];
   await ensureTemplate(prev);
   const currentEl = document.getElementById(current);
@@ -324,6 +324,7 @@ async function goBack() {
   updateChrome(prev);
   updateNavActive(prev);
   handleScreenTransition(currentEl, prevEl, 'back');
+  current = prev;
 }
 
 // Init: hide nav & FAB on landing
