@@ -190,7 +190,11 @@
   gap: 8px;
   margin-bottom: 10px;
 }
-.ftc-author { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.ftc-author { font-size: 13px; font-weight: 500; color: inherit; }
+.ftc-author-s { color: #3b82f6; }
+.ftc-author-c { color: #22c55e; }
+.ftc-author-r { color: #f59e0b; }
+.ftc-author-a { color: #a78bfa; }
 .ftc-time { font-size: 11px; color: rgba(255,255,255,0.35); margin-left: auto; }
 .ftc-stats {
   display: flex;
