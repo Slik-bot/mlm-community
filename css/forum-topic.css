@@ -587,6 +587,12 @@
   position: sticky;
   top: 0;
   z-index: 2;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.forum-date-divider.visible {
+  opacity: 1;
 }
 .forum-date-divider span {
   background: rgba(255,255,255,0.08);
