@@ -106,7 +106,7 @@ function renderForumList(topics) {
     const ini = fInitials(author.name);
     const isHot = (t.replies_count || 0) >= 5;
     const pinIcon = t.is_pinned ? '<svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" width="14" height="14"><path d="M12 2v10l4 4H8l4-4V2z"/><line x1="12" y1="22" x2="12" y2="18"/></svg>' : '';
-    return '<div class="forum-card" style="animation-delay:' + (i * 40) + 'ms" onclick="openForumTopic(\'' + t.id + '\')">' +
+    return '<div class="forum-card" data-cat="' + t.category + '" style="animation-delay:' + (i * 40) + 'ms" onclick="openForumTopic(\'' + t.id + '\')">' +
       '<div class="ftc-top"><span class="cat-tag ' + cat.css + '">' + fEsc(cat.label) + '</span>' + (isHot ? '<span class="heat-badge">Hot</span>' : '') + pinIcon + '</div>' +
       '<div class="ftc-title">' + fEsc(t.title) + '</div>' +
       '<div class="ftc-preview">' + fEsc((t.content || '').slice(0, 120)) + '</div>' +
