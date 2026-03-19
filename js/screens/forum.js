@@ -7,6 +7,7 @@ let currentTopic = null;
 let currentTopicReplies = [];
 let forumReplyToId = null;
 let likedReplyIds = new Set();
+let likedTopicIds = new Set();
 let forumSelectedCat = '';
 let forumPage = 0;
 let forumHasMore = true;
@@ -21,6 +22,7 @@ function initForum() {
   fEl('forumSearchBar', function(el) { el.classList.add('hidden'); });
   fEl('forumSearchInput', function(el) { el.value = ''; });
   forumPage = 0; forumHasMore = true;
+  likedTopicIds = new Set();
   updateForumCatUI();
   updateForumSortUI();
   loadForumTopics();
@@ -42,6 +44,15 @@ async function loadForumTopics(append) {
     var rows = result.data || [];
     forumHasMore = rows.length >= FORUM_PAGE;
     allForumTopics = append ? allForumTopics.concat(rows) : rows;
+    if (window.currentUser && rows.length) {
+      var tIds = rows.map(function(t) { return t.id; });
+      var lt = await window.sb.from('reactions').select('target_id')
+        .eq('user_id', window.currentUser.id)
+        .eq('target_type', 'forum_topic')
+        .in('target_id', tIds);
+      if (!append) likedTopicIds = new Set();
+      if (lt.data) lt.data.forEach(function(r) { likedTopicIds.add(r.target_id); });
+    }
     renderForumList(applyForumFilters());
   } catch (e) {
     console.error('Forum load error:', e);
@@ -101,7 +112,7 @@ function renderForumList(topics) {
       '<div class="ftc-preview">' + fEsc((t.content || '').slice(0, 120)) + '</div>' +
       '<div class="ftc-meta">' + buildForumAv(author, 22) + '<span class="ftc-author">' + fEsc(author.name) + '</span><span class="ftc-time">' + fTimeAgo(t.created_at) + '</span></div>' +
       '<div class="ftc-stats">' +
-      '<div class="ftc-stat' + (t.likes_count > 0 ? ' liked' : '') + '"><svg viewBox="0 0 24 24" fill="' + (t.likes_count > 0 ? '#ef4444' : 'none') + '" stroke="' + (t.likes_count > 0 ? '#ef4444' : 'currentColor') + '" stroke-width="2" width="13" height="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (t.likes_count || 0) + '</span></div>' +
+      '<div class="ftc-stat' + (likedTopicIds.has(t.id) ? ' liked' : '') + '"><svg viewBox="0 0 24 24" fill="' + (likedTopicIds.has(t.id) ? '#ef4444' : 'none') + '" stroke="' + (likedTopicIds.has(t.id) ? '#ef4444' : 'currentColor') + '" stroke-width="2" width="13" height="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span>' + (t.likes_count || 0) + '</span></div>' +
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + (t.views_count || 0) + '</div>' +
       '<div class="ftc-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' + (t.replies_count || 0) + '</div></div></div>';
   }).join('');
@@ -257,10 +268,12 @@ function forumLikeTopic() {
   var cur = parseInt(countEl ? countEl.textContent : '0') || 0, wasLiked = el && el.classList.contains('liked');
   var uid = window.currentUser.id, tid = currentTopic.id, eh = function(r) { if (r.error) console.error(r.error); };
   if (wasLiked) {
+    likedTopicIds.delete(tid);
     if (el) el.classList.remove('liked'); if (countEl) countEl.textContent = Math.max(0, cur - 1);
     window.sb.from('reactions').delete().eq('user_id', uid).eq('target_type', 'forum_topic').eq('target_id', tid).then(eh);
     window.sb.from('forum_topics').update({ likes_count: Math.max(0, cur - 1) }).eq('id', tid).then(eh);
   } else {
+    likedTopicIds.add(tid);
     if (el) el.classList.add('liked'); if (countEl) countEl.textContent = cur + 1;
     window.sb.from('reactions').upsert({ user_id: uid, target_type: 'forum_topic', target_id: tid, reaction_type: 'like' }, { onConflict: 'user_id,target_type,target_id' }).then(eh);
     window.sb.from('forum_topics').update({ likes_count: cur + 1 }).eq('id', tid).then(eh);
