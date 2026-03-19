@@ -195,7 +195,10 @@ function renderTopicHeader(t) {
   fEl('forumTopicReplyCount', function(el) { el.textContent = t.replies_count || 0; });
   fEl('forumTopicLikeCount', function(el) { el.textContent = t.likes_count || 0; });
   const likeBtn = document.getElementById('forumTopicLike');
-  if (likeBtn) likeBtn.classList.remove('liked');
+  if (likeBtn) {
+    likeBtn.classList.remove('liked');
+    if (likedTopicIds.has(topicId)) likeBtn.classList.add('liked');
+  }
   if (likeBtn && currentTopic && window.currentUser) {
     window.sb.from('reactions').select('id')
       .eq('user_id', window.currentUser.id)
