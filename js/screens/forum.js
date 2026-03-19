@@ -199,14 +199,6 @@ function renderTopicHeader(t) {
     likeBtn.classList.remove('liked');
     if (likedTopicIds.has(topicId)) likeBtn.classList.add('liked');
   }
-  if (likeBtn && currentTopic && window.currentUser) {
-    window.sb.from('reactions').select('id')
-      .eq('user_id', window.currentUser.id)
-      .eq('target_type', 'forum_topic')
-      .eq('target_id', currentTopic.id)
-      .maybeSingle()
-      .then(function(res) { if (res.data) likeBtn.classList.add('liked'); });
-  }
 }
 async function loadForumReplies(topicId) {
   try {
