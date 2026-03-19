@@ -197,7 +197,7 @@ function renderTopicHeader(t) {
   const likeBtn = document.getElementById('forumTopicLike');
   if (likeBtn) {
     likeBtn.classList.remove('liked');
-    if (likedTopicIds.has(topicId)) likeBtn.classList.add('liked');
+    if (likedTopicIds.has(t.id)) likeBtn.classList.add('liked');
   }
 }
 async function loadForumReplies(topicId) {
