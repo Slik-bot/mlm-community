@@ -144,71 +144,103 @@
 
 /* --- Forum card --- */
 .forum-card {
-  background: rgba(255,255,255,0.035);
+  position: relative;
+  background: rgba(255,255,255,0.032);
   border: 0.5px solid rgba(255,255,255,0.07);
-  border-radius: 16px;
-  padding: 14px;
+  border-radius: 18px;
+  padding: 14px 14px 12px;
   margin: 0 16px 10px;
   cursor: pointer;
-  transition: background 200ms cubic-bezier(0.16,1,0.3,1);
+  overflow: hidden;
+  transition: transform 180ms cubic-bezier(0.16,1,0.3,1),
+              background 180ms cubic-bezier(0.16,1,0.3,1);
   animation: fadeInUp 350ms cubic-bezier(0.16,1,0.3,1) both;
 }
-.forum-card:active {
-  background: rgba(255,255,255,0.055);
-  transform: scale(0.98);
+.forum-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 18px 0 0 18px;
+  background: var(--fc-accent, rgba(255,255,255,0.15));
+  transition: opacity 200ms;
 }
+.forum-card:active {
+  transform: scale(0.985);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Акцент по категории */
+.forum-card[data-cat="business"]  { --fc-accent: #8b5cf6; }
+.forum-card[data-cat="marketing"] { --fc-accent: #22c55e; }
+.forum-card[data-cat="tools"]     { --fc-accent: #3b82f6; }
+.forum-card[data-cat="education"] { --fc-accent: #f59e0b; }
+.forum-card[data-cat="newbies"]   { --fc-accent: #a78bfa; }
+.forum-card[data-cat="cases"]     { --fc-accent: #ef4444; }
+.forum-card[data-cat="offtopic"]  { --fc-accent: rgba(255,255,255,0.2); }
+
 .ftc-top {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 7px;
+  margin-bottom: 9px;
 }
 .ftc-title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   color: #fff;
   line-height: 1.4;
+  letter-spacing: -0.01em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 .ftc-preview {
   font-size: 13px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.4);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 10px;
-  line-height: 1.5;
+  margin-bottom: 11px;
+  line-height: 1.55;
 }
 .ftc-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   margin-bottom: 10px;
 }
-.ftc-author { font-size: 13px; font-weight: 500; color: inherit; }
+.ftc-author {
+  font-size: 12px;
+  font-weight: 600;
+}
 .ftc-author-s { color: #3b82f6; }
 .ftc-author-c { color: #22c55e; }
 .ftc-author-r { color: #f59e0b; }
 .ftc-author-a { color: #a78bfa; }
-.ftc-time { font-size: 11px; color: rgba(255,255,255,0.35); margin-left: auto; }
+.ftc-time {
+  font-size: 11px;
+  color: rgba(255,255,255,0.28);
+  margin-left: auto;
+}
 .ftc-stats {
   display: flex;
-  gap: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  gap: 14px;
+  padding-top: 9px;
+  border-top: 0.5px solid rgba(255,255,255,0.055);
 }
 .ftc-stat {
   font-size: 12px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.35);
   display: flex;
   align-items: center;
   gap: 4px;
+  transition: color 150ms;
 }
+.ftc-stat.liked { color: #ef4444; }
 
 /* --- DNA avatar --- */
 .forum-av {
