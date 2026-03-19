@@ -23,9 +23,11 @@
   z-index: 1;
 }
 #scrForumTopic .scr-head {
-  background: rgba(6, 6, 11, 0.85);
+  background: rgba(6, 6, 11, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  padding-top: env(safe-area-inset-top, 0px);
+  min-height: 48px;
 }
 .forum-reply-bar {
   background: rgba(6, 6, 11, 0.90);
@@ -37,46 +39,54 @@
 /* ===== TOPIC DETAIL ===== */
 .forum-topic-body { padding-bottom: 8px; }
 .topic-header {
-  margin: 12px 16px;
-  padding: 16px;
+  margin: 8px 12px;
+  padding: 14px;
   border-radius: 16px;
-  background: rgba(14, 14, 22, 0.90);
+  background: rgba(14, 14, 22, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255,255,255,0.07);
+  border-top: 2px solid var(--topic-accent, #8b5cf6);
 }
+#scrForumTopic[data-category="business"]  .topic-header { --topic-accent: #8b5cf6; }
+#scrForumTopic[data-category="marketing"] .topic-header { --topic-accent: #22c55e; }
+#scrForumTopic[data-category="tools"]     .topic-header { --topic-accent: #3b82f6; }
+#scrForumTopic[data-category="education"] .topic-header { --topic-accent: #f59e0b; }
+#scrForumTopic[data-category="newbies"]   .topic-header { --topic-accent: #a78bfa; }
+#scrForumTopic[data-category="cases"]     .topic-header { --topic-accent: #ef4444; }
+#scrForumTopic[data-category="offtopic"]  .topic-header { --topic-accent: rgba(255,255,255,0.2); }
 .topic-meta {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .topic-meta-info { display: flex; flex-direction: column; gap: 2px; }
 .topic-author-name { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
 .topic-time { font-size: 12px; color: rgba(255,255,255,0.35); }
 .topic-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #fff;
   line-height: 1.4;
-  margin-bottom: 12px;
-  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 .topic-body {
   font-size: 14px;
   line-height: 1.7;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255,255,255,0.75);
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .topic-stats {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  gap: 14px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 0.5px solid rgba(255,255,255,0.06);
 }
 .topic-stat {
   font-size: 13px;
