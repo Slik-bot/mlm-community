@@ -161,12 +161,15 @@ function openForumTopic(topicId) {
 }
 async function initForumTopic() {
   const topicId = window._forumTopicId;
+  const scrEl = document.getElementById('scrForumTopic');
+  if (scrEl && currentTopic) scrEl.setAttribute('data-category', currentTopic.category || '');
   if (!topicId) { goBack(); return; }
   const res = await window.sb.from('forum_topics')
     .select('*, author:users(id, name, avatar_url, dna_type, level)')
     .eq('id', topicId).single();
   if (res.error || !res.data) { goBack(); return; }
   currentTopic = res.data;
+  if (scrEl) scrEl.setAttribute('data-category', currentTopic.category || '');
   window.sb.from('forum_topics').update({ views_count: (currentTopic.views_count || 0) + 1 })
     .eq('id', topicId).then(function() {});
   requestAnimationFrame(function() { renderTopicHeader(currentTopic); });
