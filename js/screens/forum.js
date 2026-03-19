@@ -179,7 +179,7 @@ async function initForumTopic() {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forum_replies', filter: 'topic_id=eq.' + topicId }, function() { loadForumReplies(topicId); })
     .subscribe();
   if (window.initForumTopicSwipe) initForumTopicSwipe();
-  const scrollEl = document.getElementById('forumTopicScroll');
+  const scrollEl = document.getElementById('scrForumTopic');
   if (scrollEl && !scrollEl._dateScroll) {
     scrollEl._dateScroll = true;
     let _scrollTimer;
