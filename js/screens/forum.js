@@ -153,7 +153,8 @@ function forumSearch(val) {
 }
 // ===== FORUM TOPIC DETAIL =====
 function openForumTopic(topicId) {
-  currentTopic = allForumTopics.find(function(t) { return t.id === topicId; });
+  currentTopic = null;
+  currentTopic = allForumTopics.find(function(t) { return t.id === topicId; }) || null;
   if (!currentTopic) return;
   window._forumTopicId = topicId;
   goTo('scrForumTopic');
@@ -161,7 +162,7 @@ function openForumTopic(topicId) {
 async function initForumTopic() {
   const topicId = window._forumTopicId;
   if (!topicId) { goBack(); return; }
-  if (!currentTopic || currentTopic.id !== topicId) {
+  if (!currentTopic || currentTopic.id !== topicId || !currentTopic.author) {
     const res = await window.sb.from('forum_topics')
       .select('*, author:users(id, name, avatar_url, dna_type, level)')
       .eq('id', topicId).single();
