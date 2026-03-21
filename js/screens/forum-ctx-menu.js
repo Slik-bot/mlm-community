@@ -89,7 +89,6 @@ function closeReplyCtxMenu() {
   const sheet = document.getElementById('replyCtxSheet');
   const overlay = document.getElementById('replyCtxOverlay');
   if (!sheet || !overlay) return;
-  window.clearCtxEffect?.();
   sheet.style.transform = 'translateY(100%)';
   overlay.style.opacity = '0';
   setTimeout(() => {

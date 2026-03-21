@@ -75,34 +75,15 @@ function attachLongPress(el, onLongPress) {
 
   el.addEventListener('touchstart', () => {
     moved = false;
-    clearCtxEffect();
     el.classList.add('ctx-pressed');
-
     timer = setTimeout(() => {
       if (!moved) {
         el.classList.remove('ctx-pressed');
-
         try {
           window.Telegram?.WebApp?.HapticFeedback
             ?.impactOccurred('medium');
         } catch(e) {}
-
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-
-        setTimeout(() => {
-          document.querySelectorAll('.forum-reply-row')
-            .forEach(r => {
-              if (r === el) {
-                r.classList.add('ctx-focused');
-              } else {
-                r.classList.add('ctx-blur');
-              }
-            });
-          onLongPress();
-        }, 300);
+        onLongPress();
       }
     }, 500);
   }, { passive: true });
@@ -123,17 +104,8 @@ function attachLongPress(el, onLongPress) {
     clearTimeout(timer);
   }, { passive: true });
 }
-
-function clearCtxEffect() {
-  document.querySelectorAll(
-    '.ctx-focused, .ctx-blur, .ctx-pressed'
-  ).forEach(el => {
-    el.classList.remove('ctx-focused','ctx-blur','ctx-pressed');
-  });
-}
+window.attachLongPress = attachLongPress;
 
 // ЭКСПОРТЫ
 window.initForumTopicSwipe = initForumTopicSwipe;
 window.attachReplySwipe = attachReplySwipe;
-window.attachLongPress = attachLongPress;
-window.clearCtxEffect = clearCtxEffect;
