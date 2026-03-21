@@ -86,7 +86,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     const clone = rowEl.cloneNode(true);
     clone.id = 'replyCtxClone';
     const sheetH = window.innerHeight * 0.55;
-    const topicCard = document.getElementById('forumTopicCard');
+    const topicCard = document.getElementById('forumTopicHeader');
     const topBound = topicCard
       ? topicCard.getBoundingClientRect().bottom + 10
       : 80;
