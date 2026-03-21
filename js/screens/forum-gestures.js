@@ -77,22 +77,32 @@ function attachLongPress(el, onLongPress) {
     moved = false;
     clearCtxEffect();
     el.classList.add('ctx-pressed');
+
     timer = setTimeout(() => {
       if (!moved) {
         el.classList.remove('ctx-pressed');
+
         try {
           window.Telegram?.WebApp?.HapticFeedback
             ?.impactOccurred('medium');
         } catch(e) {}
-        document.querySelectorAll('.forum-reply-row')
-          .forEach(r => {
-            if (r === el) {
-              r.classList.add('ctx-focused');
-            } else {
-              r.classList.add('ctx-blur');
-            }
-          });
-        onLongPress();
+
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+
+        setTimeout(() => {
+          document.querySelectorAll('.forum-reply-row')
+            .forEach(r => {
+              if (r === el) {
+                r.classList.add('ctx-focused');
+              } else {
+                r.classList.add('ctx-blur');
+              }
+            });
+          onLongPress();
+        }, 300);
       }
     }, 500);
   }, { passive: true });
