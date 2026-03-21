@@ -148,6 +148,8 @@
   background: rgba(14, 14, 22, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .forum-reply.is-best {
   background: rgba(251,191,36,0.06);
