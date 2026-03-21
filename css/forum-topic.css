@@ -701,3 +701,25 @@
 .forum-reply-row.ctx-pressed {
   transform: scale(0.95);
 }
+
+/* ===== CTX MENU — LIFTED MESSAGE EFFECT ===== */
+.reply-ctx-lifted {
+  position: relative;
+  z-index: 101;
+  border-radius: 14px;
+  transform: scale(1.02);
+  transition: transform 250ms cubic-bezier(0.16,1,0.3,1),
+              box-shadow 250ms cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+
+.forum-replies-dimmed .forum-reply-row:not(.reply-ctx-lifted) {
+  opacity: 0.25;
+  filter: blur(1.5px);
+  transition: opacity 250ms ease, filter 250ms ease;
+  pointer-events: none;
+}
+
+.forum-reply-row {
+  transition: transform 150ms ease, opacity 250ms ease, filter 250ms ease;
+}

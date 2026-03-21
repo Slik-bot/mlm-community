@@ -281,7 +281,7 @@ function renderForumReplies(replies) {
         ?.textContent?.trim() || '';
       const author = row.querySelector('.reply-name')
         ?.textContent?.trim() || '';
-      openReplyCtxMenu(id, mine, text, author);
+      openReplyCtxMenu(id, mine, text, author, row);
     });
   });
 }

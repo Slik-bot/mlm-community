@@ -13,7 +13,7 @@ const CTX_SVG = {
   flag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>'
 };
 
-function openReplyCtxMenu(replyId, isMine, text, author) {
+function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
   const menu = document.getElementById('replyCtxMenu');
   const sheet = document.getElementById('replyCtxSheet');
   const overlay = document.getElementById('replyCtxOverlay');
@@ -76,7 +76,12 @@ function openReplyCtxMenu(replyId, isMine, text, author) {
     items.appendChild(btn);
   });
 
+  const repliesList = document.getElementById('forumReplies');
+
   menu.style.display = 'block';
+  if (rowEl) rowEl.classList.add('reply-ctx-lifted');
+  if (repliesList) repliesList.classList.add('forum-replies-dimmed');
+
   requestAnimationFrame(() => {
     sheet.style.transform = 'translateY(0)';
     overlay.style.opacity = '1';
@@ -91,6 +96,12 @@ function closeReplyCtxMenu() {
   if (!sheet || !overlay) return;
   sheet.style.transform = 'translateY(100%)';
   overlay.style.opacity = '0';
+  const repliesList = document.getElementById('forumReplies');
+  if (repliesList) {
+    repliesList.classList.remove('forum-replies-dimmed');
+    repliesList.querySelectorAll('.reply-ctx-lifted')
+      .forEach(el => el.classList.remove('reply-ctx-lifted'));
+  }
   setTimeout(() => {
     if (menu) menu.style.display = 'none';
   }, 300);
