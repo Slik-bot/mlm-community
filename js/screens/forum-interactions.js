@@ -140,7 +140,33 @@ async function likeTopicFromList(topicId, el) {
   }
 }
 
+function initReplyInput() {
+  const input = document.getElementById('forumReplyInput');
+  const sendBtn = document.getElementById('forumReplySendBtn');
+  if (!input || !sendBtn) return;
+
+  input.addEventListener('input', function() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 96) + 'px';
+    if (input.value.trim().length > 0) {
+      sendBtn.classList.add('visible');
+    } else {
+      sendBtn.classList.remove('visible');
+    }
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input.value.trim().length > 0 && window.sendForumReply) {
+        window.sendForumReply();
+      }
+    }
+  });
+}
+
 // ЭКСПОРТЫ
+window.initReplyInput = initReplyInput;
 window.likeTopicFromList = likeTopicFromList;
 window.forumLikeTopic = forumLikeTopic;
 window.likeForumReply = likeForumReply;

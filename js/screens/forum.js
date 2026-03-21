@@ -179,6 +179,7 @@ async function initForumTopic() {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forum_replies', filter: 'topic_id=eq.' + topicId }, function() { loadForumReplies(topicId); })
     .subscribe();
   if (window.initForumTopicSwipe) initForumTopicSwipe();
+  if (window.initReplyInput) initReplyInput();
   const scrollEl = document.getElementById('scrForumTopic');
   if (scrollEl && !scrollEl._dateScroll) {
     scrollEl._dateScroll = true;
@@ -297,16 +298,25 @@ function buildReplyBubble(r, i, replyMap) {
 // ═══════════════════════════════════════
 // ЛАЙКИ, МЕНЮ, ШЕРИНГ, УДАЛЕНИЕ — см. forum-interactions.js
 // ═══════════════════════════════════════
-function replyToForumReply(replyId, authorName, replyText) {
+function replyToForumReply(replyId, authorName, previewText) {
   forumReplyToId = replyId;
-  fEl('forumReplyContext', function(el) { el.classList.remove('hidden'); });
-  fEl('forumReplyContextName', function(el) { el.textContent = authorName; });
-  fEl('forumReplyContextText', function(el) { el.textContent = (replyText || '').slice(0, 60); });
-  fEl('forumReplyInput', function(el) { el.focus(); });
+  const ctx = document.getElementById('forumReplyContext');
+  const authorEl = document.getElementById('forumReplyAuthor');
+  const msgEl = document.getElementById('forumReplyMsg');
+  if (authorEl) authorEl.textContent = authorName || 'Аноним';
+  if (msgEl) msgEl.textContent = (previewText || '').slice(0, 60);
+  if (ctx) ctx.classList.add('active');
+  const input = document.getElementById('forumReplyInput');
+  if (input) input.focus();
 }
 function cancelForumReply() {
   forumReplyToId = null;
-  fEl('forumReplyContext', function(el) { el.classList.add('hidden'); });
+  const ctx = document.getElementById('forumReplyContext');
+  if (ctx) ctx.classList.remove('active');
+  const input = document.getElementById('forumReplyInput');
+  if (input) { input.value = ''; input.style.height = 'auto'; }
+  const sendBtn = document.getElementById('forumReplySendBtn');
+  if (sendBtn) sendBtn.classList.remove('visible');
 }
 async function sendForumReply() {
   const user = window.currentUser;
