@@ -141,6 +141,7 @@
 }
 .forum-reply {
   border-left: 2.5px solid rgba(255,255,255,0.15);
+  border-radius: 4px 18px 18px 18px;
   padding: 0 0 0 10px;
   width: fit-content; max-width: calc(100% - 44px); min-width: 100px;
   animation: bubbleIn 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -188,7 +189,7 @@
 .reply-level { font-size: 10px; color: rgba(255,255,255,0.3); }
 .reply-time { font-size: 10px; color: rgba(255,255,255,0.3); margin-left: auto; }
 .reply-text {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
   color: rgba(255,255,255,0.75);
   white-space: pre-wrap;
@@ -300,7 +301,7 @@
   align-items: center;
   justify-content: center;
 }
-.forum-reply-row {
+.forum-input-row {
   display: flex;
   align-items: flex-end;
   gap: 8px;
