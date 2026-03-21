@@ -273,6 +273,17 @@ function renderForumReplies(replies) {
   });
   container.innerHTML = html;
   if (window.attachReplySwipe) attachReplySwipe();
+  container.querySelectorAll('.forum-reply-row').forEach(row => {
+    attachLongPress(row, () => {
+      const id = row.dataset.id;
+      const mine = row.dataset.mine === 'true';
+      const text = row.querySelector('.reply-text')
+        ?.textContent?.trim() || '';
+      const author = row.querySelector('.reply-name')
+        ?.textContent?.trim() || '';
+      openReplyCtxMenu(id, mine, text, author);
+    });
+  });
 }
 function buildReplyBubble(r, i, replyMap) {
   const a = r.author || {}, suffix = fDnaSuffix(a.dna_type);
@@ -405,9 +416,12 @@ async function publishForumTopic() {
   goBack();
 }
 function forumCleanup() {
+  closeReplyCtxMenu?.();
   if (_forumChannel) { window.sb.removeChannel(_forumChannel); _forumChannel = null; }
   if (_forumRepliesChannel) { window.sb.removeChannel(_forumRepliesChannel); _forumRepliesChannel = null; }
 }
+// ===== REPLY CONTEXT MENU — см. forum-ctx-menu.js =====
+
 // ===== EXPORTS =====
 window.forumCleanup = forumCleanup;
 window.initForum = initForum;
