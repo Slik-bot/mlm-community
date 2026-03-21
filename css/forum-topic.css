@@ -668,3 +668,25 @@
     transform: scale(1) translateY(0);
   }
 }
+
+/* ===== REPLY CONTEXT MENU ===== */
+.reply-ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.9);
+  font-size: 15px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  text-align: left;
+}
+.reply-ctx-item:active {
+  background: rgba(255,255,255,0.05);
+}
+.reply-ctx-item.danger {
+  color: #ef4444;
+}
