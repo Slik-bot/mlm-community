@@ -295,7 +295,7 @@ function buildReplyBubble(r, i, replyMap) {
     const p = replyMap[r.parent_id], pa = p.author || {};
     quoteHtml = '<div class="reply-quote-block" onclick="event.stopPropagation();scrollToReply(\'' + r.parent_id + '\')"><span class="reply-quote-author">' + fEsc(pa.name||'Аноним') + '</span><span class="reply-quote-text">' + fEsc((p.content||'').slice(0,60)) + '</span></div>';
   }
-  return '<div class="forum-reply-row" style="animation-delay:' + (i*30) + 'ms">' +
+  return '<div class="forum-reply-row" data-id="' + r.id + '" data-mine="' + isMe + '" style="animation-delay:' + (i*30) + 'ms">' +
     buildForumAv(a, 32) +
     '<div class="forum-reply' + bestCls + ' dna-' + suffix + (isMe ? ' is-mine' : '') + '">' + bestLabel + quoteHtml +
       '<div class="reply-top"><span class="reply-name reply-name-' + suffix + '">' + (isMe ? 'Вы' : fEsc(a.name||'Аноним')) + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
