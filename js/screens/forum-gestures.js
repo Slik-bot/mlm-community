@@ -69,6 +69,34 @@ function _bindReplySwipe(el, onReply) {
   });
 }
 
+function attachLongPress(el, onLongPress) {
+  let timer = null;
+  let moved = false;
+  el.addEventListener('touchstart', () => {
+    moved = false;
+    timer = setTimeout(() => {
+      if (!moved) {
+        try {
+          window.Telegram?.WebApp?.HapticFeedback
+            ?.impactOccurred('medium');
+        } catch(e) {}
+        onLongPress();
+      }
+    }, 500);
+  }, { passive: true });
+  el.addEventListener('touchmove', () => {
+    moved = true;
+    clearTimeout(timer);
+  }, { passive: true });
+  el.addEventListener('touchend', () => {
+    clearTimeout(timer);
+  }, { passive: true });
+  el.addEventListener('touchcancel', () => {
+    clearTimeout(timer);
+  }, { passive: true });
+}
+
 // ЭКСПОРТЫ
 window.initForumTopicSwipe = initForumTopicSwipe;
 window.attachReplySwipe = attachReplySwipe;
+window.attachLongPress = attachLongPress;
