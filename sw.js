@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trafiqo-v2';
+const CACHE_NAME = 'trafiqo-v3';
 
 const STATIC_ASSETS = [
   '/',
