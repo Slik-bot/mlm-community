@@ -79,8 +79,17 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
   const repliesList = document.getElementById('forumReplies');
 
   menu.style.display = 'block';
-  if (rowEl) rowEl.classList.add('reply-ctx-lifted');
   if (repliesList) repliesList.classList.add('forum-replies-dimmed');
+
+  if (rowEl) {
+    rowEl.style.opacity = '0';
+    const clone = rowEl.cloneNode(true);
+    clone.id = 'replyCtxClone';
+    const sheetH = window.innerHeight * 0.55;
+    const centerY = (window.innerHeight - sheetH) / 2 - 20;
+    clone.style.cssText = 'position:fixed;left:12px;right:12px;top:'+centerY+'px;z-index:102;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;';
+    document.body.appendChild(clone);
+  }
 
   requestAnimationFrame(() => {
     sheet.style.transform = 'translateY(0)';
@@ -96,11 +105,13 @@ function closeReplyCtxMenu() {
   if (!sheet || !overlay) return;
   sheet.style.transform = 'translateY(100%)';
   overlay.style.opacity = '0';
+  const clone = document.getElementById('replyCtxClone');
+  if (clone) clone.remove();
   const repliesList = document.getElementById('forumReplies');
   if (repliesList) {
     repliesList.classList.remove('forum-replies-dimmed');
-    repliesList.querySelectorAll('.reply-ctx-lifted')
-      .forEach(el => el.classList.remove('reply-ctx-lifted'));
+    repliesList.querySelectorAll('.forum-reply-row')
+      .forEach(el => { el.style.opacity = ''; });
   }
   setTimeout(() => {
     if (menu) menu.style.display = 'none';
