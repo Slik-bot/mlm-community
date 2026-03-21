@@ -75,6 +75,7 @@ function attachLongPress(el, onLongPress) {
 
   el.addEventListener('touchstart', () => {
     moved = false;
+    clearCtxEffect();
     el.classList.add('ctx-pressed');
     timer = setTimeout(() => {
       if (!moved) {
