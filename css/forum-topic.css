@@ -705,11 +705,11 @@
 }
 
 .forum-reply-row.ctx-focused {
-  transform: scale(1.0);
+  transform: scale(1.02) translateY(-8px);
   filter: none;
   opacity: 1;
   position: relative;
-  z-index: 10;
+  z-index: 100;
 }
 
 .forum-reply-row.ctx-blur {
