@@ -72,31 +72,57 @@ function _bindReplySwipe(el, onReply) {
 function attachLongPress(el, onLongPress) {
   let timer = null;
   let moved = false;
+
   el.addEventListener('touchstart', () => {
     moved = false;
+    el.classList.add('ctx-pressed');
     timer = setTimeout(() => {
       if (!moved) {
+        el.classList.remove('ctx-pressed');
         try {
           window.Telegram?.WebApp?.HapticFeedback
             ?.impactOccurred('medium');
         } catch(e) {}
+        document.querySelectorAll('.forum-reply-row')
+          .forEach(r => {
+            if (r === el) {
+              r.classList.add('ctx-focused');
+            } else {
+              r.classList.add('ctx-blur');
+            }
+          });
         onLongPress();
       }
     }, 500);
   }, { passive: true });
+
   el.addEventListener('touchmove', () => {
     moved = true;
+    el.classList.remove('ctx-pressed');
     clearTimeout(timer);
   }, { passive: true });
+
   el.addEventListener('touchend', () => {
+    el.classList.remove('ctx-pressed');
     clearTimeout(timer);
   }, { passive: true });
+
   el.addEventListener('touchcancel', () => {
+    el.classList.remove('ctx-pressed');
     clearTimeout(timer);
   }, { passive: true });
+}
+
+function clearCtxEffect() {
+  document.querySelectorAll(
+    '.ctx-focused, .ctx-blur, .ctx-pressed'
+  ).forEach(el => {
+    el.classList.remove('ctx-focused','ctx-blur','ctx-pressed');
+  });
 }
 
 // ЭКСПОРТЫ
 window.initForumTopicSwipe = initForumTopicSwipe;
 window.attachReplySwipe = attachReplySwipe;
 window.attachLongPress = attachLongPress;
+window.clearCtxEffect = clearCtxEffect;
