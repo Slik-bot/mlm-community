@@ -88,7 +88,12 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     const sheetH = window.innerHeight * 0.55;
     const freeH = window.innerHeight - sheetH;
     const cloneH = rowEl.getBoundingClientRect().height;
-    const centerY = Math.max(16, (freeH - cloneH) / 2);
+    const header = document.getElementById('forumTopicHeader');
+    const headerBottom = header
+      ? Math.max(0, header.getBoundingClientRect().bottom)
+      : 0;
+    const safeTop = headerBottom + 16;
+    const centerY = Math.max(safeTop, (freeH - cloneH) / 2);
     clone.style.cssText = 'position:fixed;left:12px;right:12px;top:'+centerY+'px;z-index:102;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;';
     document.body.appendChild(clone);
     const scr = document.getElementById('scrForumTopic');
