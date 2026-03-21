@@ -693,26 +693,11 @@
   color: #ef4444;
 }
 
-/* ===== CTX PRESS + BLUR EFFECT ===== */
+/* ===== CTX PRESS EFFECT ===== */
 .forum-reply-row {
-  transition: transform 150ms cubic-bezier(0.16,1,0.3,1),
-              filter 250ms ease,
-              opacity 250ms ease;
+  transition: transform 150ms cubic-bezier(0.16,1,0.3,1);
 }
 
 .forum-reply-row.ctx-pressed {
   transform: scale(0.95);
-}
-
-.forum-reply-row.ctx-focused {
-  filter: none;
-  opacity: 1;
-  position: relative;
-  z-index: 10;
-  transform: scale(1.0);
-}
-
-.forum-reply-row.ctx-blur {
-  filter: blur(3px);
-  opacity: 0.2;
 }
