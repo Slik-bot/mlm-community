@@ -256,13 +256,24 @@
   padding: 0 0 env(safe-area-inset-bottom);
 }
 .forum-reply-context {
-  display: none;
+  display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px 6px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: max-height 220ms cubic-bezier(0.16,1,0.3,1),
+              opacity 180ms ease,
+              transform 220ms cubic-bezier(0.16,1,0.3,1);
 }
-.forum-reply-context.active { display: flex; }
+.forum-reply-context.active {
+  max-height: 60px;
+  opacity: 1;
+  transform: translateY(0);
+}
 .forum-reply-context-line {
   width: 3px;
   min-height: 28px;
