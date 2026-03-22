@@ -38,6 +38,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
           ta.remove();
         });
       close();
+      showCopyToast();
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
       close();
@@ -77,6 +78,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
           ta.remove();
         });
       close();
+      showCopyToast();
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
       close();
@@ -150,6 +152,25 @@ function closeReplyCtxMenu() {
   setTimeout(() => {
     if (menu) menu.style.display = 'none';
   }, 300);
+}
+
+function showCopyToast() {
+  const existing = document.getElementById('copyToast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'copyToast';
+  toast.textContent = 'Скопировано';
+  toast.style.cssText = 'position:fixed;bottom:48%;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(30,30,40,0.92);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 180ms ease,transform 180ms ease;pointer-events:none;backdrop-filter:blur(8px);';
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-8px)';
+    setTimeout(() => toast.remove(), 200);
+  }, 1500);
 }
 
 async function deleteReplyById(replyId, forEveryone) {
