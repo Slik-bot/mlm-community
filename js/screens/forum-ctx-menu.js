@@ -45,6 +45,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     }},
     { icon: CTX_SVG.select, label: 'Выбрать', fn: () => {
       close();
+      enterSelectionMode(replyId);
     }},
     { icon: CTX_SVG.edit, label: 'Редактировать', fn: () => {
       window._editReplyId = replyId;
@@ -98,6 +99,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     }},
     { icon: CTX_SVG.select, label: 'Выбрать', fn: () => {
       close();
+      enterSelectionMode(replyId);
     }},
     { icon: CTX_SVG.flag, label: 'Пожаловаться', danger: true, fn: () => {
       close();
@@ -166,6 +168,111 @@ function closeReplyCtxMenu() {
   setTimeout(() => {
     if (menu) menu.style.display = 'none';
   }, 300);
+}
+
+const _selectedIds = new Set();
+
+function enterSelectionMode(firstId) {
+  const replies = document.getElementById('forumReplies');
+  const bar = document.getElementById('forumSelectBar');
+  const replyBar = document.getElementById('forumReplyBar');
+  if (!replies || !bar) return;
+
+  _selectedIds.clear();
+  replies.classList.add('selection-mode');
+  bar.classList.add('active');
+  if (replyBar) replyBar.style.display = 'none';
+
+  replies.querySelectorAll('.forum-reply-row').forEach(row => {
+    let circle = row.querySelector('.select-circle');
+    if (!circle) {
+      circle = document.createElement('div');
+      circle.className = 'select-circle';
+      row.insertBefore(circle, row.firstChild);
+    }
+    row.onclick = () => toggleSelectReply(row);
+  });
+
+  if (firstId) {
+    const first = replies.querySelector(`[data-id="${firstId}"]`);
+    if (first) toggleSelectReply(first);
+  }
+
+  document.getElementById('forumSelectCancel')
+    .onclick = exitSelectionMode;
+  document.getElementById('forumSelectCopy')
+    .onclick = copySelectedReplies;
+  document.getElementById('forumSelectDelete')
+    .onclick = deleteSelectedReplies;
+  document.getElementById('forumSelectForward')
+    .onclick = forwardSelectedReplies;
+}
+
+function toggleSelectReply(row) {
+  const id = row.dataset.id;
+  if (_selectedIds.has(id)) {
+    _selectedIds.delete(id);
+    row.classList.remove('selected');
+  } else {
+    _selectedIds.add(id);
+    row.classList.add('selected');
+  }
+  const count = _selectedIds.size;
+  const el = document.getElementById('forumSelectCount');
+  if (el) el.textContent = count + ' выбрано';
+  const del = document.getElementById('forumSelectDelete');
+  const fwd = document.getElementById('forumSelectForward');
+  const cpy = document.getElementById('forumSelectCopy');
+  if (del) del.style.opacity = count ? '1' : '0.3';
+  if (fwd) fwd.style.opacity = count ? '1' : '0.3';
+  if (cpy) cpy.style.opacity = count ? '1' : '0.3';
+}
+
+function exitSelectionMode() {
+  const replies = document.getElementById('forumReplies');
+  const bar = document.getElementById('forumSelectBar');
+  const replyBar = document.getElementById('forumReplyBar');
+  if (!replies || !bar) return;
+  _selectedIds.clear();
+  replies.classList.remove('selection-mode');
+  bar.classList.remove('active');
+  if (replyBar) replyBar.style.display = '';
+  replies.querySelectorAll('.forum-reply-row').forEach(row => {
+    row.classList.remove('selected');
+    row.onclick = null;
+  });
+}
+
+function copySelectedReplies() {
+  if (!_selectedIds.size) return;
+  const texts = [];
+  _selectedIds.forEach(id => {
+    const el = document.querySelector(`[data-id="${id}"] .reply-text`);
+    if (el) texts.push(el.textContent.trim());
+  });
+  navigator.clipboard.writeText(texts.join('\n\n'))
+    .catch(() => {});
+  showCopyToast('Скопировано (' + texts.length + ')');
+  exitSelectionMode();
+}
+
+async function deleteSelectedReplies() {
+  if (!_selectedIds.size || !window.sb) return;
+  const ids = [..._selectedIds];
+  const { error } = await window.sb
+    .from('forum_replies').delete().in('id', ids);
+  if (error) { console.error('delete selected:', error); return; }
+  ids.forEach(id => {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) el.remove();
+  });
+  exitSelectionMode();
+}
+
+function forwardSelectedReplies() {
+  if (!_selectedIds.size) return;
+  showCopyToast('Скоро: пересылка в тему');
+  exitSelectionMode();
 }
 
 async function reportReply(replyId) {
