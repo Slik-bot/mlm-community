@@ -292,7 +292,8 @@ function forwardSelectedReplies() {
 }
 
 function showForwardSheet(content) {
-  window._forwardContent = content;
+  const topicTitle = window.currentTopic?.title || '';
+  window._forwardContent = '[FWD]' + topicTitle + '\n' + content;
   if (window.goTo) goTo('scrForum');
 }
 

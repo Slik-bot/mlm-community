@@ -801,3 +801,24 @@
   background: rgba(139,92,246,0.08);
   border-radius: 12px;
 }
+
+/* ===== FORWARD BUBBLE ===== */
+.reply-forward-block {
+  border-left: 3px solid #8b5cf6;
+  padding: 6px 10px;
+  border-radius: 0 8px 8px 0;
+  background: rgba(139,92,246,0.08);
+  margin-bottom: 4px;
+}
+.reply-forward-from {
+  font-size: 11px;
+  color: #a78bfa;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.reply-forward-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}

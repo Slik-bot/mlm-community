@@ -163,17 +163,19 @@ function openForumTopic(topicId) {
 async function initForumTopic() {
   if (window.cancelForumReply) cancelForumReply();
   if (window._forwardContent) {
+    const fwd = window._forwardContent;
     const inp = document.getElementById('forumReplyInput');
     const ctx = document.getElementById('forumReplyContext');
     const authorEl = document.getElementById('forumReplyAuthor');
     const msgEl = document.getElementById('forumReplyMsg');
     if (inp) {
-      inp.value = window._forwardContent;
+      inp.value = fwd;
       inp.dispatchEvent(new Event('input'));
     }
     if (ctx && authorEl && msgEl) {
-      authorEl.textContent = 'Пересылка';
-      msgEl.textContent = window._forwardContent.slice(0, 60) + (window._forwardContent.length > 60 ? '...' : '');
+      const lines = fwd.replace('[FWD]', '').split('\n');
+      authorEl.textContent = '📨 Переслано из «' + (lines[0] || '') + '»';
+      msgEl.textContent = lines.slice(1).join(' ').slice(0, 60) + '...';
       ctx.classList.add('active');
     }
     window._forwardContent = null;
@@ -317,7 +319,15 @@ function buildReplyBubble(r, i, replyMap) {
     buildForumAv(a, 32) +
     '<div class="forum-reply' + bestCls + ' dna-' + suffix + (isMe ? ' is-mine' : '') + '">' + bestLabel + quoteHtml +
       '<div class="reply-top"><span class="reply-name reply-name-' + suffix + '">' + (isMe ? 'Вы' : fEsc(a.name||'Аноним')) + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' + (r.updated_at && r.updated_at !== r.created_at ? '<span class="reply-edited">изменено</span>' : '') + '</div>' +
-      '<div class="reply-text">' + fEsc(r.content) + '</div>' +
+      (r.content && r.content.startsWith('[FWD]') ? (function(){
+        var lines = r.content.replace('[FWD]','').split('\n');
+        var src = lines[0] || '';
+        var body = fEsc(lines.slice(1).join('\n'));
+        return '<div class="reply-forward-block">' +
+          '<div class="reply-forward-from">📨 Переслано из «' + fEsc(src) + '»</div>' +
+          '<div class="reply-forward-text">' + body + '</div>' +
+          '</div>';
+      })() : '<div class="reply-text">' + fEsc(r.content) + '</div>') +
       '<div class="reply-actions-row">' +
         '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +
         '<div class="reply-like-btn' + lc + '" onclick="event.stopPropagation();likeForumReply(\'' + r.id + '\',this)">' +
