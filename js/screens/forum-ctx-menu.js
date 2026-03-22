@@ -101,6 +101,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     }},
     { icon: CTX_SVG.flag, label: 'Пожаловаться', danger: true, fn: () => {
       close();
+      reportReply(replyId);
     }}
   ];
 
@@ -165,6 +166,23 @@ function closeReplyCtxMenu() {
   setTimeout(() => {
     if (menu) menu.style.display = 'none';
   }, 300);
+}
+
+async function reportReply(replyId) {
+  if (!window.sb || !replyId) return;
+  const user = window._currentUser || window.currentUser;
+  if (!user) { showCopyToast('Необходима авторизация'); return; }
+  const { error } = await window.sb
+    .from('reports')
+    .insert({
+      reporter_id: user.id,
+      target_type: 'comment',
+      target_id: replyId,
+      reason_category: 'inappropriate',
+      status: 'pending'
+    });
+  if (error) { console.error('report error:', error); showCopyToast('Ошибка отправки'); return; }
+  showCopyToast('Жалоба отправлена');
 }
 
 async function editReplyById(replyId, newContent) {
