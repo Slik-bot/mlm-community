@@ -169,10 +169,9 @@ function closeReplyCtxMenu() {
 
 async function editReplyById(replyId, newContent) {
   if (!window.sb || !replyId || !newContent.trim()) return;
-  const now = new Date().toISOString();
   const { error } = await window.sb
     .from('forum_replies')
-    .update({ content: newContent.trim(), updated_at: now })
+    .update({ content: newContent.trim() })
     .eq('id', replyId);
   if (error) {
     console.error('edit reply error:', error);
