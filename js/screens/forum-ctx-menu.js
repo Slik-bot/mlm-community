@@ -42,6 +42,10 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
       close();
+      const row = document.querySelector(`[data-id="${replyId}"]`);
+      const name = row?.querySelector('.reply-name')?.textContent || '';
+      const txt = row?.querySelector('.reply-text')?.textContent || '';
+      if (txt) showForwardSheet((name ? name + ':\n' : '') + txt);
     }},
     { icon: CTX_SVG.select, label: 'Выбрать', fn: () => {
       close();
@@ -96,6 +100,10 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
       close();
+      const row = document.querySelector(`[data-id="${replyId}"]`);
+      const name = row?.querySelector('.reply-name')?.textContent || '';
+      const txt = row?.querySelector('.reply-text')?.textContent || '';
+      if (txt) showForwardSheet((name ? name + ':\n' : '') + txt);
     }},
     { icon: CTX_SVG.select, label: 'Выбрать', fn: () => {
       close();
@@ -283,8 +291,16 @@ function forwardSelectedReplies() {
   showForwardSheet(texts.join('\n\n'));
 }
 
-function showForwardSheet(content) {
-  const topics = window.allForumTopics || [];
+async function showForwardSheet(content) {
+  let topics = window.allForumTopics || [];
+  if (!topics.length && window.sb) {
+    const { data } = await window.sb
+      .from('forum_topics')
+      .select('id, title, category')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (data) { topics = data; window.allForumTopics = data; }
+  }
   const curId = window._forumTopicId;
   const other = topics.filter(t => t.id !== curId);
 

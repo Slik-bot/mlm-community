@@ -44,6 +44,7 @@ async function loadForumTopics(append) {
     var rows = result.data || [];
     forumHasMore = rows.length >= FORUM_PAGE;
     allForumTopics = append ? allForumTopics.concat(rows) : rows;
+    window.allForumTopics = allForumTopics;
     if (window.currentUser && rows.length) {
       var tIds = rows.map(function(t) { return t.id; });
       var lt = await window.sb.from('reactions').select('target_id')
