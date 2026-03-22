@@ -323,6 +323,7 @@ function replyToForumReply(replyId, authorName, previewText) {
 }
 function cancelForumReply() {
   forumReplyToId = null;
+  window._editReplyId = null;
   const ctx = document.getElementById('forumReplyContext');
   if (ctx) ctx.classList.remove('active');
   const input = document.getElementById('forumReplyInput');

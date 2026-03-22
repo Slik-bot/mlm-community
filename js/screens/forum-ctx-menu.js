@@ -56,6 +56,7 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
         authorEl.textContent = 'Редактирование';
         msgEl.textContent = text;
         input.value = text;
+        input.dispatchEvent(new Event('input'));
         input.focus();
         ctx.classList.add('active');
       }
