@@ -160,6 +160,7 @@ function openForumTopic(topicId) {
   goTo('scrForumTopic');
 }
 async function initForumTopic() {
+  if (window.cancelForumReply) cancelForumReply();
   const topicId = window._forumTopicId;
   const scrEl = document.getElementById('scrForumTopic');
   if (scrEl && currentTopic) scrEl.setAttribute('data-category', currentTopic.category || '');
