@@ -41,8 +41,15 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
       close();
     }},
     { icon: CTX_SVG.del, label: 'Удалить', danger: true, fn: () => {
+      const replyEl = document.querySelector(`[data-id="${replyId}"]`);
+      const replyTime = replyEl ? parseInt(replyEl.dataset.time || '0') : 0;
+      const canDeleteForAll = replyTime && (Date.now() - replyTime) < 24 * 60 * 60 * 1000;
+      if (canDeleteForAll) {
+        if (confirm('Удалить у всех?')) deleteReplyById(replyId, true);
+      } else {
+        if (confirm('Удалить сообщение?')) deleteReplyById(replyId, false);
+      }
       close();
-      deleteReplyById(replyId);
     }}
   ];
 
@@ -129,20 +136,34 @@ function closeReplyCtxMenu() {
   }, 300);
 }
 
-async function deleteReplyById(replyId) {
-  if (!window.sb || !replyId) return;
-  try {
-    const { error } = await window.sb
-      .from('forum_posts')
-      .delete()
-      .eq('id', replyId);
-    if (error) throw error;
-    const el = document.querySelector(
-      `[data-id="${replyId}"]`
-    );
-    if (el) el.remove();
-  } catch (err) {
-    console.error('deleteReplyById:', err);
+async function deleteReplyById(replyId, forEveryone) {
+  if (!window.sb) return;
+  const { error } = await window.sb
+    .from('forum_replies')
+    .delete()
+    .eq('id', replyId);
+  if (error) { console.error('delete reply error:', error); return; }
+
+  const el = document.querySelector(`[data-id="${replyId}"]`);
+  if (el) el.remove();
+
+  if (window.currentTopicReplies) {
+    window.currentTopicReplies = window.currentTopicReplies
+      .filter(r => r.id !== replyId);
+  }
+
+  const topicId = window._forumTopicId;
+  if (topicId) {
+    const { data: topic } = await window.sb
+      .from('forum_topics')
+      .select('replies_count')
+      .eq('id', topicId)
+      .single();
+    if (topic) {
+      await window.sb.from('forum_topics')
+        .update({ replies_count: Math.max(0, (topic.replies_count || 1) - 1) })
+        .eq('id', topicId);
+    }
   }
 }
 
