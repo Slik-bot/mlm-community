@@ -47,6 +47,18 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
       close();
     }},
     { icon: CTX_SVG.edit, label: 'Редактировать', fn: () => {
+      window._editReplyId = replyId;
+      const ctx = document.getElementById('forumReplyContext');
+      const authorEl = document.getElementById('forumReplyAuthor');
+      const msgEl = document.getElementById('forumReplyMsg');
+      const input = document.getElementById('forumReplyInput');
+      if (ctx && authorEl && msgEl && input) {
+        authorEl.textContent = 'Редактирование';
+        msgEl.textContent = text;
+        input.value = text;
+        input.focus();
+        ctx.classList.add('active');
+      }
       close();
     }},
     { icon: CTX_SVG.del, label: 'Удалить', danger: true, fn: () => {
@@ -153,6 +165,19 @@ function closeReplyCtxMenu() {
     if (menu) menu.style.display = 'none';
   }, 300);
 }
+
+async function editReplyById(replyId, newContent) {
+  if (!window.sb || !replyId || !newContent.trim()) return;
+  const { error } = await window.sb
+    .from('forum_replies')
+    .update({ content: newContent.trim() })
+    .eq('id', replyId);
+  if (error) { console.error('edit reply error:', error); return; }
+  const el = document.querySelector(`[data-id="${replyId}"] .reply-text`);
+  if (el) el.textContent = newContent.trim();
+  window._editReplyId = null;
+}
+window.editReplyById = editReplyById;
 
 function showCopyToast() {
   const existing = document.getElementById('copyToast');

@@ -337,6 +337,12 @@ async function sendForumReply() {
   const inp = document.getElementById('forumReplyInput');
   const content = (inp ? inp.value : '').trim();
   if (!content) return;
+  if (window._editReplyId) {
+    await window.editReplyById(window._editReplyId, content);
+    if (inp) inp.value = '';
+    if (window.cancelForumReply) cancelForumReply();
+    return;
+  }
   const btn = document.querySelector('.forum-reply-send');
   if (btn) btn.disabled = true;
   const payload = { topic_id: currentTopic.id, author_id: user.id, content: content };
