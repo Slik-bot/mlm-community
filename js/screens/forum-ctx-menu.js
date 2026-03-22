@@ -291,77 +291,9 @@ function forwardSelectedReplies() {
   showForwardSheet(texts.join('\n\n'));
 }
 
-async function showForwardSheet(content) {
-  let topics = window.allForumTopics || [];
-  if (!topics.length && window.sb) {
-    const { data } = await window.sb
-      .from('forum_topics')
-      .select('id, title, category')
-      .order('created_at', { ascending: false })
-      .limit(50);
-    if (data) { topics = data; window.allForumTopics = data; }
-  }
-  const curId = window._forumTopicId;
-  const other = topics.filter(t => t.id !== curId);
-
-  const ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;flex-direction:column;justify-content:flex-end;';
-
-  const sheet = document.createElement('div');
-  sheet.style.cssText = 'background:#12121c;border-radius:16px 16px 0 0;max-height:70vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 280ms cubic-bezier(0.16,1,0.3,1);';
-
-  const head = document.createElement('div');
-  head.style.cssText = 'padding:16px 20px 10px;font-size:15px;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;';
-  head.textContent = 'Переслать в тему';
-
-  const list = document.createElement('div');
-  list.style.cssText = 'overflow-y:auto;flex:1;';
-
-  if (!other.length) {
-    const empty = document.createElement('div');
-    empty.style.cssText = 'padding:40px 20px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px;';
-    empty.textContent = 'Нет других тем';
-    list.appendChild(empty);
-  } else {
-    other.forEach(t => {
-      const item = document.createElement('div');
-      item.style.cssText = 'padding:14px 20px;font-size:14px;color:rgba(255,255,255,0.85);border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;';
-      item.textContent = t.title || 'Без названия';
-      item.onclick = async () => {
-        ov.remove();
-        await sendForwardReply(t.id, content);
-      };
-      list.appendChild(item);
-    });
-  }
-
-  const cancel = document.createElement('button');
-  cancel.textContent = 'Отменить';
-  cancel.style.cssText = 'margin:8px 16px 16px;padding:14px;background:rgba(255,255,255,0.06);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);flex-shrink:0;';
-  cancel.onclick = () => ov.remove();
-
-  sheet.appendChild(head);
-  sheet.appendChild(list);
-  sheet.appendChild(cancel);
-  ov.appendChild(sheet);
-  document.body.appendChild(ov);
-  ov.onclick = e => { if (e.target === ov) ov.remove(); };
-
-  requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
-}
-
-async function sendForwardReply(topicId, content) {
-  if (!window.sb || !topicId) return;
-  const user = window._currentUser || window.currentUser;
-  if (!user) { showCopyToast('Необходима авторизация'); return; }
-  const { error } = await window.sb
-    .from('forum_replies')
-    .insert({ topic_id: topicId, author_id: user.id, content: '📨 ' + content });
-  if (error) { console.error('forward error:', error); showCopyToast('Ошибка пересылки'); return; }
-  await window.sb.from('forum_topics')
-    .update({ replies_count: window.allForumTopics?.find(t=>t.id===topicId)?.replies_count + 1 || 1 })
-    .eq('id', topicId);
-  showCopyToast('Переслано в тему');
+function showForwardSheet(content) {
+  window._forwardContent = content;
+  if (window.goTo) goTo('scrForum');
 }
 
 async function reportReply(replyId) {

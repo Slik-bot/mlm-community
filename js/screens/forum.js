@@ -16,6 +16,8 @@ let _forumChannel = null;
 let _forumRepliesChannel = null;
 // ===== FORUM LIST =====
 function initForum() {
+  const fwdBanner = document.getElementById('forumForwardBanner');
+  if (fwdBanner) fwdBanner.style.display = window._forwardContent ? 'block' : 'none';
   forumCat = 'all';
   forumSortMethod = 'new';
   forumQuery = '';
@@ -154,14 +156,28 @@ function forumSearch(val) {
 }
 // ===== FORUM TOPIC DETAIL =====
 function openForumTopic(topicId) {
-  currentTopic = null;
   currentTopic = allForumTopics.find(function(t) { return t.id === topicId; }) || null;
-  if (!currentTopic) return;
   window._forumTopicId = topicId;
   goTo('scrForumTopic');
 }
 async function initForumTopic() {
   if (window.cancelForumReply) cancelForumReply();
+  if (window._forwardContent) {
+    const inp = document.getElementById('forumReplyInput');
+    const ctx = document.getElementById('forumReplyContext');
+    const authorEl = document.getElementById('forumReplyAuthor');
+    const msgEl = document.getElementById('forumReplyMsg');
+    if (inp) {
+      inp.value = window._forwardContent;
+      inp.dispatchEvent(new Event('input'));
+    }
+    if (ctx && authorEl && msgEl) {
+      authorEl.textContent = 'Пересылка';
+      msgEl.textContent = window._forwardContent.slice(0, 60) + (window._forwardContent.length > 60 ? '...' : '');
+      ctx.classList.add('active');
+    }
+    window._forwardContent = null;
+  }
   const topicId = window._forumTopicId;
   const scrEl = document.getElementById('scrForumTopic');
   if (scrEl && currentTopic) scrEl.setAttribute('data-category', currentTopic.category || '');
