@@ -174,7 +174,11 @@ async function editReplyById(replyId, newContent) {
     .from('forum_replies')
     .update({ content: newContent.trim(), updated_at: now })
     .eq('id', replyId);
-  if (error) { console.error('edit reply error:', error); return; }
+  if (error) {
+    console.error('edit reply error:', error);
+    showCopyToast('Ошибка: ' + (error.message || error.code || 'unknown'));
+    return;
+  }
   const row = document.querySelector(`[data-id="${replyId}"]`);
   if (row) {
     const textEl = row.querySelector('.reply-text');
@@ -191,12 +195,12 @@ async function editReplyById(replyId, newContent) {
 }
 window.editReplyById = editReplyById;
 
-function showCopyToast() {
+function showCopyToast(msg) {
   const existing = document.getElementById('copyToast');
   if (existing) existing.remove();
   const toast = document.createElement('div');
   toast.id = 'copyToast';
-  toast.textContent = 'Скопировано';
+  toast.textContent = msg || 'Скопировано';
   toast.style.cssText = 'position:fixed;bottom:48%;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(30,30,40,0.92);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 180ms ease,transform 180ms ease;pointer-events:none;backdrop-filter:blur(8px);';
   document.body.appendChild(toast);
   requestAnimationFrame(() => {
