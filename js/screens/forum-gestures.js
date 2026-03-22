@@ -103,6 +103,17 @@ function attachLongPress(el, onLongPress) {
     el.classList.remove('ctx-pressed');
     clearTimeout(timer);
   }, { passive: true });
+
+  el.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    const id = el.dataset.id;
+    const mine = el.dataset.mine === 'true';
+    const textEl = el.querySelector('.reply-text');
+    const nameEl = el.querySelector('.reply-name');
+    const text = textEl ? textEl.textContent : '';
+    const author = nameEl ? nameEl.textContent : '';
+    if (window.openReplyCtxMenu) openReplyCtxMenu(id, mine, text, author, el);
+  });
 }
 window.attachLongPress = attachLongPress;
 
