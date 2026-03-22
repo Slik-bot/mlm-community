@@ -80,7 +80,10 @@ function openForumMore() {
   }
   menu.innerHTML = items;
   document.body.appendChild(overlay);
+  menu.style.transform = 'translateY(100%)';
+  menu.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1)';
   document.body.appendChild(menu);
+  requestAnimationFrame(() => { menu.style.transform = 'translateY(0)'; });
 }
 function closeForumMore() {
   const overlay = document.querySelector('.forum-more-overlay');
@@ -89,17 +92,80 @@ function closeForumMore() {
   if (menu) menu.remove();
 }
 function shareForum() {
-  if (navigator.share && currentTopic) {
-    navigator.share({ title: currentTopic.title, text: currentTopic.title });
+  closeForumMore();
+  const topic = window.currentTopic || {};
+  const title = topic.title || 'Тема форума';
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        const t = document.createElement('div');
+        t.textContent = 'Ссылка скопирована';
+        t.style.cssText = 'position:fixed;bottom:48%;left:50%;transform:translateX(-50%);background:rgba(30,30,40,0.92);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;pointer-events:none;backdrop-filter:blur(8px);';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+      })
+      .catch(() => {});
   }
 }
-async function deleteForumTopic() {
-  if (!currentTopic) return;
-  await window.sb.from('forum_replies').delete().eq('topic_id', currentTopic.id);
-  await window.sb.from('forum_topics').delete().eq('id', currentTopic.id);
-  if (window.showToast) showToast('Тема удалена');
-  goBack();
+function deleteForumTopic() {
+  closeForumMore();
+  const topicId = window._forumTopicId;
+  if (!topicId) return;
+
+  let cancelled = false;
+  let seconds = 5;
+
+  const wrap = document.createElement('div');
+  wrap.id = 'undoToast';
+  wrap.style.cssText = 'position:fixed;bottom:80px;left:12px;right:12px;background:rgba(20,20,30,0.96);backdrop-filter:blur(12px);border-radius:14px;padding:14px 16px;z-index:999;display:flex;align-items:center;gap:12px;border:1px solid rgba(255,255,255,0.08);';
+
+  const txt = document.createElement('span');
+  txt.style.cssText = 'flex:1;font-size:14px;color:#fff;';
+  txt.textContent = 'Тема удаляется через ' + seconds + ' сек...';
+
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:absolute;bottom:0;left:0;height:3px;background:#ef4444;border-radius:0 0 14px 14px;width:100%;transition:width linear;';
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Отменить';
+  btn.style.cssText = 'background:rgba(139,92,246,0.15);color:#8b5cf6;border:1px solid rgba(139,92,246,0.3);border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;';
+  btn.onclick = () => { cancelled = true; wrap.remove(); };
+
+  wrap.appendChild(bar);
+  wrap.appendChild(txt);
+  wrap.appendChild(btn);
+  document.body.appendChild(wrap);
+
+  requestAnimationFrame(() => {
+    bar.style.transitionDuration = '5s';
+    bar.style.width = '0%';
+  });
+
+  const tick = setInterval(() => {
+    seconds--;
+    if (cancelled) { clearInterval(tick); return; }
+    txt.textContent = seconds > 0
+      ? 'Тема удаляется через ' + seconds + ' сек...'
+      : 'Удаление...';
+    if (seconds <= 0) {
+      clearInterval(tick);
+      wrap.remove();
+      _doDeleteForumTopic(topicId);
+    }
+  }, 1000);
 }
+
+async function _doDeleteForumTopic(topicId) {
+  if (!window.sb || !topicId) return;
+  await window.sb.from('forum_replies').delete().eq('topic_id', topicId);
+  const { error } = await window.sb.from('forum_topics').delete().eq('id', topicId);
+  if (error) { console.error('delete topic error:', error); return; }
+  if (window.goBack) goBack();
+}
+window.deleteForumTopic = deleteForumTopic;
 
 async function likeTopicFromList(topicId, el) {
   if (!window.currentUser) return;
