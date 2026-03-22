@@ -28,7 +28,15 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
       window.replyToForumReply?.(replyId, author, text);
     }},
     { icon: CTX_SVG.copy, label: 'Скопировать', fn: () => {
-      navigator.clipboard?.writeText(text);
+      navigator.clipboard.writeText(text)
+        .catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        });
       close();
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
@@ -59,7 +67,15 @@ function openReplyCtxMenu(replyId, isMine, text, author, rowEl) {
       window.replyToForumReply?.(replyId, author, text);
     }},
     { icon: CTX_SVG.copy, label: 'Скопировать', fn: () => {
-      navigator.clipboard?.writeText(text);
+      navigator.clipboard.writeText(text)
+        .catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        });
       close();
     }},
     { icon: CTX_SVG.forward, label: 'Переслать', fn: () => {
