@@ -299,7 +299,7 @@ function buildReplyBubble(r, i, replyMap) {
   return '<div class="forum-reply-row" data-id="' + r.id + '" data-mine="' + isMe + '" data-time="' + new Date(r.created_at).getTime() + '" style="animation-delay:' + (i*30) + 'ms">' +
     buildForumAv(a, 32) +
     '<div class="forum-reply' + bestCls + ' dna-' + suffix + (isMe ? ' is-mine' : '') + '">' + bestLabel + quoteHtml +
-      '<div class="reply-top"><span class="reply-name reply-name-' + suffix + '">' + (isMe ? 'Вы' : fEsc(a.name||'Аноним')) + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span></div>' +
+      '<div class="reply-top"><span class="reply-name reply-name-' + suffix + '">' + (isMe ? 'Вы' : fEsc(a.name||'Аноним')) + '</span><span class="reply-time">' + fTimeAgo(r.created_at) + '</span>' + (r.updated_at && r.updated_at !== r.created_at ? '<span class="reply-edited">изменено</span>' : '') + '</div>' +
       '<div class="reply-text">' + fEsc(r.content) + '</div>' +
       '<div class="reply-actions-row">' +
         '<button class="reply-reply-btn" onclick="event.stopPropagation();replyToForumReply(\'' + r.id + '\',\'' + fEsc(a.name||'') + '\',\'' + fEsc((r.content||'').slice(0,60)) + '\')">Ответить</button>' +

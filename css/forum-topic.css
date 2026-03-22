@@ -734,3 +734,12 @@
 .forum-reply-row {
   transition: transform 150ms ease, opacity 250ms ease, filter 250ms ease;
 }
+
+/* ===== EDITED MARK ===== */
+.reply-edited {
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  font-style: italic;
+  margin-left: 4px;
+  white-space: nowrap;
+}
