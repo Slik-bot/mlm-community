@@ -168,13 +168,24 @@ function closeReplyCtxMenu() {
 
 async function editReplyById(replyId, newContent) {
   if (!window.sb || !replyId || !newContent.trim()) return;
+  const now = new Date().toISOString();
   const { error } = await window.sb
     .from('forum_replies')
-    .update({ content: newContent.trim() })
+    .update({ content: newContent.trim(), updated_at: now })
     .eq('id', replyId);
   if (error) { console.error('edit reply error:', error); return; }
-  const el = document.querySelector(`[data-id="${replyId}"] .reply-text`);
-  if (el) el.textContent = newContent.trim();
+  const row = document.querySelector(`[data-id="${replyId}"]`);
+  if (row) {
+    const textEl = row.querySelector('.reply-text');
+    if (textEl) textEl.textContent = newContent.trim();
+    const timeEl = row.querySelector('.reply-time');
+    if (timeEl && !row.querySelector('.reply-edited')) {
+      const mark = document.createElement('span');
+      mark.className = 'reply-edited';
+      mark.textContent = 'изменено';
+      timeEl.insertAdjacentElement('afterend', mark);
+    }
+  }
   window._editReplyId = null;
 }
 window.editReplyById = editReplyById;
